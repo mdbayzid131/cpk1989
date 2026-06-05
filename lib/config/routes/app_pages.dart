@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:cpk1989/module/shared/splash/splash_view.dart';
+import 'package:cpk1989/module/shared/splash/splash_binding.dart';
 
 class AppRoutes {
   static const String splash = '/splash';
@@ -41,7 +43,8 @@ class PlaceholderScreen extends StatelessWidget {
 final pages = [
   GetPage(
     name: AppRoutes.splash,
-    page: () => const PlaceholderScreen(),
+    page: () => const SplashView(),
+    binding: SplashBinding(),
   ),
   GetPage(
     name: AppRoutes.onboarding,
