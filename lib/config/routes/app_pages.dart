@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cpk1989/module/shared/splash/splash_view.dart';
 import 'package:cpk1989/module/shared/splash/splash_binding.dart';
+import 'package:cpk1989/module/shared/onboarding/onboarding_view.dart';
+import 'package:cpk1989/module/shared/onboarding/onboarding_binding.dart';
 
 class AppRoutes {
   static const String splash = '/splash';
@@ -32,11 +34,7 @@ class PlaceholderScreen extends StatelessWidget {
   const PlaceholderScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('App is running!'),
-      ),
-    );
+    return const Scaffold(body: Center(child: Text('App is running!')));
   }
 }
 
@@ -48,14 +46,9 @@ final pages = [
   ),
   GetPage(
     name: AppRoutes.onboarding,
-    page: () => const PlaceholderScreen(),
+    page: () => const OnboardingView(),
+    binding: OnboardingBinding(),
   ),
-  GetPage(
-    name: AppRoutes.login,
-    page: () => const PlaceholderScreen(),
-  ),
-  GetPage(
-    name: AppRoutes.bottomNavBar,
-    page: () => const PlaceholderScreen(),
-  ),
+  GetPage(name: AppRoutes.login, page: () => const PlaceholderScreen()),
+  GetPage(name: AppRoutes.bottomNavBar, page: () => const PlaceholderScreen()),
 ];
