@@ -29,7 +29,7 @@ class OnboardingController extends GetxController {
 
   Future<void> finishOnboarding() async {
     await StorageService.setBool(StorageConstants.onboardingSeen, true);
-    Get.offAllNamed(AppRoutes.login);
+    Get.offAllNamed(AppRoutes.bottomNavBar);
   }
 
   @override

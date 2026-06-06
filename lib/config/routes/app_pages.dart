@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:cpk1989/module/shared/splash/splash_view.dart';
-import 'package:cpk1989/module/shared/splash/splash_binding.dart';
-import 'package:cpk1989/module/shared/onboarding/onboarding_view.dart';
-import 'package:cpk1989/module/shared/onboarding/onboarding_binding.dart';
+import 'package:cpk1989/module/splash/splash_view.dart';
+import 'package:cpk1989/module/splash/splash_binding.dart';
+import 'package:cpk1989/module/onboarding/onboarding_view.dart';
+import 'package:cpk1989/module/onboarding/onboarding_binding.dart';
+import 'package:cpk1989/module/bottom_nav_bar/bottom_nav_bar_view.dart';
+import 'package:cpk1989/module/bottom_nav_bar/bottom_nav_bar_binding.dart';
 
 class AppRoutes {
   static const String splash = '/splash';
   static const String onboarding = '/onboarding';
-  static const String login = '/login';
+  
+
+
   static const String register = '/register';
   static const String forgotPassword = '/forgot-password';
   static const String home = '/home';
@@ -49,6 +53,9 @@ final pages = [
     page: () => const OnboardingView(),
     binding: OnboardingBinding(),
   ),
-  GetPage(name: AppRoutes.login, page: () => const PlaceholderScreen()),
-  GetPage(name: AppRoutes.bottomNavBar, page: () => const PlaceholderScreen()),
+  GetPage(
+    name: AppRoutes.bottomNavBar,
+    page: () => const BottomNavBarView(),
+    binding: BottomNavBarBinding(),
+  ),
 ];

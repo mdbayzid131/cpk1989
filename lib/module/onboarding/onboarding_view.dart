@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:cpk1989/module/shared/onboarding/onboarding_controller.dart';
+import 'package:cpk1989/module/onboarding/onboarding_controller.dart';
 
 class OnboardingView extends GetView<OnboardingController> {
   const OnboardingView({super.key});
@@ -36,9 +36,36 @@ class OnboardingView extends GetView<OnboardingController> {
               controller: controller.pageController,
               onPageChanged: controller.onPageChanged,
               children: [
-                _buildScreen1(),
-                _buildScreen2(),
-                _buildScreen3(),
+                Center(
+                  child: Text(
+                    'Screen 1',
+                    style: GoogleFonts.outfit(
+                      color: Colors.white,
+                      fontSize: 24.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                Center(
+                  child: Text(
+                    'Screen 2',
+                    style: GoogleFonts.outfit(
+                      color: Colors.white,
+                      fontSize: 24.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                Center(
+                  child: Text(
+                    'Screen 3',
+                    style: GoogleFonts.outfit(
+                      color: Colors.white,
+                      fontSize: 24.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -94,16 +121,16 @@ class OnboardingView extends GetView<OnboardingController> {
                                   ],
                                 )
                               : null,
-                          color: isActive ? null : Colors.white.withValues(alpha: 0.2),
+                          color: isActive
+                              ? null
+                              : Colors.white.withValues(alpha: 0.2),
                         ),
                       );
                     }),
                   ),
 
                   // Action Button
-                  isLastPage
-                      ? _buildEnterButton()
-                      : _buildCircleNextButton(),
+                  isLastPage ? _buildEnterButton() : _buildCircleNextButton(),
                 ],
               );
             }),
@@ -187,11 +214,7 @@ class OnboardingView extends GetView<OnboardingController> {
               ),
             ),
             SizedBox(width: 8.w),
-            const Icon(
-              Icons.arrow_forward,
-              color: Color(0xFF0F1012),
-              size: 18,
-            ),
+            const Icon(Icons.arrow_forward, color: Color(0xFF0F1012), size: 18),
           ],
         ),
       ),
@@ -346,10 +369,7 @@ class OnboardingView extends GetView<OnboardingController> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(1.5.r),
                           gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFFFFF0CA),
-                              Color(0xFFD4AF37),
-                            ],
+                            colors: [Color(0xFFFFF0CA), Color(0xFFD4AF37)],
                           ),
                         ),
                       ),
@@ -435,10 +455,7 @@ class OnboardingView extends GetView<OnboardingController> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(1.5.r),
                           gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFFFFF0CA),
-                              Color(0xFFD4AF37),
-                            ],
+                            colors: [Color(0xFFFFF0CA), Color(0xFFD4AF37)],
                           ),
                         ),
                       ),
@@ -526,16 +543,9 @@ class OnboardingView extends GetView<OnboardingController> {
       children: [
         ShaderMask(
           shaderCallback: (bounds) => const LinearGradient(
-            colors: [
-              Color(0xFFFFF0CA),
-              Color(0xFFD4AF37),
-            ],
+            colors: [Color(0xFFFFF0CA), Color(0xFFD4AF37)],
           ).createShader(bounds),
-          child: Icon(
-            icon,
-            size: 28.sp,
-            color: Colors.white,
-          ),
+          child: Icon(icon, size: 28.sp, color: Colors.white),
         ),
         SizedBox(height: 10.h),
         Text(
@@ -681,7 +691,9 @@ class ProductCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20.r),
         border: Border.all(
-          color: hasGoldBorder ? const Color(0xFFD4AF37) : Colors.white.withValues(alpha: 0.15),
+          color: hasGoldBorder
+              ? const Color(0xFFD4AF37)
+              : Colors.white.withValues(alpha: 0.15),
           width: hasGoldBorder ? 1.5 : 1,
         ),
         boxShadow: hasGoldBorder
@@ -699,12 +711,7 @@ class ProductCard extends StatelessWidget {
         child: Stack(
           children: [
             // Product photo
-            Positioned.fill(
-              child: Image.asset(
-                image,
-                fit: BoxFit.cover,
-              ),
-            ),
+            Positioned.fill(child: Image.asset(image, fit: BoxFit.cover)),
 
             // Semi-transparent dark overlay
             Positioned.fill(
@@ -916,7 +923,9 @@ class _CameraScannerMockupState extends State<CameraScannerMockup>
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFFD4AF37).withValues(alpha: 0.5),
+                              color: const Color(
+                                0xFFD4AF37,
+                              ).withValues(alpha: 0.5),
                               blurRadius: 8,
                               spreadRadius: 1,
                             ),
