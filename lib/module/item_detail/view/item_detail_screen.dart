@@ -39,10 +39,15 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                 height: 380.h,
                                 width: double.infinity,
                                 color: Colors.black,
-                                child: Image.asset(
-                                  item.imagePath,
-                                  fit: BoxFit.cover,
-                                ),
+                                child: item.imagePath.startsWith('http')
+                                    ? Image.network(
+                                        item.imagePath,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Image.asset(
+                                        item.imagePath,
+                                        fit: BoxFit.cover,
+                                      ),
                               ),
                             ),
                             // Vignette overlay

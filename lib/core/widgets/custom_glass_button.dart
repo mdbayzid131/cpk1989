@@ -40,6 +40,7 @@ class CustomGlassButton extends StatelessWidget {
   final VoidCallback? onTap;
   final double size;
   final double blurSigma;
+  final EdgeInsetsGeometry? padding;
 
   const CustomGlassButton({
     super.key,
@@ -47,6 +48,7 @@ class CustomGlassButton extends StatelessWidget {
     this.onTap,
     this.size = 50.0,
     this.blurSigma = 15.0, // Glass frosted blur strength
+    this.padding,
   });
 
   @override
@@ -95,7 +97,7 @@ class CustomGlassButton extends StatelessWidget {
               onTap: onTap,
               customBorder: const CircleBorder(),
               child: Padding(
-                padding: const EdgeInsets.all(12.0), // Figma: 12px padding
+                padding: padding ?? EdgeInsets.all(size > 40.0 ? 12.0 : 6.0),
                 child: Center(child: child),
               ),
             ),

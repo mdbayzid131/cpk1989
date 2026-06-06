@@ -9,6 +9,10 @@ import 'package:cpk1989/module/sell/view/sell_screen.dart';
 import 'package:cpk1989/module/sell/binding/sell_binding.dart';
 import 'package:cpk1989/module/item_detail/view/item_detail_screen.dart';
 import 'package:cpk1989/module/item_detail/binding/item_detail_binding.dart';
+import 'package:cpk1989/module/purchase_detail/view/purchase_detail_screen.dart';
+import 'package:cpk1989/module/purchase_detail/binding/purchase_detail_binding.dart';
+import 'package:cpk1989/module/my_item_detail/view/my_item_detail_screen.dart';
+import 'package:cpk1989/module/my_item_detail/binding/my_item_detail_binding.dart';
 
 class AppRoutes {
   static const String splash = '/splash';
@@ -16,6 +20,8 @@ class AppRoutes {
   static const String bottomNavBar = '/bottom-nav-bar';
   static const String sell = '/sell';
   static const String itemDetail = '/item-detail';
+  static const String purchaseDetail = '/purchase-detail';
+  static const String myItemDetail = '/my-item-detail';
 }
 
 final Transition transition = Transition.fade;
@@ -52,4 +58,17 @@ final pages = [
     binding: ItemDetailBinding(),
     transition: transition,
   ),
+  GetPage(
+    name: AppRoutes.purchaseDetail,
+    page: () => const PurchaseDetailScreen(),
+    binding: PurchaseDetailBinding(),
+    transition: transition,
+  ),
+  GetPage(
+    name: AppRoutes.myItemDetail,
+    page: () => const MyItemDetailScreen(),
+    binding: MyItemDetailBinding(),
+    transition: transition,
+  ),
 ];
+
