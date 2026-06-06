@@ -1,4 +1,4 @@
-import 'package:cpk1989/module/splash/splash_controller.dart';
+import 'package:cpk1989/module/splash/controller/splash_controller.dart';
 import 'package:get/get.dart';
 
 class SplashBinding extends Bindings {

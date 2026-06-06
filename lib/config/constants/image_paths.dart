@@ -4,9 +4,9 @@ class ImagePaths {
   static String searchIcon = "assets/icons/search_icon.svg";
 
   ///<======================ImageIcon =======================>
-  static String onboardingImage1 = "assets/images/onbordingImage1.png";
-  static String onboardingImage2 = "assets/images/onbordingImage2.png";
-  static String onboardingImage3 = "assets/images/onbordingImage3.png";
+  static String onboardingImage1 = "assets/images/closet_scan.png";
+  static String onboardingImage2 = "assets/images/luxury_bag.png";
+  static String onboardingImage3 = "assets/images/bag_handover.png";
   static String appLogo = "assets/images/app_icon.png";
   static String splashLogo = "assets/images/app_icon.png";
   static String googleIcon = "assets/icons/google_icon.svg";

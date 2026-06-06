@@ -2,7 +2,6 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:cpk1989/config/routes/app_pages.dart';
 
 class SubscriptionHelper {
   static void showSubscriptionDialog({
@@ -18,7 +17,7 @@ class SubscriptionHelper {
         ),
         title: Center(
           child: Text(
-            title ??   '  Subscription Required',
+            title ?? '  Subscription Required',
             style: GoogleFonts.arimo(
               fontWeight: FontWeight.w700,
               fontSize: 18.sp,
@@ -34,10 +33,10 @@ class SubscriptionHelper {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: onPress ??
+              onPressed:
+                  onPress ??
                   () {
                     Get.back();
-                    Get.toNamed(AppRoutes.subscription);
                   },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF9945FF),

@@ -1,7 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:cpk1989/config/constants/storage_constants.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
-import 'package:cpk1989/core/services/auth_service.dart';
 import 'package:cpk1989/core/services/storage_service.dart';
 
 class SplashController extends GetxController {
@@ -22,7 +22,9 @@ class SplashController extends GetxController {
       } else {
         Get.offAllNamed(AppRoutes.bottomNavBar);
       }
-      // ignore: empty_catches
-    } catch (e) {}
+    } catch (e) {
+      debugPrint("Error in splash transition: $e");
+    }
   }
 }
+

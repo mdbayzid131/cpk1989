@@ -402,7 +402,7 @@ class ApiClient extends GetxService {
   /// Force logout when refresh fails
   void _forceLogout() {
     StorageService.clearAll();
-    Get.offAllNamed(AppRoutes.bottomNavBar);
+    Get.offAllNamed(AppRoutes.splash);
     Helpers.showError('Session reset.', title: 'Session Expired');
   }
 }

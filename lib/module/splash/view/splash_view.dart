@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:cpk1989/module/splash/splash_controller.dart';
+import 'package:cpk1989/module/splash/controller/splash_controller.dart';
 
 class SplashView extends GetView<SplashController> {
   const SplashView({super.key});

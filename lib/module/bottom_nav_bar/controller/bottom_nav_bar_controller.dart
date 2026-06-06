@@ -1,9 +1,11 @@
 import 'package:get/get.dart';
 
 class BottomNavBarController extends GetxController {
-  final RxInt currentIndex = 0.obs;
+  final _selectedIndex = 0.obs;
+
+  int get selectedIndex => _selectedIndex.value;
 
   void changeIndex(int index) {
-    currentIndex.value = index;
+    _selectedIndex.value = index;
   }
 }
