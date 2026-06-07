@@ -1,6 +1,5 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:cpk1989/module/bottom_nav_bar/controller/bottom_nav_bar_controller.dart';
 import 'package:cpk1989/module/home/view/home_screen.dart';
@@ -40,190 +39,221 @@ class BottomNavBarScreen extends GetView<BottomNavBarController> {
 
   Widget _buildBottomNavigationBar(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
-    final barHeight = 72.0;
-    // Calculate total width of the bottom bar container inside its padding (padding is 20 left, 20 right)
-    final w = MediaQuery.of(context).size.width - 40;
+    final screenWidth = MediaQuery.of(context).size.width;
 
-    return Container(
-      height: barHeight + bottomPadding + 20.h,
-      padding: EdgeInsets.only(
-        left: 20,
-        right: 20,
-        bottom: bottomPadding + 10.h,
-      ),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          // Background Custom Shape
-          Positioned(
-            left: 0,
-            right: 0,
-            top: 0,
-            height: barHeight,
-            child: CustomPaint(painter: BottomNavBarPainter()),
-          ),
+    // Responsive scaling factor 'k':
+    // Scales proportionally on all screens (including phones and iPads/tablets) based on the design size width (393.0)
+    // to ensure the navigation bar stays perfectly in proportion with the rest of the application.
+    final double k = screenWidth / 393.0;
 
-          // Main Navigation Items (Home, Wishlist, Profile)
-          Positioned(
-            left: 12,
-            top: 0,
-            width: w - 120,
-            height: barHeight,
-            child: Obx(
-              () => Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildNavItem(0, Icons.home_outlined, Icons.home),
-                  _buildNavItem(1, Icons.favorite_border, Icons.favorite),
-                  _buildNavItem(2, Icons.person_outline, Icons.person),
-                ],
+    // Sized symmetrically using the scaling factor 'k'
+    final double barWidth = 361.0 * k;
+    final double barHeight = 67.0 * k;
+
+    return Center(
+      child: Container(
+        width: barWidth,
+        height: barHeight + bottomPadding + 10.0 * k,
+        padding: EdgeInsets.only(bottom: bottomPadding + 5.0 * k),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            // Background Custom Shape SVG
+            Positioned(
+              left: 0,
+              right: 0,
+              top: 0,
+              height: barHeight,
+              child: SvgPicture.asset(
+                'assets/icons/bottom _nab_ber.svg', // Fixed filename with space
+                width: barWidth,
+                height: barHeight,
+                fit: BoxFit
+                    .fill, // Ensures it stretches exactly to the specified bounds
               ),
             ),
-          ),
 
-          // Floating Action Button (+) centered mathematically in the right circular capsule
-          Positioned(
-            right: 12,
-            top: (barHeight - 48) / 2,
-            width: 48,
-            height: 48,
-            child: Container(
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Color(
-                  0xFFF6EFE9,
-                ), // Creamy accent background matching design
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  customBorder: const CircleBorder(),
-                  onTap: () {
-                    Get.toNamed(AppRoutes.sell);
-                  },
-                  child: const Icon(Icons.add, color: Colors.black, size: 26),
+            // Main Navigation Items (Home, Wishlist, Profile) - centered inside the left capsule, adjusted to shift Wishlist & Profile rightwards
+            Positioned(
+              left: 0,
+              top: 0,
+              width: 250.0 * k,
+              height: barHeight,
+              child: Obx(
+                () => Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(width: 15.0 * k),
+                    _buildNavItem(0, 'assets/icons/home.svg', k),
+                    SizedBox(width: 38.0 * k), // Shift Wishlist to the right
+                    _buildNavItem(1, 'assets/icons/wishlist.svg', k),
+                    SizedBox(width: 38.0 * k), // Shift Profile to the right
+                    _buildNavItem(2, 'assets/icons/profile.svg', k),
+                  ],
                 ),
               ),
             ),
-          ),
-        ],
+
+            // Floating Action Button (+) centered mathematically on the SVG's cream circle
+            Positioned(
+              left: 301.0 * k,
+              top: (barHeight - 53.0 * k) / 2,
+              width: 53.0 * k,
+              height: 53.0 * k,
+              child: Container(
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color(0xFFF5ECE7), // Cream background matching SVG
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    customBorder: const CircleBorder(),
+                    onTap: () {
+                      Get.toNamed(AppRoutes.sell);
+                    },
+                    child: Center(
+                      child: Icon(
+                        Icons.add,
+                        color: const Color(0xFF121212), // Black plus icon
+                        size: 26.0 * k,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildNavItem(
-    int index,
-    IconData unselectedIcon,
-    IconData selectedIcon,
-  ) {
+  Widget _buildNavItem(int index, String iconPath, double k) {
     final isSelected = controller.selectedIndex == index;
     return GestureDetector(
       onTap: () => controller.changeIndex(index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
-        padding: EdgeInsets.all(12.w),
+        padding: EdgeInsets.all(12.0 * k),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: isSelected ? const Color(0xFF282A2E) : Colors.transparent,
+          color: isSelected
+              ? const Color(0xFFffffff).withValues(alpha: 0.15)
+              : Colors.transparent,
         ),
-        child: Icon(
-          isSelected ? selectedIcon : unselectedIcon,
-          color: isSelected ? Colors.white : const Color(0xff8E8E93),
-          size: 24.sp,
+        child: SvgPicture.asset(
+          iconPath,
+          colorFilter: ColorFilter.mode(
+            isSelected ? Colors.white : const Color(0xffA2A2A2),
+            BlendMode.srcIn,
+          ),
+          width: 26.0 * k,
+          height: 26.0 * k,
         ),
       ),
     );
   }
 }
 
-/// A CustomPainter that draws a perfectly symmetrical, continuous dark bottom bar
-/// containing a main navigation capsule, a narrow neck, and a matching circular capsule
-/// on the right for the floating action button.
-class BottomNavBarPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color =
-          const Color(0xFF111214) // Clean dark background matching screenshot
-      ..style = PaintingStyle.fill;
+// /// A CustomPainter that draws a perfectly symmetrical, continuous dark bottom bar
+// /// containing a main navigation capsule, a narrow neck, and a matching circular capsule
+// /// on the right for the floating action button.
+// class BottomNavBarPainter extends CustomPainter {
+//   @override
+//   void paint(Canvas canvas, Size size) {
+//     final paint = Paint()
+//       ..color =
+//           const Color(0xFF0A0A0C) // Rich dark background matching screenshot
+//       ..style = PaintingStyle.fill;
 
-    final path = Path();
-    final h = size.height;
-    final w = size.width;
-    final r = h / 2; // Semi-circle corner radius = 36 for h = 72
+//     final borderPaint = Paint()
+//       ..color =
+//           const Color(0xFF2E2E33) // Elegant subtle border matching design
+//       ..style = PaintingStyle.stroke
+//       ..strokeWidth = 1.2.w;
 
-    // Symmetrical circle center
-    final cx = w - r;
-    final cy = r;
+//     final path = Path();
+//     final h = size.height;
+//     final w = size.width;
+//     final r = h / 2; // Semi-circle corner radius = 36 for h = 72
 
-    // Mathematically exact start/end angles for the circular FAB capsule
-    const angleTop = 1.25 * math.pi;
+//     // Symmetrical circle center
+//     final cx = w - r;
+//     final cy = r;
 
-    // Transition connection coordinates at exact circle edge points
-    final tx1 = cx + r * math.cos(angleTop);
-    final ty1 = cy + r * math.sin(angleTop);
+//     // Mathematically exact start/end angles for the circular FAB capsule
+//     const angleTop = 1.25 * math.pi;
 
-    // Start top-left corner
-    path.moveTo(r, 0);
+//     // Transition connection coordinates at exact circle edge points
+//     final tx1 = cx + r * math.cos(angleTop);
+//     final ty1 = cy + r * math.sin(angleTop);
 
-    // Top edge of the main navigation pill
-    path.lineTo(w - 120, 0);
+//     // Start top-left corner
+//     path.moveTo(r, 0);
 
-    // Smooth curve down to the neck (symmetrical top curve)
-    path.cubicTo(
-      w - 105,
-      0,
-      w - 98,
-      28,
-      w - 86,
-      28, // Symmetrical Neck Center Top
-    );
-    path.cubicTo(
-      w - 74,
-      28,
-      w - 68,
-      14,
-      tx1,
-      ty1, // Merges perfectly into the start of the arc
-    );
+//     // Top edge of the main navigation pill
+//     path.lineTo(w - 120, 0);
 
-    // Draw the circular capsule on the right (centered at cx, cy)
-    path.arcTo(
-      Rect.fromCircle(center: Offset(cx, cy), radius: r),
-      angleTop,
-      1.5 * math.pi,
-      false,
-    );
+//     // Smooth curve down to the neck (symmetrical top curve)
+//     path.cubicTo(
+//       w - 105,
+//       0,
+//       w - 98,
+//       28,
+//       w - 86,
+//       28, // Symmetrical Neck Center Top
+//     );
+//     path.cubicTo(
+//       w - 74,
+//       28,
+//       w - 68,
+//       14,
+//       tx1,
+//       ty1, // Merges perfectly into the start of the arc
+//     );
 
-    // Smooth curve back to the neck bottom (symmetrical bottom curve)
-    path.cubicTo(
-      w - 68,
-      h - 14,
-      w - 74,
-      h - 28,
-      w - 86,
-      h - 28, // Symmetrical Neck Center Bottom
-    );
-    path.cubicTo(w - 98, h - 28, w - 105, h, w - 120, h);
+//     // Draw the circular capsule on the right (centered at cx, cy)
+//     path.arcTo(
+//       Rect.fromCircle(center: Offset(cx, cy), radius: r),
+//       angleTop,
+//       1.5 * math.pi,
+//       false,
+//     );
 
-    // Bottom edge back to left corner
-    path.lineTo(r, h);
-    path.quadraticBezierTo(0, h, 0, h - r);
-    path.lineTo(0, r);
-    path.quadraticBezierTo(0, 0, r, 0);
-    path.close();
+//     // Smooth curve back to the neck bottom (symmetrical bottom curve)
+//     path.cubicTo(
+//       w - 68,
+//       h - 14,
+//       w - 74,
+//       h - 28,
+//       w - 86,
+//       h - 28, // Symmetrical Neck Center Bottom
+//     );
+//     path.cubicTo(w - 98, h - 28, w - 105, h, w - 120, h);
 
-    // Symmetrical outer shadow
-    canvas.drawShadow(
-      path.shift(const Offset(0, 4)),
-      Colors.black.withValues(alpha: 0.5),
-      10.0,
-      true,
-    );
+//     // Bottom edge back to left corner
+//     path.lineTo(r, h);
+//     path.quadraticBezierTo(0, h, 0, h - r);
+//     path.lineTo(0, r);
+//     path.quadraticBezierTo(0, 0, r, 0);
+//     path.close();
 
-    canvas.drawPath(path, paint);
-  }
+//     // Symmetrical outer shadow
+//     canvas.drawShadow(
+//       path.shift(const Offset(0, 4)),
+//       Colors.black.withValues(alpha: 0.5),
+//       10.0,
+//       true,
+//     );
 
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
+//     // Draw solid background fill
+//     canvas.drawPath(path, paint);
+
+//     // Draw border outline
+//     canvas.drawPath(path, borderPaint);
+//   }
+
+//   @override
+//   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+// }

@@ -71,7 +71,7 @@ class HomeScreen extends GetView<HomeController> {
                 // 4. Bottom Information Overlay
                 Positioned(
                   bottom:
-                      104.0 +
+                      104.h +
                       MediaQuery.of(context)
                           .padding
                           .bottom, // dynamically clears the bottom navigation bar height on all devices
