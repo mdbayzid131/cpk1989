@@ -107,22 +107,23 @@ class OnboardingPage1 extends StatelessWidget {
           ),
         ),
 
-        // 3. Bottom fade-to-black overlay gradient to smoothly transition cards into background
-        Positioned(
-          left: 0,
-          right: 0,
-          bottom: 0,
-          height: 320.h,
+        // 3. Full-screen vertical vignette overlay (black at top and bottom, clear/transparent in the middle)
+        Positioned.fill(
           child: IgnorePointer(
             child: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    const Color(0xFF0A0A0C).withValues(alpha: 0.0),
-                    const Color(0xFF0A0A0C).withValues(alpha: 0.85),
-                    const Color(0xFF0A0A0C),
+                    const Color(0xFF0A0A0C), // Solid black at the top
+                    const Color(0xFF0A0A0C).withValues(
+                      alpha: 0.0,
+                    ), // Fully transparent/clear in the middle
+                    const Color(
+                      0xFF0A0A0C,
+                    ).withValues(alpha: 0.0), // Keep middle clear
+                    const Color(0xFF0A0A0C), // Solid black at the bottom
                   ],
-                  stops: const [0.0, 0.5, 1.0],
+                  stops: const [0.0, 0.25, 0.75, 1.0],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
