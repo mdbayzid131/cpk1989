@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../config/constants/image_paths.dart';
-
 class OnboardingPage2 extends StatelessWidget {
   const OnboardingPage2({super.key});
 
@@ -11,86 +9,63 @@ class OnboardingPage2 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(height: 60.h),
+        SizedBox(height: 100.h),
 
         ///<================= DESCRIPTION TEXT =========================>///
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
           child: Text(
-            'Cleaned by locals\nyou trust',
+            'Verify it. Trust it.',
             textAlign: TextAlign.center,
-            style: GoogleFonts.manrope(
-              fontSize: 28.sp,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xff101828),
+            style: GoogleFonts.playfairDisplay(
+              fontSize: 32.sp,
+              fontWeight: FontWeight.w400,
+              color: Colors.white,
+              height: 1.25,
             ),
           ),
         ),
         SizedBox(height: 16.h),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
           child: Text(
-            'Trusted local cleaners. Fully coordinated\npickup and delivery.',
+            'Every item is physically inspected and verified by our local luxury experts before being listed.',
             textAlign: TextAlign.center,
             style: GoogleFonts.manrope(
               fontSize: 15.sp,
               fontWeight: FontWeight.w400,
-              color: const Color(0xff4A5565),
+              color: Colors.white.withValues(alpha: 0.55),
+              height: 1.4,
             ),
           ),
         ),
         const Spacer(),
 
-        ///<================= COMPARISON ILLUSTRATION =========================>///
+        ///<================= ILLUSTRATION CARD =========================>///
         Container(
-          margin: EdgeInsets.symmetric(horizontal: 10.w),
-          padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 16.w),
+          margin: EdgeInsets.symmetric(horizontal: 24.w),
+          padding: EdgeInsets.all(16.r),
           decoration: BoxDecoration(
-            color: const Color(0xffF9FAFB),
+            color: const Color(0xFF161719),
             borderRadius: BorderRadius.circular(24.r),
-            border: Border.all(color: Colors.grey.shade100, width: 1),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.08),
+              width: 1.0,
+            ),
           ),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildComparisonBadge('Before'),
-                  _buildComparisonBadge('After'),
-                ],
-              ),
-              SizedBox(height: 20.h),
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Image.asset(ImagePaths.onboardingImage2, fit: BoxFit.contain),
-                  Icon(Icons.arrow_forward, size: 28.sp, color: Colors.black87),
-                ],
-              ),
-            ],
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16.r),
+            child: Image.asset(
+              'assets/images/closet_scan.png',
+              height: 250.h,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
           ),
         ),
 
-        const Spacer(),
+        const Spacer(flex: 2),
       ],
-    );
-  }
-
-  Widget _buildComparisonBadge(String text) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
-      decoration: BoxDecoration(
-        color: const Color(0xffA6D4E9).withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(30.r),
-      ),
-      child: Text(
-        text,
-        style: GoogleFonts.manrope(
-          fontSize: 16.sp,
-          fontWeight: FontWeight.w600,
-          color: Colors.black87,
-        ),
-      ),
     );
   }
 }

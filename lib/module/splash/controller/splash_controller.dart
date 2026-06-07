@@ -13,11 +13,11 @@ class SplashController extends GetxController {
 
   Future<void> _navigateToNextScreen() async {
     try {
-      await Future.delayed(const Duration(seconds: 500));
+      await Future.delayed(const Duration(seconds: 3));
       final onboardingSeen =
           await StorageService.getBool(StorageConstants.onboardingSeen) ??
           false;
-      if (!onboardingSeen) {
+      if (onboardingSeen) {
         Get.offAllNamed(AppRoutes.onboarding);
       } else {
         Get.offAllNamed(AppRoutes.bottomNavBar);
