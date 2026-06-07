@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cpk1989/core/widgets/custom_gold_button.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/module/item_detail/controller/item_detail_controller.dart';
+import 'package:cpk1989/config/routes/app_pages.dart';
+import 'package:cpk1989/core/widgets/processing_overlay.dart';
 
 class ItemDetailScreen extends GetView<ItemDetailController> {
   const ItemDetailScreen({super.key});
@@ -299,13 +301,9 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                       size: 18,
                     ),
                     onTap: () {
-                      Get.snackbar(
-                        "Order Secured",
-                        "Securing item: ${item.itemName}...",
-                        snackPosition: SnackPosition.TOP,
-                        backgroundColor: const Color(0xFFD4AF37),
-                        colorText: Colors.black,
-                      );
+                      showProcessingOverlay(context, () {
+                        Get.toNamed(AppRoutes.secureCheckout, arguments: item);
+                      });
                     },
                   ),
                 ),

@@ -13,6 +13,11 @@ import 'package:cpk1989/module/purchase_detail/view/purchase_detail_screen.dart'
 import 'package:cpk1989/module/purchase_detail/binding/purchase_detail_binding.dart';
 import 'package:cpk1989/module/my_item_detail/view/my_item_detail_screen.dart';
 import 'package:cpk1989/module/my_item_detail/binding/my_item_detail_binding.dart';
+import 'package:cpk1989/module/sell/view/ai_analysis_screen.dart';
+import 'package:cpk1989/module/sell_item_detail/view/sell_item_detail_screen.dart';
+import 'package:cpk1989/module/sell_item_detail/binding/sell_item_detail_binding.dart';
+import 'package:cpk1989/module/secure_checkout/view/secure_checkout_screen.dart';
+import 'package:cpk1989/module/secure_checkout/binding/secure_checkout_binding.dart';
 
 class AppRoutes {
   static const String splash = '/splash';
@@ -22,6 +27,9 @@ class AppRoutes {
   static const String itemDetail = '/item-detail';
   static const String purchaseDetail = '/purchase-detail';
   static const String myItemDetail = '/my-item-detail';
+  static const String aiAnalysis = '/ai-analysis';
+  static const String sellItemDetail = '/sell-item-detail';
+  static const String secureCheckout = '/secure-checkout';
 }
 
 final Transition transition = Transition.fade;
@@ -53,6 +61,12 @@ final pages = [
     transition: transition,
   ),
   GetPage(
+    name: AppRoutes.aiAnalysis,
+    page: () => const AIAnalysisScreen(),
+    binding: SellBinding(),
+    transition: transition,
+  ),
+  GetPage(
     name: AppRoutes.itemDetail,
     page: () => const ItemDetailScreen(),
     binding: ItemDetailBinding(),
@@ -68,6 +82,18 @@ final pages = [
     name: AppRoutes.myItemDetail,
     page: () => const MyItemDetailScreen(),
     binding: MyItemDetailBinding(),
+    transition: transition,
+  ),
+  GetPage(
+    name: AppRoutes.sellItemDetail,
+    page: () => const SellItemDetailScreen(),
+    binding: SellItemDetailBinding(),
+    transition: transition,
+  ),
+  GetPage(
+    name: AppRoutes.secureCheckout,
+    page: () => const SecureCheckoutScreen(),
+    binding: SecureCheckoutBinding(),
     transition: transition,
   ),
 ];

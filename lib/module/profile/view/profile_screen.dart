@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:cpk1989/core/widgets/video_preview_widget.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:cpk1989/core/widgets/custom_gold_button.dart';
@@ -504,33 +506,52 @@ class ProfileScreen extends GetView<ProfileController> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // 1. Product image with lazy loading
-            Image.network(
-              item.imageUrl,
-              fit: BoxFit.cover,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Container(
-                  color: const Color(0xFF1E2022),
-                  child: const Center(
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Color(0xFFE2B744),
+            // 1. Product image with lazy loading (supports both network and local paths)
+            item.imageUrl.startsWith('http')
+                ? Image.network(
+                    item.imageUrl,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        color: const Color(0xFF1E2022),
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Color(0xFFE2B744),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: const Color(0xFF1E2022),
+                        child: const Center(
+                          child: Icon(Icons.broken_image, color: Colors.white30),
+                        ),
+                      );
+                    },
+                  )
+                : (item.imageUrl.endsWith('.mp4') || item.imageUrl.endsWith('.mov') || item.imageUrl.endsWith('.3gp'))
+                    ? VideoPreviewWidget(
+                        videoPath: item.imageUrl,
+                        fit: BoxFit.cover,
+                        muted: true,
+                      )
+                    : Image.file(
+                        File(item.imageUrl),
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: const Color(0xFF1E2022),
+                            child: const Center(
+                              child: Icon(Icons.broken_image, color: Colors.white30),
+                            ),
+                          );
+                        },
                       ),
-                    ),
-                  ),
-                );
-              },
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  color: const Color(0xFF1E2022),
-                  child: const Center(
-                    child: Icon(Icons.broken_image, color: Colors.white30),
-                  ),
-                );
-              },
-            ),
 
             // 2. Dark Overlay for sold items
             if (item.isSold)

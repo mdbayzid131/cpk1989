@@ -13,7 +13,7 @@ class SplashController extends GetxController {
 
   Future<void> _navigateToNextScreen() async {
     try {
-      await Future.delayed(const Duration(seconds: 3));
+      await Future.delayed(const Duration(seconds: 500));
       final onboardingSeen =
           await StorageService.getBool(StorageConstants.onboardingSeen) ??
           false;
@@ -27,4 +27,3 @@ class SplashController extends GetxController {
     }
   }
 }
-

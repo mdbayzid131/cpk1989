@@ -66,5 +66,11 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>We need camera access to capture items you want to list for sale.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need microphone access to record sound for your item listing videos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need gallery access to let you choose item photos from your library.</string>
 </dict>
 </plist>

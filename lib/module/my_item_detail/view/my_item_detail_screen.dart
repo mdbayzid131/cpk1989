@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -5,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/core/widgets/vertical_stepper.dart';
+import 'package:cpk1989/core/widgets/video_preview_widget.dart';
 import 'package:cpk1989/module/my_item_detail/controller/my_item_detail_controller.dart';
 
 class MyItemDetailScreen extends GetView<MyItemDetailController> {
@@ -166,27 +168,49 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                       height: 300.h,
                       width: double.infinity,
                       color: Colors.black,
-                      child: Image.network(
-                        item.imageUrl,
-                        fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return const Center(
-                            child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Color(0xFFE2B744),
-                              ),
+                      child: item.imageUrl.startsWith('http')
+                          ? Image.network(
+                              item.imageUrl,
+                              fit: BoxFit.cover,
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return const Center(
+                                      child: CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                              Color(0xFFE2B744),
+                                            ),
+                                      ),
+                                    );
+                                  },
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Center(
+                                    child: Icon(
+                                      Icons.broken_image,
+                                      color: Colors.white30,
+                                    ),
+                                  ),
+                            )
+                          : (item.imageUrl.endsWith('.mp4') ||
+                                item.imageUrl.endsWith('.mov') ||
+                                item.imageUrl.endsWith('.3gp'))
+                          ? VideoPreviewWidget(
+                              videoPath: item.imageUrl,
+                              fit: BoxFit.cover,
+                              muted: true,
+                            )
+                          : Image.file(
+                              File(item.imageUrl),
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Center(
+                                    child: Icon(
+                                      Icons.broken_image,
+                                      color: Colors.white30,
+                                    ),
+                                  ),
                             ),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Center(
-                              child: Icon(
-                                Icons.broken_image,
-                                color: Colors.white30,
-                              ),
-                            ),
-                      ),
                     ),
                   ),
                   // Vignette overlay

@@ -2,7 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cpk1989/module/splash/controller/splash_controller.dart';
 
 class SplashView extends GetView<SplashController> {
@@ -11,28 +11,36 @@ class SplashView extends GetView<SplashController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F1012),
+      backgroundColor: const Color(
+        0xFF0A0A0C,
+      ), // Dark premium charcoal background
       body: Stack(
         children: [
           // 1. Rotating sunburst background
-          const Positioned.fill(
-            child: RotatingSunburst(),
-          ),
+          const Positioned.fill(child: RotatingSunburst()),
 
-          // 2. Radial gradient overlay to fade the rays and add central glow
+          // 2. Radial gradient overlay to fade the rays and add central glow (spotlight effect)
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
                 gradient: RadialGradient(
                   center: Alignment.center,
-                  radius: 0.8,
+                  radius: 0.80,
                   colors: [
-                    const Color(0xFFD4AF37).withValues(alpha: 0.12), // Beautiful gold glow behind logo
-                    const Color(0xFF0F1012).withValues(alpha: 0.5),
-                    const Color(0xFF0F1012).withValues(alpha: 0.95),
-                    const Color(0xFF0F1012), // Absolute black/gray at screen edges
+                    const Color(0xFF0A0A0C).withValues(
+                      alpha: 0.0,
+                    ), // No darkness in the center (completely clear)
+                    const Color(0xFF0A0A0C).withValues(
+                      alpha: 0.0,
+                    ), // Keep the logo area completely clear
+                    const Color(0xFF0A0A0C).withValues(
+                      alpha: 0.75,
+                    ), // Smoothly transitions to darkness
+                    const Color(
+                      0xFF0A0A0C,
+                    ), // Pitch black edges (inverse vignette overlay)
                   ],
-                  stops: const [0.0, 0.4, 0.8, 1.0],
+                  stops: const [0.0, 0.25, 0.7, 1.0],
                 ),
               ),
             ),
@@ -58,28 +66,10 @@ class SplashView extends GetView<SplashController> {
                   ),
                 );
               },
-              child: ShaderMask(
-                shaderCallback: (bounds) => const LinearGradient(
-                  colors: [
-                    Color(0xFFFFF0CA), // Extra bright highlight gold
-                    Color(0xFFF9E49B), // Light gold
-                    Color(0xFFD4AF37), // Pure gold
-                    Color(0xFFB38915), // Mid bronze/gold
-                    Color(0xFFE6C362), // Bright gold accent
-                    Color(0xFF8A6605), // Dark shadow gold
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
-                child: Text(
-                  'Closeté',
-                  style: GoogleFonts.cormorantGaramond(
-                    fontSize: 60.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white, // crucial for shader mask to display colors properly
-                    letterSpacing: 1.5,
-                  ),
-                ),
+              child: SvgPicture.asset(
+                'assets/icons/closet_logo.svg',
+                width: 180.w,
+                fit: BoxFit.contain,
               ),
             ),
           ),
@@ -94,18 +84,28 @@ class SunburstPainter extends CustomPainter {
   final Color rayColor;
   final int rayCount;
 
-  SunburstPainter({
-    required this.rayColor,
-    this.rayCount = 48,
-  });
+  SunburstPainter({required this.rayColor, this.rayCount = 48});
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final maxRadius = size.longestSide * 1.2; // exceed the screen edges to be safe
+    final maxRadius =
+        size.longestSide * 1.2; // exceed the screen edges to be safe
+    final rect = Rect.fromCircle(center: center, radius: maxRadius);
+
     final paint = Paint()
-      ..color = rayColor
-      ..style = PaintingStyle.fill;
+      ..style = PaintingStyle.fill
+      ..shader = RadialGradient(
+        colors: [
+          rayColor.withValues(
+            alpha: 0.0,
+          ), // Completely transparent in the center (behind logo)
+          rayColor.withValues(alpha: 0.01), // Keep the center clear of rays
+          rayColor, // Max brightness in the mid-range
+          rayColor.withValues(alpha: 0.01), // Fades out towards the edges
+        ],
+        stops: const [0.0, 0.08, 0.22, 0.6],
+      ).createShader(rect);
 
     final angleStep = (2 * math.pi) / rayCount;
     final path = Path();
@@ -131,7 +131,8 @@ class SunburstPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant SunburstPainter oldDelegate) {
-    return oldDelegate.rayColor != oldDelegate.rayColor || oldDelegate.rayCount != rayCount;
+    return oldDelegate.rayColor != oldDelegate.rayColor ||
+        oldDelegate.rayCount != rayCount;
   }
 }
 
@@ -168,7 +169,9 @@ class _RotatingSunburstState extends State<RotatingSunburst>
       turns: _controller,
       child: CustomPaint(
         painter: SunburstPainter(
-          rayColor: const Color(0xFFD4AF37).withValues(alpha: 0.04), // soft bronze/gold rays
+          rayColor: const Color(
+            0xFFE2B744,
+          ).withValues(alpha: 0.30), // warmer, richer gold rays
           rayCount: 48,
         ),
         child: const SizedBox.expand(),
