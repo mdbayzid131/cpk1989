@@ -9,27 +9,56 @@ class OnboardingPage3 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(height: 100.h),
+        SizedBox(height: 70.h),
 
-        ///<================= DESCRIPTION TEXT =========================>///
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w),
+        ///<================= HEADER TEXT =========================>///
+        Text(
+          'Shop with',
+          style: GoogleFonts.playfairDisplay(
+            fontSize: 38.sp,
+            fontWeight: FontWeight.w400,
+            color: Colors.white,
+            height: 1.15,
+          ),
+        ),
+        ShaderMask(
+          shaderCallback: (bounds) => const LinearGradient(
+            colors: [
+              Color(0xFFAF7413),
+              Color(0xFFC98C28),
+              Color(0xFFE2B744),
+              Color(0xFFFFED81),
+              Color(0xFFE1C24E),
+              Color(0xFFA06008),
+            ],
+            stops: [0.0477, 0.1933, 0.3893, 0.5054, 0.6210, 0.9074],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ).createShader(
+            Rect.fromLTWH(0, 0, bounds.width, bounds.height),
+          ),
           child: Text(
-            'Sell it. Consign it.',
-            textAlign: TextAlign.center,
+            'Confidence',
             style: GoogleFonts.playfairDisplay(
-              fontSize: 32.sp,
+              fontSize: 38.sp,
               fontWeight: FontWeight.w400,
               color: Colors.white,
-              height: 1.25,
+              height: 1.15,
             ),
           ),
+        ),
+        SizedBox(height: 12.h),
+        // Small gold horizontal accent line
+        Container(
+          width: 32.w,
+          height: 2.h,
+          color: const Color(0xFFC98C28),
         ),
         SizedBox(height: 16.h),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 24.w),
           child: Text(
-            'We arrange secure pickup, inspect and photograph your items, and coordinate delivery directly to the buyer.',
+            'Verified before delivery. Payment\nprotected until you receive it.',
             textAlign: TextAlign.center,
             style: GoogleFonts.manrope(
               fontSize: 15.sp,
@@ -41,30 +70,143 @@ class OnboardingPage3 extends StatelessWidget {
         ),
         const Spacer(),
 
-        ///<================= ILLUSTRATION CARD =========================>///
+        ///<================= MAIN HANDOVER IMAGE (FULL SCREEN WIDTH) =========================>///
         Container(
-          margin: EdgeInsets.symmetric(horizontal: 24.w),
-          padding: EdgeInsets.all(16.r),
-          decoration: BoxDecoration(
-            color: const Color(0xFF161719),
-            borderRadius: BorderRadius.circular(24.r),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.08),
-              width: 1.0,
-            ),
+          width: double.infinity,
+          height: 320.h,
+          color: Colors.transparent,
+          child: Stack(
+            children: [
+              // 1. Handover Image Background
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/bag_handover.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
+
+              // 2. Vertical vignette overlay (black at top and bottom, clear/transparent in the middle)
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        const Color(0xFF0A0A0C),
+                        const Color(0xFF0A0A0C).withValues(alpha: 0.0),
+                        const Color(0xFF0A0A0C).withValues(alpha: 0.0),
+                        const Color(0xFF0A0A0C),
+                      ],
+                      stops: const [0.0, 0.22, 0.70, 1.0],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16.r),
-            child: Image.asset(
-              'assets/images/bag_handover.png',
-              height: 250.h,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
+        ),
+        const Spacer(),
+
+        ///<================= FEATURES GRID / ROW =========================>///
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              // 1. Authenticity Guaranteed
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.verified_user_outlined,
+                      color: Colors.white.withValues(alpha: 0.95),
+                      size: 24.w,
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      'Authenticity\nGuaranteed',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.manrope(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                        height: 1.3,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Divider
+              Container(
+                width: 1.w,
+                height: 36.h,
+                color: Colors.white.withValues(alpha: 0.15),
+              ),
+
+              // 2. Payment Protected
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.lock_outline_rounded,
+                      color: Colors.white.withValues(alpha: 0.95),
+                      size: 24.w,
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      'Payment\nProtected',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.manrope(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                        height: 1.3,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Divider
+              Container(
+                width: 1.w,
+                height: 36.h,
+                color: Colors.white.withValues(alpha: 0.15),
+              ),
+
+              // 3. Secure Delivery
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.inventory_2_outlined,
+                      color: Colors.white.withValues(alpha: 0.95),
+                      size: 24.w,
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      'Secure\nDelivery',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.manrope(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                        height: 1.3,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
 
-        const Spacer(flex: 2),
+        const Spacer(flex: 3),
       ],
     );
   }
