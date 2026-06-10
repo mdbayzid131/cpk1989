@@ -219,6 +219,11 @@ class AuthService extends GetxService {
     await StorageService.remove(StorageConstants.bearerToken);
     await StorageService.remove(StorageConstants.refreshToken);
     await StorageService.remove(StorageConstants.userData);
+    await StorageService.remove(StorageConstants.isLoggedIn);
+    await StorageService.remove('first_name');
+    await StorageService.remove('last_name');
+    await StorageService.remove('email');
+    await StorageService.remove('phone');
 
     isLoggedIn.value = false;
   }

@@ -8,7 +8,6 @@ import 'package:get/get.dart';
 import 'package:cpk1989/module/sell/controller/sell_controller.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
-import 'package:cpk1989/core/widgets/video_preview_widget.dart';
 
 class AIAnalysisScreen extends StatefulWidget {
   const AIAnalysisScreen({super.key});
@@ -20,7 +19,6 @@ class AIAnalysisScreen extends StatefulWidget {
 class _AIAnalysisScreenState extends State<AIAnalysisScreen>
     with TickerProviderStateMixin {
   final SellController controller = Get.find<SellController>();
-  bool _analysisFinished = false;
 
   // Bottom sheet slide-up animation
   late AnimationController _sheetController;
@@ -107,13 +105,8 @@ class _AIAnalysisScreenState extends State<AIAnalysisScreen>
       // Start AI analysis logic
       controller.startAIAnalysis(() {
         if (mounted) {
-          setState(() => _analysisFinished = true);
           final newItem = controller.addScannedItemToWardrobeSilently();
-          Future.delayed(const Duration(milliseconds: 900), () {
-            if (mounted) {
-              Get.offAndToNamed(AppRoutes.sellItemDetail, arguments: newItem);
-            }
-          });
+          Get.offAndToNamed(AppRoutes.sellItemDetail, arguments: newItem);
         }
       });
     });
@@ -136,8 +129,6 @@ class _AIAnalysisScreenState extends State<AIAnalysisScreen>
       body: Obx(() {
         final activeIndex = controller.selectedItemIndex.value;
         final product = controller.galleryProducts[activeIndex];
-        final priceFormatted =
-            "AED ${product["price"].toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
         final progress = controller.scanProgress.value;
 
         return Stack(
@@ -205,9 +196,7 @@ class _AIAnalysisScreenState extends State<AIAnalysisScreen>
                           child: child,
                         ),
                       ),
-                      child: _analysisFinished
-                          ? _buildResultsSheet(product, priceFormatted)
-                          : _buildScanningSheet(progress),
+                      child: _buildScanningSheet(progress),
                     ),
                   ),
                 ),
@@ -562,170 +551,14 @@ class _AIAnalysisScreenState extends State<AIAnalysisScreen>
     );
   }
 
-  // ─── Results Sheet ─────────────────────────────────────────────────────────
 
-  Widget _buildResultsSheet(
-    Map<String, dynamic> product,
-    String priceFormatted,
-  ) {
-    final goldGradient = const LinearGradient(
-      colors: [
-        Color(0xFFAF7413),
-        Color(0xFFC98C28),
-        Color(0xFFE2B744),
-        Color(0xFFFFED81),
-        Color(0xFFE1C24E),
-        Color(0xFFA06008),
-      ],
-      stops: [0.0477, 0.1933, 0.3893, 0.5054, 0.6210, 0.9074],
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-    );
-
-    return Padding(
-      key: const ValueKey('results'),
-      padding: EdgeInsets.fromLTRB(24.w, 32.h, 24.w, 16.h),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Heading row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "AI VALUATION REPORT",
-                style: GoogleFonts.manrope(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFFE2B744),
-                  letterSpacing: 1.0,
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF30D158).withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(
-                    color: const Color(0xFF30D158),
-                    width: 1.2,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.verified_user,
-                      color: const Color(0xFF30D158),
-                      size: 12.sp,
-                    ),
-                    SizedBox(width: 4.w),
-                    Text(
-                      "AUTHENTIC: ${product["authScore"]}",
-                      style: GoogleFonts.manrope(
-                        fontSize: 10.sp,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFF30D158),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 4.h),
-          Divider(color: Colors.white.withValues(alpha: 0.08), height: 24.h),
-          _buildResultRow("Brand detected", product["brand"]),
-          _buildResultRow("Model name", controller.itemNameInput.value),
-          _buildResultRow("Serial / Date code", product["serialNumber"]),
-          _buildResultRow(
-            "Verified condition",
-            controller.conditionInput.value,
-          ),
-          _buildResultRow(
-            "Estimated resale value",
-            priceFormatted,
-            highlight: true,
-          ),
-          SizedBox(height: 24.h),
-
-          // Confirm & Publish button
-          Container(
-            height: 56.h,
-            decoration: BoxDecoration(
-              gradient: goldGradient,
-              borderRadius: BorderRadius.circular(28.r),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFFC98C28).withValues(alpha: 0.35),
-                  blurRadius: 16.r,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () => controller.addScannedItemToWardrobe(),
-                borderRadius: BorderRadius.circular(28.r),
-                child: Center(
-                  child: Text(
-                    "CONFIRM & PUBLISH LISTING",
-                    style: GoogleFonts.manrope(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.black,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: 12.h),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildResultRow(String label, String value, {bool highlight = false}) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.manrope(
-              fontSize: 13.sp,
-              color: Colors.white.withValues(alpha: 0.4),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          Text(
-            value,
-            style: GoogleFonts.manrope(
-              fontSize: highlight ? 15.sp : 14.sp,
-              fontWeight: highlight ? FontWeight.w800 : FontWeight.w700,
-              color: highlight ? const Color(0xFFE2B744) : Colors.white,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   // ─── Background preview ────────────────────────────────────────────────────
 
   Widget _buildBackgroundPreview(Map<String, dynamic> product) {
     final path = controller.rxCapturedPath.value;
-    final isVideo =
-        path.endsWith('.mp4') || path.endsWith('.mov') || path.endsWith('.3gp');
     if (path.isNotEmpty) {
-      return Positioned.fill(
-        child: isVideo
-            ? VideoPreviewWidget(videoPath: path, muted: true)
-            : Image.file(File(path), fit: BoxFit.cover),
-      );
+      return Positioned.fill(child: Image.file(File(path), fit: BoxFit.cover));
     }
     return Positioned.fill(
       child: Image.network(product["imageUrl"], fit: BoxFit.cover),

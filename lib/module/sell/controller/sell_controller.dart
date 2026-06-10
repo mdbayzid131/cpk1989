@@ -76,9 +76,6 @@ class SellController extends GetxController {
   // Camera settings state
   final isPhotoMode = true.obs;
   final flashState = "off".obs; // off, on, auto
-  final isRecording = false.obs;
-  final recordingSeconds = 0.obs;
-  Timer? _recordingTimer;
 
   // Selected item information state
   final selectedItemIndex = 1.obs; // Defaults to Chanel Classic Flap Bag
@@ -192,12 +189,6 @@ class SellController extends GetxController {
     customSerial.value = product["serialNumber"];
   }
 
-  void toggleCameraMode(bool photoMode) {
-    if (isRecording.value) stopVideoRecording(() {});
-    isPhotoMode.value = photoMode;
-    _syncFlashMode();
-  }
-
   void toggleFlash() {
     if (flashState.value == "off") {
       flashState.value = "on";
@@ -214,7 +205,7 @@ class SellController extends GetxController {
     try {
       FlashMode mode;
       if (flashState.value == "on") {
-        mode = isPhotoMode.value ? FlashMode.always : FlashMode.torch;
+        mode = FlashMode.always;
       } else if (flashState.value == "auto") {
         mode = FlashMode.auto;
       } else {
@@ -222,8 +213,7 @@ class SellController extends GetxController {
       }
       await cameraController!.setFlashMode(mode);
     } catch (e) {
-      // If setting FlashMode.always fails, try fallback to torch for photo mode too
-      if (flashState.value == "on" && isPhotoMode.value) {
+      if (flashState.value == "on") {
         try {
           await cameraController!.setFlashMode(FlashMode.torch);
         } catch (_) {}
@@ -249,60 +239,6 @@ class SellController extends GetxController {
     } else {
       // Fallback if camera is unavailable (simulator mode)
       rxCapturedPath.value = ""; // blank means fallback to mockup network image
-      isPreviewMode.value = true;
-      onFinish();
-    }
-  }
-
-  // Start video capture from real camera
-  Future<void> startVideoRecording() async {
-    if (isPhotoMode.value) return;
-
-    if (cameraController != null && isCameraInitialized.value) {
-      try {
-        await cameraController!.startVideoRecording();
-        isRecording.value = true;
-        recordingSeconds.value = 0;
-        _recordingTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-          recordingSeconds.value++;
-        });
-      } catch (e) {
-        Get.snackbar(
-          "Recording Error",
-          "Failed to start video recording: ${e.toString()}",
-        );
-      }
-    } else {
-      // Fallback simulator mode
-      isRecording.value = true;
-      recordingSeconds.value = 0;
-      _recordingTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        recordingSeconds.value++;
-      });
-    }
-  }
-
-  // Stop video capture from real camera
-  Future<void> stopVideoRecording(void Function() onFinish) async {
-    isRecording.value = false;
-    _recordingTimer?.cancel();
-    _recordingTimer = null;
-
-    if (cameraController != null && isCameraInitialized.value) {
-      try {
-        final XFile file = await cameraController!.stopVideoRecording();
-        rxCapturedPath.value = file.path;
-        isPreviewMode.value = true;
-        onFinish();
-      } catch (e) {
-        Get.snackbar(
-          "Recording Error",
-          "Failed to stop video recording: ${e.toString()}",
-        );
-      }
-    } else {
-      // Fallback simulator mode
-      rxCapturedPath.value = "";
       isPreviewMode.value = true;
       onFinish();
     }
@@ -471,7 +407,6 @@ class SellController extends GetxController {
 
   @override
   void onClose() {
-    _recordingTimer?.cancel();
     cameraController?.dispose();
     super.onClose();
   }

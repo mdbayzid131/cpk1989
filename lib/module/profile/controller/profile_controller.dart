@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'package:cpk1989/core/services/storage_service.dart';
+
 class ProfileItem {
   final String id;
   final String imageUrl;
@@ -33,6 +35,7 @@ class ProfileController extends GetxController {
   late final TextEditingController addressController;
   late final TextEditingController phoneController;
   final rxLocation = "Dubai, UAE".obs;
+  final rxUserName = "Gretchen Bothman".obs;
 
   @override
   void onInit() {
@@ -41,7 +44,28 @@ class ProfileController extends GetxController {
     lastNameController = TextEditingController(text: "Bothman");
     addressController = TextEditingController(text: "Palm Jumeirah, Building 5, Apt 1204");
     phoneController = TextEditingController(text: "50 123 4567");
+    _loadUserData();
     _loadItems();
+  }
+
+  Future<void> _loadUserData() async {
+    final savedFirstName = await StorageService.getString('first_name');
+    final savedLastName = await StorageService.getString('last_name');
+    final savedPhone = await StorageService.getString('phone');
+
+    if (savedFirstName.isNotEmpty) {
+      firstNameController.text = savedFirstName;
+    }
+    if (savedLastName.isNotEmpty) {
+      lastNameController.text = savedLastName;
+    }
+    if (savedPhone.isNotEmpty) {
+      phoneController.text = savedPhone;
+    }
+
+    final fName = savedFirstName.isNotEmpty ? savedFirstName : "Gretchen";
+    final lName = savedLastName.isNotEmpty ? savedLastName : "Bothman";
+    rxUserName.value = "$fName $lName";
   }
 
   @override
@@ -57,7 +81,12 @@ class ProfileController extends GetxController {
     rxSelectedIndex.value = index;
   }
 
-  void saveChanges() {
+  void saveChanges() async {
+    await StorageService.setString('first_name', firstNameController.text.trim());
+    await StorageService.setString('last_name', lastNameController.text.trim());
+    await StorageService.setString('phone', phoneController.text.trim());
+    rxUserName.value = "${firstNameController.text.trim()} ${lastNameController.text.trim()}";
+
     Get.snackbar(
       'Success',
       'Personal details updated successfully.',

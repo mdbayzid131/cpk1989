@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:camera/camera.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
-import 'package:cpk1989/core/widgets/video_preview_widget.dart';
 import 'package:cpk1989/module/sell/controller/sell_controller.dart';
 
 class SellScreen extends GetView<SellController> {
@@ -23,20 +22,10 @@ class SellScreen extends GetView<SellController> {
           Obx(() {
             if (controller.isPreviewMode.value) {
               final path = controller.rxCapturedPath.value;
-              final isVideo =
-                  path.endsWith('.mp4') ||
-                  path.endsWith('.mov') ||
-                  path.endsWith('.3gp');
               if (path.isNotEmpty) {
-                if (isVideo) {
-                  return Positioned.fill(
-                    child: VideoPreviewWidget(videoPath: path, muted: true),
-                  );
-                } else {
-                  return Positioned.fill(
-                    child: Image.file(File(path), fit: BoxFit.cover),
-                  );
-                }
+                return Positioned.fill(
+                  child: Image.file(File(path), fit: BoxFit.cover),
+                );
               } else {
                 return Positioned.fill(
                   child: Image.network(
@@ -197,73 +186,7 @@ class SellScreen extends GetView<SellController> {
             ),
           ),
 
-          // 4. Viewfinder bottom details cards row
-          Positioned(
-            bottom: 210.h,
-            left: 20.w,
-            right: 20.w,
-            child: Obx(() {
-              return Row(
-                children: [
-                  _buildGlassInfoCard(
-                    "What is it?",
-                    controller.itemNameInput.value,
-                    () => _showEditDialog(
-                      "What is it?",
-                      controller.itemNameInput,
-                    ),
-                  ),
-                  SizedBox(width: 8.w),
-                  _buildGlassInfoCard(
-                    "Condition?",
-                    controller.conditionInput.value,
-                    () => _showSelectorDialog(
-                      "Condition?",
-                      controller.conditionInput,
-                      ["Pristine", "Excellent", "Very Good", "Good", "Fair"],
-                    ),
-                  ),
-                  SizedBox(width: 8.w),
-                  _buildGlassInfoCard(
-                    "Why selling?",
-                    controller.whySellingInput.value,
-                    () => _showEditDialog(
-                      "Why selling?",
-                      controller.whySellingInput,
-                    ),
-                  ),
-                ],
-              );
-            }),
-          ),
-
-          // 5. Mode Selector: PHOTO | VIDEO
-          Positioned(
-            bottom: 146.h,
-            left: 0,
-            right: 0,
-            child: Obx(() {
-              final isPhoto = controller.isPhotoMode.value;
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildModeTab(
-                    "PHOTO",
-                    isPhoto,
-                    () => controller.toggleCameraMode(true),
-                  ),
-                  SizedBox(width: 8.w),
-                  _buildModeTab(
-                    "VIDEO",
-                    !isPhoto,
-                    () => controller.toggleCameraMode(false),
-                  ),
-                ],
-              );
-            }),
-          ),
-
-          // 6. Camera / Preview controls
+          // 5. Camera / Preview controls
           Obx(() {
             if (controller.isPreviewMode.value) {
               return Positioned(
@@ -407,63 +330,43 @@ class SellScreen extends GetView<SellController> {
                               ),
                             ),
 
-                            // Capture Shutter Button + RECORD label
-                            Obx(() {
-                              final isPhoto = controller.isPhotoMode.value;
-                              final isRec = controller.isRecording.value;
-                              return Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      if (isPhoto) {
-                                        controller.capturePhoto(() {});
-                                      } else {
-                                        if (isRec) {
-                                          controller.stopVideoRecording(() {});
-                                        } else {
-                                          controller.startVideoRecording();
-                                        }
-                                      }
-                                    },
+                            // Capture Shutter Button
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                GestureDetector(
+                                  onTap: () => controller.capturePhoto(() {}),
+                                  child: Container(
+                                    width: 48.r,
+                                    height: 48.r,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 2.2.r,
+                                      ),
+                                    ),
+                                    padding: EdgeInsets.all(3.r),
                                     child: Container(
-                                      width: 48.r,
-                                      height: 48.r,
-                                      decoration: BoxDecoration(
+                                      decoration: const BoxDecoration(
                                         shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: Colors.white,
-                                          width: 2.2.r,
-                                        ),
-                                      ),
-                                      padding: EdgeInsets.all(3.r),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: isPhoto
-                                              ? Colors.white
-                                              : (isRec
-                                                    ? const Color(0xFFFF3B30)
-                                                    : Colors.white),
-                                        ),
+                                        color: Colors.white,
                                       ),
                                     ),
                                   ),
-                                  SizedBox(height: 4.h),
-                                  Text(
-                                    isPhoto
-                                        ? "CAPTURE"
-                                        : (isRec ? "STOP" : "RECORD"),
-                                    style: GoogleFonts.manrope(
-                                      fontSize: 9.sp,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.white,
-                                      letterSpacing: 1.0,
-                                    ),
+                                ),
+                                SizedBox(height: 4.h),
+                                Text(
+                                  "CAPTURE",
+                                  style: GoogleFonts.manrope(
+                                    fontSize: 9.sp,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                    letterSpacing: 1.0,
                                   ),
-                                ],
-                              );
-                            }),
+                                ),
+                              ],
+                            ),
 
                             // Flip Camera (Switches front/back lenses)
                             GestureDetector(
@@ -583,194 +486,7 @@ class SellScreen extends GetView<SellController> {
     );
   }
 
-  // Info display overlay capsule
-  Widget _buildGlassInfoCard(String label, String value, VoidCallback onTap) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(18.r),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.35),
-                borderRadius: BorderRadius.circular(18.r),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.25),
-                  width: 1.2,
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    label,
-                    style: GoogleFonts.manrope(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.white.withValues(alpha: 0.7),
-                    ),
-                  ),
-                  SizedBox(height: 6.h),
-                  Text(
-                    value.isEmpty ? "Tap to add" : value,
-                    style: GoogleFonts.manrope(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w500,
-                      color: value.isEmpty ? Colors.white30 : Colors.white,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Mode Selection Tab Option
-  Widget _buildModeTab(String label, bool active, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 8.h),
-        decoration: BoxDecoration(
-          color: active
-              ? Colors.white.withValues(alpha: 0.15)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(20.r),
-        ),
-        child: Text(
-          label,
-          style: GoogleFonts.manrope(
-            fontSize: 13.sp,
-            fontWeight: active ? FontWeight.w700 : FontWeight.w500,
-            color: active ? Colors.white : Colors.white.withValues(alpha: 0.55),
-            letterSpacing: 0.8,
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Modal edit dialog for card titles/reasons
-  void _showEditDialog(String title, RxString textRx) {
-    final textController = TextEditingController(text: textRx.value);
-    Get.dialog(
-      AlertDialog(
-        backgroundColor: const Color(0xFF161719),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.r),
-        ),
-        title: Text(
-          "Edit $title",
-          style: GoogleFonts.manrope(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-            fontSize: 16.sp,
-          ),
-        ),
-        content: TextField(
-          controller: textController,
-          autofocus: true,
-          style: const TextStyle(color: Colors.white),
-          decoration: InputDecoration(
-            hintText: "Enter value...",
-            hintStyle: const TextStyle(color: Colors.white38),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.white24, width: 1.w),
-            ),
-            focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFFE2B744), width: 1.5),
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text(
-              "CANCEL",
-              style: GoogleFonts.manrope(
-                color: Colors.white38,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              textRx.value = textController.text.trim();
-              Get.back();
-            },
-            child: const Text(
-              "SAVE",
-              style: TextStyle(
-                color: Color(0xFFE2B744),
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Option dropdown sheets for conditions
-  void _showSelectorDialog(
-    String title,
-    RxString selectedRx,
-    List<String> options,
-  ) {
-    Get.dialog(
-      SimpleDialog(
-        backgroundColor: const Color(0xFF161719),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.r),
-        ),
-        title: Text(
-          "Select $title",
-          style: GoogleFonts.manrope(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-            fontSize: 16.sp,
-          ),
-        ),
-        children: options.map((opt) {
-          final isSelected = selectedRx.value == opt;
-          return SimpleDialogOption(
-            onPressed: () {
-              selectedRx.value = opt;
-              Get.back();
-            },
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.h),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    opt,
-                    style: GoogleFonts.manrope(
-                      color: isSelected
-                          ? const Color(0xFFE2B744)
-                          : Colors.white70,
-                      fontSize: 14.sp,
-                    ),
-                  ),
-                  if (isSelected)
-                    const Icon(Icons.check, color: Color(0xFFE2B744), size: 18),
-                ],
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
+  // Viewfinder bracket corners (already drawn above)
 
   //   // Simulated Gallery Picker modal bottom sheet
   //   void _showGallerySheet(BuildContext context) {

@@ -17,8 +17,12 @@ class SplashController extends GetxController {
       final onboardingSeen =
           await StorageService.getBool(StorageConstants.onboardingSeen) ??
           false;
+      final isLoggedIn =
+          await StorageService.getBool(StorageConstants.isLoggedIn) ?? false;
       if (!onboardingSeen) {
         Get.offAllNamed(AppRoutes.onboarding);
+      } else if (!isLoggedIn) {
+        Get.offAllNamed(AppRoutes.login);
       } else {
         Get.offAllNamed(AppRoutes.bottomNavBar);
       }

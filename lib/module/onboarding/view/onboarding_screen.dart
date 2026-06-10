@@ -75,7 +75,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     StorageConstants.onboardingSeen,
                     true,
                   );
-                  Get.offAllNamed(AppRoutes.bottomNavBar);
+                  Get.offAllNamed(AppRoutes.login);
                 },
                 child: Padding(
                   padding: EdgeInsets.all(8.r),
@@ -168,7 +168,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     StorageConstants.onboardingSeen,
                     true,
                   );
-                  Get.offAllNamed(AppRoutes.bottomNavBar);
+                  Get.offAllNamed(AppRoutes.login);
                 }
               },
               child: AnimatedContainer(

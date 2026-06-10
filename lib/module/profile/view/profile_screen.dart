@@ -4,10 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:cpk1989/core/widgets/video_preview_widget.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:cpk1989/core/widgets/custom_gold_button.dart';
+import 'package:cpk1989/core/services/auth_service.dart';
 
 class ProfileScreen extends GetView<ProfileController> {
   const ProfileScreen({super.key});
@@ -140,23 +140,25 @@ class ProfileScreen extends GetView<ProfileController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Name + verified check icon
-                Row(
-                  children: [
-                    Text(
-                      "Gretchen Bothman",
-                      style: GoogleFonts.manrope(
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                Obx(
+                  () => Row(
+                    children: [
+                      Text(
+                        controller.rxUserName.value,
+                        style: GoogleFonts.manrope(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    SizedBox(width: 6.w),
-                    Icon(
-                      Icons.verified,
-                      color: const Color(0xFF007AFF), // Verified badge blue
-                      size: 16.sp,
-                    ),
-                  ],
+                      SizedBox(width: 6.w),
+                      Icon(
+                        Icons.verified,
+                        color: const Color(0xFF007AFF), // Verified badge blue
+                        size: 16.sp,
+                      ),
+                    ],
+                  ),
                 ),
 
                 SizedBox(height: 8.h),
@@ -529,29 +531,29 @@ class ProfileScreen extends GetView<ProfileController> {
                       return Container(
                         color: const Color(0xFF1E2022),
                         child: const Center(
-                          child: Icon(Icons.broken_image, color: Colors.white30),
+                          child: Icon(
+                            Icons.broken_image,
+                            color: Colors.white30,
+                          ),
                         ),
                       );
                     },
                   )
-                : (item.imageUrl.endsWith('.mp4') || item.imageUrl.endsWith('.mov') || item.imageUrl.endsWith('.3gp'))
-                    ? VideoPreviewWidget(
-                        videoPath: item.imageUrl,
-                        fit: BoxFit.cover,
-                        muted: true,
-                      )
-                    : Image.file(
-                        File(item.imageUrl),
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: const Color(0xFF1E2022),
-                            child: const Center(
-                              child: Icon(Icons.broken_image, color: Colors.white30),
-                            ),
-                          );
-                        },
-                      ),
+                : Image.file(
+                    File(item.imageUrl),
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: const Color(0xFF1E2022),
+                        child: const Center(
+                          child: Icon(
+                            Icons.broken_image,
+                            color: Colors.white30,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
 
             // 2. Dark Overlay for sold items
             if (item.isSold)
@@ -745,8 +747,9 @@ class ProfileScreen extends GetView<ProfileController> {
               foregroundColor: Colors.white30,
               padding: EdgeInsets.symmetric(vertical: 12.h),
             ),
-            onPressed: () {
-              Get.offAllNamed(AppRoutes.splash);
+            onPressed: () async {
+              await Get.find<AuthService>().logout();
+              Get.offAllNamed(AppRoutes.login);
             },
             icon: const Icon(Icons.logout, size: 16, color: Colors.white30),
             label: Text(

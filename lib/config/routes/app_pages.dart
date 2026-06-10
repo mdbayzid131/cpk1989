@@ -17,11 +17,15 @@ import 'package:cpk1989/module/sell/view/ai_analysis_screen.dart';
 import 'package:cpk1989/module/sell_item_detail/view/sell_item_detail_screen.dart';
 import 'package:cpk1989/module/sell_item_detail/binding/sell_item_detail_binding.dart';
 import 'package:cpk1989/module/secure_checkout/view/secure_checkout_screen.dart';
+import 'package:cpk1989/module/secure_checkout/view/terms_and_conditions_screen.dart';
 import 'package:cpk1989/module/secure_checkout/binding/secure_checkout_binding.dart';
+import 'package:cpk1989/module/auth/view/login_screen.dart';
+import 'package:cpk1989/module/auth/binding/auth_binding.dart';
 
 class AppRoutes {
   static const String splash = '/splash';
   static const String onboarding = '/onboarding';
+  static const String login = '/login';
   static const String bottomNavBar = '/bottom-nav-bar';
   static const String sell = '/sell';
   static const String itemDetail = '/item-detail';
@@ -30,6 +34,7 @@ class AppRoutes {
   static const String aiAnalysis = '/ai-analysis';
   static const String sellItemDetail = '/sell-item-detail';
   static const String secureCheckout = '/secure-checkout';
+  static const String termsAndConditions = '/terms-and-conditions';
 }
 
 final Transition transition = Transition.fade;
@@ -45,6 +50,12 @@ final pages = [
     name: AppRoutes.onboarding,
     page: () => const OnboardingScreen(),
     binding: OnboardingBinding(),
+    transition: transition,
+  ),
+  GetPage(
+    name: AppRoutes.login,
+    page: () => const LoginScreen(),
+    binding: AuthBinding(),
     transition: transition,
   ),
 
@@ -94,6 +105,11 @@ final pages = [
     name: AppRoutes.secureCheckout,
     page: () => const SecureCheckoutScreen(),
     binding: SecureCheckoutBinding(),
+    transition: transition,
+  ),
+  GetPage(
+    name: AppRoutes.termsAndConditions,
+    page: () => const TermsAndConditionsScreen(),
     transition: transition,
   ),
 ];

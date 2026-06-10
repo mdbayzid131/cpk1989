@@ -1,8 +1,10 @@
+import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
+import 'package:cpk1989/core/widgets/custom_gold_button.dart';
 import 'package:cpk1989/module/secure_checkout/controller/secure_checkout_controller.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
@@ -13,8 +15,6 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
 
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       backgroundColor: const Color(0xFF0F1012),
       appBar: AppBar(
@@ -45,129 +45,134 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
           ),
         ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Product Card
-              _buildProductSummaryCard(),
-              SizedBox(height: 24.h),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Product Card
+                  _buildProductSummaryCard(),
+                  SizedBox(height: 24.h),
 
-              // Delivery details Section Header
-              Text(
-                "Delivery details",
-                style: GoogleFonts.manrope(
-                  fontSize: 15.sp,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-              SizedBox(height: 4.h),
-              Text(
-                "Please confirm your shipping information for this order.",
-                style: GoogleFonts.manrope(
-                  fontSize: 13.sp,
-                  color: Colors.white.withValues(alpha: 0.4),
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              SizedBox(height: 16.h),
-
-              // Form inputs
-              _buildTextInputField(
-                controller: controller.firstNameController,
-                hintText: "Enter first name here",
-                icon: Icons.person_outline_rounded,
-              ),
-              SizedBox(height: 12.h),
-              _buildTextInputField(
-                controller: controller.lastNameController,
-                hintText: "Enter last name here",
-                icon: Icons.person_outline_rounded,
-              ),
-              SizedBox(height: 12.h),
-              _buildTextInputField(
-                controller: controller.addressController,
-                hintText: "Palm Jumeirah, Building 5, Apt 1204",
-                icon: Icons.location_on_outlined,
-              ),
-              SizedBox(height: 12.h),
-              _buildDropdownField(
-                value: controller.rxLocation,
-                icon: Icons.location_on_outlined,
-                items: ["Dubai, UAE", "Abu Dhabi, UAE", "Sharjah, UAE"],
-              ),
-              SizedBox(height: 12.h),
-              _buildPhoneInputField(),
-              SizedBox(height: 28.h),
-
-              // Payment Method Section Header
-              Text(
-                "Payment Method",
-                style: GoogleFonts.manrope(
-                  fontSize: 15.sp,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-              SizedBox(height: 16.h),
-
-              // Payment options
-              Obx(
-                () => Column(
-                  children: [
-                    _buildPaymentOptionTile(
-                      id: "apple_pay",
-                      label: "Apple Pay",
-                      logoWidget: _buildBrandLogo(
-                        " Pay",
-                        Colors.white,
-                        Colors.black,
-                      ),
+                  // Delivery details Section Header
+                  Text(
+                    "Delivery details",
+                    style: GoogleFonts.manrope(
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
                     ),
-                    SizedBox(height: 12.h),
-                    _buildPaymentOptionTile(
-                      id: "google_pay",
-                      label: "Google Pay",
-                      logoWidget: _buildBrandLogo(
-                        "G Pay",
-                        const Color(0xFFF1F3F4),
-                        Colors.black,
-                        textStyle: GoogleFonts.manrope(
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFF5F6368),
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    "Please confirm your shipping information for this order.",
+                    style: GoogleFonts.manrope(
+                      fontSize: 13.sp,
+                      color: Colors.white.withValues(alpha: 0.4),
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Form inputs (only location, country, and phone number)
+                  _buildTextInputField(
+                    controller: controller.addressController,
+                    hintText: "Palm Jumeirah, Building 5, Apt 1204",
+                    icon: Icons.location_on_outlined,
+                  ),
+                  SizedBox(height: 12.h),
+                  _buildDropdownField(
+                    value: controller.rxLocation,
+                    icon: Icons.public_rounded,
+                    items: ["UAE", "Bangladesh", "Saudi Arabia", "Qatar"],
+                  ),
+                  SizedBox(height: 12.h),
+                  _buildPhoneInputField(),
+                  SizedBox(height: 28.h),
+
+                  // Payment Method Section Header
+                  Text(
+                    "Payment Method",
+                    style: GoogleFonts.manrope(
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Payment options
+                  Obx(
+                    () => Column(
+                      children: [
+                        _buildPaymentOptionTile(
+                          id: "apple_pay",
+                          label: "Apple Pay",
+                          logoWidget: _buildBrandLogo(
+                            " Pay",
+                            Colors.white,
+                            Colors.black,
+                          ),
                         ),
-                      ),
+                        SizedBox(height: 12.h),
+                        _buildPaymentOptionTile(
+                          id: "google_pay",
+                          label: "Google Pay",
+                          logoWidget: _buildBrandLogo(
+                            "G Pay",
+                            const Color(0xFFF1F3F4),
+                            Colors.black,
+                            textStyle: GoogleFonts.manrope(
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF5F6368),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 12.h),
+                        _buildPaymentOptionTile(
+                          id: "card",
+                          label: "Card",
+                          logoWidget: _buildCardLogo(),
+                          isCard: true,
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 12.h),
-                    _buildPaymentOptionTile(
-                      id: "card",
-                      label: "Card",
-                      logoWidget: _buildCardLogo(),
-                      isCard: true,
-                    ),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 24.h),
+
+                  // Security pill
+                  Center(child: _buildSecurityPill()),
+                  SizedBox(height: 20.h),
+
+                  // Secure This Item CTA Button
+                  _buildSecureCTAButton(context),
+                  SizedBox(height: 16.h),
+
+                  // Agreement text footer
+                  Center(child: _buildAgreementFooter()),
+                  SizedBox(height: 20.h),
+                ],
               ),
-              SizedBox(height: 24.h),
-
-              // Security pill
-              Center(child: _buildSecurityPill()),
-              SizedBox(height: 20.h),
-
-              // Secure This Item CTA Button
-              _buildSecureCTAButton(context),
-              SizedBox(height: 16.h),
-
-              // Agreement text footer
-              Center(child: _buildAgreementFooter()),
-              SizedBox(height: 20.h),
-            ],
+            ),
           ),
-        ),
+
+          // Blur and dim overlay when "Add card" bottom sheet is open
+          Obx(() {
+            if (controller.rxIsCardSheetOpen.value) {
+              return Positioned.fill(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                  child: Container(color: Colors.black.withValues(alpha: 0.45)),
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          }),
+        ],
       ),
     );
   }
@@ -274,6 +279,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
     required TextEditingController controller,
     required String hintText,
     required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
   }) {
     return Container(
       height: 54.h,
@@ -294,6 +300,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
           Expanded(
             child: TextField(
               controller: controller,
+              keyboardType: keyboardType,
               style: GoogleFonts.manrope(
                 fontSize: 14.sp,
                 color: Colors.white,
@@ -658,61 +665,173 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
   }
 
   Widget _buildSecureCTAButton(BuildContext context) {
-    final goldGradient = const LinearGradient(
-      colors: [
-        Color(0xFFAF7413),
-        Color(0xFFC98C28),
-        Color(0xFFE2B744),
-        Color(0xFFFFED81),
-        Color(0xFFE1C24E),
-        Color(0xFFA06008),
-      ],
-      stops: [0.0477, 0.1933, 0.3893, 0.5054, 0.6210, 0.9074],
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-    );
-
-    return Container(
+    return CustomGoldButton(
+      text: "Secure This Item",
       height: 54.h,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(27.r),
-        gradient: goldGradient,
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFFC98C28).withValues(alpha: 0.35),
-            blurRadius: 16.r,
-            offset: const Offset(0, 6),
-          ),
-        ],
+      suffix: Icon(
+        Icons.arrow_forward_rounded,
+        color: Colors.black,
+        size: 18.sp,
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            // Show processing dialog on Payment Page, then go to success details
-            showProcessingOverlay(context, () {
-              // Convert dynamic FeedItem structure to ProfileItem for routing to PurchaseDetailScreen
-              final profileController = Get.find<ProfileController>();
-              final profileItem = profileController.rxPurchaseItems.first;
+      onTap: () => _showAddCardBottomSheet(context),
+    );
+  }
 
-              Get.back(); // Pop SecureCheckoutScreen
-              Get.toNamed(AppRoutes.purchaseDetail, arguments: profileItem);
-            });
-          },
-          borderRadius: BorderRadius.circular(27.r),
-          child: Center(
-            child: Text(
-              "Secure This Item →",
-              style: GoogleFonts.manrope(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w800,
-                color: Colors.black,
+  void _showAddCardBottomSheet(BuildContext context) {
+    final nameController = TextEditingController();
+    final numberController = TextEditingController();
+    final expiryController = TextEditingController();
+    final cvvController = TextEditingController();
+
+    controller.rxIsCardSheetOpen.value = true;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      barrierColor:
+          Colors.transparent, // Handled by our custom BackdropFilter overlay
+      builder: (sheetContext) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF161719),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(32.r)),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.05),
+                width: 1.0,
               ),
             ),
+            padding: EdgeInsets.fromLTRB(
+              24.w,
+              24.h,
+              24.w,
+              MediaQuery.of(sheetContext).padding.bottom + 24.h,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Title Row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Add a new card",
+                      style: GoogleFonts.manrope(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(sheetContext),
+                      child: Container(
+                        padding: EdgeInsets.all(4.r),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white.withValues(alpha: 0.08),
+                        ),
+                        child: Icon(
+                          Icons.close_rounded,
+                          color: Colors.white,
+                          size: 20.sp,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 24.h),
+
+                // Cardholder Name
+                _buildTextInputField(
+                  controller: nameController,
+                  hintText: "Enter Card holder Name",
+                  icon: Icons.person_outline_rounded,
+                ),
+                SizedBox(height: 16.h),
+
+                // Card Number
+                _buildTextInputField(
+                  controller: numberController,
+                  hintText: "Enter Card number",
+                  icon: Icons.credit_card_outlined,
+                  keyboardType: TextInputType.number,
+                ),
+                SizedBox(height: 16.h),
+
+                // Expiry & CVV Row
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildTextInputField(
+                        controller: expiryController,
+                        hintText: "Enter expiry date",
+                        icon: Icons.calendar_today_outlined,
+                        keyboardType: TextInputType.datetime,
+                      ),
+                    ),
+                    SizedBox(width: 16.w),
+                    Expanded(
+                      child: _buildTextInputField(
+                        controller: cvvController,
+                        hintText: "Enter CVV",
+                        icon: Icons.lock_outline_rounded,
+                        keyboardType: TextInputType.number,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 32.h),
+
+                // Add Card Gold Button
+                CustomGoldButton(
+                  text: "Add Card",
+                  height: 54.h,
+                  suffix: Icon(
+                    Icons.arrow_forward_rounded,
+                    color: Colors.black,
+                    size: 18.sp,
+                  ),
+                  onTap: () {
+                    Navigator.pop(sheetContext); // Close sheet
+
+                    // Process the purchase to add the item dynamically
+                    controller.processPurchase(() {});
+
+                    // Show processing dialog, then go to success details
+                    showProcessingOverlay(context, () {
+                      // Convert dynamic FeedItem structure to ProfileItem for routing to PurchaseDetailScreen
+                      if (!Get.isRegistered<ProfileController>()) {
+                        Get.put(ProfileController());
+                      }
+                      final profileController = Get.find<ProfileController>();
+                      final profileItem =
+                          profileController.rxPurchaseItems.first;
+
+                      Get.back(); // Pop SecureCheckoutScreen
+                      Get.toNamed(
+                        AppRoutes.purchaseDetail,
+                        arguments: profileItem,
+                      );
+                    });
+                  },
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
-    );
+        );
+      },
+    ).then((_) {
+      controller.rxIsCardSheetOpen.value = false;
+      nameController.dispose();
+      numberController.dispose();
+      expiryController.dispose();
+      cvvController.dispose();
+    });
   }
 
   Widget _buildAgreementFooter() {
@@ -730,12 +849,20 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
             const TextSpan(text: "By clicking continue, you agree to our "),
             TextSpan(
               text: "Terms of service",
-              style: const TextStyle(decoration: TextDecoration.underline),
+              style: const TextStyle(
+                decoration: TextDecoration.underline,
+                color: Colors.white70,
+              ),
+              recognizer: controller.termsRecognizer,
             ),
             const TextSpan(text: " and "),
             TextSpan(
               text: "Purchase Policy.",
-              style: const TextStyle(decoration: TextDecoration.underline),
+              style: const TextStyle(
+                decoration: TextDecoration.underline,
+                color: Colors.white70,
+              ),
+              recognizer: controller.purchasePolicyRecognizer,
             ),
           ],
         ),
