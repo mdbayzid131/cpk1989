@@ -19,7 +19,7 @@ class LoginScreen extends GetView<AuthController> {
         statusBarHeight + 50.h + 20.h; // logo is at top: 50.h with ~40.h height
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0C),
+      backgroundColor: const Color(0xFF0F1012),
       body: Stack(
         children: [
           // 1. Static sunburst background centered exactly on the logo
@@ -44,10 +44,10 @@ class LoginScreen extends GetView<AuthController> {
                   ),
                   radius: 0.80,
                   colors: [
-                    const Color(0xFF0A0A0C).withValues(alpha: 0.0),
-                    const Color(0xFF0A0A0C).withValues(alpha: 0.0),
-                    const Color(0xFF0A0A0C).withValues(alpha: 0.75),
-                    const Color(0xFF0A0A0C),
+                    const Color(0xFF0F1012).withValues(alpha: 0.0),
+                    const Color(0xFF0F1012).withValues(alpha: 0.0),
+                    const Color(0xFF0F1012).withValues(alpha: 0.75),
+                    const Color(0xFF0F1012),
                   ],
                   stops: const [0.0, 0.25, 0.7, 1.0],
                 ),
@@ -91,7 +91,7 @@ class LoginScreen extends GetView<AuthController> {
                       Center(
                         child: Text(
                           "Create your account",
-                          style: GoogleFonts.playfairDisplay(
+                          style: GoogleFonts.prata(
                             fontSize: 32.sp,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
@@ -102,7 +102,7 @@ class LoginScreen extends GetView<AuthController> {
                       Center(
                         child: Text(
                           "Discover and sell luxury, effortlessly",
-                          style: GoogleFonts.manrope(
+                          style: GoogleFonts.dmSans(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w400,
                             color: Colors.white38,
@@ -210,7 +210,7 @@ class LoginScreen extends GetView<AuthController> {
                                         children: [
                                           Text(
                                             "Continue",
-                                            style: GoogleFonts.manrope(
+                                            style: GoogleFonts.dmSans(
                                               fontSize: 16.sp,
                                               fontWeight: FontWeight.w700,
                                               color: Colors.black,
@@ -251,14 +251,14 @@ class LoginScreen extends GetView<AuthController> {
       controller: controller,
       validator: validator,
       keyboardType: keyboardType,
-      style: GoogleFonts.manrope(
+      style: GoogleFonts.dmSans(
         fontSize: 15.sp,
         fontWeight: FontWeight.w500,
         color: Colors.white,
       ),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: GoogleFonts.manrope(
+        hintStyle: GoogleFonts.dmSans(
           fontSize: 15.sp,
           fontWeight: FontWeight.w400,
           color: Colors.white38,

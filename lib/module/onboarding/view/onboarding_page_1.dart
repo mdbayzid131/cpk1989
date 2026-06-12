@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cpk1989/config/themes/app_theme.dart';
 
 class OnboardingPage1 extends StatelessWidget {
   const OnboardingPage1({super.key});
@@ -19,7 +21,7 @@ class OnboardingPage1 extends StatelessWidget {
             children: [
               Text(
                 'Scroll it.',
-                style: GoogleFonts.playfairDisplay(
+                style: GoogleFonts.prata(
                   fontSize: 38.sp,
                   fontWeight: FontWeight.w400,
                   color: Colors.white,
@@ -28,7 +30,7 @@ class OnboardingPage1 extends StatelessWidget {
               ),
               Text(
                 'See it.',
-                style: GoogleFonts.playfairDisplay(
+                style: GoogleFonts.prata(
                   fontSize: 38.sp,
                   fontWeight: FontWeight.w400,
                   color: Colors.white,
@@ -36,8 +38,8 @@ class OnboardingPage1 extends StatelessWidget {
                 ),
               ),
               Text(
-                'Love it.',
-                style: GoogleFonts.playfairDisplay(
+                'Love it',
+                style: GoogleFonts.prata(
                   fontSize: 38.sp,
                   fontWeight: FontWeight.w400,
                   color: Colors.white,
@@ -45,25 +47,12 @@ class OnboardingPage1 extends StatelessWidget {
                 ),
               ),
               ShaderMask(
-                shaderCallback: (bounds) =>
-                    const LinearGradient(
-                      colors: [
-                        Color(0xFFAF7413),
-                        Color(0xFFC98C28),
-                        Color(0xFFE2B744),
-                        Color(0xFFFFED81),
-                        Color(0xFFE1C24E),
-                        Color(0xFFA06008),
-                      ],
-                      stops: [0.0477, 0.1933, 0.3893, 0.5054, 0.6210, 0.9074],
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                    ).createShader(
-                      Rect.fromLTWH(0, 0, bounds.width, bounds.height),
-                    ),
+                shaderCallback: (bounds) => AppTheme.goldGradient.createShader(
+                  Rect.fromLTWH(0, 0, bounds.width, bounds.height),
+                ),
                 child: Text(
                   'Buy it',
-                  style: GoogleFonts.playfairDisplay(
+                  style: GoogleFonts.prata(
                     fontSize: 38.sp,
                     fontWeight: FontWeight.w400,
                     color: Colors.white,
@@ -76,12 +65,12 @@ class OnboardingPage1 extends StatelessWidget {
               Container(
                 width: 32.w,
                 height: 2.h,
-                color: const Color(0xFFC98C28),
+                decoration: BoxDecoration(gradient: AppTheme.goldGradient),
               ),
               SizedBox(height: 24.h),
               Text(
                 'Luxury, from\nwomen like\nyou',
-                style: GoogleFonts.manrope(
+                style: GoogleFonts.dmSans(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w400,
                   color: Colors.white.withValues(alpha: 0.55),
@@ -107,23 +96,22 @@ class OnboardingPage1 extends StatelessWidget {
           ),
         ),
 
-        // 3. Full-screen vertical vignette overlay (black at top and bottom, clear/transparent in the middle)
-        Positioned.fill(
+        // 3. Bottom shadow overlay to fade out cards beautifully
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: 180.h,
           child: IgnorePointer(
             child: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    const Color(0xFF0A0A0C), // Solid black at the top
-                    const Color(0xFF0A0A0C).withValues(
-                      alpha: 0.0,
-                    ), // Fully transparent/clear in the middle
-                    const Color(
-                      0xFF0A0A0C,
-                    ).withValues(alpha: 0.0), // Keep middle clear
-                    const Color(0xFF0A0A0C), // Solid black at the bottom
+                    Colors.black.withValues(alpha: 0.0),
+                    Colors.black,
+                    Colors.black,
                   ],
-                  stops: const [0.0, 0.25, 0.75, 1.0],
+                  stops: const [0.0, 0.5, 1.0],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
@@ -143,130 +131,133 @@ class DiagonalScrollPreview extends StatefulWidget {
   State<DiagonalScrollPreview> createState() => _DiagonalScrollPreviewState();
 }
 
-class _DiagonalScrollPreviewState extends State<DiagonalScrollPreview>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
+class _DiagonalScrollPreviewState extends State<DiagonalScrollPreview> {
+  late final PageController _pageController;
+  Timer? _timer;
+
+  // List of card data
+  final List<Map<String, dynamic>> _cards = [
+    {
+      'imagePath': 'assets/images/luxury_watch.png',
+      'username': 'Hanna R.',
+      'profileImage':
+          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop',
+      'likes': '2.4K',
+    },
+    {
+      'imagePath': 'assets/images/luxury_bag.png',
+      'username': 'Maren B.',
+      'profileImage':
+          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop',
+      'likes': '2.4K',
+    },
+    {
+      'imagePath': 'assets/images/luxury_heels.png',
+      'username': 'Olivia M.',
+      'profileImage':
+          'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=150&auto=format&fit=crop',
+      'likes': '2.4K',
+    },
+  ];
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 18), // Speed of diagonal scroll
-    )..repeat();
+    // Start at a large index (multiple of 3) to allow infinite scrolling backwards and forwards
+    _pageController = PageController(viewportFraction: 0.28, initialPage: 3000);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _startAutoScroll();
+    });
+  }
+
+  void _startAutoScroll() {
+    // Trigger the first scroll after 1.5 seconds to feel responsive on load,
+    // then continue with a periodic timer every 3 seconds.
+    _timer = Timer(const Duration(milliseconds: 1500), () {
+      if (!mounted) return;
+      _scrollNext();
+      _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+        _scrollNext();
+      });
+    });
+  }
+
+  void _scrollNext() {
+    if (_pageController.hasClients) {
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 800),
+        curve: Curves.fastOutSlowIn,
+      );
+    }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _timer?.cancel();
+    _pageController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Dimension of one card + spacing
-    final cardHeight = 280.h;
-    final spacing = 20.h;
-    final itemTotalHeight = cardHeight + spacing;
+    return PageView.builder(
+      scrollDirection: Axis.vertical,
+      controller: _pageController,
+      physics: const BouncingScrollPhysics(),
+      itemBuilder: (context, index) {
+        final cardData = _cards[index % _cards.length];
 
-    // We have 3 items: Watch, Bag, Heels
-    // Total height of one loop is 3 * itemTotalHeight
-    final loopHeight = 3 * itemTotalHeight;
+        return AnimatedBuilder(
+          animation: _pageController,
+          builder: (context, child) {
+            double page = _pageController.initialPage.toDouble();
+            if (_pageController.hasClients &&
+                _pageController.position.haveDimensions) {
+              page = _pageController.page ?? page;
+            }
 
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        // topOffset goes from 0 to -loopHeight
-        final topOffset = _controller.value * -loopHeight;
+            // Calculate distance from center
+            double diff = (page - index).abs();
 
-        return Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Positioned(
-              top: topOffset,
-              left: 0,
-              right: 0,
-              child: Column(
-                children: [
-                  // First set of 3 cards
-                  _buildCard(
-                    imagePath: 'assets/images/luxury_watch.png',
-                    username: 'Hanna R',
-                    likes: '2.4K',
-                    hasGoldBorder: false,
-                    cardHeight: cardHeight,
-                    spacing: spacing,
+            // Scale and opacity effects based on distance from center
+            double scale =
+                1.0 -
+                (diff * 0.15).clamp(
+                  0.0,
+                  0.3,
+                ); // Center is 1.0, adjacent is 0.85
+            double opacity =
+                1.0 -
+                (diff * 0.3).clamp(0.0, 0.5); // Center is 1.0, adjacent is 0.7
+
+            // Dynamic gold border for the active center card
+            double activeFactor = (1.0 - diff * 2.0).clamp(0.0, 1.0);
+            Color borderColor = Color.lerp(
+              Colors.white.withValues(alpha: 0.08),
+              const Color(0xFFC98C28),
+              activeFactor,
+            )!;
+            double borderWidth = 1.0 + (0.5 * activeFactor);
+
+            return Center(
+              child: Transform.scale(
+                scale: scale,
+                child: Opacity(
+                  opacity: opacity,
+                  child: _buildCard(
+                    imagePath: cardData['imagePath'],
+                    username: cardData['username'],
+                    profileImage: cardData['profileImage'],
+                    likes: cardData['likes'],
+                    borderColor: borderColor,
+                    borderWidth: borderWidth,
+                    cardHeight: 280.h,
                   ),
-                  _buildCard(
-                    imagePath: 'assets/images/luxury_bag.png',
-                    username: 'Maren B.',
-                    likes: '2.4K',
-                    hasGoldBorder: true,
-                    cardHeight: cardHeight,
-                    spacing: spacing,
-                  ),
-                  _buildCard(
-                    imagePath: 'assets/images/luxury_heels.png',
-                    username: 'Olivia M.',
-                    likes: '2.4K',
-                    hasGoldBorder: false,
-                    cardHeight: cardHeight,
-                    spacing: spacing,
-                  ),
-                  // Second set of 3 cards (duplicate for seamless loop)
-                  _buildCard(
-                    imagePath: 'assets/images/luxury_watch.png',
-                    username: 'Hanna R',
-                    likes: '2.4K',
-                    hasGoldBorder: false,
-                    cardHeight: cardHeight,
-                    spacing: spacing,
-                  ),
-                  _buildCard(
-                    imagePath: 'assets/images/luxury_bag.png',
-                    username: 'Maren B.',
-                    likes: '2.4K',
-                    hasGoldBorder: true,
-                    cardHeight: cardHeight,
-                    spacing: spacing,
-                  ),
-                  _buildCard(
-                    imagePath: 'assets/images/luxury_heels.png',
-                    username: 'Olivia M.',
-                    likes: '2.4K',
-                    hasGoldBorder: false,
-                    cardHeight: cardHeight,
-                    spacing: spacing,
-                  ),
-                  // Third set of 3 cards to ensure screen is fully covered during scroll
-                  _buildCard(
-                    imagePath: 'assets/images/luxury_watch.png',
-                    username: 'Hanna R',
-                    likes: '2.4K',
-                    hasGoldBorder: false,
-                    cardHeight: cardHeight,
-                    spacing: spacing,
-                  ),
-                  _buildCard(
-                    imagePath: 'assets/images/luxury_bag.png',
-                    username: 'Maren B.',
-                    likes: '2.4K',
-                    hasGoldBorder: true,
-                    cardHeight: cardHeight,
-                    spacing: spacing,
-                  ),
-                  _buildCard(
-                    imagePath: 'assets/images/luxury_heels.png',
-                    username: 'Olivia M.',
-                    likes: '2.4K',
-                    hasGoldBorder: false,
-                    cardHeight: cardHeight,
-                    spacing: spacing,
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
+            );
+          },
         );
       },
     );
@@ -275,23 +266,18 @@ class _DiagonalScrollPreviewState extends State<DiagonalScrollPreview>
   Widget _buildCard({
     required String imagePath,
     required String username,
+    required String profileImage,
     required String likes,
-    required bool hasGoldBorder,
+    required Color borderColor,
+    required double borderWidth,
     required double cardHeight,
-    required double spacing,
   }) {
     return Container(
-      margin: EdgeInsets.only(bottom: spacing),
       width: 200.w,
       height: cardHeight,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24.r),
-        border: hasGoldBorder
-            ? Border.all(color: const Color(0xFFC98C28), width: 1.5)
-            : Border.all(
-                color: Colors.white.withValues(alpha: 0.08),
-                width: 1.0,
-              ),
+        border: Border.all(color: borderColor, width: borderWidth),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.4),
@@ -352,21 +338,15 @@ class _DiagonalScrollPreviewState extends State<DiagonalScrollPreview>
               right: 12.w,
               bottom: 12.h,
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // User Avatar
                   CircleAvatar(
-                    radius: 12.r,
+                    radius: 14.r,
+                    backgroundImage: NetworkImage(profileImage),
                     backgroundColor: Colors.white.withValues(alpha: 0.2),
-                    child: Text(
-                      username.substring(0, 1),
-                      style: TextStyle(
-                        fontSize: 10.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
                   ),
-                  SizedBox(width: 6.w),
+                  SizedBox(width: 8.w),
 
                   // Username
                   Expanded(
@@ -374,30 +354,35 @@ class _DiagonalScrollPreviewState extends State<DiagonalScrollPreview>
                       username,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
+                      style: GoogleFonts.dmSans(
                         color: Colors.white,
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w500,
+                        height: 1.0,
+                        letterSpacing: 0.0,
                       ),
                     ),
                   ),
+                  SizedBox(width: 8.w),
 
                   // Heart Likes Count
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        Icons.favorite_border_rounded,
-                        color: Colors.white.withValues(alpha: 0.9),
-                        size: 14.w,
+                        Icons.favorite_border,
+                        color: Colors.white,
+                        size: 16.w,
                       ),
-                      SizedBox(width: 3.w),
+                      SizedBox(width: 4.w),
                       Text(
                         likes,
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.9),
-                          fontSize: 11.sp,
-                          fontWeight: FontWeight.w400,
+                        style: GoogleFonts.dmSans(
+                          color: Colors.white,
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w500,
+                          height: 1.0,
+                          letterSpacing: 0.0,
                         ),
                       ),
                     ],

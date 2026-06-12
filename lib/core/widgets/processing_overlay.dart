@@ -55,7 +55,7 @@ class _ProcessingOverlayState extends State<ProcessingOverlay> with SingleTicker
           SizedBox(height: 24.h),
           Text(
             "Processing..",
-            style: GoogleFonts.manrope(
+            style: GoogleFonts.dmSans(
               fontSize: 18.sp,
               fontWeight: FontWeight.w600,
               color: Colors.white,

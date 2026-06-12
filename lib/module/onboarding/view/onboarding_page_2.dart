@@ -51,7 +51,7 @@ class _OnboardingPage2State extends State<OnboardingPage2>
         ///<================= HEADER TEXT =========================>///
         Text(
           'Sell in',
-          style: GoogleFonts.playfairDisplay(
+          style: GoogleFonts.prata(
             fontSize: 38.sp,
             fontWeight: FontWeight.w400,
             color: Colors.white,
@@ -74,7 +74,7 @@ class _OnboardingPage2State extends State<OnboardingPage2>
           ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
           child: Text(
             '60 Seconds',
-            style: GoogleFonts.playfairDisplay(
+            style: GoogleFonts.prata(
               fontSize: 38.sp,
               fontWeight: FontWeight.w400,
               color: Colors.white,
@@ -108,10 +108,10 @@ class _OnboardingPage2State extends State<OnboardingPage2>
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        const Color(0xFF0A0A0C),
-                        const Color(0xFF0A0A0C).withValues(alpha: 0.0),
-                        const Color(0xFF0A0A0C).withValues(alpha: 0.0),
-                        const Color(0xFF0A0A0C),
+                        const Color(0xFF0F1012),
+                        const Color(0xFF0F1012).withValues(alpha: 0.0),
+                        const Color(0xFF0F1012).withValues(alpha: 0.0),
+                        const Color(0xFF0F1012),
                       ],
                       stops: const [0.0, 0.22, 0.70, 1.0],
                       begin: Alignment.topCenter,
@@ -249,7 +249,7 @@ class _OnboardingPage2State extends State<OnboardingPage2>
           child: Text(
             'Record. Upload. We handle the rest,\nwhile you get paid.',
             textAlign: TextAlign.center,
-            style: GoogleFonts.manrope(
+            style: GoogleFonts.dmSans(
               fontSize: 15.sp,
               fontWeight: FontWeight.w400,
               color: Colors.white.withValues(alpha: 0.55),

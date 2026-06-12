@@ -69,7 +69,7 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
         ),
         title: Text(
           "Order #$orderId",
-          style: GoogleFonts.manrope(
+          style: GoogleFonts.dmSans(
             fontSize: 18.sp,
             fontWeight: FontWeight.w700,
             color: Colors.white,
@@ -122,7 +122,7 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
               Center(
                 child: Text(
                   "You've secured this item",
-                  style: GoogleFonts.manrope(
+                  style: GoogleFonts.dmSans(
                     fontSize: 22.sp,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -133,7 +133,7 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
               Center(
                 child: Text(
                   "We'll collect and verify it within 24 hours",
-                  style: GoogleFonts.manrope(
+                  style: GoogleFonts.dmSans(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w400,
                     color: Colors.white38,
@@ -149,7 +149,7 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
               // 4. Delivery Status Timeline Section
               Text(
                 "Delivery Status",
-                style: GoogleFonts.manrope(
+                style: GoogleFonts.dmSans(
                   fontSize: 15.sp,
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
@@ -182,12 +182,12 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                 activeDashedSize: 32.r,
                 lineWidth: 2.w,
                 stepHeight: 74.h,
-                titleStyle: GoogleFonts.manrope(
+                titleStyle: GoogleFonts.dmSans(
                   fontSize: 15.sp,
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
                 ),
-                subtitleStyle: GoogleFonts.manrope(
+                subtitleStyle: GoogleFonts.dmSans(
                   fontSize: 12.sp,
                   color: Colors.white54,
                 ),
@@ -213,7 +213,7 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                       SizedBox(width: 8.w),
                       Text(
                         "Authenticity Verified. Payment protected.",
-                        style: GoogleFonts.manrope(
+                        style: GoogleFonts.dmSans(
                           fontSize: 11.sp,
                           color: Colors.white54,
                           fontWeight: FontWeight.w600,
@@ -275,7 +275,7 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                   ),
                   child: Text(
                     formattedPrice,
-                    style: GoogleFonts.manrope(
+                    style: GoogleFonts.dmSans(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
@@ -288,7 +288,7 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                   item.itemName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.manrope(
+                  style: GoogleFonts.dmSans(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -300,7 +300,7 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                   children: [
                     Text(
                       item.brand.toUpperCase() == "CHANEL" ? "Olivia Mendes" : "Seller", // Mock seller matching checkout
-                      style: GoogleFonts.manrope(
+                      style: GoogleFonts.dmSans(
                         fontSize: 13.sp,
                         fontWeight: FontWeight.w500,
                         color: Colors.white.withValues(alpha: 0.4),

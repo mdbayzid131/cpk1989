@@ -66,7 +66,7 @@ class CustomTextField extends StatelessWidget {
             padding: EdgeInsets.only(bottom: 6.h),
             child: Text(
               label!,
-              style: GoogleFonts.manrope(
+              style: GoogleFonts.dmSans(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w500,
                 color: Colors.black,
@@ -91,7 +91,7 @@ class CustomTextField extends StatelessWidget {
           inputFormatters: inputFormatters,
           focusNode: focusNode,
           textCapitalization: textCapitalization,
-          style: GoogleFonts.manrope(
+          style: GoogleFonts.dmSans(
             fontSize: 15.sp,
             fontWeight: FontWeight.w400,
             color: Colors.black,

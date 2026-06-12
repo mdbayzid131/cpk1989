@@ -222,7 +222,7 @@ class _AIAnalysisScreenState extends State<AIAnalysisScreen>
           // Title
           Text(
             "Analysing brand ..",
-            style: GoogleFonts.playfairDisplay(
+            style: GoogleFonts.prata(
               fontSize: 28.sp,
               fontWeight: FontWeight.w600,
               color: Colors.white,
@@ -234,7 +234,7 @@ class _AIAnalysisScreenState extends State<AIAnalysisScreen>
           // Subtitle
           Text(
             "Identifying brand, condition, and price",
-            style: GoogleFonts.manrope(
+            style: GoogleFonts.dmSans(
               fontSize: 14.sp,
               color: Colors.white.withValues(alpha: 0.45),
               fontWeight: FontWeight.w400,
@@ -335,7 +335,7 @@ class _AIAnalysisScreenState extends State<AIAnalysisScreen>
                 alignment: Alignment.center,
                 child: Text(
                   "Closeté",
-                  style: GoogleFonts.playfairDisplay(
+                  style: GoogleFonts.prata(
                     fontSize: 24.sp,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
@@ -508,7 +508,7 @@ class _AIAnalysisScreenState extends State<AIAnalysisScreen>
           padding: EdgeInsets.only(top: 3.h),
           child: Text(
             label,
-            style: GoogleFonts.manrope(
+            style: GoogleFonts.dmSans(
               fontSize: 14.sp,
               fontWeight: isCompleted || isActive
                   ? FontWeight.w600

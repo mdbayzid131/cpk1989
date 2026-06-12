@@ -7,6 +7,8 @@ import 'package:cpk1989/core/services/storage_service.dart';
 import 'package:cpk1989/module/onboarding/view/onboarding_page_1.dart';
 import 'package:cpk1989/module/onboarding/view/onboarding_page_2.dart';
 import 'package:cpk1989/module/onboarding/view/onboarding_page_3.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:cpk1989/config/themes/app_theme.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -49,7 +51,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0C), // dark premium background
+      backgroundColor: const Color(0xFF0F1012), // dark premium background
       body: Stack(
         children: [
           // 1. Full screen PageView (allows background elements to bleed into edges)
@@ -81,8 +83,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   padding: EdgeInsets.all(8.r),
                   child: Text(
                     'Skip',
-                    style: TextStyle(
-                      fontFamily: 'Manrope',
+                    style: GoogleFonts.dmSans(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w400,
                       color: Colors.white.withValues(alpha: 0.55),
@@ -122,26 +123,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(5.w),
-                            gradient: const LinearGradient(
-                              colors: [
-                                Color(0xFFAF7413),
-                                Color(0xFFC98C28),
-                                Color(0xFFE2B744),
-                                Color(0xFFFFED81),
-                                Color(0xFFE1C24E),
-                                Color(0xFFA06008),
-                              ],
-                              stops: [
-                                0.0477,
-                                0.1933,
-                                0.3893,
-                                0.5054,
-                                0.6210,
-                                0.9074,
-                              ],
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                            ),
+                            gradient: AppTheme.goldGradient,
                           ),
                         ),
                       ),
@@ -176,21 +158,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 curve: Curves.easeInOutCubic,
                 width: _currentPage == 2 ? 180.w : 56.w,
                 height: 56.w,
-                clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(28.r),
                   gradient: const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
                     colors: [
-                      Color(0xFFAF7413),
-                      Color(0xFFC98C28),
-                      Color(0xFFE2B744),
-                      Color(0xFFFFED81),
-                      Color(0xFFE1C24E),
-                      Color(0xFFA06008),
+                      Color(0x66FFFFFF), // rgba(255, 255, 255, 0.4) at 0%
+                      Color(0x66E8E8E8), // rgba(232, 232, 232, 0.4) at 100%
                     ],
-                    stops: [0.0477, 0.1933, 0.3893, 0.5054, 0.6210, 0.9074],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
                   ),
                   boxShadow: [
                     BoxShadow(
@@ -200,46 +176,52 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   ],
                 ),
-                child: Center(
-                  child: AnimatedCrossFade(
-                    firstChild: SizedBox(
-                      width: 180.w,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Enter Closete',
-                            maxLines: 1,
-                            style: TextStyle(
-                              fontFamily: 'Manrope',
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black,
+                padding: const EdgeInsets.all(1.0), // 1px border width
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(27.r),
+                    gradient: AppTheme.goldGradient,
+                  ),
+                  child: Center(
+                    child: AnimatedCrossFade(
+                      firstChild: SizedBox(
+                        width: 180.w,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Enter Closete',
+                              maxLines: 1,
+                              style: GoogleFonts.dmSans(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                              ),
                             ),
-                          ),
-                          SizedBox(width: 8.w),
-                          Icon(
-                            Icons.arrow_forward_rounded,
-                            color: Colors.black,
-                            size: 20.w,
-                          ),
-                        ],
-                      ),
-                    ),
-                    secondChild: SizedBox(
-                      width: 56.w,
-                      child: Center(
-                        child: Icon(
-                          Icons.arrow_forward_rounded,
-                          color: Colors.black,
-                          size: 24.w,
+                            SizedBox(width: 8.w),
+                            Icon(
+                              Icons.arrow_forward_rounded,
+                              color: Colors.black,
+                              size: 20.w,
+                            ),
+                          ],
                         ),
                       ),
+                      secondChild: SizedBox(
+                        width: 56.w,
+                        child: Center(
+                          child: Icon(
+                            Icons.arrow_forward_rounded,
+                            color: Colors.black,
+                            size: 24.w,
+                          ),
+                        ),
+                      ),
+                      crossFadeState: _currentPage == 2
+                          ? CrossFadeState.showFirst
+                          : CrossFadeState.showSecond,
+                      duration: const Duration(milliseconds: 300),
                     ),
-                    crossFadeState: _currentPage == 2
-                        ? CrossFadeState.showFirst
-                        : CrossFadeState.showSecond,
-                    duration: const Duration(milliseconds: 300),
                   ),
                 ),
               ),

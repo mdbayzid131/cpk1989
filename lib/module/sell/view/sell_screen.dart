@@ -148,7 +148,7 @@ class SellScreen extends GetView<SellController> {
                 ),
                 Text(
                   "Show your item",
-                  style: GoogleFonts.manrope(
+                  style: GoogleFonts.dmSans(
                     fontSize: 20.sp,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -212,7 +212,7 @@ class SellScreen extends GetView<SellController> {
                         SizedBox(height: 8.h),
                         Text(
                           "Retake",
-                          style: GoogleFonts.manrope(
+                          style: GoogleFonts.dmSans(
                             fontSize: 12.sp,
                             fontWeight: FontWeight.w600,
                             color: Colors.white70,
@@ -275,7 +275,7 @@ class SellScreen extends GetView<SellController> {
                         SizedBox(height: 8.h),
                         Text(
                           "Confirm",
-                          style: GoogleFonts.manrope(
+                          style: GoogleFonts.dmSans(
                             fontSize: 12.sp,
                             fontWeight: FontWeight.w700,
                             color: const Color(0xFFE2B744),
@@ -358,7 +358,7 @@ class SellScreen extends GetView<SellController> {
                                 SizedBox(height: 4.h),
                                 Text(
                                   "CAPTURE",
-                                  style: GoogleFonts.manrope(
+                                  style: GoogleFonts.dmSans(
                                     fontSize: 9.sp,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.white,
@@ -510,7 +510,7 @@ class SellScreen extends GetView<SellController> {
   //                 ),
   //                 title: Text(
   //                   "Choose from Device Gallery",
-  //                   style: GoogleFonts.manrope(
+  //                   style: GoogleFonts.dmSans(
   //                     fontSize: 14.sp,
   //                     fontWeight: FontWeight.w600,
   //                     color: Colors.white,
@@ -526,7 +526,7 @@ class SellScreen extends GetView<SellController> {
   //                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
   //                 child: Text(
   //                   "Or select a test template item:",
-  //                   style: GoogleFonts.manrope(
+  //                   style: GoogleFonts.dmSans(
   //                     fontSize: 12.sp,
   //                     fontWeight: FontWeight.w500,
   //                     color: Colors.white38,
@@ -592,7 +592,7 @@ class SellScreen extends GetView<SellController> {
   //                                 padding: EdgeInsets.all(8.w),
   //                                 child: Text(
   //                                   product["itemName"],
-  //                                   style: GoogleFonts.manrope(
+  //                                   style: GoogleFonts.dmSans(
   //                                     fontSize: 11.sp,
   //                                     fontWeight: FontWeight.w600,
   //                                     color: Colors.white,

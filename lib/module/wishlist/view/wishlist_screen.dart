@@ -26,7 +26,7 @@ class WishlistScreen extends GetView<WishlistController> {
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                 child: Text(
                   "Wishlist",
-                  style: GoogleFonts.manrope(
+                  style: GoogleFonts.dmSans(
                     fontSize: 28.sp,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -54,7 +54,7 @@ class WishlistScreen extends GetView<WishlistController> {
                         SizedBox(height: 16.h),
                         Text(
                           "Your Wishlist is empty",
-                          style: GoogleFonts.manrope(
+                          style: GoogleFonts.dmSans(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
@@ -63,7 +63,7 @@ class WishlistScreen extends GetView<WishlistController> {
                         SizedBox(height: 8.h),
                         Text(
                           "Save luxury items here to track them.",
-                          style: GoogleFonts.manrope(
+                          style: GoogleFonts.dmSans(
                             fontSize: 12.sp,
                             color: Colors.white38,
                           ),
@@ -177,7 +177,7 @@ class WishlistScreen extends GetView<WishlistController> {
                             children: [
                               Text(
                                 item.brand.toUpperCase(),
-                                style: GoogleFonts.manrope(
+                                style: GoogleFonts.dmSans(
                                   fontSize: 10.sp,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.white38,
@@ -187,7 +187,7 @@ class WishlistScreen extends GetView<WishlistController> {
                               SizedBox(height: 4.h),
                               Text(
                                 item.itemName,
-                                style: GoogleFonts.manrope(
+                                style: GoogleFonts.dmSans(
                                   fontSize: 13.sp,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.white,
@@ -238,7 +238,7 @@ class WishlistScreen extends GetView<WishlistController> {
                       ),
                       child: Text(
                         "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
-                        style: GoogleFonts.manrope(
+                        style: GoogleFonts.dmSans(
                           fontSize: 11.sp,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,

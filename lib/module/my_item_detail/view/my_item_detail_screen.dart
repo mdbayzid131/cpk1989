@@ -115,7 +115,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
         ),
         title: Text(
           "Item Detail",
-          style: GoogleFonts.manrope(
+          style: GoogleFonts.dmSans(
             fontSize: 20.sp,
             fontWeight: FontWeight.w700,
             color: Colors.white,
@@ -235,7 +235,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                   Expanded(
                     child: Text(
                       item.itemName,
-                      style: GoogleFonts.manrope(
+                      style: GoogleFonts.dmSans(
                         fontSize: 22.sp,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
@@ -264,7 +264,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                           : status == "Rejected"
                           ? "• Rejected"
                           : "• $status",
-                      style: GoogleFonts.manrope(
+                      style: GoogleFonts.dmSans(
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w700,
                         color: status == null ? Colors.white54 : Colors.black,
@@ -282,7 +282,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                 children: [
                   Text(
                     "ITEM DETAILS",
-                    style: GoogleFonts.manrope(
+                    style: GoogleFonts.dmSans(
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w700,
                       color: Colors.white38,
@@ -317,7 +317,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                 // ITEM CURRENT STATUS Section Header
                 Text(
                   "ITEM CURRENT STATUS",
-                  style: GoogleFonts.manrope(
+                  style: GoogleFonts.dmSans(
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w700,
                     color: Colors.white38,
@@ -334,12 +334,12 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                   activeDashedSize: 48.r,
                   lineWidth: 2.w,
                   stepHeight: 88.h,
-                  titleStyle: GoogleFonts.manrope(
+                  titleStyle: GoogleFonts.dmSans(
                     fontSize: 15.sp,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
                   ),
-                  subtitleStyle: GoogleFonts.manrope(
+                  subtitleStyle: GoogleFonts.dmSans(
                     fontSize: 12.sp,
                     color: Colors.white54,
                   ),
@@ -367,7 +367,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                             children: [
                               Text(
                                 "This item didn't pass authentication",
-                                style: GoogleFonts.manrope(
+                                style: GoogleFonts.dmSans(
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.white,
@@ -376,7 +376,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                               SizedBox(height: 4.h),
                               Text(
                                 "Your item is being sent back Estimated delivery: 2-3 days",
-                                style: GoogleFonts.manrope(
+                                style: GoogleFonts.dmSans(
                                   fontSize: 12.sp,
                                   color: Colors.white70,
                                 ),
@@ -400,7 +400,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                 // BUYER DETAILS Section Header
                 Text(
                   "BUYER DETAILS",
-                  style: GoogleFonts.manrope(
+                  style: GoogleFonts.dmSans(
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w700,
                     color: Colors.white38,
@@ -435,7 +435,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                           SizedBox(width: 12.w),
                           Text(
                             "Aisha Khan",
-                            style: GoogleFonts.manrope(
+                            style: GoogleFonts.dmSans(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
@@ -457,7 +457,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                           Expanded(
                             child: Text(
                               "Palm Jumeirah, Building 5, Apt 1204",
-                              style: GoogleFonts.manrope(
+                              style: GoogleFonts.dmSans(
                                 fontSize: 13.sp,
                                 color: Colors.white70,
                               ),
@@ -476,7 +476,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                           SizedBox(width: 8.w),
                           Text(
                             "+971 50 123 4567",
-                            style: GoogleFonts.manrope(
+                            style: GoogleFonts.dmSans(
                               fontSize: 13.sp,
                               color: Colors.white70,
                             ),
@@ -496,7 +496,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                     children: [
                       Text(
                         "YOUR EARNINGS",
-                        style: GoogleFonts.manrope(
+                        style: GoogleFonts.dmSans(
                           fontSize: 12.sp,
                           fontWeight: FontWeight.w700,
                           color: Colors.white38,
@@ -530,7 +530,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                               SizedBox(width: 4.w),
                               Text(
                                 "Payout completed",
-                                style: GoogleFonts.manrope(
+                                style: GoogleFonts.dmSans(
                                   fontSize: 10.sp,
                                   fontWeight: FontWeight.w700,
                                   color: const Color(0xFF30D158),
@@ -571,7 +571,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                           children: [
                             Text(
                               "You'll Earn",
-                              style: GoogleFonts.manrope(
+                              style: GoogleFonts.dmSans(
                                 fontSize: 14.sp,
                                 color: Colors.white,
                                 fontWeight: FontWeight.w700,
@@ -579,7 +579,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                             ),
                             Text(
                               "AED 3,520",
-                              style: GoogleFonts.manrope(
+                              style: GoogleFonts.dmSans(
                                 fontSize: 16.sp,
                                 color: const Color(
                                   0xFFE2B744,
@@ -638,7 +638,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                             children: [
                               Text(
                                 "Sell Again",
-                                style: GoogleFonts.manrope(
+                                style: GoogleFonts.dmSans(
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.black,
@@ -677,7 +677,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                             : status == "Delivered"
                             ? "Funds have been transferred to your account"
                             : "You're not charged for this listing",
-                        style: GoogleFonts.manrope(
+                        style: GoogleFonts.dmSans(
                           fontSize: 12.sp,
                           color: Colors.white38,
                           fontWeight: FontWeight.w500,
@@ -712,7 +712,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
         children: [
           Text(
             label,
-            style: GoogleFonts.manrope(
+            style: GoogleFonts.dmSans(
               fontSize: 14.sp,
               color: Colors.white38,
               fontWeight: FontWeight.w500,
@@ -724,7 +724,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
             child: Text(
               value,
               textAlign: TextAlign.end,
-              style: GoogleFonts.manrope(
+              style: GoogleFonts.dmSans(
                 fontSize: 14.sp,
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
@@ -755,7 +755,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
         children: [
           Text(
             label,
-            style: GoogleFonts.manrope(
+            style: GoogleFonts.dmSans(
               fontSize: 13.sp,
               color: Colors.white38,
               fontWeight: FontWeight.w500,
@@ -764,7 +764,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
           SizedBox(height: 8.h),
           Text(
             value,
-            style: GoogleFonts.manrope(
+            style: GoogleFonts.dmSans(
               fontSize: 14.sp,
               color: Colors.white,
               height: 1.4,
@@ -793,7 +793,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
         children: [
           Text(
             label,
-            style: GoogleFonts.manrope(
+            style: GoogleFonts.dmSans(
               fontSize: 14.sp,
               color: Colors.white38,
               fontWeight: FontWeight.w500,
@@ -816,7 +816,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                 SizedBox(width: 6.w),
                 Text(
                   "Bill.pdf",
-                  style: GoogleFonts.manrope(
+                  style: GoogleFonts.dmSans(
                     fontSize: 12.sp,
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
@@ -838,7 +838,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
       children: [
         Text(
           label,
-          style: GoogleFonts.manrope(
+          style: GoogleFonts.dmSans(
             fontSize: 13.sp,
             color: Colors.white38,
             fontWeight: FontWeight.w500,
@@ -846,7 +846,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
         ),
         Text(
           value,
-          style: GoogleFonts.manrope(
+          style: GoogleFonts.dmSans(
             fontSize: 13.sp,
             color: Colors.white70,
             fontWeight: FontWeight.w600,

@@ -38,7 +38,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
         ),
         title: Text(
           "Secure your item",
-          style: GoogleFonts.manrope(
+          style: GoogleFonts.dmSans(
             fontSize: 20.sp,
             fontWeight: FontWeight.w700,
             color: Colors.white,
@@ -61,7 +61,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                   // Delivery details Section Header
                   Text(
                     "Delivery details",
-                    style: GoogleFonts.manrope(
+                    style: GoogleFonts.dmSans(
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
@@ -70,7 +70,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                   SizedBox(height: 4.h),
                   Text(
                     "Please confirm your shipping information for this order.",
-                    style: GoogleFonts.manrope(
+                    style: GoogleFonts.dmSans(
                       fontSize: 13.sp,
                       color: Colors.white.withValues(alpha: 0.4),
                       fontWeight: FontWeight.w400,
@@ -97,7 +97,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                   // Payment Method Section Header
                   Text(
                     "Payment Method",
-                    style: GoogleFonts.manrope(
+                    style: GoogleFonts.dmSans(
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
@@ -126,7 +126,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                             "G Pay",
                             const Color(0xFFF1F3F4),
                             Colors.black,
-                            textStyle: GoogleFonts.manrope(
+                            textStyle: GoogleFonts.dmSans(
                               fontWeight: FontWeight.w800,
                               color: const Color(0xFF5F6368),
                             ),
@@ -209,7 +209,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                   ),
                   child: Text(
                     "AED ${item.price}",
-                    style: GoogleFonts.manrope(
+                    style: GoogleFonts.dmSans(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
@@ -222,7 +222,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                   item.itemName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.manrope(
+                  style: GoogleFonts.dmSans(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -234,7 +234,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                   children: [
                     Text(
                       item.userName,
-                      style: GoogleFonts.manrope(
+                      style: GoogleFonts.dmSans(
                         fontSize: 13.sp,
                         fontWeight: FontWeight.w500,
                         color: Colors.white.withValues(alpha: 0.4),
@@ -301,14 +301,14 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
             child: TextField(
               controller: controller,
               keyboardType: keyboardType,
-              style: GoogleFonts.manrope(
+              style: GoogleFonts.dmSans(
                 fontSize: 14.sp,
                 color: Colors.white,
                 fontWeight: FontWeight.w500,
               ),
               decoration: InputDecoration(
                 hintText: hintText,
-                hintStyle: GoogleFonts.manrope(
+                hintStyle: GoogleFonts.dmSans(
                   fontSize: 14.sp,
                   color: Colors.white38,
                   fontWeight: FontWeight.w500,
@@ -355,7 +355,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                     color: Colors.white38,
                     size: 20.sp,
                   ),
-                  style: GoogleFonts.manrope(
+                  style: GoogleFonts.dmSans(
                     fontSize: 14.sp,
                     color: Colors.white,
                     fontWeight: FontWeight.w500,
@@ -406,7 +406,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                     size: 16.sp,
                   ),
                 ),
-                style: GoogleFonts.manrope(
+                style: GoogleFonts.dmSans(
                   fontSize: 14.sp,
                   color: Colors.white,
                   fontWeight: FontWeight.w500,
@@ -436,14 +436,14 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
             child: TextField(
               controller: controller.phoneController,
               keyboardType: TextInputType.phone,
-              style: GoogleFonts.manrope(
+              style: GoogleFonts.dmSans(
                 fontSize: 14.sp,
                 color: Colors.white,
                 fontWeight: FontWeight.w500,
               ),
               decoration: InputDecoration(
                 hintText: "Phone number",
-                hintStyle: GoogleFonts.manrope(
+                hintStyle: GoogleFonts.dmSans(
                   fontSize: 14.sp,
                   color: Colors.white38,
                   fontWeight: FontWeight.w500,
@@ -498,7 +498,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                     Expanded(
                       child: Text(
                         label,
-                        style: GoogleFonts.manrope(
+                        style: GoogleFonts.dmSans(
                           fontSize: 15.sp,
                           color: Colors.white,
                           fontWeight: FontWeight.w700,
@@ -547,7 +547,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                           SizedBox(width: 6.w),
                           Text(
                             "Add a New card",
-                            style: GoogleFonts.manrope(
+                            style: GoogleFonts.dmSans(
                               fontSize: 13.sp,
                               fontWeight: FontWeight.w600,
                               color: Colors.white70,
@@ -585,7 +585,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
         text,
         style:
             textStyle ??
-            GoogleFonts.manrope(
+            GoogleFonts.dmSans(
               fontWeight: FontWeight.w900,
               fontSize: 12.sp,
               color: textColor,
@@ -653,7 +653,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
           SizedBox(width: 8.w),
           Text(
             "Authenticity guaranteed. Payment protected.",
-            style: GoogleFonts.manrope(
+            style: GoogleFonts.dmSans(
               fontSize: 11.sp,
               color: Colors.white54,
               fontWeight: FontWeight.w600,
@@ -721,7 +721,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                   children: [
                     Text(
                       "Add a new card",
-                      style: GoogleFonts.manrope(
+                      style: GoogleFonts.dmSans(
                         fontSize: 20.sp,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
@@ -840,7 +840,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
       child: RichText(
         textAlign: TextAlign.center,
         text: TextSpan(
-          style: GoogleFonts.manrope(
+          style: GoogleFonts.dmSans(
             fontSize: 11.sp,
             color: Colors.white38,
             height: 1.4,

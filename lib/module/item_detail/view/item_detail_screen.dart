@@ -109,7 +109,7 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                 ),
                                 child: Text(
                                   item.price,
-                                  style: GoogleFonts.manrope(
+                                  style: GoogleFonts.dmSans(
                                     fontSize: 16.sp,
                                     fontWeight: FontWeight.w800,
                                     color: Colors.black,
@@ -149,7 +149,7 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                 SizedBox(width: 8.w),
                                 Text(
                                   item.userName,
-                                  style: GoogleFonts.manrope(
+                                  style: GoogleFonts.dmSans(
                                     fontSize: 16.sp,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.white,
@@ -167,7 +167,7 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                             ),
                             Text(
                               "Listed price",
-                              style: GoogleFonts.manrope(
+                              style: GoogleFonts.dmSans(
                                 fontSize: 13.sp,
                                 color: Colors.white38,
                                 fontWeight: FontWeight.w500,
@@ -181,7 +181,7 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                         // 3. Item Title
                         Text(
                           item.itemName,
-                          style: GoogleFonts.manrope(
+                          style: GoogleFonts.dmSans(
                             fontSize: 24.sp,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
@@ -201,7 +201,7 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                             SizedBox(width: 4.w),
                             Text(
                               "${item.condition} : ${item.wornCount}",
-                              style: GoogleFonts.manrope(
+                              style: GoogleFonts.dmSans(
                                 fontSize: 13.sp,
                                 color: Colors.white70,
                                 fontWeight: FontWeight.w500,
@@ -222,7 +222,7 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                             SizedBox(width: 4.w),
                             Text(
                               item.size,
-                              style: GoogleFonts.manrope(
+                              style: GoogleFonts.dmSans(
                                 fontSize: 13.sp,
                                 color: Colors.white70,
                                 fontWeight: FontWeight.w500,
@@ -238,7 +238,7 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                         // 5. Description
                         Text(
                           "DESCRIPTION",
-                          style: GoogleFonts.manrope(
+                          style: GoogleFonts.dmSans(
                             fontSize: 12.sp,
                             fontWeight: FontWeight.w700,
                             color: Colors.white38,
@@ -248,7 +248,7 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                         SizedBox(height: 8.h),
                         Text(
                           item.description,
-                          style: GoogleFonts.manrope(
+                          style: GoogleFonts.dmSans(
                             fontSize: 14.sp,
                             color: Colors.white70,
                             height: 1.5,
@@ -356,7 +356,7 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
         Text(
           label,
           textAlign: TextAlign.center,
-          style: GoogleFonts.manrope(
+          style: GoogleFonts.dmSans(
             fontSize: 12.sp,
             color: Colors.white70,
             fontWeight: FontWeight.w600,

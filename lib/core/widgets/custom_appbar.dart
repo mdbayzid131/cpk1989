@@ -32,7 +32,7 @@ class CustomAppBar {
       bottom: bottom,
       title: Text(
         title,
-        style: GoogleFonts.manrope(
+        style: GoogleFonts.dmSans(
           fontSize: 18.sp,
           fontWeight: FontWeight.w700,
           color: Colors.black87,

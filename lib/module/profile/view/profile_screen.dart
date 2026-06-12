@@ -29,7 +29,7 @@ class ProfileScreen extends GetView<ProfileController> {
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
                 child: Text(
                   "My Profile",
-                  style: GoogleFonts.manrope(
+                  style: GoogleFonts.dmSans(
                     fontSize: 28.sp,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -145,7 +145,7 @@ class ProfileScreen extends GetView<ProfileController> {
                     children: [
                       Text(
                         controller.rxUserName.value,
-                        style: GoogleFonts.manrope(
+                        style: GoogleFonts.dmSans(
                           fontSize: 20.sp,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
@@ -200,7 +200,7 @@ class ProfileScreen extends GetView<ProfileController> {
         Text(
           label,
           textAlign: TextAlign.center,
-          style: GoogleFonts.manrope(
+          style: GoogleFonts.dmSans(
             fontSize: 10.sp,
             fontWeight: FontWeight.w400,
             color: Colors.white38, // Grey-ish label matching mockup
@@ -209,7 +209,7 @@ class ProfileScreen extends GetView<ProfileController> {
         SizedBox(height: 4.h),
         Text(
           value,
-          style: GoogleFonts.manrope(
+          style: GoogleFonts.dmSans(
             fontSize: 14.sp,
             fontWeight: FontWeight.w700,
             color: Colors.white, // White bold value matching mockup
@@ -270,7 +270,7 @@ class ProfileScreen extends GetView<ProfileController> {
             Text(
               label,
               textAlign: TextAlign.center,
-              style: GoogleFonts.manrope(
+              style: GoogleFonts.dmSans(
                 fontSize: 11.sp,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                 color: isSelected
@@ -304,7 +304,7 @@ class ProfileScreen extends GetView<ProfileController> {
           alignment: Alignment.center,
           child: Text(
             "Your wardrobe is empty.",
-            style: GoogleFonts.manrope(color: Colors.white38, fontSize: 14.sp),
+            style: GoogleFonts.dmSans(color: Colors.white38, fontSize: 14.sp),
           ),
         );
       }
@@ -337,7 +337,7 @@ class ProfileScreen extends GetView<ProfileController> {
           alignment: Alignment.center,
           child: Text(
             "No purchase history found.",
-            style: GoogleFonts.manrope(color: Colors.white38, fontSize: 14.sp),
+            style: GoogleFonts.dmSans(color: Colors.white38, fontSize: 14.sp),
           ),
         );
       }
@@ -408,7 +408,7 @@ class ProfileScreen extends GetView<ProfileController> {
                         SizedBox(width: 6.w),
                         Text(
                           status,
-                          style: GoogleFonts.manrope(
+                          style: GoogleFonts.dmSans(
                             fontSize: 10.sp,
                             fontWeight: FontWeight.w700,
                             color: statusColor,
@@ -422,7 +422,7 @@ class ProfileScreen extends GetView<ProfileController> {
                   // Item Name
                   Text(
                     item.itemName,
-                    style: GoogleFonts.manrope(
+                    style: GoogleFonts.dmSans(
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
@@ -433,7 +433,7 @@ class ProfileScreen extends GetView<ProfileController> {
                   // Price
                   Text(
                     "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
-                    style: GoogleFonts.manrope(
+                    style: GoogleFonts.dmSans(
                       fontSize: 12.sp,
                       color: Colors.white38,
                     ),
@@ -574,7 +574,7 @@ class ProfileScreen extends GetView<ProfileController> {
                   ),
                   child: Text(
                     "Sold",
-                    style: GoogleFonts.manrope(
+                    style: GoogleFonts.dmSans(
                       fontSize: 9.sp,
                       fontWeight: FontWeight.w700,
                       color: Colors.black,
@@ -647,7 +647,7 @@ class ProfileScreen extends GetView<ProfileController> {
                         SizedBox(width: 4.w),
                         Text(
                           formattedLikes,
-                          style: GoogleFonts.manrope(
+                          style: GoogleFonts.dmSans(
                             fontSize: 11.sp,
                             fontWeight: FontWeight.w500,
                             color: Colors.white,
@@ -658,7 +658,7 @@ class ProfileScreen extends GetView<ProfileController> {
                     // Price
                     Text(
                       formattedPrice,
-                      style: GoogleFonts.manrope(
+                      style: GoogleFonts.dmSans(
                         fontSize: 11.sp,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
@@ -754,7 +754,7 @@ class ProfileScreen extends GetView<ProfileController> {
             icon: const Icon(Icons.logout, size: 16, color: Colors.white30),
             label: Text(
               "Log Out",
-              style: GoogleFonts.manrope(
+              style: GoogleFonts.dmSans(
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w500,
                 color: Colors.white38,
@@ -793,7 +793,7 @@ class ProfileScreen extends GetView<ProfileController> {
               controller: controller,
               readOnly: readOnly,
               onTap: onTap,
-              style: GoogleFonts.manrope(
+              style: GoogleFonts.dmSans(
                 fontSize: 14.sp,
                 color: Colors.white,
                 fontWeight: FontWeight.w500,
@@ -840,7 +840,7 @@ class ProfileScreen extends GetView<ProfileController> {
               children: [
                 Text(
                   "+971",
-                  style: GoogleFonts.manrope(
+                  style: GoogleFonts.dmSans(
                     fontSize: 14.sp,
                     color: Colors.white,
                     fontWeight: FontWeight.w500,
@@ -870,7 +870,7 @@ class ProfileScreen extends GetView<ProfileController> {
             child: TextField(
               controller: controller,
               keyboardType: TextInputType.phone,
-              style: GoogleFonts.manrope(
+              style: GoogleFonts.dmSans(
                 fontSize: 14.sp,
                 color: Colors.white,
                 fontWeight: FontWeight.w500,
@@ -938,7 +938,7 @@ class ProfileScreen extends GetView<ProfileController> {
                 child: Text(
                   "This listing will be removed from your wardrobe and won't be visible to buyers.",
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.manrope(
+                  style: GoogleFonts.dmSans(
                     fontSize: 13.sp,
                     color: Colors.white54,
                     height: 1.4,
@@ -968,7 +968,7 @@ class ProfileScreen extends GetView<ProfileController> {
                       children: [
                         Text(
                           item.brand.toUpperCase(),
-                          style: GoogleFonts.manrope(
+                          style: GoogleFonts.dmSans(
                             fontSize: 11.sp,
                             fontWeight: FontWeight.w700,
                             color: Colors.white38,
@@ -978,7 +978,7 @@ class ProfileScreen extends GetView<ProfileController> {
                         SizedBox(height: 4.h),
                         Text(
                           item.itemName,
-                          style: GoogleFonts.manrope(
+                          style: GoogleFonts.dmSans(
                             fontSize: 15.sp,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
@@ -997,7 +997,7 @@ class ProfileScreen extends GetView<ProfileController> {
                           ),
                           child: Text(
                             "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
-                            style: GoogleFonts.manrope(
+                            style: GoogleFonts.dmSans(
                               fontSize: 11.sp,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
@@ -1027,7 +1027,7 @@ class ProfileScreen extends GetView<ProfileController> {
             Center(
               child: Text(
                 "You can relist this item anytime",
-                style: GoogleFonts.manrope(
+                style: GoogleFonts.dmSans(
                   fontSize: 12.sp,
                   color: Colors.white38,
                 ),
@@ -1062,7 +1062,7 @@ class ProfileScreen extends GetView<ProfileController> {
                 ),
                 child: Text(
                   "Cancel",
-                  style: GoogleFonts.manrope(
+                  style: GoogleFonts.dmSans(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
                     color: Colors.white60,

@@ -7,7 +7,7 @@ class DarkTheme {
       useMaterial3: true,
       brightness: Brightness.dark,
       primaryColor: AppTheme.primaryColor,
-      scaffoldBackgroundColor: const Color(0xFF121212),
+      scaffoldBackgroundColor: const Color(0xFF0F1012),
       colorScheme: const ColorScheme.dark(
         primary: AppTheme.primaryColor,
         secondary: AppTheme.secondaryColor,

@@ -1,6 +1,8 @@
+import 'package:cpk1989/config/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class OnboardingPage3 extends StatelessWidget {
   const OnboardingPage3({super.key});
@@ -14,13 +16,14 @@ class OnboardingPage3 extends StatelessWidget {
         ///<================= HEADER TEXT =========================>///
         Text(
           'Shop with',
-          style: GoogleFonts.playfairDisplay(
+          style: GoogleFonts.prata(
             fontSize: 38.sp,
             fontWeight: FontWeight.w400,
             color: Colors.white,
             height: 1.15,
           ),
         ),
+        SizedBox(height: 5.h),
         ShaderMask(
           shaderCallback: (bounds) => const LinearGradient(
             colors: [
@@ -34,12 +37,10 @@ class OnboardingPage3 extends StatelessWidget {
             stops: [0.0477, 0.1933, 0.3893, 0.5054, 0.6210, 0.9074],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
-          ).createShader(
-            Rect.fromLTWH(0, 0, bounds.width, bounds.height),
-          ),
+          ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
           child: Text(
             'Confidence',
-            style: GoogleFonts.playfairDisplay(
+            style: GoogleFonts.prata(
               fontSize: 38.sp,
               fontWeight: FontWeight.w400,
               color: Colors.white,
@@ -52,7 +53,7 @@ class OnboardingPage3 extends StatelessWidget {
         Container(
           width: 32.w,
           height: 2.h,
-          color: const Color(0xFFC98C28),
+          decoration: BoxDecoration(gradient: AppTheme.goldGradient),
         ),
         SizedBox(height: 16.h),
         Padding(
@@ -60,7 +61,7 @@ class OnboardingPage3 extends StatelessWidget {
           child: Text(
             'Verified before delivery. Payment\nprotected until you receive it.',
             textAlign: TextAlign.center,
-            style: GoogleFonts.manrope(
+            style: GoogleFonts.dmSans(
               fontSize: 15.sp,
               fontWeight: FontWeight.w400,
               color: Colors.white.withValues(alpha: 0.55),
@@ -91,10 +92,10 @@ class OnboardingPage3 extends StatelessWidget {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        const Color(0xFF0A0A0C),
-                        const Color(0xFF0A0A0C).withValues(alpha: 0.0),
-                        const Color(0xFF0A0A0C).withValues(alpha: 0.0),
-                        const Color(0xFF0A0A0C),
+                        const Color(0xFF0F1012),
+                        const Color(0xFF0F1012).withValues(alpha: 0.0),
+                        const Color(0xFF0F1012).withValues(alpha: 0.0),
+                        const Color(0xFF0F1012),
                       ],
                       stops: const [0.0, 0.22, 0.70, 1.0],
                       begin: Alignment.topCenter,
@@ -119,16 +120,16 @@ class OnboardingPage3 extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      Icons.verified_user_outlined,
-                      color: Colors.white.withValues(alpha: 0.95),
-                      size: 24.w,
+                    SvgPicture.asset(
+                      'assets/icons/Authenticity Verified.svg',
+                      width: 24.w,
+                      height: 24.w,
                     ),
                     SizedBox(height: 8.h),
                     Text(
-                      'Authenticity\nGuaranteed',
+                      'Authenticity\nVerified',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.manrope(
+                      style: GoogleFonts.dmSans(
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w500,
                         color: Colors.white,
@@ -151,16 +152,16 @@ class OnboardingPage3 extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      Icons.lock_outline_rounded,
-                      color: Colors.white.withValues(alpha: 0.95),
-                      size: 24.w,
+                    SvgPicture.asset(
+                      'assets/icons/Payment Protected .svg',
+                      width: 24.w,
+                      height: 24.w,
                     ),
                     SizedBox(height: 8.h),
                     Text(
                       'Payment\nProtected',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.manrope(
+                      style: GoogleFonts.dmSans(
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w500,
                         color: Colors.white,
@@ -183,16 +184,16 @@ class OnboardingPage3 extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      Icons.inventory_2_outlined,
-                      color: Colors.white.withValues(alpha: 0.95),
-                      size: 24.w,
+                    SvgPicture.asset(
+                      'assets/icons/Secure Delivery.svg',
+                      width: 24.w,
+                      height: 24.w,
                     ),
                     SizedBox(height: 8.h),
                     Text(
                       'Secure\nDelivery',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.manrope(
+                      style: GoogleFonts.dmSans(
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w500,
                         color: Colors.white,
@@ -205,6 +206,7 @@ class OnboardingPage3 extends StatelessWidget {
             ],
           ),
         ),
+        SizedBox(height: 50.h),
 
         const Spacer(flex: 3),
       ],

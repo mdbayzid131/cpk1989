@@ -115,7 +115,7 @@ class BottomNavBarScreen extends GetView<BottomNavBarController> {
                     child: Center(
                       child: Icon(
                         Icons.add,
-                        color: const Color(0xFF121212), // Black plus icon
+                        color: const Color(0xFF0F1012), // Black plus icon
                         size: 26.0 * k,
                       ),
                     ),
@@ -164,7 +164,7 @@ class BottomNavBarScreen extends GetView<BottomNavBarController> {
 //   void paint(Canvas canvas, Size size) {
 //     final paint = Paint()
 //       ..color =
-//           const Color(0xFF0A0A0C) // Rich dark background matching screenshot
+//           const Color(0xFF0F1012) // Rich dark background matching screenshot
 //       ..style = PaintingStyle.fill;
 
 //     final borderPaint = Paint()

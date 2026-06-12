@@ -42,7 +42,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
         ),
         title: Text(
           "Review Listing",
-          style: GoogleFonts.manrope(
+          style: GoogleFonts.dmSans(
             fontSize: 20.sp,
             fontWeight: FontWeight.w700,
             color: Colors.white,
@@ -161,7 +161,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                   Expanded(
                     child: Text(
                       item.itemName,
-                      style: GoogleFonts.manrope(
+                      style: GoogleFonts.dmSans(
                         fontSize: 22.sp,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
@@ -195,7 +195,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                         SizedBox(width: 4.w),
                         Text(
                           "AI Ready",
-                          style: GoogleFonts.manrope(
+                          style: GoogleFonts.dmSans(
                             fontSize: 11.sp,
                             fontWeight: FontWeight.w800,
                             color: const Color(0xFFFFAF2C),
@@ -215,7 +215,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 children: [
                   Text(
                     "ITEM DETAILS",
-                    style: GoogleFonts.manrope(
+                    style: GoogleFonts.dmSans(
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w700,
                       color: Colors.white38,
@@ -255,7 +255,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                   Expanded(
                     child: Text(
                       "Final verification happens after pickup.",
-                      style: GoogleFonts.manrope(
+                      style: GoogleFonts.dmSans(
                         fontSize: 12.sp,
                         color: Colors.white38,
                         fontWeight: FontWeight.w500,
@@ -267,7 +267,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
               SizedBox(height: 28.h),
               Text(
                 "SELLER DETAILS",
-                style: GoogleFonts.manrope(
+                style: GoogleFonts.dmSans(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w700,
                   color: Colors.white38,
@@ -279,7 +279,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
               SizedBox(height: 28.h),
               Text(
                 "YOUR EARNINGS",
-                style: GoogleFonts.manrope(
+                style: GoogleFonts.dmSans(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w700,
                   color: Colors.white38,
@@ -292,7 +292,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
               Center(
                 child: Text(
                   "By posting, you agree to Closeté Terms & Conditions",
-                  style: GoogleFonts.manrope(
+                  style: GoogleFonts.dmSans(
                     fontSize: 12.sp,
                     color: Colors.white38,
                     fontWeight: FontWeight.w500,
@@ -325,7 +325,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
         children: [
           Text(
             label,
-            style: GoogleFonts.manrope(
+            style: GoogleFonts.dmSans(
               fontSize: 14.sp,
               color: Colors.white38,
               fontWeight: FontWeight.w500,
@@ -337,7 +337,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
             child: Text(
               value,
               textAlign: TextAlign.end,
-              style: GoogleFonts.manrope(
+              style: GoogleFonts.dmSans(
                 fontSize: 14.sp,
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
@@ -368,7 +368,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
         children: [
           Text(
             label,
-            style: GoogleFonts.manrope(
+            style: GoogleFonts.dmSans(
               fontSize: 13.sp,
               color: Colors.white38,
               fontWeight: FontWeight.w500,
@@ -377,7 +377,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
           SizedBox(height: 8.h),
           Text(
             value,
-            style: GoogleFonts.manrope(
+            style: GoogleFonts.dmSans(
               fontSize: 14.sp,
               color: Colors.white,
               height: 1.4,
@@ -406,7 +406,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
         children: [
           Text(
             label,
-            style: GoogleFonts.manrope(
+            style: GoogleFonts.dmSans(
               fontSize: 14.sp,
               color: Colors.white38,
               fontWeight: FontWeight.w500,
@@ -429,7 +429,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 SizedBox(width: 6.w),
                 Text(
                   "Bill.pdf",
-                  style: GoogleFonts.manrope(
+                  style: GoogleFonts.dmSans(
                     fontSize: 12.sp,
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
@@ -451,7 +451,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
       children: [
         Text(
           label,
-          style: GoogleFonts.manrope(
+          style: GoogleFonts.dmSans(
             fontSize: 13.sp,
             color: Colors.white38,
             fontWeight: FontWeight.w500,
@@ -459,7 +459,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
         ),
         Text(
           value,
-          style: GoogleFonts.manrope(
+          style: GoogleFonts.dmSans(
             fontSize: 13.sp,
             color: Colors.white70,
             fontWeight: FontWeight.w600,
@@ -496,7 +496,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
               SizedBox(width: 12.w),
               Text(
                 "Olivia Mendes",
-                style: GoogleFonts.manrope(
+                style: GoogleFonts.dmSans(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
@@ -555,7 +555,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
             children: [
               Text(
                 "You'll Earn",
-                style: GoogleFonts.manrope(
+                style: GoogleFonts.dmSans(
                   fontSize: 14.sp,
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
@@ -563,7 +563,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
               ),
               Text(
                 formattedEarn,
-                style: GoogleFonts.manrope(
+                style: GoogleFonts.dmSans(
                   fontSize: 16.sp,
                   color: const Color(0xFFE2B744),
                   fontWeight: FontWeight.w800,
@@ -637,7 +637,7 @@ class _SuccessBottomSheetContent extends StatelessWidget {
         Center(
           child: Text(
             "Your item is live",
-            style: GoogleFonts.playfairDisplay(
+            style: GoogleFonts.prata(
               fontSize: 30.sp,
               fontWeight: FontWeight.w600,
               color: Colors.white,
@@ -649,7 +649,7 @@ class _SuccessBottomSheetContent extends StatelessWidget {
         Center(
           child: Text(
             "We'll arrange pickup and verification shortly",
-            style: GoogleFonts.manrope(
+            style: GoogleFonts.dmSans(
               fontSize: 13.sp,
               color: Colors.white38,
               fontWeight: FontWeight.w500,
@@ -675,7 +675,7 @@ class _SuccessBottomSheetContent extends StatelessWidget {
                   children: [
                     Text(
                       item.brand.toUpperCase(),
-                      style: GoogleFonts.manrope(
+                      style: GoogleFonts.dmSans(
                         fontSize: 11.sp,
                         fontWeight: FontWeight.w700,
                         color: Colors.white38,
@@ -685,7 +685,7 @@ class _SuccessBottomSheetContent extends StatelessWidget {
                     SizedBox(height: 4.h),
                     Text(
                       item.itemName,
-                      style: GoogleFonts.manrope(
+                      style: GoogleFonts.dmSans(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
@@ -698,7 +698,7 @@ class _SuccessBottomSheetContent extends StatelessWidget {
                       children: [
                         Text(
                           "Listed at  ",
-                          style: GoogleFonts.manrope(
+                          style: GoogleFonts.dmSans(
                             fontSize: 12.sp,
                             color: Colors.white38,
                             fontWeight: FontWeight.w500,
@@ -715,7 +715,7 @@ class _SuccessBottomSheetContent extends StatelessWidget {
                           ),
                           child: Text(
                             formattedPrice,
-                            style: GoogleFonts.manrope(
+                            style: GoogleFonts.dmSans(
                               fontSize: 11.sp,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,

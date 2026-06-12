@@ -69,7 +69,7 @@ class CustomGoldButton extends StatelessWidget {
                 children: [
                   Text(
                     text,
-                    style: GoogleFonts.manrope(
+                    style: GoogleFonts.dmSans(
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w700,
                       color: Colors.black, // Dark text color matching design

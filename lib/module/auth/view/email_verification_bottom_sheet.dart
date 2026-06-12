@@ -65,7 +65,7 @@ class _EmailVerificationBottomSheetContentState
         Center(
           child: Text(
             "Verify your email",
-            style: GoogleFonts.playfairDisplay(
+            style: GoogleFonts.prata(
               fontSize: 28.sp,
               fontWeight: FontWeight.w700,
               color: Colors.white,
@@ -78,7 +78,7 @@ class _EmailVerificationBottomSheetContentState
           child: RichText(
             textAlign: TextAlign.center,
             text: TextSpan(
-              style: GoogleFonts.manrope(
+              style: GoogleFonts.dmSans(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w400,
                 color: Colors.white38,
@@ -87,7 +87,7 @@ class _EmailVerificationBottomSheetContentState
                 const TextSpan(text: "We've sent a verification code to\n"),
                 TextSpan(
                   text: widget.email,
-                  style: GoogleFonts.manrope(
+                  style: GoogleFonts.dmSans(
                     fontWeight: FontWeight.w600,
                     color: Colors.white70,
                   ),
@@ -111,7 +111,7 @@ class _EmailVerificationBottomSheetContentState
           child: _secondsRemaining > 0
               ? Text(
                   "Resend code in ${_formatTimer()}",
-                  style: GoogleFonts.manrope(
+                  style: GoogleFonts.dmSans(
                     fontSize: 14.sp,
                     color: Colors.white38,
                     fontWeight: FontWeight.w500,
@@ -126,7 +126,7 @@ class _EmailVerificationBottomSheetContentState
                   },
                   child: Text(
                     "Resend Code",
-                    style: GoogleFonts.manrope(
+                    style: GoogleFonts.dmSans(
                       fontSize: 14.sp,
                       color: const Color(0xFFE2B744),
                       fontWeight: FontWeight.w600,
@@ -180,7 +180,7 @@ class _EmailVerificationBottomSheetContentState
                         children: [
                           Text(
                             "Verify Email",
-                            style: GoogleFonts.manrope(
+                            style: GoogleFonts.dmSans(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.w700,
                               color: Colors.black,
@@ -273,7 +273,7 @@ class _OtpInputWidgetState extends State<OtpInputWidget> {
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
               maxLength: 1,
-              style: GoogleFonts.manrope(
+              style: GoogleFonts.dmSans(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
                 color: Colors.white,

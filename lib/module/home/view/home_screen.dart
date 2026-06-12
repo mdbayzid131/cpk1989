@@ -112,7 +112,7 @@ class HomeScreen extends GetView<HomeController> {
                                 Expanded(
                                   child: Text(
                                     item.userName,
-                                    style: GoogleFonts.manrope(
+                                    style: GoogleFonts.dmSans(
                                       fontSize: 16.sp,
                                       fontWeight: FontWeight.w700,
                                       color: Colors.white,
@@ -146,7 +146,7 @@ class HomeScreen extends GetView<HomeController> {
                             ),
                             child: Text(
                               item.price,
-                              style: GoogleFonts.manrope(
+                              style: GoogleFonts.dmSans(
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.w800,
                                 color: Colors.black,
@@ -161,7 +161,7 @@ class HomeScreen extends GetView<HomeController> {
                       // Condition Status
                       Text(
                         item.condition,
-                        style: GoogleFonts.manrope(
+                        style: GoogleFonts.dmSans(
                           fontSize: 13.sp,
                           color: Colors.white70,
                           fontWeight: FontWeight.w500,
@@ -176,7 +176,7 @@ class HomeScreen extends GetView<HomeController> {
                           Flexible(
                             child: Text(
                               item.itemName,
-                              style: GoogleFonts.manrope(
+                              style: GoogleFonts.dmSans(
                                 fontSize: 24.sp,
                                 fontWeight: FontWeight.w800,
                                 color: Colors.white,
@@ -195,7 +195,7 @@ class HomeScreen extends GetView<HomeController> {
                             },
                             child: Text(
                               "View More",
-                              style: GoogleFonts.manrope(
+                              style: GoogleFonts.dmSans(
                                 fontSize: 13.sp,
                                 color: Colors.white70,
                                 decoration: TextDecoration.underline,
@@ -231,7 +231,7 @@ class HomeScreen extends GetView<HomeController> {
                             SizedBox(width: 6.w),
                             Text(
                               "Authenticity guaranteed. Payment protected.",
-                              style: GoogleFonts.manrope(
+                              style: GoogleFonts.dmSans(
                                 fontSize: 11.sp,
                                 color: Colors.white.withValues(alpha: 0.95),
                                 fontWeight: FontWeight.w500,

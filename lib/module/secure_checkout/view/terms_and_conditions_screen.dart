@@ -34,7 +34,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
         ),
         title: Text(
           title,
-          style: GoogleFonts.manrope(
+          style: GoogleFonts.dmSans(
             fontSize: 20.sp,
             fontWeight: FontWeight.w700,
             color: Colors.white,
@@ -88,7 +88,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
       children: [
         Text(
           title,
-          style: GoogleFonts.manrope(
+          style: GoogleFonts.dmSans(
             fontSize: 16.sp,
             fontWeight: FontWeight.w700,
             color: Colors.white,
@@ -97,7 +97,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
         SizedBox(height: 12.h),
         Text(
           body,
-          style: GoogleFonts.manrope(
+          style: GoogleFonts.dmSans(
             fontSize: 14.sp,
             color: Colors.white.withValues(alpha: 0.7),
             height: 1.5,
@@ -113,7 +113,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
       alignment: Alignment.center,
       child: RichText(
         text: TextSpan(
-          style: GoogleFonts.manrope(
+          style: GoogleFonts.dmSans(
             fontSize: 13.sp,
             color: Colors.white38,
           ),

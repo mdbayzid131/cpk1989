@@ -86,7 +86,7 @@ class CustomButton extends StatelessWidget {
 
     final textWidget = Text(
       text,
-      style: GoogleFonts.manrope(
+      style: GoogleFonts.dmSans(
         fontSize: (fontSize ?? 16).sp,
         fontWeight: FontWeight.w600,
         color: outlineColor ?? textColor ?? Colors.white,

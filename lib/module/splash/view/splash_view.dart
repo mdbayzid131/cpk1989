@@ -12,7 +12,7 @@ class SplashView extends GetView<SplashController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(
-        0xFF0A0A0C,
+        0xFF0F1012,
       ), // Dark premium charcoal background
       body: Stack(
         children: [
@@ -27,17 +27,17 @@ class SplashView extends GetView<SplashController> {
                   center: Alignment.center,
                   radius: 0.80,
                   colors: [
-                    const Color(0xFF0A0A0C).withValues(
+                    const Color(0xFF0F1012).withValues(
                       alpha: 0.0,
                     ), // No darkness in the center (completely clear)
-                    const Color(0xFF0A0A0C).withValues(
+                    const Color(0xFF0F1012).withValues(
                       alpha: 0.0,
                     ), // Keep the logo area completely clear
-                    const Color(0xFF0A0A0C).withValues(
+                    const Color(0xFF0F1012).withValues(
                       alpha: 0.75,
                     ), // Smoothly transitions to darkness
                     const Color(
-                      0xFF0A0A0C,
+                      0xFF0F1012,
                     ), // Pitch black edges (inverse vignette overlay)
                   ],
                   stops: const [0.0, 0.25, 0.7, 1.0],
