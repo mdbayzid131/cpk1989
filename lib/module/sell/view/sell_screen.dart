@@ -1,3 +1,4 @@
+import 'package:cpk1989/config/themes/app_theme.dart';
 import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
@@ -167,7 +168,7 @@ class SellScreen extends GetView<SellController> {
                   Color iconColor;
                   if (flash == "on") {
                     flashIcon = Icons.flash_on_rounded;
-                    iconColor = const Color(0xFFFFAF2C);
+                    iconColor = AppTheme.yellow;
                   } else if (flash == "auto") {
                     flashIcon = Icons.flash_auto_rounded;
                     iconColor = Colors.white;

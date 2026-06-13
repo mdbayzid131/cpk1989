@@ -1,10 +1,13 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cpk1989/module/auth/controller/auth_controller.dart';
+import 'package:cpk1989/config/themes/app_theme.dart';
+import 'package:cpk1989/core/widgets/custom_gold_button.dart';
+import 'package:cpk1989/core/widgets/custom_dipped_bottom_sheet.dart';
+import 'package:cpk1989/module/auth/view/email_verification_bottom_sheet.dart';
 
 class LoginScreen extends GetView<AuthController> {
   const LoginScreen({super.key});
@@ -14,228 +17,162 @@ class LoginScreen extends GetView<AuthController> {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    final double statusBarHeight = MediaQuery.of(context).padding.top;
-    final double logoCenterY =
-        statusBarHeight + 50.h + 20.h; // logo is at top: 50.h with ~40.h height
+    // Moved logo further down to be "more in the middle"
+    final double logoTop = 130.h;
 
     return Scaffold(
       backgroundColor: const Color(0xFF0F1012),
-      body: Stack(
-        children: [
-          // 1. Static sunburst background centered exactly on the logo
-          Positioned.fill(
-            child: CustomPaint(
-              painter: LoginSunburstPainter(
-                logoCenter: Offset(screenWidth / 2, logoCenterY),
-                rayColor: const Color(0xFFE2B744).withValues(alpha: 0.30),
-                rayCount: 48,
-              ),
-            ),
-          ),
-
-          // 2. Radial gradient overlay (spotlight centered on the logo)
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  center: Alignment(
-                    0.0,
-                    (logoCenterY / (screenHeight / 2)) - 1.0,
-                  ),
-                  radius: 0.80,
-                  colors: [
-                    const Color(0xFF0F1012).withValues(alpha: 0.0),
-                    const Color(0xFF0F1012).withValues(alpha: 0.0),
-                    const Color(0xFF0F1012).withValues(alpha: 0.75),
-                    const Color(0xFF0F1012),
-                  ],
-                  stops: const [0.0, 0.25, 0.7, 1.0],
+      body: SingleChildScrollView(
+        physics: const ClampingScrollPhysics(),
+        child: SizedBox(
+          height: screenHeight,
+          child: Stack(
+            children: [
+              // 1. Background sunburst rays from Figma SVG
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: SvgPicture.asset(
+                  'assets/icons/Group.svg',
+                  width: screenWidth,
+                  fit: BoxFit.cover,
                 ),
               ),
-            ),
-          ),
 
-          // 3. Central logo at the top (moved down a bit)
-          Positioned(
-            top: statusBarHeight + 50.h,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: SvgPicture.asset(
-                'assets/icons/closet_logo.svg',
-                width: 140.w,
-                fit: BoxFit.contain,
+              // 3. Central logo at the top
+              Positioned(
+                top: logoTop,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: SvgPicture.asset(
+                    'assets/icons/closet_logo.svg',
+                    width: 110.w,
+                    fit: BoxFit.contain,
+                  ),
+                ),
               ),
-            ),
-          ),
 
-          // 4. Dipped card containing login/signup form
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            top: screenHeight * 0.24, // Card starts at 24% of screen height
-            child: CustomPaint(
-              painter: LoginCardPainter(),
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24.w),
-                child: Form(
-                  key: controller.formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // Top spacing to clear the dipped top edge curve
-                      SizedBox(height: 64.h),
+              // 4. Dipped card containing login/signup form
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                top: 199.h, // Card starts at 199.h
+                child: CustomPaint(
+                  painter: LoginCardPainter(),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24.w),
+                    child: Form(
+                      key: controller.formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Top spacing to clear the dipped top edge curve
+                          SizedBox(height: 64.h),
 
-                      // Card Titles
-                      Center(
-                        child: Text(
-                          "Create your account",
-                          style: GoogleFonts.prata(
-                            fontSize: 32.sp,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 6.h),
-                      Center(
-                        child: Text(
-                          "Discover and sell luxury, effortlessly",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white38,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 36.h),
-
-                      // Text Input Fields
-                      _buildTextField(
-                        controller: controller.firstNameController,
-                        hintText: "First name",
-                        prefixIcon: Icons.person_outline_rounded,
-                        validator: controller.validateFirstName,
-                      ),
-                      SizedBox(height: 14.h),
-
-                      _buildTextField(
-                        controller: controller.lastNameController,
-                        hintText: "Last name",
-                        prefixIcon: Icons.person_outline_rounded,
-                        validator: controller.validateLastName,
-                      ),
-                      SizedBox(height: 14.h),
-
-                      _buildTextField(
-                        controller: controller.emailController,
-                        hintText: "Email",
-                        prefixIcon: Icons.mail_outline_rounded,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: controller.validateEmail,
-                      ),
-
-                      const Spacer(),
-
-                      // Golden gradient Continue Button
-                      Obx(() {
-                        final isLoading = controller.rxIsLoading.value;
-                        return Container(
-                          height: 52.h,
-                          margin: EdgeInsets.only(
-                            bottom:
-                                MediaQuery.of(context).padding.bottom + 20.h,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(26.r),
-                            gradient: isLoading
-                                ? null
-                                : const LinearGradient(
-                                    colors: [
-                                      Color(0xFFAF7413),
-                                      Color(0xFFC98C28),
-                                      Color(0xFFE2B744),
-                                      Color(0xFFFFED81),
-                                      Color(0xFFE1C24E),
-                                      Color(0xFFA06008),
-                                    ],
-                                    stops: [
-                                      0.0477,
-                                      0.1933,
-                                      0.3893,
-                                      0.5054,
-                                      0.6210,
-                                      0.9074,
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                            color: isLoading ? const Color(0xFF1E2022) : null,
-                            boxShadow: isLoading
-                                ? []
-                                : [
-                                    BoxShadow(
-                                      color: const Color(
-                                        0xFFC98C28,
-                                      ).withValues(alpha: 0.25),
-                                      blurRadius: 15.r,
-                                      offset: const Offset(0, 5),
-                                    ),
-                                  ],
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: isLoading
-                                  ? null
-                                  : () => controller.continueAuth(context),
-                              borderRadius: BorderRadius.circular(26.r),
-                              child: Center(
-                                child: isLoading
-                                    ? SizedBox(
-                                        height: 20.w,
-                                        width: 20.w,
-                                        child: const CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                                Color(0xFFE2B744),
-                                              ),
-                                        ),
-                                      )
-                                    : Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            "Continue",
-                                            style: GoogleFonts.dmSans(
-                                              fontSize: 16.sp,
-                                              fontWeight: FontWeight.w700,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                          SizedBox(width: 6.w),
-                                          Icon(
-                                            Icons.arrow_forward_rounded,
-                                            color: Colors.black,
-                                            size: 18.sp,
-                                          ),
-                                        ],
-                                      ),
+                          // Card Titles
+                          Center(
+                            child: Text(
+                              "Create your account",
+                              style: GoogleFonts.prata(
+                                fontSize: 30.sp,
+                                fontWeight: FontWeight.w700,
+                                color: AppTheme.primaryText,
                               ),
                             ),
                           ),
-                        );
-                      }),
-                    ],
+                          SizedBox(height: 6.h),
+                          Center(
+                            child: Text(
+                              "Discover and sell luxury, effortlessly",
+                              style: GoogleFonts.dmSans(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w400,
+                                color: AppTheme.gray,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 36.h),
+
+                          // Text Input Fields
+                          _buildTextField(
+                            controller: controller.firstNameController,
+                            hintText: "First name",
+                            prefixIconPath: "assets/icons/person.svg",
+                            validator: controller.validateFirstName,
+                          ),
+                          SizedBox(height: 10.h),
+
+                          _buildTextField(
+                            controller: controller.lastNameController,
+                            hintText: "Mendes",
+                            prefixIconPath: "assets/icons/person.svg",
+                            validator: controller.validateLastName,
+                          ),
+                          SizedBox(height: 10.h),
+
+                          _buildTextField(
+                            controller: controller.emailController,
+                            hintText: "Email",
+                            prefixIconPath: "assets/icons/mail.svg",
+                            keyboardType: TextInputType.emailAddress,
+                            validator: controller.validateEmail,
+                          ),
+
+                          const Spacer(),
+
+                          // Golden gradient Continue Button
+                          Obx(() {
+                            final isLoading = controller.rxIsLoading.value;
+                            return Padding(
+                              padding: EdgeInsets.only(
+                                bottom:
+                                    MediaQuery.of(context).padding.bottom +
+                                    20.h,
+                              ),
+                              child: CustomGoldButton(
+                                text: "Continue",
+                                height: 52.h,
+                                isLoading: isLoading,
+                                onTap: () async {
+                                  final success = await controller.prepareAuth();
+                                  if (success && context.mounted) {
+                                    controller.clearOtpFields();
+                                    controller.startOtpTimer();
+
+                                    showCustomDippedBottomSheet(
+                                      context: context,
+                                      logo: Image.asset(
+                                        'assets/icons/message_svg.png',
+                                        width: 75.w,
+                                        height: 75.w,
+                                        fit: BoxFit.contain,
+                                      ),
+                                      content: const EmailVerificationBottomSheetContent(),
+                                    ).then((_) {
+                                      controller.stopOtpTimer();
+                                    });
+                                  }
+                                },
+                                suffix: Icon(
+                                  Icons.arrow_forward_rounded,
+                                  color: Colors.black,
+                                  size: 18.sp,
+                                ),
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -243,60 +180,77 @@ class LoginScreen extends GetView<AuthController> {
   Widget _buildTextField({
     required TextEditingController controller,
     required String hintText,
-    required IconData prefixIcon,
+    required String prefixIconPath,
     String? Function(String?)? validator,
     TextInputType keyboardType = TextInputType.text,
   }) {
-    return TextFormField(
-      controller: controller,
-      validator: validator,
-      keyboardType: keyboardType,
-      style: GoogleFonts.dmSans(
-        fontSize: 15.sp,
-        fontWeight: FontWeight.w500,
-        color: Colors.white,
-      ),
-      decoration: InputDecoration(
-        hintText: hintText,
-        hintStyle: GoogleFonts.dmSans(
-          fontSize: 15.sp,
-          fontWeight: FontWeight.w400,
-          color: Colors.white38,
-        ),
-        prefixIcon: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: Icon(prefixIcon, color: Colors.white54, size: 20.sp),
-        ),
-        prefixIconConstraints: BoxConstraints(minWidth: 40.w),
-        filled: true,
-        fillColor: const Color(0xFF1B1C1E),
-        contentPadding: EdgeInsets.symmetric(vertical: 18.h, horizontal: 16.w),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide: BorderSide(
-            color: Colors.white.withValues(alpha: 0.05),
-            width: 1.0,
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide: BorderSide(
-            color: Colors.white.withValues(alpha: 0.05),
-            width: 1.0,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: Color(0xFFE2B744), width: 1.0),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: Colors.redAccent, width: 1.0),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: Colors.redAccent, width: 1.2),
-        ),
+    return Focus(
+      child: Builder(
+        builder: (context) {
+          final hasFocus = Focus.of(context).hasFocus;
+          return Container(
+            height: 50.h,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10.r),
+              gradient: const LinearGradient(
+                colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+                begin: Alignment.centerRight,
+                end: Alignment.centerLeft,
+              ),
+              border: Border.all(
+                color: hasFocus
+                    ? const Color(0xFFE2B744)
+                    : Colors.white.withValues(alpha: 0.05),
+                width: 1.0,
+              ),
+            ),
+            child: Center(
+              child: TextFormField(
+                controller: controller,
+                validator: validator,
+                keyboardType: keyboardType,
+                style: GoogleFonts.dmSans(
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.w500,
+                  color: AppTheme.primaryText,
+                ),
+                decoration: InputDecoration(
+                  hintText: hintText,
+                  hintStyle: GoogleFonts.dmSans(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w400,
+                    color: AppTheme.grayTerritory,
+                  ),
+                  prefixIcon: Padding(
+                    padding: EdgeInsets.only(left: 15.w, right: 10.w),
+                    child: SvgPicture.asset(
+                      prefixIconPath,
+                      colorFilter: const ColorFilter.mode(
+                        Colors.white54,
+                        BlendMode.srcIn,
+                      ),
+                      width: 18.w,
+                      height: 18.w,
+                    ),
+                  ),
+                  prefixIconConstraints: BoxConstraints(minWidth: 40.w),
+                  filled: true,
+                  fillColor: Colors.transparent,
+                  contentPadding: EdgeInsets.only(
+                    top: 10.h,
+                    bottom: 10.h,
+                    right: 10.w,
+                  ),
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  focusedErrorBorder: InputBorder.none,
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -308,79 +262,103 @@ class LoginCardPainter extends CustomPainter {
     final w = size.width;
     final h = size.height;
 
-    // Mathematically perfect concentric curve parameters:
-    final double logoRadius = 42.r;
-    final double g = 8.r; // Concentric gap size (8 pixels)
-    final double r1 = logoRadius + g; // Cutout radius (50.r)
-    final double r2 = 12.r; // Shoulder radius
+    // Perfect fluid Bezier dip parameters matching Figma smooth vectors
     final double flatY = 24.r; // Top flat line Y
+    final double dipWidth = 156.w; // Total width of the dip
+    final double dipDepth = 26.r; // Depth of the dip below flatY
+    final double xs = -dipWidth / 2;
 
-    final double ys = flatY + r2;
-    final double xSquare = (r1 + r2) * (r1 + r2) - ys * ys;
-    final double xs = -math.sqrt(xSquare);
-
-    final double xt = xs * r1 / (r1 + r2);
-    final double yt = ys * r1 / (r1 + r2);
+    // Control point offsets for elegant "squircle" curve transitions
+    final double cp1X = 36.w; // Smooths the top shoulder
+    final double cp2X = 36.w; // Smooths the bottom valley
 
     final paint = Paint()
-      ..color = const Color(0xFF0D0E10)
+      ..color = const Color(0xFF0F1012)
       ..style = PaintingStyle.fill;
 
-    // Draw the main card body path (flat -> left shoulder -> concentric circular cutout -> right shoulder -> flat)
+    // Draw the main card body path with smooth fluid curves
     final path = Path()
       ..moveTo(0, h)
-      ..lineTo(0, 40.r)
-      ..quadraticBezierTo(0, flatY, 32.r, flatY)
+      ..lineTo(0, flatY + 30.r)
+      ..arcToPoint(
+        Offset(30.r, flatY),
+        radius: Radius.circular(30.r),
+        clockwise: true,
+      )
       ..lineTo(w / 2 + xs, flatY)
+      // Left fluid shoulder and valley
+      ..cubicTo(
+        w / 2 + xs + cp1X,
+        flatY, // Control point 1
+        w / 2 - cp2X,
+        flatY + dipDepth, // Control point 2
+        w / 2,
+        flatY + dipDepth, // Bottom center
+      )
+      // Right fluid valley and shoulder
+      ..cubicTo(
+        w / 2 + cp2X,
+        flatY + dipDepth, // Control point 1
+        w / 2 - xs - cp1X,
+        flatY, // Control point 2
+        w / 2 - xs,
+        flatY, // Back to flat line
+      )
+      ..lineTo(w - 30.r, flatY)
       ..arcToPoint(
-        Offset(w / 2 + xt, yt),
-        radius: Radius.circular(r2),
+        Offset(w, flatY + 30.r),
+        radius: Radius.circular(30.r),
         clockwise: true,
       )
-      ..arcToPoint(
-        Offset(w / 2 - xt, yt),
-        radius: Radius.circular(r1),
-        clockwise: false,
-      )
-      ..arcToPoint(
-        Offset(w / 2 - xs, flatY),
-        radius: Radius.circular(r2),
-        clockwise: true,
-      )
-      ..lineTo(w - 32.r, flatY)
-      ..quadraticBezierTo(w, flatY, w, 40.r)
       ..lineTo(w, h)
       ..close();
 
     canvas.drawPath(path, paint);
 
     final borderPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.07)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.2;
+      ..strokeWidth = 1.0
+      ..shader = const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Color(0x33FFFFFF), // rgba(255, 255, 255, 0.2)
+          Color(0x00FFFFFF), // rgba(255, 255, 255, 0)
+        ],
+        stops: [0.0, 0.8673],
+      ).createShader(Rect.fromLTWH(0, 0, w, h));
 
-    // Draw the highlight outline on the top edge
+    // Draw the highlight outline matching the fluid curves exactly
     final borderPath = Path()
-      ..moveTo(0, 40.r)
-      ..quadraticBezierTo(0, flatY, 32.r, flatY)
+      ..moveTo(0, flatY + 30.r)
+      ..arcToPoint(
+        Offset(30.r, flatY),
+        radius: Radius.circular(30.r),
+        clockwise: true,
+      )
       ..lineTo(w / 2 + xs, flatY)
+      ..cubicTo(
+        w / 2 + xs + cp1X,
+        flatY,
+        w / 2 - cp2X,
+        flatY + dipDepth,
+        w / 2,
+        flatY + dipDepth,
+      )
+      ..cubicTo(
+        w / 2 + cp2X,
+        flatY + dipDepth,
+        w / 2 - xs - cp1X,
+        flatY,
+        w / 2 - xs,
+        flatY,
+      )
+      ..lineTo(w - 30.r, flatY)
       ..arcToPoint(
-        Offset(w / 2 + xt, yt),
-        radius: Radius.circular(r2),
+        Offset(w, flatY + 30.r),
+        radius: Radius.circular(30.r),
         clockwise: true,
-      )
-      ..arcToPoint(
-        Offset(w / 2 - xt, yt),
-        radius: Radius.circular(r1),
-        clockwise: false,
-      )
-      ..arcToPoint(
-        Offset(w / 2 - xs, flatY),
-        radius: Radius.circular(r2),
-        clockwise: true,
-      )
-      ..lineTo(w - 32.r, flatY)
-      ..quadraticBezierTo(w, flatY, w, 40.r);
+      );
 
     canvas.drawPath(borderPath, borderPaint);
   }
@@ -389,64 +367,60 @@ class LoginCardPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-class LoginSunburstPainter extends CustomPainter {
-  final Offset logoCenter;
-  final Color rayColor;
-  final int rayCount;
-
-  LoginSunburstPainter({
-    required this.logoCenter,
-    required this.rayColor,
-    this.rayCount = 48,
-  });
-
+class LoginCardClipper extends CustomClipper<Path> {
   @override
-  void paint(Canvas canvas, Size size) {
-    final center = logoCenter;
-    final maxRadius = size.longestSide * 1.2;
+  Path getClip(Size size) {
+    final w = size.width;
+    final h = size.height;
 
-    // Decouple the gradient radius from container size to keep the rays properly visible
-    final double gradientRadius = 852.0; // Same scale as on the splash screen
-    final rect = Rect.fromCircle(center: center, radius: gradientRadius);
+    final double flatY = 24.r; // Top flat line Y
+    final double dipWidth = 156.w; // Total width of the dip
+    final double dipDepth = 26.r; // Depth of the dip below flatY
+    final double xs = -dipWidth / 2;
 
-    final paint = Paint()
-      ..style = PaintingStyle.fill
-      ..shader = RadialGradient(
-        colors: [
-          rayColor.withValues(alpha: 0.0),
-          rayColor.withValues(alpha: 0.01),
-          rayColor,
-          rayColor.withValues(alpha: 0.01),
-        ],
-        stops: const [0.0, 0.08, 0.22, 0.6],
-      ).createShader(rect);
+    // Control point offsets for elegant "squircle" curve transitions
+    final double cp1X = 36.w; // Smooths the top shoulder
+    final double cp2X = 36.w; // Smooths the bottom valley
 
-    final angleStep = (2 * math.pi) / rayCount;
-    final path = Path();
+    final path = Path()
+      ..moveTo(0, h)
+      ..lineTo(0, flatY + 30.r)
+      ..arcToPoint(
+        Offset(30.r, flatY),
+        radius: Radius.circular(30.r),
+        clockwise: true,
+      )
+      ..lineTo(w / 2 + xs, flatY)
+      // Left fluid shoulder and valley
+      ..cubicTo(
+        w / 2 + xs + cp1X,
+        flatY, // Control point 1
+        w / 2 - cp2X,
+        flatY + dipDepth, // Control point 2
+        w / 2,
+        flatY + dipDepth, // Bottom center
+      )
+      // Right fluid valley and shoulder
+      ..cubicTo(
+        w / 2 + cp2X,
+        flatY + dipDepth, // Control point 1
+        w / 2 - xs - cp1X,
+        flatY, // Control point 2
+        w / 2 - xs,
+        flatY, // Back to flat line
+      )
+      ..lineTo(w - 30.r, flatY)
+      ..arcToPoint(
+        Offset(w, flatY + 30.r),
+        radius: Radius.circular(30.r),
+        clockwise: true,
+      )
+      ..lineTo(w, h)
+      ..close();
 
-    for (int i = 0; i < rayCount; i += 2) {
-      final startAngle = i * angleStep;
-      final endAngle = (i + 1) * angleStep;
-
-      path.reset();
-      path.moveTo(center.dx, center.dy);
-      path.lineTo(
-        center.dx + maxRadius * math.cos(startAngle),
-        center.dy + maxRadius * math.sin(startAngle),
-      );
-      path.lineTo(
-        center.dx + maxRadius * math.cos(endAngle),
-        center.dy + maxRadius * math.sin(endAngle),
-      );
-      path.close();
-      canvas.drawPath(path, paint);
-    }
+    return path;
   }
 
   @override
-  bool shouldRepaint(covariant LoginSunburstPainter oldDelegate) {
-    return oldDelegate.logoCenter != logoCenter ||
-        oldDelegate.rayColor != rayColor ||
-        oldDelegate.rayCount != rayCount;
-  }
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }

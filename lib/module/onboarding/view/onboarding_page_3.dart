@@ -19,31 +19,22 @@ class OnboardingPage3 extends StatelessWidget {
           style: GoogleFonts.prata(
             fontSize: 38.sp,
             fontWeight: FontWeight.w400,
-            color: Colors.white,
+            color: AppTheme.primaryText,
             height: 1.15,
           ),
         ),
         SizedBox(height: 5.h),
         ShaderMask(
-          shaderCallback: (bounds) => const LinearGradient(
-            colors: [
-              Color(0xFFAF7413),
-              Color(0xFFC98C28),
-              Color(0xFFE2B744),
-              Color(0xFFFFED81),
-              Color(0xFFE1C24E),
-              Color(0xFFA06008),
-            ],
-            stops: [0.0477, 0.1933, 0.3893, 0.5054, 0.6210, 0.9074],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+          shaderCallback: (bounds) =>
+              AppTheme.goldGradient.createShader(
+                Rect.fromLTWH(0, 0, bounds.width, bounds.height),
+              ),
           child: Text(
             'Confidence',
             style: GoogleFonts.prata(
               fontSize: 38.sp,
               fontWeight: FontWeight.w400,
-              color: Colors.white,
+              color: AppTheme.primaryText,
               height: 1.15,
             ),
           ),
@@ -64,7 +55,7 @@ class OnboardingPage3 extends StatelessWidget {
             style: GoogleFonts.dmSans(
               fontSize: 15.sp,
               fontWeight: FontWeight.w400,
-              color: Colors.white.withValues(alpha: 0.55),
+              color: AppTheme.grayTerritory,
               height: 1.4,
             ),
           ),

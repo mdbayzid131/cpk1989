@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cpk1989/config/themes/app_theme.dart';
 
 class OnboardingPage2 extends StatefulWidget {
   const OnboardingPage2({super.key});
@@ -54,37 +55,31 @@ class _OnboardingPage2State extends State<OnboardingPage2>
           style: GoogleFonts.prata(
             fontSize: 38.sp,
             fontWeight: FontWeight.w400,
-            color: Colors.white,
+            color: AppTheme.primaryText,
             height: 1.15,
           ),
         ),
         ShaderMask(
-          shaderCallback: (bounds) => const LinearGradient(
-            colors: [
-              Color(0xFFAF7413),
-              Color(0xFFC98C28),
-              Color(0xFFE2B744),
-              Color(0xFFFFED81),
-              Color(0xFFE1C24E),
-              Color(0xFFA06008),
-            ],
-            stops: [0.0477, 0.1933, 0.3893, 0.5054, 0.6210, 0.9074],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+          shaderCallback: (bounds) => AppTheme.goldGradient.createShader(
+            Rect.fromLTWH(0, 0, bounds.width, bounds.height),
+          ),
           child: Text(
             '60 Seconds',
             style: GoogleFonts.prata(
               fontSize: 38.sp,
               fontWeight: FontWeight.w400,
-              color: Colors.white,
+              color: AppTheme.primaryText,
               height: 1.15,
             ),
           ),
         ),
         SizedBox(height: 12.h),
         // Small gold horizontal accent line
-        Container(width: 32.w, height: 2.h, color: const Color(0xFFC98C28)),
+        Container(
+          width: 32.w,
+          height: 2.h,
+          decoration: BoxDecoration(gradient: AppTheme.goldGradient),
+        ),
         const Spacer(),
 
         ///<================= CAMERA PREVIEW WIDGET =========================>///
@@ -252,7 +247,7 @@ class _OnboardingPage2State extends State<OnboardingPage2>
             style: GoogleFonts.dmSans(
               fontSize: 15.sp,
               fontWeight: FontWeight.w400,
-              color: Colors.white.withValues(alpha: 0.55),
+              color: AppTheme.grayTerritory,
               height: 1.4,
             ),
           ),

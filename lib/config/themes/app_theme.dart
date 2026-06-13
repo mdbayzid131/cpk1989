@@ -5,14 +5,14 @@ import 'dark_theme.dart';
 class AppTheme {
   static ThemeData get lightTheme => LightTheme.theme;
   static ThemeData get darkTheme => DarkTheme.theme;
-  
+
   // Common colors
   static const Color primaryColor = Color(0xff9945FF);
   static const Color secondaryColor = Color(0xFF03DAC6);
   static const Color errorColor = Color(0xFFB00020);
   static const Color successColor = Color(0xFF4CAF50);
   static const Color warningColor = Color(0xFFFF9800);
-  
+
   // Premium Gold Gradient
   static const List<Color> goldGradientColors = [
     Color(0xFFAF7413),
@@ -33,9 +33,17 @@ class AppTheme {
   ];
 
   static LinearGradient get goldGradient => const LinearGradient(
-        colors: goldGradientColors,
-        stops: goldGradientStops,
-        begin: Alignment(-1.0, -0.165), // Simulates 99.37deg angle
-        end: Alignment(1.0, 0.165),
-      );
+    colors: goldGradientColors,
+    stops: goldGradientStops,
+    begin: Alignment(-1.0, -0.165), // Simulates 99.37deg angle
+    end: Alignment(1.0, 0.165),
+  );
+
+  // Premium Text Colors from Style Guide
+  static const Color primaryText = Color(0xFFFFFFFF);
+  static const Color yellow = Color(0xFFFFAF2C);
+  static const Color gray = Color(0xFFA2A2A2);
+  static const Color grayTerritory = Color(
+    0x66FFFFFF,
+  ); // #FFFFFF with 40% Opacity
 }

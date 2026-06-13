@@ -1,3 +1,4 @@
+import 'package:cpk1989/config/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -145,7 +146,7 @@ class BottomNavBarScreen extends GetView<BottomNavBarController> {
         child: SvgPicture.asset(
           iconPath,
           colorFilter: ColorFilter.mode(
-            isSelected ? Colors.white : const Color(0xffA2A2A2),
+            isSelected ? Colors.white : AppTheme.gray,
             BlendMode.srcIn,
           ),
           width: 26.0 * k,

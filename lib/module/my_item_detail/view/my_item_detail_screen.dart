@@ -1,3 +1,4 @@
+import 'package:cpk1989/config/themes/app_theme.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -255,7 +256,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                           ? const Color(0xFFFF453A)
                           : status == null
                           ? Colors.white.withValues(alpha: 0.08)
-                          : const Color(0xFFFFAF2C),
+                          : AppTheme.yellow,
                       borderRadius: BorderRadius.circular(10.r),
                     ),
                     child: Text(

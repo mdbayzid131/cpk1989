@@ -13,6 +13,7 @@ class CustomGoldButton extends StatelessWidget {
   final Widget? suffix;
   final double? width;
   final double? height;
+  final bool isLoading;
 
   const CustomGoldButton({
     super.key,
@@ -21,6 +22,7 @@ class CustomGoldButton extends StatelessWidget {
     this.suffix,
     this.width,
     this.height,
+    this.isLoading = false,
   });
 
   @override
@@ -44,7 +46,10 @@ class CustomGoldButton extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(100.r),
           gradient: const LinearGradient(
-            begin: Alignment(-1.0, -0.165), // 99.37deg angle: horizontal with slight vertical tilt
+            begin: Alignment(
+              -1.0,
+              -0.165,
+            ), // 99.37deg angle: horizontal with slight vertical tilt
             end: Alignment(1.0, 0.165),
             colors: [
               Color(0xFFAF7413), // #AF7413 at 4.77%
@@ -61,26 +66,33 @@ class CustomGoldButton extends StatelessWidget {
           color: Colors.transparent,
           child: InkWell(
             borderRadius: BorderRadius.circular(100.r),
-            onTap: onTap,
+            onTap: isLoading ? null : onTap,
             child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    text,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black, // Dark text color matching design
+              child: isLoading
+                  ? SizedBox(
+                      height: 20.w,
+                      width: 20.w,
+                      child: const CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                      ),
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          text,
+                          style: GoogleFonts.dmSans(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w700,
+                            color:
+                                Colors.black, // Dark text color matching design
+                          ),
+                        ),
+                        if (suffix != null) ...[SizedBox(width: 8.w), suffix!],
+                      ],
                     ),
-                  ),
-                  if (suffix != null) ...[
-                    SizedBox(width: 8.w),
-                    suffix!,
-                  ],
-                ],
-              ),
             ),
           ),
         ),

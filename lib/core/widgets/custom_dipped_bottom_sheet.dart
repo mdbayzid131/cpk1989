@@ -1,195 +1,236 @@
-import 'dart:math' as math;
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 /// A reusable custom premium bottom sheet featuring:
-/// - A central U-shaped dip on the top edge (drawn with a CustomPainter).
-/// - A floating circular logo/badge centered on the dip.
-/// - Background gold rays/glow effect behind the logo.
-/// - Automatic keyboard avoidance.
+/// - Background drawn dynamically via CustomPainter using precise vector Bezier curves
+/// - Height auto-adjusts to wrap the content and bottom padding dynamically
+/// - Floating circular logo centered on the custom-drawn dip (optional)
+/// - Ambient golden flashlight rays, stars, and logo container background from SVG
 class CustomDippedBottomSheet extends StatelessWidget {
-  final Widget logo;
+  final Widget? logo;
   final Widget content;
 
-  const CustomDippedBottomSheet({
-    super.key,
-    required this.logo,
-    required this.content,
-  });
+  const CustomDippedBottomSheet({super.key, this.logo, required this.content});
 
   @override
   Widget build(BuildContext context) {
-    final double logoSize = 84.r;
-    final double halfLogo = logoSize / 2;
+    final double screenWidth = MediaQuery.of(context).size.width;
 
-    return Container(
-      color: Colors.transparent,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          // 1. Gold spotlight glow effect behind the logo (centered exactly on the logo center)
-          Positioned(
-            top:
-                42.r -
-                90.r, // Centered vertically on the logo center (y = 42.r) with radius 90.r
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Container(
-                width: 180.r,
-                height: 180.r,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      const Color(
-                        0xFFE2B744,
-                      ).withValues(alpha: 0.55), // Brighter central light
-                      const Color(0xFFE2B744).withValues(alpha: 0.20),
-                      Colors.transparent,
-                    ],
-                    stops: const [0.0, 0.35, 1.0],
-                  ),
-                ),
-              ),
+    // SVG coordinate space is based on width 422.729
+    final double scale = screenWidth / 422.729;
+
+    // We only calculate the bottom padding when the keyboard is closed.
+    // When the keyboard is open, viewInsets.bottom handles the spacing,
+    // so we only need a clean minimal bottom padding.
+    final double bottomPadding = MediaQuery.of(context).viewInsets.bottom > 0
+        ? 16.h
+        : MediaQuery.of(context).padding.bottom + 24.h;
+
+    // Flashlight beam with container geometry based on card width 393.0 inside SVG
+    final double scaleFlashlight = screenWidth / 393.0;
+    final double flashlightWidth = 403.0 * scaleFlashlight;
+    final double flashlightHeight = 290.0 * scaleFlashlight;
+    final double flashlightTop =
+        (54.0 * scale) - (117.0 * scaleFlashlight) - 12;
+
+    // Center coordinates for the floating logo (aligned with circle center)
+    final double logoCenterX = screenWidth / 2;
+    final double logoCenterY = (54.0 * scale) - 12;
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        // 0. Ambient golden flashlight rays, stars, and container background SVG
+        Positioned(
+          top: flashlightTop,
+          left: 0,
+          width: flashlightWidth,
+          height: flashlightHeight,
+          child: ImageFiltered(
+            imageFilter: ImageFilter.blur(sigmaX: 0.5, sigmaY: 0.5),
+            child: SvgPicture.asset(
+              'assets/icons/flash light with container .svg',
+              width: flashlightWidth,
+              height: flashlightHeight,
+              fit: BoxFit.contain,
+              alignment: Alignment.topLeft,
             ),
           ),
+        ),
 
-          // 2. Dipped top card container (shifted down by half the logo size)
-          Padding(
-            padding: EdgeInsets.only(top: halfLogo),
-            child: CustomPaint(
-              painter: BottomSheetCardPainter(),
-              child: Container(
+        // 1. Main card body with content
+        CustomPaint(
+          painter: DippedBottomSheetPainter(),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Spacer to push content below the logo and the dip (bottom of dip is at y=180, shifted: 117)
+              SizedBox(height: 117.0 * scale + 24.h),
+
+              // The content
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24.w),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    SizedBox(
-                      height: 54.h,
-                    ), // Top padding to clear the top curve and dip
-                    content,
-                    SizedBox(
-                      height: MediaQuery.of(context).padding.bottom + 24.h,
-                    ),
-                  ],
-                ),
+                child: content,
               ),
-            ),
-          ),
 
-          // 3. Floating circular logo container
+              // Bottom padding for keyboard or safe area
+              SizedBox(height: bottomPadding),
+            ],
+          ),
+        ),
+
+        // 2. Floating logo positioned exactly over the CustomPaint ellipse (if provided)
+        if (logo != null)
           Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Container(
-                width: logoSize,
-                height: logoSize,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: const Color(0xFF131416),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.5),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
-                ),
-                child: Center(child: logo),
-              ),
+            top: logoCenterY,
+            left: logoCenterX,
+            child: FractionalTranslation(
+              translation: const Offset(-0.5, -0.5),
+              child: logo!,
             ),
           ),
-        ],
-      ),
+      ],
     );
   }
 }
 
-class BottomSheetCardPainter extends CustomPainter {
+class DippedBottomSheetPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final w = size.width;
     final h = size.height;
 
-    // Mathematically perfect concentric curve parameters:
-    final double logoRadius = 42.r;
-    final double g = 8.r; // Concentric gap size (8 pixels)
-    final double r1 = logoRadius + g; // Cutout radius (50.r)
-    final double r2 = 12.r; // Shoulder radius
-    final double flatY = 24.r; // Top flat line Y
+    final double scale = w / 422.729;
 
-    final double ys = flatY + r2;
-    final double xSquare = (r1 + r2) * (r1 + r2) - ys * ys;
-    final double xs = -math.sqrt(xSquare);
+    double sx(double x) => x * scale;
+    double sy(double y) => (y - 63.0) * scale;
 
-    final double xt = xs * r1 / (r1 + r2);
-    final double yt = ys * r1 / (r1 + r2);
-
-    final paint = Paint()
-      ..color = const Color(0xFF0D0E10)
+    // 1. Paint the main card background
+    final cardPaint = Paint()
+      ..color = const Color(0xFF0F1012)
       ..style = PaintingStyle.fill;
 
-    // Draw the main card body path (flat -> left shoulder -> concentric circular cutout -> right shoulder -> flat)
     final path = Path()
-      ..moveTo(0, h)
-      ..lineTo(0, 40.r)
-      ..quadraticBezierTo(0, flatY, 32.r, flatY)
-      ..lineTo(w / 2 + xs, flatY)
-      ..arcToPoint(
-        Offset(w / 2 + xt, yt),
-        radius: Radius.circular(r2),
-        clockwise: true,
-      )
-      ..arcToPoint(
-        Offset(w / 2 - xt, yt),
-        radius: Radius.circular(r1),
-        clockwise: false,
-      )
-      ..arcToPoint(
-        Offset(w / 2 - xs, flatY),
-        radius: Radius.circular(r2),
-        clockwise: true,
-      )
-      ..lineTo(w - 32.r, flatY)
-      ..quadraticBezierTo(w, flatY, w, 40.r)
+      ..moveTo(0, sy(153.0))
+      ..lineTo(0, h)
       ..lineTo(w, h)
+      ..lineTo(w, sy(153.0))
+      ..cubicTo(w, sy(136.432), sx(409.297), sy(123.0), sx(392.729), sy(123.0))
+      ..lineTo(sx(303.586), sy(123.0))
+      ..cubicTo(
+        sx(289.218),
+        sy(123.0),
+        sx(277.715),
+        sy(134.447),
+        sx(270.502),
+        sy(146.874),
+      )
+      ..cubicTo(
+        sx(259.055),
+        sy(166.598),
+        sx(236.624),
+        sy(180.0),
+        sx(210.826),
+        sy(180.0),
+      )
+      ..cubicTo(
+        sx(185.028),
+        sy(180.0),
+        sx(162.597),
+        sy(166.598),
+        sx(151.15),
+        sy(146.874),
+      )
+      ..cubicTo(
+        sx(143.938),
+        sy(134.447),
+        sx(132.434),
+        sy(123.0),
+        sx(118.067),
+        sy(123.0),
+      )
+      ..lineTo(sx(30.0), sy(123.0))
+      ..cubicTo(sx(13.4315), sy(123.0), 0, sy(136.431), 0, sy(153.0))
       ..close();
 
-    canvas.drawPath(path, paint);
+    canvas.drawPath(path, cardPaint);
 
+    // 2. Paint the gradient border highlight on card top curves
     final borderPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.07)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.2;
+      ..strokeWidth = 1.0
+      ..shader = const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Color(0x33FFFFFF), // rgba(255, 255, 255, 0.2)
+          Color(0x00FFFFFF), // rgba(255, 255, 255, 0)
+        ],
+        stops: [0.0, 0.8673],
+      ).createShader(Rect.fromLTWH(0, 0, w, h));
 
-    // Draw the highlight outline on the top edge
     final borderPath = Path()
-      ..moveTo(0, 40.r)
-      ..quadraticBezierTo(0, flatY, 32.r, flatY)
-      ..lineTo(w / 2 + xs, flatY)
-      ..arcToPoint(
-        Offset(w / 2 + xt, yt),
-        radius: Radius.circular(r2),
-        clockwise: true,
+      ..moveTo(0, sy(153.0))
+      ..cubicTo(0, sy(136.431), sx(13.4315), sy(123.0), sx(30.0), sy(123.0))
+      ..lineTo(sx(118.067), sy(123.0))
+      ..cubicTo(
+        sx(132.434),
+        sy(123.0),
+        sx(143.938),
+        sy(134.447),
+        sx(151.15),
+        sy(146.874),
       )
-      ..arcToPoint(
-        Offset(w / 2 - xt, yt),
-        radius: Radius.circular(r1),
-        clockwise: false,
+      ..cubicTo(
+        sx(162.597),
+        sy(166.598),
+        sx(185.028),
+        sy(180.0),
+        sx(210.826),
+        sy(180.0),
       )
-      ..arcToPoint(
-        Offset(w / 2 - xs, flatY),
-        radius: Radius.circular(r2),
-        clockwise: true,
+      ..cubicTo(
+        sx(236.624),
+        sy(180.0),
+        sx(259.055),
+        sy(166.598),
+        sx(270.502),
+        sy(146.874),
       )
-      ..lineTo(w - 32.r, flatY)
-      ..quadraticBezierTo(w, flatY, w, 40.r);
+      ..cubicTo(
+        sx(277.715),
+        sy(134.447),
+        sx(289.218),
+        sy(123.0),
+        sx(303.586),
+        sy(123.0),
+      )
+      ..lineTo(sx(392.729), sy(123.0))
+      ..cubicTo(sx(409.297), sy(123.0), w, sy(136.432), w, sy(153.0));
 
     canvas.drawPath(borderPath, borderPaint);
+
+    // 3. Paint the custom golden blur glow centered on the logo circle pocket
+    final glowPaint = Paint()
+      ..shader =
+          RadialGradient(
+            colors: [
+              const Color(0xFFE2B744).withValues(alpha: 0.4),
+              const Color(0xFFE2B744).withValues(alpha: 0.1),
+              Colors.transparent,
+            ],
+            stops: const [0.0, 0.4, 1.0],
+          ).createShader(
+            Rect.fromCircle(
+              center: Offset(w / 2, sy(117.0)),
+              radius: 80.0 * scale,
+            ),
+          );
+
+    canvas.drawCircle(Offset(w / 2, sy(117.0)), 80.0 * scale, glowPaint);
   }
 
   @override
@@ -199,7 +240,7 @@ class BottomSheetCardPainter extends CustomPainter {
 /// Helper function to show the custom dipped bottom sheet
 Future<T?> showCustomDippedBottomSheet<T>({
   required BuildContext context,
-  required Widget logo,
+  Widget? logo,
   required Widget content,
   bool isDismissible = true,
 }) {
@@ -208,15 +249,16 @@ Future<T?> showCustomDippedBottomSheet<T>({
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
     isDismissible: isDismissible,
-    barrierColor: Colors.black.withValues(alpha: 0.6), // Blurred dim overlay
+    barrierColor: Colors.black.withValues(alpha: 0.5),
     builder: (context) {
-      return Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(
-            context,
-          ).viewInsets.bottom, // support keyboard popups
+      return BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: CustomDippedBottomSheet(logo: logo, content: content),
         ),
-        child: CustomDippedBottomSheet(logo: logo, content: content),
       );
     },
   );

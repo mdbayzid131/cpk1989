@@ -1,3 +1,4 @@
+import 'package:cpk1989/config/themes/app_theme.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -177,10 +178,10 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                       vertical: 6.h,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFAF2C).withValues(alpha: 0.12),
+                      color: AppTheme.yellow.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(10.r),
                       border: Border.all(
-                        color: const Color(0xFFFFAF2C),
+                        color: AppTheme.yellow,
                         width: 1.0.w,
                       ),
                     ),
@@ -189,7 +190,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                       children: [
                         Icon(
                           Icons.auto_awesome_rounded,
-                          color: const Color(0xFFFFAF2C),
+                          color: AppTheme.yellow,
                           size: 12.sp,
                         ),
                         SizedBox(width: 4.w),
@@ -198,7 +199,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                           style: GoogleFonts.dmSans(
                             fontSize: 11.sp,
                             fontWeight: FontWeight.w800,
-                            color: const Color(0xFFFFAF2C),
+                            color: AppTheme.yellow,
                           ),
                         ),
                       ],
