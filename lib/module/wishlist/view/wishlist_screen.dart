@@ -27,8 +27,8 @@ class WishlistScreen extends GetView<WishlistController> {
                 child: Text(
                   "Wishlist",
                   style: GoogleFonts.dmSans(
-                    fontSize: 28.sp,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 24.sp,
+                    fontWeight: FontWeight.w400,
                     color: Colors.white,
                   ),
                 ),
@@ -209,7 +209,9 @@ class WishlistScreen extends GetView<WishlistController> {
 
                       // Red Heart Squircle button (Matches design)
                       Obx(() {
-                        final isRemoving = controller.rxRemovingIds.contains(item.id);
+                        final isRemoving = controller.rxRemovingIds.contains(
+                          item.id,
+                        );
                         return GestureDetector(
                           onTap: () => controller.toggleFavorite(item.id),
                           child: Container(

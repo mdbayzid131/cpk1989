@@ -82,14 +82,20 @@ class BottomNavBarScreen extends GetView<BottomNavBarController> {
               height: barHeight,
               child: Obx(
                 () => Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SizedBox(width: 15.0 * k),
-                    _buildNavItem(0, 'assets/icons/home.svg', k),
-                    SizedBox(width: 38.0 * k), // Shift Wishlist to the right
-                    _buildNavItem(1, 'assets/icons/wishlist.svg', k),
-                    SizedBox(width: 38.0 * k), // Shift Profile to the right
-                    _buildNavItem(2, 'assets/icons/profile.svg', k),
+                    Padding(
+                      padding: EdgeInsets.only(left: 7.0 * k),
+                      child: _buildNavItem(0, 'assets/icons/home.svg', k),
+                    ),
+                    Transform.translate(
+                      offset: Offset(5.0 * k, 0),
+                      child: _buildNavItem(1, 'assets/icons/wishlist.svg', k),
+                    ),
+                    Transform.translate(
+                      offset: Offset(10.0 * k, 0),
+                      child: _buildNavItem(2, 'assets/icons/profile.svg', k),
+                    ),
                   ],
                 ),
               ),
