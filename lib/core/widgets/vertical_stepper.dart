@@ -140,33 +140,22 @@ class VerticalStepper extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: (activeDashedSize - nodeSize) / 2 + 4.0),
-                  Text(
-                    step.title,
-                    style:
-                        titleStyle ??
-                        TextStyle(
-                          fontFamily: 'Manrope',
-                          fontSize: 15.0,
-                          fontWeight: step.state != StepperStepState.inactive
-                              ? FontWeight.w700
-                              : FontWeight.w500,
-                          color: step.state != StepperStepState.inactive
-                              ? Colors.white
-                              : Colors.white24,
-                        ),
-                  ),
+                  _buildTitleWidget(step),
                   const SizedBox(height: 4.0),
                   Text(
                     step.subtitle,
                     style:
-                        subtitleStyle ??
-                        TextStyle(
-                          fontFamily: 'Manrope',
-                          fontSize: 12.0,
-                          color: step.state != StepperStepState.inactive
-                              ? Colors.white54
-                              : Colors.white12,
-                        ),
+                        (subtitleStyle ??
+                                const TextStyle(
+                                  fontFamily: 'Manrope',
+                                  fontSize: 12.0,
+                                ))
+                            .copyWith(
+                              color: step.state != StepperStepState.inactive
+                                  ? (subtitleStyle?.color ?? Colors.white54)
+                                  : (subtitleStyle?.color ?? Colors.white54)
+                                        .withValues(alpha: 0.22),
+                            ),
                   ),
                 ],
               ),
@@ -286,6 +275,37 @@ class VerticalStepper extends StatelessWidget {
           ),
         );
     }
+  }
+
+  Widget _buildTitleWidget(StepperStep step) {
+    final baseStyle =
+        (titleStyle ?? const TextStyle(fontFamily: 'Manrope', fontSize: 15.0))
+            .copyWith(
+              fontWeight: step.state != StepperStepState.inactive
+                  ? FontWeight.w700
+                  : FontWeight.w500,
+              color: step.state != StepperStepState.inactive
+                  ? (titleStyle?.color ?? Colors.white)
+                  : (titleStyle?.color ?? Colors.white).withValues(alpha: 0.24),
+            );
+
+    if (step.title.contains("(Failed)")) {
+      final parts = step.title.split("(Failed)");
+      return Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(text: parts[0], style: baseStyle),
+            TextSpan(
+              text: "(Failed)",
+              style: baseStyle.copyWith(color: const Color(0xFFFF453A)),
+            ),
+            if (parts.length > 1) TextSpan(text: parts[1], style: baseStyle),
+          ],
+        ),
+      );
+    }
+
+    return Text(step.title, style: baseStyle);
   }
 }
 

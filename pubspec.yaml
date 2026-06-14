@@ -97,3 +97,9 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+  fonts:
+    - family: Schnyder L
+      fonts:
+        - asset: assets/fonts/Schnyder-L-Light.otf
+          weight: 300

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cpk1989/module/home/controller/home_controller.dart';
 import 'package:cpk1989/core/widgets/custom_gold_button.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
@@ -55,15 +56,18 @@ class HomeScreen extends GetView<HomeController> {
 
                 // 3. Top Header Overlay (Closeté logo)
                 Positioned(
-                  top: MediaQuery.of(context).padding.top + 16.h,
+                  top: MediaQuery.of(context).padding.top + 25.h,
                   left: 20.w,
                   child: Text(
                     'Closeté',
-                    style: GoogleFonts.cormorantGaramond(
-                      fontSize: 34.sp,
-                      fontWeight: FontWeight.bold,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'Schnyder L',
+                      fontSize: 30.sp,
+                      fontWeight: FontWeight.w300,
                       color: Colors.white,
-                      letterSpacing: 1.0,
+                      height: 1.0,
+                      letterSpacing: 0.0,
                     ),
                   ),
                 ),
@@ -81,64 +85,117 @@ class HomeScreen extends GetView<HomeController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // User Info & Price badge
+                      // User Info Row (Avatar + Username + Verified badge)
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 20.r,
+                            backgroundColor: Colors.grey.shade900,
+                            child: ClipOval(
+                              child: Image.network(
+                                "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150",
+                                width: 40.r,
+                                height: 40.r,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(
+                                      Icons.person,
+                                      color: Colors.white70,
+                                    ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 10.w),
+                          Text(
+                            item.userName,
+                            style: GoogleFonts.dmSans(
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
+                            ),
+                          ),
+                          if (item.isVerified) ...[
+                            SizedBox(width: 6.w),
+                            SvgPicture.asset(
+                              'assets/icons/blue_verify-badg.svg',
+                              width: 18.r,
+                              height: 18.r,
+                            ),
+                          ],
+                        ],
+                      ),
+
+                      SizedBox(height: 16.h),
+
+                      // Item Details (Condition, Name, View More on left; Price Badge on right)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // User profile info
+                          // Left Details Column
                           Expanded(
-                            child: Row(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                CircleAvatar(
-                                  radius: 20.r,
-                                  backgroundColor: Colors.grey.shade900,
-                                  child: ClipOval(
-                                    child: Image.network(
-                                      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150",
-                                      width: 40.r,
-                                      height: 40.r,
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) =>
-                                              const Icon(
-                                                Icons.person,
-                                                color: Colors.white70,
-                                              ),
-                                    ),
+                                Text(
+                                  item.condition,
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 14.sp,
+                                    color: Colors.white.withValues(alpha: 0.7),
+                                    fontWeight: FontWeight.w400,
                                   ),
                                 ),
-                                SizedBox(width: 8.w),
-                                Expanded(
-                                  child: Text(
-                                    item.userName,
-                                    style: GoogleFonts.dmSans(
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.white,
+                                SizedBox(height: 4.h),
+                                Row(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.baseline,
+                                  textBaseline: TextBaseline.alphabetic,
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        item.itemName,
+                                        style: GoogleFonts.dmSans(
+                                          fontSize: 24.sp,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.white,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
+                                    SizedBox(width: 12.w),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Get.toNamed(
+                                          AppRoutes.itemDetail,
+                                          arguments: item,
+                                        );
+                                      },
+                                      child: Text(
+                                        "View More",
+                                        style: GoogleFonts.dmSans(
+                                          fontSize: 14.sp,
+                                          color: Colors.white,
+                                          decoration: TextDecoration.underline,
+                                          decorationColor: Colors.white,
+                                          decorationThickness: 1.5,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                if (item.isVerified) ...[
-                                  SizedBox(width: 4.w),
-                                  Icon(
-                                    Icons.verified,
-                                    color: const Color(0xFF00A2FF),
-                                    size: 16.sp,
-                                  ),
-                                ],
                               ],
                             ),
                           ),
-                          SizedBox(width: 16.w),
+                          SizedBox(width: 8.w),
 
-                          // Price Badge
+                          // Right Price Badge
                           Container(
                             padding: EdgeInsets.symmetric(
-                              horizontal: 14.w,
-                              vertical: 8.h,
+                              horizontal: 10.w,
+                              vertical: 6.h,
                             ),
                             decoration: BoxDecoration(
                               color: Colors.white,
@@ -147,7 +204,7 @@ class HomeScreen extends GetView<HomeController> {
                             child: Text(
                               item.price,
                               style: GoogleFonts.dmSans(
-                                fontSize: 16.sp,
+                                fontSize: 14.sp,
                                 fontWeight: FontWeight.w800,
                                 color: Colors.black,
                               ),
@@ -158,58 +215,6 @@ class HomeScreen extends GetView<HomeController> {
 
                       SizedBox(height: 16.h),
 
-                      // Condition Status
-                      Text(
-                        item.condition,
-                        style: GoogleFonts.dmSans(
-                          fontSize: 13.sp,
-                          color: Colors.white70,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-
-                      SizedBox(height: 4.h),
-
-                      // Item Title & "View More" link
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              item.itemName,
-                              style: GoogleFonts.dmSans(
-                                fontSize: 24.sp,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          SizedBox(width: 8.w),
-                          GestureDetector(
-                            onTap: () {
-                              Get.toNamed(
-                                AppRoutes.itemDetail,
-                                arguments: item,
-                              );
-                            },
-                            child: Text(
-                              "View More",
-                              style: GoogleFonts.dmSans(
-                                fontSize: 13.sp,
-                                color: Colors.white70,
-                                decoration: TextDecoration.underline,
-                                decorationColor: Colors.white70,
-                                decorationThickness: 1.5,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      SizedBox(height: 12.h),
-
                       // Trust badge (Authenticity guaranteed)
                       Container(
                         padding: EdgeInsets.symmetric(
@@ -217,24 +222,24 @@ class HomeScreen extends GetView<HomeController> {
                           vertical: 8.h,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.1),
+                          color: Colors.white.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(20.r),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              Icons.security_outlined,
-                              color: Colors.white,
-                              size: 15.sp,
+                            SvgPicture.asset(
+                              'assets/icons/Authenticity guarante_ home page logo.svg',
+                              width: 14.r,
+                              height: 14.r,
                             ),
-                            SizedBox(width: 6.w),
+                            SizedBox(width: 8.w),
                             Text(
                               "Authenticity guaranteed. Payment protected.",
                               style: GoogleFonts.dmSans(
                                 fontSize: 11.sp,
                                 color: Colors.white.withValues(alpha: 0.95),
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.w400,
                               ),
                             ),
                           ],
@@ -255,7 +260,10 @@ class HomeScreen extends GetView<HomeController> {
                           showProcessingOverlay(context, () {
                             // Close bottom sheet first
                             Get.back();
-                            Get.toNamed(AppRoutes.secureCheckout, arguments: item);
+                            Get.toNamed(
+                              AppRoutes.secureCheckout,
+                              arguments: item,
+                            );
                           });
                         },
                       ),

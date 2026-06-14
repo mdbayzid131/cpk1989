@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cpk1989/core/widgets/custom_gold_button.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/module/item_detail/controller/item_detail_controller.dart';
@@ -18,6 +19,7 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
     return Scaffold(
       backgroundColor: const Color(0xFF0F1012),
       body: SafeArea(
+        top: false,
         child: Stack(
           children: [
             // 1. Scrollable Content + Bottom Action Bar
@@ -25,18 +27,18 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
               children: [
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 16.w,
-                      vertical: 16.h,
-                    ),
+                    padding: EdgeInsets.zero,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Hero Image Card
                         Stack(
+                          clipBehavior: Clip.none,
                           children: [
                             ClipRRect(
-                              borderRadius: BorderRadius.circular(24.r),
+                              borderRadius: BorderRadius.vertical(
+                                bottom: Radius.circular(24.r),
+                              ),
                               child: Container(
                                 height: 380.h,
                                 width: double.infinity,
@@ -55,7 +57,9 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                             // Vignette overlay
                             Positioned.fill(
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(24.r),
+                                borderRadius: BorderRadius.vertical(
+                                  bottom: Radius.circular(24.r),
+                                ),
                                 child: Container(
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
@@ -71,32 +75,9 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                 ),
                               ),
                             ),
-                            // Play button overlay in center
-                            Positioned.fill(
-                              child: Center(
-                                child: Container(
-                                  padding: EdgeInsets.all(16.r),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.25),
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: Colors.white.withValues(
-                                        alpha: 0.4,
-                                      ),
-                                      width: 1.5,
-                                    ),
-                                  ),
-                                  child: Icon(
-                                    Icons.play_arrow,
-                                    color: Colors.white,
-                                    size: 30.sp,
-                                  ),
-                                ),
-                              ),
-                            ),
                             // Price tag bottom right
                             Positioned(
-                              bottom: 16.h,
+                              bottom: -16.h,
                               right: 16.w,
                               child: Container(
                                 padding: EdgeInsets.symmetric(
@@ -105,7 +86,20 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                 ),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12.r),
+                                  borderRadius: BorderRadius.circular(20.r),
+                                  border: Border.all(
+                                    color: Colors.black,
+                                    width: 2.w,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(
+                                        alpha: 0.25,
+                                      ),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
                                 ),
                                 child: Text(
                                   item.price,
@@ -120,162 +114,192 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                           ],
                         ),
 
-                        SizedBox(height: 16.h),
-
-                        // 2. Seller Profile row
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                CircleAvatar(
-                                  radius: 20.r,
-                                  backgroundColor: Colors.grey.shade900,
-                                  child: ClipOval(
-                                    child: Image.network(
-                                      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150",
-                                      width: 40.r,
-                                      height: 40.r,
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) =>
-                                              const Icon(
-                                                Icons.person,
-                                                color: Colors.white70,
-                                              ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: 8.w),
-                                Text(
-                                  item.userName,
-                                  style: GoogleFonts.dmSans(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                if (item.isVerified) ...[
-                                  SizedBox(width: 4.w),
-                                  Icon(
-                                    Icons.verified,
-                                    color: const Color(0xFF00A2FF),
-                                    size: 16.sp,
-                                  ),
-                                ],
-                              ],
-                            ),
-                            Text(
-                              "Listed price",
-                              style: GoogleFonts.dmSans(
-                                fontSize: 13.sp,
-                                color: Colors.white38,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        SizedBox(height: 16.h),
-
-                        // 3. Item Title
-                        Text(
-                          item.itemName,
-                          style: GoogleFonts.dmSans(
-                            fontSize: 24.sp,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
-                        ),
-
-                        SizedBox(height: 8.h),
-
-                        // 4. Specifications row (Condition & Worn Count & Size)
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.star_border,
-                              color: Colors.white70,
-                              size: 16.sp,
-                            ),
-                            SizedBox(width: 4.w),
-                            Text(
-                              "${item.condition} : ${item.wornCount}",
-                              style: GoogleFonts.dmSans(
-                                fontSize: 13.sp,
-                                color: Colors.white70,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            SizedBox(width: 8.w),
-                            Container(
-                              height: 12.h,
-                              width: 1.w,
-                              color: Colors.white24,
-                            ),
-                            SizedBox(width: 8.w),
-                            Icon(
-                              Icons.straighten_outlined,
-                              color: Colors.white70,
-                              size: 16.sp,
-                            ),
-                            SizedBox(width: 4.w),
-                            Text(
-                              item.size,
-                              style: GoogleFonts.dmSans(
-                                fontSize: 13.sp,
-                                color: Colors.white70,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        SizedBox(height: 20.h),
-                        const Divider(color: Colors.white10),
-                        SizedBox(height: 20.h),
-
-                        // 5. Description
-                        Text(
-                          "DESCRIPTION",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white38,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                        SizedBox(height: 8.h),
-                        Text(
-                          item.description,
-                          style: GoogleFonts.dmSans(
-                            fontSize: 14.sp,
-                            color: Colors.white70,
-                            height: 1.5,
-                          ),
-                        ),
-
                         SizedBox(height: 32.h),
 
-                        // 6. Security Assurances Grid/Row
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            _buildSecurityBadge(
-                              icon: Icons.verified_user_outlined,
-                              label: "Authenticity\nGuaranteed",
-                            ),
-                            _buildSecurityBadge(
-                              icon: Icons.lock_outline,
-                              label: "Payment\nProtected",
-                            ),
-                            _buildSecurityBadge(
-                              icon: Icons.local_shipping_outlined,
-                              label: "Secure\nDelivery",
-                            ),
-                          ],
+                        // Scrollable content wrapped in horizontal padding
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // 2. Seller Profile row
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 20.r,
+                                        backgroundColor: Colors.grey.shade900,
+                                        child: ClipOval(
+                                          child: Image.network(
+                                            "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150",
+                                            width: 40.r,
+                                            height: 40.r,
+                                            fit: BoxFit.cover,
+                                            errorBuilder:
+                                                (context, error, stackTrace) =>
+                                                    const Icon(
+                                                      Icons.person,
+                                                      color: Colors.white70,
+                                                    ),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(width: 10.w),
+                                      Text(
+                                        item.userName,
+                                        style: GoogleFonts.dmSans(
+                                          fontSize: 18.sp,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      if (item.isVerified) ...[
+                                        SizedBox(width: 6.w),
+                                        SvgPicture.asset(
+                                          'assets/icons/blue_verify-badg.svg',
+                                          width: 18.r,
+                                          height: 18.r,
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                  Text(
+                                    "Listed price",
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 14.sp,
+                                      color: Colors.white38,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              SizedBox(height: 16.h),
+
+                              // 3. Item Title
+                              Text(
+                                item.itemName,
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 28.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                ),
+                              ),
+
+                              SizedBox(height: 8.h),
+
+                              // 4. Specifications row (Condition & Worn Count & Size)
+                              Row(
+                                children: [
+                                  SvgPicture.asset(
+                                    'assets/icons/Excellent condition  Warn Twice.svg',
+                                    width: 16.r,
+                                    height: 16.r,
+                                  ),
+                                  SizedBox(width: 6.w),
+                                  Text(
+                                    "${item.condition} : ${item.wornCount}",
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 13.sp,
+                                      color: const Color(0xFFA2A2A2),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  SizedBox(width: 12.w),
+                                  Container(
+                                    height: 12.h,
+                                    width: 1.w,
+                                    color: Colors.white12,
+                                  ),
+                                  SizedBox(width: 12.w),
+                                  Icon(
+                                    Icons.straighten_outlined,
+                                    color: const Color(0xFFA2A2A2),
+                                    size: 16.sp,
+                                  ),
+                                  SizedBox(width: 6.w),
+                                  Text(
+                                    item.size,
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 13.sp,
+                                      color: const Color(0xFFA2A2A2),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              SizedBox(height: 20.h),
+                              const Divider(color: Colors.white10),
+                              SizedBox(height: 20.h),
+
+                              // 5. Description
+                              Text(
+                                "DESCRIPTION",
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white38,
+                                  letterSpacing: 1.2,
+                                ),
+                              ),
+                              SizedBox(height: 8.h),
+                              Text(
+                                item.description,
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 14.sp,
+                                  color: Colors.white70,
+                                  height: 1.5,
+                                ),
+                              ),
+
+                              SizedBox(height: 32.h),
+
+                              // 6. Security Assurances Grid/Row
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Expanded(
+                                    child: _buildSecurityBadge(
+                                      svgPath:
+                                          'assets/icons/Authenticity Verified.svg',
+                                      label: "Authenticity\nVerified",
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 1.w,
+                                    height: 36.h,
+                                    color: Colors.white.withValues(alpha: 0.08),
+                                  ),
+                                  Expanded(
+                                    child: _buildSecurityBadge(
+                                      svgPath:
+                                          'assets/icons/Payment Protected .svg',
+                                      label: "Payment\nProtected",
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 1.w,
+                                    height: 36.h,
+                                    color: Colors.white.withValues(alpha: 0.08),
+                                  ),
+                                  Expanded(
+                                    child: _buildSecurityBadge(
+                                      svgPath:
+                                          'assets/icons/Secure Delivery.svg',
+                                      label: "Secure\nDelivery",
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 16.h),
+                            ],
+                          ),
                         ),
-                        SizedBox(height: 16.h),
                       ],
                     ),
                   ),
@@ -312,9 +336,9 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
 
             // 2. Fixed Top Navigation Controls (Floats above layout)
             Positioned(
-              top: 32.h,
-              left: 32.w,
-              right: 32.w,
+              top: MediaQuery.of(context).padding.top + 16.h,
+              left: 16.w,
+              right: 16.w,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -348,10 +372,11 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
     );
   }
 
-  Widget _buildSecurityBadge({required IconData icon, required String label}) {
+  Widget _buildSecurityBadge({required String svgPath, required String label}) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: Colors.white, size: 24.sp),
+        SvgPicture.asset(svgPath, width: 24.r, height: 24.r),
         SizedBox(height: 10.h),
         Text(
           label,
@@ -359,7 +384,7 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
           style: GoogleFonts.dmSans(
             fontSize: 12.sp,
             color: Colors.white70,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w500,
             height: 1.3,
           ),
         ),

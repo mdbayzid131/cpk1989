@@ -76,9 +76,10 @@ class LoginScreen extends GetView<AuthController> {
                           Center(
                             child: Text(
                               "Create your account",
-                              style: GoogleFonts.prata(
+                              style: TextStyle(
+                                fontFamily: 'Schnyder L',
                                 fontSize: 30.sp,
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w300,
                                 color: AppTheme.primaryText,
                               ),
                             ),

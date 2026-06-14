@@ -27,6 +27,7 @@ class ProfileItem {
 
 class ProfileController extends GetxController {
   final rxSelectedIndex = 0.obs;
+  final rxIsEditing = false.obs;
   final rxWardrobeItems = <ProfileItem>[].obs;
   final rxPurchaseItems = <ProfileItem>[].obs;
 
@@ -86,6 +87,7 @@ class ProfileController extends GetxController {
     await StorageService.setString('last_name', lastNameController.text.trim());
     await StorageService.setString('phone', phoneController.text.trim());
     rxUserName.value = "${firstNameController.text.trim()} ${lastNameController.text.trim()}";
+    rxIsEditing.value = false;
 
     Get.snackbar(
       'Success',

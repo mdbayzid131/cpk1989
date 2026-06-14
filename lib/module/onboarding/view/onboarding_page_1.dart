@@ -21,27 +21,30 @@ class OnboardingPage1 extends StatelessWidget {
             children: [
               Text(
                 'Scroll it.',
-                style: GoogleFonts.prata(
+                style: TextStyle(
+                  fontFamily: 'Schnyder L',
                   fontSize: 38.sp,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w300,
                   color: Colors.white,
                   height: 1.15,
                 ),
               ),
               Text(
                 'See it.',
-                style: GoogleFonts.prata(
+                style: TextStyle(
+                  fontFamily: 'Schnyder L',
                   fontSize: 38.sp,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w300,
                   color: Colors.white,
                   height: 1.15,
                 ),
               ),
               Text(
                 'Love it',
-                style: GoogleFonts.prata(
+                style: TextStyle(
+                  fontFamily: 'Schnyder L',
                   fontSize: 38.sp,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w300,
                   color: Colors.white,
                   height: 1.15,
                 ),
@@ -52,9 +55,10 @@ class OnboardingPage1 extends StatelessWidget {
                 ),
                 child: Text(
                   'Buy it',
-                  style: GoogleFonts.prata(
+                  style: TextStyle(
+                    fontFamily: 'Schnyder L',
                     fontSize: 38.sp,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w300,
                     color: Colors.white,
                     height: 1.15,
                   ),

@@ -52,9 +52,10 @@ class _OnboardingPage2State extends State<OnboardingPage2>
         ///<================= HEADER TEXT =========================>///
         Text(
           'Sell in',
-          style: GoogleFonts.prata(
+          style: TextStyle(
+            fontFamily: 'Schnyder L',
             fontSize: 38.sp,
-            fontWeight: FontWeight.w400,
+            fontWeight: FontWeight.w300,
             color: AppTheme.primaryText,
             height: 1.15,
           ),
@@ -65,9 +66,10 @@ class _OnboardingPage2State extends State<OnboardingPage2>
           ),
           child: Text(
             '60 Seconds',
-            style: GoogleFonts.prata(
+            style: TextStyle(
+              fontFamily: 'Schnyder L',
               fontSize: 38.sp,
-              fontWeight: FontWeight.w400,
+              fontWeight: FontWeight.w300,
               color: AppTheme.primaryText,
               height: 1.15,
             ),

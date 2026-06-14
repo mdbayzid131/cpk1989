@@ -228,7 +228,7 @@ class SellController extends GetxController {
       try {
         final XFile file = await cameraController!.takePicture();
         rxCapturedPath.value = file.path;
-        isPreviewMode.value = true;
+        confirmCapture();
         onFinish();
       } catch (e) {
         Get.snackbar(
@@ -239,7 +239,7 @@ class SellController extends GetxController {
     } else {
       // Fallback if camera is unavailable (simulator mode)
       rxCapturedPath.value = ""; // blank means fallback to mockup network image
-      isPreviewMode.value = true;
+      confirmCapture();
       onFinish();
     }
   }
@@ -253,7 +253,7 @@ class SellController extends GetxController {
       );
       if (file != null) {
         rxCapturedPath.value = file.path;
-        isPreviewMode.value = true;
+        confirmCapture();
         onPicked();
       }
     } catch (e) {

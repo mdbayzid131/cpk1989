@@ -17,14 +17,14 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
   @override
   Widget build(BuildContext context) {
     final item = controller.item;
-    final formattedPrice =
-        "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
 
     return Scaffold(
       backgroundColor: const Color(0xFF0F1012),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
         centerTitle: true,
         leadingWidth: 70.w,
         leading: Padding(
@@ -81,14 +81,14 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+          padding: EdgeInsets.only(bottom: 24.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Stack(
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(24.r),
+                    borderRadius: BorderRadius.vertical(bottom: Radius.circular(24.r)),
                     child: Container(
                       height: 300.h,
                       width: double.infinity,
@@ -163,8 +163,8 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                     child: Text(
                       item.itemName,
                       style: GoogleFonts.dmSans(
-                        fontSize: 22.sp,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w500,
                         color: Colors.white,
                       ),
                       maxLines: 2,
@@ -180,18 +180,18 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                     decoration: BoxDecoration(
                       color: AppTheme.yellow.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(10.r),
-                      border: Border.all(
-                        color: AppTheme.yellow,
-                        width: 1.0.w,
-                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          Icons.auto_awesome_rounded,
-                          color: AppTheme.yellow,
-                          size: 12.sp,
+                        SvgPicture.asset(
+                          'assets/icons/Excellent condition  Warn Twice.svg',
+                          width: 12.w,
+                          height: 12.h,
+                          colorFilter: ColorFilter.mode(
+                            AppTheme.yellow,
+                            BlendMode.srcIn,
+                          ),
                         ),
                         SizedBox(width: 4.w),
                         Text(
@@ -210,6 +210,8 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
 
               SizedBox(height: 28.h),
 
+              SizedBox(height: 28.h),
+
               // ITEM DETAILS Section Header
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -223,29 +225,78 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                       letterSpacing: 1.0,
                     ),
                   ),
-                  SvgPicture.asset(
-                    'assets/icons/edit pen .svg',
-                    colorFilter: const ColorFilter.mode(
-                      Color(0xFFE2B744),
-                      BlendMode.srcIn,
+                  Obx(
+                    () => GestureDetector(
+                      onTap: () => controller.toggleEditMode(),
+                      child: controller.rxIsEditMode.value
+                          ? Container(
+                              width: 22.r,
+                              height: 22.r,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: AppTheme.yellow,
+                                  width: 1.5.w,
+                                ),
+                              ),
+                              child: Center(
+                                child: Icon(
+                                  Icons.check_rounded,
+                                  color: AppTheme.yellow,
+                                  size: 14.sp,
+                                ),
+                              ),
+                            )
+                          : SvgPicture.asset(
+                              'assets/icons/edit pen .svg',
+                              colorFilter: const ColorFilter.mode(
+                                Color(0xFFE2B744),
+                                BlendMode.srcIn,
+                              ),
+                              width: 18.w,
+                              height: 18.h,
+                            ),
                     ),
-                    width: 18.w,
-                    height: 18.h,
                   ),
                 ],
               ),
 
               SizedBox(height: 12.h),
 
-              // ITEM DETAILS list
-              _buildDetailRow("Brand", item.brand),
-              _buildDescriptionDetailRow(
-                "Description",
-                "Black caviar leather with gold hardware. Comes with original dust bag and authenticity card.",
-              ),
-              _buildDetailRow("Suggested price", formattedPrice),
-              _buildDetailRow("Condition", "Excellent"),
-              _buildProofOfPurchaseRow("Proof of purchase (Optional)"),
+              // ITEM DETAILS list (Editable or Read-Only based on mode)
+              Obx(() {
+                if (controller.rxIsEditMode.value) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildBrandEditRow(),
+                      _buildDescriptionEditRow(),
+                      _buildPriceEditRow(),
+                      _buildConditionEditRow(),
+                      _buildProofOfPurchaseEditRow(),
+                    ],
+                  );
+                } else {
+                  final formattedPriceVal =
+                      "AED ${double.tryParse(controller.rxPrice.value)?.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},') ?? '0'}";
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildDetailRow("Brand", controller.rxBrand.value),
+                      _buildDescriptionDetailRow(
+                        "Description",
+                        controller.rxDescription.value,
+                      ),
+                      _buildDetailRow("Suggested price", formattedPriceVal),
+                      _buildDetailRow(
+                        "Condition",
+                        controller.rxCondition.value,
+                      ),
+                      _buildProofOfPurchaseRow("Proof of purchase (Optional)"),
+                    ],
+                  );
+                }
+              }),
 
               SizedBox(height: 8.h),
               Row(
@@ -276,7 +327,11 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 ),
               ),
               SizedBox(height: 12.h),
-              _buildSellerDetailsCard(),
+              Obx(
+                () => controller.rxIsEditMode.value
+                    ? _buildCompactSellerDetailsCard()
+                    : _buildSellerDetailsCard(),
+              ),
               SizedBox(height: 28.h),
               Text(
                 "YOUR EARNINGS",
@@ -291,17 +346,29 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
               _buildEarningsCard(item.price),
               SizedBox(height: 24.h),
               Center(
-                child: Text(
-                  "By posting, you agree to Closeté Terms & Conditions",
-                  style: GoogleFonts.dmSans(
-                    fontSize: 12.sp,
-                    color: Colors.white38,
-                    fontWeight: FontWeight.w500,
+                child: Text.rich(
+                  TextSpan(
+                    text: "By posting, you agree to Closeté ",
+                    style: GoogleFonts.dmSans(
+                      fontSize: 12.sp,
+                      color: Colors.white38,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    children: [
+                      const TextSpan(
+                        text: "Terms & Conditions",
+                        style: TextStyle(
+                          decoration: TextDecoration.underline,
+                          decorationColor: Colors.white38,
+                        ),
+                      ),
+                    ],
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ),
               SizedBox(height: 16.h),
-              _buildPostItemButton(context, item, formattedPrice),
+              _buildPostItemButton(context, item),
               SizedBox(height: 40.h),
             ],
           ),
@@ -405,14 +472,18 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: GoogleFonts.dmSans(
-              fontSize: 14.sp,
-              color: Colors.white38,
-              fontWeight: FontWeight.w500,
+          Expanded(
+            child: Text(
+              label,
+              style: GoogleFonts.dmSans(
+                fontSize: 14.sp,
+                color: Colors.white38,
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
+          SizedBox(width: 8.w),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
             decoration: BoxDecoration(
@@ -463,7 +534,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
           style: GoogleFonts.dmSans(
             fontSize: 13.sp,
             color: Colors.white70,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],
@@ -471,149 +542,571 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
   }
 
   Widget _buildSellerDetailsCard() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Container(
-          margin: EdgeInsets.only(bottom: 8.h),
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.03),
-            borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.05),
-              width: 1.0,
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16.r),
+        gradient: const LinearGradient(
+          begin: Alignment.centerRight,
+          end: Alignment.centerLeft,
+          colors: [Color(0xFF1C1D20), Color(0xFF2B2D32)],
+        ),
+      ),
+      padding: EdgeInsets.all(1.w),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15.r),
+          gradient: const LinearGradient(
+            begin: Alignment.centerRight,
+            end: Alignment.centerLeft,
+            colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 18.r,
+                  backgroundColor: const Color(0xFF282A2E),
+                  backgroundImage: const NetworkImage(
+                    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150',
+                  ),
+                ),
+                SizedBox(width: 12.w),
+                Text(
+                  "Olivia Mendes",
+                  style: GoogleFonts.dmSans(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(width: 6.w),
+                SvgPicture.asset(
+                  'assets/icons/blue_verify-badg.svg',
+                  width: 16.w,
+                  height: 16.h,
+                ),
+              ],
             ),
-          ),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 18.r,
-                backgroundColor: const Color(0xFF282A2E),
-                backgroundImage: const NetworkImage(
-                  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150',
+            SizedBox(height: 16.h),
+            Divider(color: Colors.white.withValues(alpha: 0.05)),
+            SizedBox(height: 12.h),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SvgPicture.asset(
+                  'assets/icons/location.svg',
+                  width: 18.w,
+                  height: 18.h,
+                  colorFilter: const ColorFilter.mode(
+                    Colors.grey,
+                    BlendMode.srcIn,
+                  ),
                 ),
-              ),
-              SizedBox(width: 12.w),
-              Text(
-                "Olivia Mendes",
-                style: GoogleFonts.dmSans(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: Text(
+                    "Palm Jumeirah, Building 5, Apt 1204, Dubai",
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
                 ),
-              ),
-              SizedBox(width: 6.w),
-              Icon(
-                Icons.verified,
-                color: const Color(0xFF007AFF), // Verified blue
-                size: 16.sp,
-              ),
-            ],
-          ),
+              ],
+            ),
+            SizedBox(height: 12.h),
+            Row(
+              children: [
+                SvgPicture.asset(
+                  'assets/icons/country.svg',
+                  width: 18.w,
+                  height: 18.h,
+                  colorFilter: const ColorFilter.mode(
+                    Colors.grey,
+                    BlendMode.srcIn,
+                  ),
+                ),
+                SizedBox(width: 12.w),
+                Text(
+                  "UAE",
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 12.h),
+            Row(
+              children: [
+                SvgPicture.asset(
+                  'assets/icons/phone.svg',
+                  width: 18.w,
+                  height: 18.h,
+                  colorFilter: const ColorFilter.mode(
+                    Colors.grey,
+                    BlendMode.srcIn,
+                  ),
+                ),
+                SizedBox(width: 12.w),
+                Text(
+                  "+971 50 123 4567",
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
-        _buildDetailRow(
-          "Location",
-          "Palm Jumeirah, Building 5, Apt 1204, Dubai",
-        ),
-        _buildDetailRow("Country", "UAE"),
-        _buildDetailRow("Phone number", "(+971) 50 123 4567"),
-      ],
+      ),
     );
   }
 
   Widget _buildEarningsCard(double price) {
-    final closetFee = price * 0.12;
-    final youEarn = price * 0.88;
+    return Obx(() {
+      final currentPrice = double.tryParse(controller.rxPrice.value) ?? price;
+      final closetFee = currentPrice * 0.12;
+      final youEarn = currentPrice * 0.88;
 
-    final formattedPrice =
-        "AED ${price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
-    final formattedFee =
-        "AED ${closetFee.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
-    final formattedEarn =
-        "AED ${youEarn.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
+      final formattedPrice =
+          "AED ${currentPrice.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
+      final formattedFee =
+          "AED ${closetFee.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
+      final formattedEarn =
+          "AED ${youEarn.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
 
+      return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16.r),
+          gradient: const LinearGradient(
+            begin: Alignment.centerRight,
+            end: Alignment.centerLeft,
+            colors: [Color(0xFF1C1D20), Color(0xFF2B2D32)],
+          ),
+        ),
+        padding: EdgeInsets.all(1.w),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15.r),
+            gradient: const LinearGradient(
+              begin: Alignment.centerRight,
+              end: Alignment.centerLeft,
+              colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+            ),
+          ),
+          child: Column(
+            children: [
+              _buildEarningsRow("Listing price", formattedPrice),
+              SizedBox(height: 8.h),
+              _buildEarningsRow("Closeté fee (12%)", formattedFee),
+              SizedBox(height: 10.h),
+              const Divider(color: Colors.white10),
+              SizedBox(height: 10.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "You'll Earn",
+                    style: GoogleFonts.dmSans(
+                      fontSize: 12.sp,
+                      color: const Color(0xFFFFAF2C),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Text(
+                    formattedEarn,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14.sp,
+                      color: const Color(0xFFFFAF2C),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget _buildPostItemButton(BuildContext context, dynamic item) {
+    return Obx(() {
+      final priceVal = double.tryParse(controller.rxPrice.value) ?? item.price;
+      final formattedPrice =
+          "AED ${priceVal.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
+
+      return CustomGoldButton(
+        text: "Post Item",
+        height: 50.h,
+        suffix: Icon(
+          Icons.arrow_forward_rounded,
+          color: Colors.black,
+          size: 18.sp,
+        ),
+        onTap: () {
+          showCustomDippedBottomSheet(
+            context: context,
+            logo: Image.asset(
+              'assets/icons/done Logo.png',
+              width: 80.r,
+              height: 80.r,
+            ),
+            content: _SuccessBottomSheetContent(
+              item: item,
+              formattedPrice: formattedPrice,
+              onDismiss: () {
+                Get.back(); // Pop the bottom sheet
+                Get.back(); // Pop SellItemDetailScreen
+                Get.back(); // Pop SellScreen (Camera)
+              },
+            ),
+          );
+        },
+      );
+    });
+  }
+
+  Widget _buildBrandEditRow() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+      height: 54.h,
+      margin: EdgeInsets.only(bottom: 8.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
-        borderRadius: BorderRadius.circular(16.r),
+        color: const Color(0xFF0F1012),
+        borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.05),
           width: 1.0,
         ),
       ),
-      child: Column(
+      child: Row(
         children: [
-          _buildEarningsRow("Listing price", formattedPrice),
-          SizedBox(height: 8.h),
-          _buildEarningsRow("Closeté fee (12%)", formattedFee),
-          SizedBox(height: 10.h),
-          const Divider(color: Colors.white10),
-          SizedBox(height: 10.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "You'll Earn",
-                style: GoogleFonts.dmSans(
-                  fontSize: 14.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                ),
+          Text(
+            "Brand",
+            style: GoogleFonts.dmSans(
+              fontSize: 14.sp,
+              color: Colors.white38,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          SizedBox(width: 16.w),
+          Expanded(
+            child: TextField(
+              controller: controller.brandController,
+              textAlign: TextAlign.end,
+              enableSuggestions: false,
+              autocorrect: false,
+              autofillHints: const [],
+              style: GoogleFonts.dmSans(
+                fontSize: 14.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
               ),
-              Text(
-                formattedEarn,
-                style: GoogleFonts.dmSans(
-                  fontSize: 16.sp,
-                  color: const Color(0xFFE2B744),
-                  fontWeight: FontWeight.w800,
-                ),
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
               ),
-            ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildPostItemButton(
-    BuildContext context,
-    dynamic item,
-    String formattedPrice,
-  ) {
-    return CustomGoldButton(
-      text: "Post Item",
-      height: 50.h,
-      suffix: Icon(
-        Icons.arrow_forward_rounded,
-        color: Colors.black,
-        size: 18.sp,
+  Widget _buildDescriptionEditRow() {
+    return Container(
+      margin: EdgeInsets.only(bottom: 8.h),
+      padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 12.h),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F1012),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.05),
+          width: 1.0,
+        ),
       ),
-      onTap: () {
-        showCustomDippedBottomSheet(
-          context: context,
-          logo: Container(
-            width: 54.r,
-            height: 54.r,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Color(0xFF00C753),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Description",
+            style: GoogleFonts.dmSans(
+              fontSize: 13.sp,
+              color: Colors.white38,
+              fontWeight: FontWeight.w500,
             ),
-            child: Icon(Icons.check_rounded, color: Colors.white, size: 32.sp),
           ),
-          content: _SuccessBottomSheetContent(
-            item: item,
-            formattedPrice: formattedPrice,
-            onDismiss: () {
-              Get.back(); // Pop the bottom sheet
-              Get.back(); // Pop SellItemDetailScreen
-              Get.back(); // Pop SellScreen (Camera)
+          SizedBox(height: 8.h),
+          TextField(
+            controller: controller.descriptionController,
+            maxLines: null,
+            maxLength: 100,
+            style: GoogleFonts.dmSans(
+              fontSize: 14.sp,
+              color: Colors.white,
+              height: 1.4,
+              fontWeight: FontWeight.w500,
+            ),
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              isDense: true,
+              contentPadding: EdgeInsets.zero,
+              counterText: "",
+            ),
+            onChanged: (val) {
+              controller.rxDescriptionLength.value = val.length;
             },
           ),
-        );
-      },
+          SizedBox(height: 8.h),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Obx(
+              () => Text(
+                "${controller.rxDescriptionLength.value}/100",
+                style: GoogleFonts.dmSans(
+                  fontSize: 11.sp,
+                  color: Colors.white38,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
+  }
+
+  Widget _buildPriceEditRow() {
+    return Obx(() {
+      final priceVal = double.tryParse(controller.rxPrice.value) ?? 0.0;
+      final isHigher = priceVal > 500.0;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            height: 54.h,
+            margin: EdgeInsets.only(bottom: 8.h),
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0F1012),
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(
+                color: isHigher
+                    ? const Color(0xFFFF453A)
+                    : Colors.white.withValues(alpha: 0.05),
+                width: 1.0,
+              ),
+            ),
+            child: Row(
+              children: [
+                Text(
+                  "Suggested price",
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14.sp,
+                    color: Colors.white38,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(width: 16.w),
+                Expanded(
+                  child: TextField(
+                    controller: controller.priceController,
+                    textAlign: TextAlign.end,
+                    keyboardType: TextInputType.number,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    decoration: const InputDecoration(
+                      prefixText: "AED ",
+                      prefixStyle: TextStyle(color: Colors.white38),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    onChanged: (val) {
+                      controller.rxPrice.value = val;
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (isHigher) ...[
+            Padding(
+              padding: EdgeInsets.only(left: 4.w, bottom: 8.h),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.info_outline_rounded,
+                    color: const Color(0xFFFF453A),
+                    size: 14.sp,
+                  ),
+                  SizedBox(width: 6.w),
+                  Text(
+                    "Listing price is higher than market rate",
+                    style: GoogleFonts.dmSans(
+                      fontSize: 12.sp,
+                      color: const Color(0xFFFF453A),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      );
+    });
+  }
+
+  Widget _buildConditionEditRow() {
+    return Container(
+      height: 54.h,
+      margin: EdgeInsets.only(bottom: 8.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F1012),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.05),
+          width: 1.0,
+        ),
+      ),
+      child: Row(
+        children: [
+          Text(
+            "Condition",
+            style: GoogleFonts.dmSans(
+              fontSize: 14.sp,
+              color: Colors.white38,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          SizedBox(width: 16.w),
+          Expanded(
+            child: TextField(
+              controller: controller.conditionController,
+              textAlign: TextAlign.end,
+              style: GoogleFonts.dmSans(
+                fontSize: 14.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProofOfPurchaseEditRow() {
+    return Container(
+      height: 54.h,
+      margin: EdgeInsets.only(bottom: 8.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F1012),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.05),
+          width: 1.0,
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              "Proof of purchase",
+              style: GoogleFonts.dmSans(
+                fontSize: 14.sp,
+                color: Colors.white38,
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          SizedBox(width: 8.w),
+          Obx(() {
+            if (controller.rxBillName.value.isEmpty) {
+              return GestureDetector(
+                onTap: () => controller.rxBillName.value = "Bill.pdf",
+                child: Text(
+                  "Upload Bill",
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14.sp,
+                    color: const Color(0xFFFFAF2C),
+                    fontWeight: FontWeight.w700,
+                    decoration: TextDecoration.underline,
+                    decorationColor: const Color(0xFFFFAF2C),
+                    decorationThickness: 1.5,
+                  ),
+                ),
+              );
+            } else {
+              return Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.picture_as_pdf_outlined,
+                      color: Colors.white,
+                      size: 14.sp,
+                    ),
+                    SizedBox(width: 6.w),
+                    Text(
+                      controller.rxBillName.value,
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+                    GestureDetector(
+                      onTap: () => controller.rxBillName.value = "",
+                      child: Icon(
+                        Icons.close,
+                        color: Colors.white38,
+                        size: 12.sp,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompactSellerDetailsCard() {
+    return _buildSellerDetailsCard();
   }
 }
 
@@ -638,9 +1131,10 @@ class _SuccessBottomSheetContent extends StatelessWidget {
         Center(
           child: Text(
             "Your item is live",
-            style: GoogleFonts.prata(
+            style: TextStyle(
+              fontFamily: 'Schnyder L',
               fontSize: 30.sp,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w300,
               color: Colors.white,
               letterSpacing: -0.5,
             ),
@@ -659,9 +1153,13 @@ class _SuccessBottomSheetContent extends StatelessWidget {
         ),
         SizedBox(height: 24.h),
         Container(
-          padding: EdgeInsets.all(12.w),
+          padding: EdgeInsets.all(10.w),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.03),
+            gradient: const LinearGradient(
+              begin: Alignment.centerRight,
+              end: Alignment.centerLeft,
+              colors: [Color(0xFF292A2D), Color(0xFF1C1D21)],
+            ),
             borderRadius: BorderRadius.circular(16.r),
             border: Border.all(
               color: Colors.white.withValues(alpha: 0.05),
@@ -734,14 +1232,14 @@ class _SuccessBottomSheetContent extends StatelessWidget {
                 child: item.imageUrl.startsWith('http')
                     ? Image.network(
                         item.imageUrl,
-                        width: 76.r,
-                        height: 76.r,
+                        width: 102.r,
+                        height: 102.r,
                         fit: BoxFit.cover,
                       )
                     : Image.file(
                         File(item.imageUrl),
-                        width: 76.r,
-                        height: 76.r,
+                        width: 102.r,
+                        height: 102.r,
                         fit: BoxFit.cover,
                       ),
               ),

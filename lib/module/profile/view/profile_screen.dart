@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:cpk1989/core/widgets/custom_gold_button.dart';
+import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/core/services/auth_service.dart';
 
 class ProfileScreen extends GetView<ProfileController> {
@@ -18,7 +19,7 @@ class ProfileScreen extends GetView<ProfileController> {
       backgroundColor: const Color(0xFF0F1012),
       body: SafeArea(
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
+          physics: const ScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -30,8 +31,8 @@ class ProfileScreen extends GetView<ProfileController> {
                 child: Text(
                   "My Profile",
                   style: GoogleFonts.dmSans(
-                    fontSize: 28.sp,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 24.sp,
+                    fontWeight: FontWeight.w400,
                     color: Colors.white,
                   ),
                 ),
@@ -92,7 +93,10 @@ class ProfileScreen extends GetView<ProfileController> {
               Positioned(
                 bottom: 0,
                 right: 0,
-                child: GestureDetector(
+                child: CustomGlassButton(
+                  size: 24.r,
+                  padding: EdgeInsets.zero,
+                  glassColor: Colors.grey.withValues(alpha: 0.35),
                   onTap: () {
                     Get.snackbar(
                       'Profile Photo',
@@ -105,36 +109,20 @@ class ProfileScreen extends GetView<ProfileController> {
                       margin: const EdgeInsets.all(16),
                     );
                   },
-                  child: Container(
-                    height: 24.r,
-                    width: 24.r,
-                    decoration: BoxDecoration(
-                      color: const Color(
-                        0xFF282A2E,
-                      ), // Dark background matching design
-                      borderRadius: BorderRadius.circular(30.r),
-                      border: Border.all(color: Colors.white54, width: 1.0),
-                    ),
-                    child: Center(
-                      child: SvgPicture.asset(
-                        'assets/icons/edit pen .svg',
-                        width: 12.r,
-                        height: 12.r,
-                        colorFilter: const ColorFilter.mode(
-                          Colors.white,
-                          BlendMode.srcIn,
-                        ),
-                      ),
+                  child: SvgPicture.asset(
+                    'assets/icons/edit pen .svg',
+                    width: 12.r,
+                    height: 12.r,
+                    colorFilter: const ColorFilter.mode(
+                      Colors.white,
+                      BlendMode.srcIn,
                     ),
                   ),
                 ),
               ),
             ],
           ),
-
           SizedBox(width: 16.w),
-
-          // Name and Stats columns
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,16 +134,16 @@ class ProfileScreen extends GetView<ProfileController> {
                       Text(
                         controller.rxUserName.value,
                         style: GoogleFonts.dmSans(
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.w700,
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w500,
                           color: Colors.white,
                         ),
                       ),
                       SizedBox(width: 6.w),
-                      Icon(
-                        Icons.verified,
-                        color: const Color(0xFF007AFF), // Verified badge blue
-                        size: 16.sp,
+                      SvgPicture.asset(
+                        'assets/icons/blue_verify-badg.svg',
+                        width: 16.w,
+                        height: 16.h,
                       ),
                     ],
                   ),
@@ -167,7 +155,7 @@ class ProfileScreen extends GetView<ProfileController> {
                 Container(
                   padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 4.w),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.05),
+                    color: Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(
                       color: Colors.white.withValues(alpha: 0.05),
@@ -203,7 +191,7 @@ class ProfileScreen extends GetView<ProfileController> {
           style: GoogleFonts.dmSans(
             fontSize: 10.sp,
             fontWeight: FontWeight.w400,
-            color: Colors.white38, // Grey-ish label matching mockup
+            color: Colors.grey, // Grey-ish label matching mockup
           ),
         ),
         SizedBox(height: 4.h),
@@ -366,7 +354,11 @@ class ProfileScreen extends GetView<ProfileController> {
         margin: EdgeInsets.only(bottom: 12.h),
         padding: EdgeInsets.all(12.w),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.03),
+          gradient: const LinearGradient(
+            begin: Alignment.centerRight,
+            end: Alignment.centerLeft,
+            colors: [Color(0xFF292A2D), Color(0xFF1C1D21)],
+          ),
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
             color: Colors.white.withValues(alpha: 0.05),
@@ -449,14 +441,14 @@ class ProfileScreen extends GetView<ProfileController> {
               borderRadius: BorderRadius.circular(12.r),
               child: Image.network(
                 item.imageUrl,
-                width: 80.r,
-                height: 80.r,
+                width: 102.r,
+                height: 102.r,
                 fit: BoxFit.cover,
                 loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress == null) return child;
                   return Container(
-                    width: 80.r,
-                    height: 80.r,
+                    width: 102.r,
+                    height: 102.r,
                     color: const Color(0xFF1E2022),
                     child: const Center(
                       child: CircularProgressIndicator(
@@ -568,15 +560,15 @@ class ProfileScreen extends GetView<ProfileController> {
                   padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                   decoration: BoxDecoration(
                     color: const Color(
-                      0xFFE2B744,
+                      0xFFFFAF2C,
                     ), // Solid Gold background matching mockup
                     borderRadius: BorderRadius.circular(6.r),
                   ),
                   child: Text(
                     "Sold",
                     style: GoogleFonts.dmSans(
-                      fontSize: 9.sp,
-                      fontWeight: FontWeight.w700,
+                      fontSize: 10.sp,
+                      fontWeight: FontWeight.w500,
                       color: Colors.black,
                     ),
                   ),
@@ -679,114 +671,214 @@ class ProfileScreen extends GetView<ProfileController> {
       text: controller.rxLocation.value,
     );
 
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // First Name
-          _buildInputField(
-            controller: controller.firstNameController,
-            prefixIcon: Icons.person_outline,
-          ),
-          SizedBox(height: 12.h),
-
-          // Last Name
-          _buildInputField(
-            controller: controller.lastNameController,
-            prefixIcon: Icons.person_outline,
-          ),
-          SizedBox(height: 12.h),
-
-          // Address Line 1
-          _buildInputField(
-            controller: controller.addressController,
-            prefixIcon: Icons.location_on_outlined,
-          ),
-          SizedBox(height: 12.h),
-
-          // Location
-          _buildInputField(
-            controller: locationController,
-            prefixIcon: Icons.location_on_outlined,
-            readOnly: true,
-            suffix: Icon(
-              Icons.keyboard_arrow_down,
-              color: Colors.white54,
-              size: 20.sp,
+    return Obx(() {
+      final isEditing = controller.rxIsEditing.value;
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Details Header + Pen Icon Row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "DETAILS",
+                  style: GoogleFonts.dmSans(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white60,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    controller.rxIsEditing.toggle();
+                  },
+                  child: SvgPicture.asset(
+                    'assets/icons/edit pen .svg',
+                    width: 20.r,
+                    height: 20.r,
+                    colorFilter: const ColorFilter.mode(
+                      Color(0xFFFFAF2C),
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            onTap: () {
-              Get.snackbar(
-                'Location Selector',
-                'Location editing coming soon!',
-                snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: const Color(0xFF1E1F22),
-                colorText: Colors.white,
-              );
-            },
-          ),
-          SizedBox(height: 12.h),
+            SizedBox(height: 16.h),
 
-          // Phone Number
-          _buildPhoneInputField(controller.phoneController),
-
-          SizedBox(height: 32.h),
-
-          // Save Changes Gold Button (matches mockup)
-          CustomGoldButton(
-            text: "Save Changes",
-            suffix: Icon(Icons.arrow_forward, size: 16.r, color: Colors.black),
-            onTap: () => controller.saveChanges(),
-          ),
-
-          SizedBox(height: 20.h),
-
-          // Log Out button
-          TextButton.icon(
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.white30,
-              padding: EdgeInsets.symmetric(vertical: 12.h),
+            // First Name
+            _buildInputField(
+              controller: controller.firstNameController,
+              prefixIcon: 'assets/icons/person.svg',
+              hintText: "Enter first name here",
+              readOnly: !isEditing,
+              isEditing: isEditing,
             ),
-            onPressed: () async {
-              await Get.find<AuthService>().logout();
-              Get.offAllNamed(AppRoutes.login);
-            },
-            icon: const Icon(Icons.logout, size: 16, color: Colors.white30),
-            label: Text(
-              "Log Out",
-              style: GoogleFonts.dmSans(
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w500,
-                color: Colors.white38,
+            SizedBox(height: 12.h),
+
+            // Last Name
+            _buildInputField(
+              controller: controller.lastNameController,
+              prefixIcon: 'assets/icons/person.svg',
+              hintText: "Enter last name here",
+              readOnly: !isEditing,
+              isEditing: isEditing,
+            ),
+            SizedBox(height: 12.h),
+
+            // Address Line 1
+            _buildInputField(
+              controller: controller.addressController,
+              prefixIcon: 'assets/icons/location.svg',
+              hintText: "Enter location here",
+              readOnly: !isEditing,
+              isEditing: isEditing,
+            ),
+            SizedBox(height: 12.h),
+
+            // Location
+            _buildInputField(
+              controller: locationController,
+              prefixIcon: 'assets/icons/location.svg',
+              hintText: "Select country",
+              readOnly: true,
+              suffix: Icon(
+                Icons.keyboard_arrow_down,
+                color: Colors.white54,
+                size: 20.sp,
+              ),
+              onTap: isEditing
+                  ? () {
+                      Get.snackbar(
+                        'Location Selector',
+                        'Location editing coming soon!',
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: const Color(0xFF1E1F22),
+                        colorText: Colors.white,
+                      );
+                    }
+                  : null,
+              isEditing: isEditing,
+            ),
+            SizedBox(height: 12.h),
+
+            // Phone Number
+            _buildPhoneInputField(
+              controller.phoneController,
+              hintText: "Enter number here",
+              isEditing: isEditing,
+              readOnly: !isEditing,
+            ),
+
+            SizedBox(height: 32.h),
+
+            // Save Changes Gold Button (matches mockup)
+            if (isEditing) ...[
+              CustomGoldButton(
+                text: "Save Changes",
+                suffix: Icon(
+                  Icons.arrow_forward,
+                  size: 16.r,
+                  color: Colors.black,
+                ),
+                onTap: () => controller.saveChanges(),
+              ),
+              SizedBox(height: 20.h),
+            ],
+
+            // Log Out button
+            TextButton.icon(
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white30,
+                padding: EdgeInsets.symmetric(vertical: 12.h),
+              ),
+              onPressed: () async {
+                await Get.find<AuthService>().logout();
+                Get.offAllNamed(AppRoutes.login);
+              },
+              icon: const Icon(Icons.logout, size: 16, color: Colors.white30),
+              label: Text(
+                "Log Out",
+                style: GoogleFonts.dmSans(
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white38,
+                ),
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildFieldContainer({
+    required Widget child,
+    required bool isEditing,
+  }) {
+    final gradient = const LinearGradient(
+      begin: Alignment.centerRight,
+      end: Alignment.centerLeft,
+      colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
     );
+
+    if (isEditing) {
+      return CustomPaint(
+        painter: _GradientBorderPainter(
+          gradient: gradient,
+          strokeWidth: 1.0,
+          borderRadius: 12.r,
+        ),
+        child: Container(
+          height: 56.h,
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          alignment: Alignment.center,
+          child: child,
+        ),
+      );
+    } else {
+      return Container(
+        height: 56.h,
+        decoration: BoxDecoration(
+          gradient: gradient,
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        alignment: Alignment.center,
+        child: child,
+      );
+    }
   }
 
   Widget _buildInputField({
     required TextEditingController controller,
-    required IconData prefixIcon,
+    required String prefixIcon,
+    String? hintText,
     Widget? suffix,
     bool readOnly = false,
     VoidCallback? onTap,
+    required bool isEditing,
   }) {
-    return Container(
-      height: 56.h,
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
-          width: 1.0,
-        ),
-      ),
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
+    return _buildFieldContainer(
+      isEditing: isEditing,
       child: Row(
         children: [
-          Icon(prefixIcon, color: Colors.white54, size: 20.sp),
+          SvgPicture.asset(
+            prefixIcon,
+            width: 20.r,
+            height: 20.r,
+            colorFilter: const ColorFilter.mode(
+              Colors.white54,
+              BlendMode.srcIn,
+            ),
+          ),
           SizedBox(width: 12.w),
           Expanded(
             child: TextField(
@@ -798,10 +890,16 @@ class ProfileScreen extends GetView<ProfileController> {
                 color: Colors.white,
                 fontWeight: FontWeight.w500,
               ),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: InputBorder.none,
                 isDense: true,
                 contentPadding: EdgeInsets.zero,
+                hintText: hintText,
+                hintStyle: GoogleFonts.dmSans(
+                  fontSize: 14.sp,
+                  color: Colors.white38,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ),
@@ -811,31 +909,40 @@ class ProfileScreen extends GetView<ProfileController> {
     );
   }
 
-  Widget _buildPhoneInputField(TextEditingController controller) {
-    return Container(
-      height: 56.h,
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
-          width: 1.0,
-        ),
-      ),
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
+  Widget _buildPhoneInputField(
+    TextEditingController controller, {
+    String? hintText,
+    required bool isEditing,
+    bool readOnly = false,
+  }) {
+    return _buildFieldContainer(
+      isEditing: isEditing,
       child: Row(
         children: [
+          SvgPicture.asset(
+            'assets/icons/phone.svg',
+            width: 20.r,
+            height: 20.r,
+            colorFilter: const ColorFilter.mode(
+              Colors.white54,
+              BlendMode.srcIn,
+            ),
+          ),
+          SizedBox(width: 12.w),
+
           // Country code selector
           GestureDetector(
-            onTap: () {
-              Get.snackbar(
-                'Country Code',
-                'Country code selection coming soon!',
-                snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: const Color(0xFF1E1F22),
-                colorText: Colors.white,
-              );
-            },
+            onTap: !readOnly
+                ? () {
+                    Get.snackbar(
+                      'Country Code',
+                      'Country code selection coming soon!',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: const Color(0xFF1E1F22),
+                      colorText: Colors.white,
+                    );
+                  }
+                : null,
             child: Row(
               children: [
                 Text(
@@ -869,16 +976,23 @@ class ProfileScreen extends GetView<ProfileController> {
           Expanded(
             child: TextField(
               controller: controller,
+              readOnly: readOnly,
               keyboardType: TextInputType.phone,
               style: GoogleFonts.dmSans(
                 fontSize: 14.sp,
                 color: Colors.white,
                 fontWeight: FontWeight.w500,
               ),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: InputBorder.none,
                 isDense: true,
                 contentPadding: EdgeInsets.zero,
+                hintText: hintText,
+                hintStyle: GoogleFonts.dmSans(
+                  fontSize: 14.sp,
+                  color: Colors.white38,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ),
@@ -946,22 +1060,23 @@ class ProfileScreen extends GetView<ProfileController> {
                 ),
               ),
             ),
-            SizedBox(height: 20.h),
-
-            // Product Card
+            SizedBox(height: 24.h),
             Container(
-              padding: EdgeInsets.all(12.w),
+              padding: EdgeInsets.all(10.w),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.04),
+                gradient: const LinearGradient(
+                  begin: Alignment.centerRight,
+                  end: Alignment.centerLeft,
+                  colors: [Color(0xFF292A2D), Color(0xFF1C1D21)],
+                ),
                 borderRadius: BorderRadius.circular(16.r),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.06),
+                  color: Colors.white.withValues(alpha: 0.05),
                   width: 1.0,
                 ),
               ),
               child: Row(
                 children: [
-                  // Text details
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -979,49 +1094,68 @@ class ProfileScreen extends GetView<ProfileController> {
                         Text(
                           item.itemName,
                           style: GoogleFonts.dmSans(
-                            fontSize: 15.sp,
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(height: 8.h),
-                        // Price Tag Capsule
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 8.w,
-                            vertical: 4.h,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.05),
-                            borderRadius: BorderRadius.circular(6.r),
-                          ),
-                          child: Text(
-                            "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
-                            style: GoogleFonts.dmSans(
-                              fontSize: 11.sp,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
+                        SizedBox(height: 12.h),
+                        Row(
+                          children: [
+                            Text(
+                              "Listed at  ",
+                              style: GoogleFonts.dmSans(
+                                fontSize: 12.sp,
+                                color: Colors.white38,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                          ),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8.w,
+                                vertical: 4.h,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.08),
+                                borderRadius: BorderRadius.circular(6.r),
+                              ),
+                              child: Text(
+                                "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 11.sp,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
                   SizedBox(width: 16.w),
-                  // Product Image
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12.r),
-                    child: Image.network(
-                      item.imageUrl,
-                      width: 76.r,
-                      height: 76.r,
-                      fit: BoxFit.cover,
-                    ),
+                    child: item.imageUrl.startsWith('http')
+                        ? Image.network(
+                            item.imageUrl,
+                            width: 102.r,
+                            height: 102.r,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.file(
+                            File(item.imageUrl),
+                            width: 102.r,
+                            height: 102.r,
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 24.h),
 
             // Help text
             Center(
@@ -1077,4 +1211,35 @@ class ProfileScreen extends GetView<ProfileController> {
       backgroundColor: Colors.transparent,
     );
   }
+}
+
+class _GradientBorderPainter extends CustomPainter {
+  final LinearGradient gradient;
+  final double strokeWidth;
+  final double borderRadius;
+
+  _GradientBorderPainter({
+    required this.gradient,
+    required this.strokeWidth,
+    required this.borderRadius,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+    final paint = Paint()
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke
+      ..shader = gradient.createShader(rect);
+
+    final rrect = RRect.fromRectAndRadius(
+      rect.deflate(strokeWidth / 2),
+      Radius.circular(borderRadius),
+    );
+
+    canvas.drawRRect(rrect, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

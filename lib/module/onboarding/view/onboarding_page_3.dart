@@ -16,9 +16,10 @@ class OnboardingPage3 extends StatelessWidget {
         ///<================= HEADER TEXT =========================>///
         Text(
           'Shop with',
-          style: GoogleFonts.prata(
+          style: TextStyle(
+            fontFamily: 'Schnyder L',
             fontSize: 38.sp,
-            fontWeight: FontWeight.w400,
+            fontWeight: FontWeight.w300,
             color: AppTheme.primaryText,
             height: 1.15,
           ),
@@ -31,9 +32,10 @@ class OnboardingPage3 extends StatelessWidget {
               ),
           child: Text(
             'Confidence',
-            style: GoogleFonts.prata(
+            style: TextStyle(
+              fontFamily: 'Schnyder L',
               fontSize: 38.sp,
-              fontWeight: FontWeight.w400,
+              fontWeight: FontWeight.w300,
               color: AppTheme.primaryText,
               height: 1.15,
             ),

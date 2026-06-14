@@ -19,6 +19,7 @@ class WishlistItem {
 
 class WishlistController extends GetxController {
   final rxItems = <WishlistItem>[].obs;
+  final rxRemovingIds = <String>[].obs;
 
   @override
   void onInit() {
@@ -27,17 +28,24 @@ class WishlistController extends GetxController {
   }
 
   void toggleFavorite(String id) {
-    rxItems.removeWhere((item) => item.id == id);
-    Get.snackbar(
-      'Removed',
-      'Item removed from your wishlist.',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: const Color(0xFF1E1F22),
-      colorText: Colors.white,
-      duration: const Duration(seconds: 2),
-      borderRadius: 8,
-      margin: const EdgeInsets.all(16),
-    );
+    if (rxRemovingIds.contains(id)) return;
+    rxRemovingIds.add(id);
+
+    Future.delayed(const Duration(milliseconds: 500), () {
+      rxItems.removeWhere((item) => item.id == id);
+      rxRemovingIds.remove(id);
+
+      Get.snackbar(
+        'Removed',
+        'Item removed from your wishlist.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFF1E1F22),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+        borderRadius: 8,
+        margin: const EdgeInsets.all(16),
+      );
+    });
   }
 
   void _loadItems() {

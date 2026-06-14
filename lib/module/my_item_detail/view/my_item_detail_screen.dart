@@ -98,6 +98,8 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
         centerTitle: true,
         leadingWidth: 70.w,
         leading: Padding(
@@ -118,7 +120,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
           "Item Detail",
           style: GoogleFonts.dmSans(
             fontSize: 20.sp,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w500,
             color: Colors.white,
           ),
         ),
@@ -155,7 +157,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -237,8 +239,8 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                     child: Text(
                       item.itemName,
                       style: GoogleFonts.dmSans(
-                        fontSize: 22.sp,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w500,
                         color: Colors.white,
                       ),
                       maxLines: 2,
@@ -267,15 +269,25 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                           : "• $status",
                       style: GoogleFonts.dmSans(
                         fontSize: 12.sp,
-                        fontWeight: FontWeight.w700,
-                        color: status == null ? Colors.white54 : Colors.black,
+                        fontWeight: FontWeight.w500,
+                        color: status == null
+                            ? Colors.white54
+                            : status == "Rejected"
+                            ? Colors.white
+                            : Colors.black,
                       ),
                     ),
                   ),
                 ],
               ),
 
-              SizedBox(height: 28.h),
+              SizedBox(height: 16.h),
+              Divider(
+                color: Colors.white.withValues(alpha: 0.08),
+                thickness: 1.0,
+                height: 1.0,
+              ),
+              SizedBox(height: 16.h),
 
               // ITEM DETAILS Section Header
               Row(
@@ -329,20 +341,43 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                 SizedBox(height: 16.h),
 
                 // Stepper Timeline Tracker
-                VerticalStepper(
-                  steps: steps,
-                  nodeSize: 36.r,
-                  activeDashedSize: 48.r,
-                  lineWidth: 2.w,
-                  stepHeight: 88.h,
-                  titleStyle: GoogleFonts.dmSans(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
+                CustomPaint(
+                  painter: _GradientBorderPainter(
+                    gradient: const LinearGradient(
+                      begin: Alignment.centerRight,
+                      end: Alignment.centerLeft,
+                      colors: [Color(0xFF292A2D), Color(0xFF212226)],
+                    ),
+                    strokeWidth: 1.0,
+                    borderRadius: 16.r,
                   ),
-                  subtitleStyle: GoogleFonts.dmSans(
-                    fontSize: 12.sp,
-                    color: Colors.white54,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 20.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(
+                        alpha: 0.04,
+                      ), // #FFFFFF0A is ~0.04 opacity
+                      borderRadius: BorderRadius.circular(16.r),
+                    ),
+                    child: VerticalStepper(
+                      steps: steps,
+                      nodeSize: 36.r,
+                      activeDashedSize: 48.r,
+                      lineWidth: 2.w,
+                      stepHeight: 88.h,
+                      titleStyle: GoogleFonts.dmSans(
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                      subtitleStyle: GoogleFonts.dmSans(
+                        fontSize: 12.sp,
+                        color: Colors.white54,
+                      ),
+                    ),
                   ),
                 ),
 
@@ -352,10 +387,9 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                   Container(
                     padding: EdgeInsets.all(16.w),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFF453A).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12.r),
                       border: Border.all(
-                        color: const Color(0xFFFF453A),
+                        color: const Color(0xFFFF383C).withValues(alpha: 0.5),
                         width: 1.0,
                       ),
                     ),
@@ -370,26 +404,48 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                                 "This item didn't pass authentication",
                                 style: GoogleFonts.dmSans(
                                   fontSize: 14.sp,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color(0xFFFF383C),
                                 ),
                               ),
                               SizedBox(height: 4.h),
-                              Text(
-                                "Your item is being sent back Estimated delivery: 2-3 days",
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 12.sp,
-                                  color: Colors.white70,
+                              Text.rich(
+                                TextSpan(
+                                  text:
+                                      "Your item is being sent back Estimated delivery: ",
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 12.sp,
+                                    color: Colors.white54,
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text: "2-3 days",
+                                      style: GoogleFonts.dmSans(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
                         ),
                         SizedBox(width: 12.w),
-                        Icon(
-                          Icons.warning_amber_rounded,
-                          color: const Color(0xFFFF453A),
-                          size: 24.sp,
+                        Container(
+                          width: 40.r,
+                          height: 40.r,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFF453A),
+                            borderRadius: BorderRadius.circular(10.r),
+                          ),
+                          child: Center(
+                            child: Icon(
+                              Icons.warning_amber_rounded,
+                              color: Colors.white,
+                              size: 20.sp,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -412,79 +468,98 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                 SizedBox(height: 12.h),
 
                 // Buyer details card capsule
-                Container(
-                  padding: EdgeInsets.all(12.w),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.03),
-                    borderRadius: BorderRadius.circular(16.r),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.05),
-                      width: 1.0,
+                CustomPaint(
+                  painter: _GradientBorderPainter(
+                    gradient: const LinearGradient(
+                      begin: Alignment.centerRight,
+                      end: Alignment.centerLeft,
+                      colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
                     ),
+                    strokeWidth: 1.0,
+                    borderRadius: 16.r,
                   ),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 18.r,
-                            backgroundColor: const Color(0xFF282A2E),
-                            backgroundImage: const NetworkImage(
-                              'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=150',
-                            ),
-                          ),
-                          SizedBox(width: 12.w),
-                          Text(
-                            "Aisha Khan",
-                            style: GoogleFonts.dmSans(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
+                  child: Container(
+                    padding: EdgeInsets.all(16.w),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment.centerRight,
+                        end: Alignment.centerLeft,
+                        colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
                       ),
-                      SizedBox(height: 12.h),
-                      const Divider(color: Colors.white10),
-                      SizedBox(height: 8.h),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on_outlined,
-                            color: Colors.white38,
-                            size: 16.sp,
-                          ),
-                          SizedBox(width: 8.w),
-                          Expanded(
-                            child: Text(
-                              "Palm Jumeirah, Building 5, Apt 1204",
+                      borderRadius: BorderRadius.circular(16.r),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 18.r,
+                              backgroundColor: const Color(0xFF282A2E),
+                              backgroundImage: const NetworkImage(
+                                'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=150',
+                              ),
+                            ),
+                            SizedBox(width: 12.w),
+                            Text(
+                              "Aisha Khan",
+                              style: GoogleFonts.dmSans(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 12.h),
+                        const Divider(color: Colors.white10),
+                        SizedBox(height: 12.h),
+                        Row(
+                          children: [
+                            SvgPicture.asset(
+                              'assets/icons/location.svg',
+                              width: 16.sp,
+                              height: 16.sp,
+                              colorFilter: const ColorFilter.mode(
+                                Colors.white38,
+                                BlendMode.srcIn,
+                              ),
+                            ),
+                            SizedBox(width: 8.w),
+                            Expanded(
+                              child: Text(
+                                "Palm Jumeirah, Building 5, Apt 1204",
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 13.sp,
+                                  color: Colors.white70,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 12.h),
+                        Row(
+                          children: [
+                            SvgPicture.asset(
+                              'assets/icons/phone.svg',
+                              width: 16.sp,
+                              height: 16.sp,
+                              colorFilter: const ColorFilter.mode(
+                                Colors.white38,
+                                BlendMode.srcIn,
+                              ),
+                            ),
+                            SizedBox(width: 8.w),
+                            Text(
+                              "+971 50 123 4567",
                               style: GoogleFonts.dmSans(
                                 fontSize: 13.sp,
                                 color: Colors.white70,
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 8.h),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.phone_outlined,
-                            color: Colors.white38,
-                            size: 16.sp,
-                          ),
-                          SizedBox(width: 8.w),
-                          Text(
-                            "+971 50 123 4567",
-                            style: GoogleFonts.dmSans(
-                              fontSize: 13.sp,
-                              color: Colors.white70,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
 
@@ -511,30 +586,24 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                             vertical: 4.h,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(
-                              0xFF30D158,
-                            ).withValues(alpha: 0.1),
+                            color: const Color(0xFF107D2C),
                             borderRadius: BorderRadius.circular(6.r),
-                            border: Border.all(
-                              color: const Color(0xFF30D158),
-                              width: 1.0,
-                            ),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.check,
-                                color: const Color(0xFF30D158),
-                                size: 10.sp,
+                                Icons.check_circle_outline_rounded,
+                                color: Colors.white,
+                                size: 12.sp,
                               ),
-                              SizedBox(width: 4.w),
+                              SizedBox(width: 6.w),
                               Text(
                                 "Payout completed",
                                 style: GoogleFonts.dmSans(
                                   fontSize: 10.sp,
-                                  fontWeight: FontWeight.w700,
-                                  color: const Color(0xFF30D158),
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
                                 ),
                               ),
                             ],
@@ -552,7 +621,11 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                       vertical: 12.h,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.03),
+                      gradient: const LinearGradient(
+                        begin: Alignment.centerRight,
+                        end: Alignment.centerLeft,
+                        colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+                      ),
                       borderRadius: BorderRadius.circular(16.r),
                       border: Border.all(
                         color: Colors.white.withValues(alpha: 0.05),
@@ -571,10 +644,10 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "You'll Earn",
+                              "You earned",
                               style: GoogleFonts.dmSans(
                                 fontSize: 14.sp,
-                                color: Colors.white,
+                                color: const Color(0xFFFFAF2C),
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -583,7 +656,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                               style: GoogleFonts.dmSans(
                                 fontSize: 16.sp,
                                 color: const Color(
-                                  0xFFE2B744,
+                                  0xFFFFAF2C,
                                 ), // Gold Earn value
                                 fontWeight: FontWeight.w800,
                               ),
@@ -702,7 +775,11 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
       margin: EdgeInsets.only(bottom: 8.h),
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
+        gradient: const LinearGradient(
+          begin: Alignment.centerRight,
+          end: Alignment.centerLeft,
+          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+        ),
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.05),
@@ -744,7 +821,11 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
       margin: EdgeInsets.only(bottom: 8.h),
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
+        gradient: const LinearGradient(
+          begin: Alignment.centerRight,
+          end: Alignment.centerLeft,
+          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+        ),
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.05),
@@ -782,7 +863,11 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
       margin: EdgeInsets.only(bottom: 8.h),
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
+        gradient: const LinearGradient(
+          begin: Alignment.centerRight,
+          end: Alignment.centerLeft,
+          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+        ),
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.05),
@@ -792,14 +877,18 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: GoogleFonts.dmSans(
-              fontSize: 14.sp,
-              color: Colors.white38,
-              fontWeight: FontWeight.w500,
+          Expanded(
+            child: Text(
+              label,
+              style: GoogleFonts.dmSans(
+                fontSize: 14.sp,
+                color: Colors.white38,
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
+          SizedBox(width: 8.w),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
             decoration: BoxDecoration(
@@ -856,4 +945,35 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
       ],
     );
   }
+}
+
+class _GradientBorderPainter extends CustomPainter {
+  final LinearGradient gradient;
+  final double strokeWidth;
+  final double borderRadius;
+
+  _GradientBorderPainter({
+    required this.gradient,
+    required this.strokeWidth,
+    required this.borderRadius,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+    final paint = Paint()
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke
+      ..shader = gradient.createShader(rect);
+
+    final rrect = RRect.fromRectAndRadius(
+      rect.deflate(strokeWidth / 2),
+      Radius.circular(borderRadius),
+    );
+
+    canvas.drawRRect(rrect, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

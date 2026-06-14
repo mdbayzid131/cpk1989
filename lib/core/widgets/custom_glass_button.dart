@@ -41,6 +41,7 @@ class CustomGlassButton extends StatelessWidget {
   final double size;
   final double blurSigma;
   final EdgeInsetsGeometry? padding;
+  final Color? glassColor;
 
   const CustomGlassButton({
     super.key,
@@ -49,6 +50,7 @@ class CustomGlassButton extends StatelessWidget {
     this.size = 50.0,
     this.blurSigma = 15.0, // Glass frosted blur strength
     this.padding,
+    this.glassColor,
   });
 
   @override
@@ -80,9 +82,9 @@ class CustomGlassButton extends StatelessWidget {
           settings: LiquidGlassSettings(
             thickness: 10.0, // refraction intensity
             blur: blurSigma, // blur intensity
-            glassColor: Colors.white.withValues(
+            glassColor: glassColor ?? Colors.white.withValues(
               alpha: 0.08,
-            ), // Figma: #FFFFFF at 8% opacity
+            ), // Default: #FFFFFF at 8% opacity
             lightIntensity: 1.0,
             lightAngle:
                 0.25 *

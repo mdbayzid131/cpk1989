@@ -30,9 +30,10 @@ class EmailVerificationBottomSheetContent extends GetView<AuthController> {
         Center(
           child: Text(
             "Verify your email",
-            style: GoogleFonts.prata(
+            style: TextStyle(
+              fontFamily: 'Schnyder L',
               fontSize: 28.sp,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w300,
               color: Colors.white,
             ),
           ),

@@ -82,8 +82,7 @@ class WishlistScreen extends GetView<WishlistController> {
                     crossAxisCount: 2,
                     crossAxisSpacing: 12.w,
                     mainAxisSpacing: 12.h,
-                    childAspectRatio:
-                        0.70, // Optimized aspect ratio for tall card details
+                    childAspectRatio: 175 / 204,
                   ),
                   itemBuilder: (context, index) {
                     final item = items[index];
@@ -119,20 +118,25 @@ class WishlistScreen extends GetView<WishlistController> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.03),
-          borderRadius: BorderRadius.circular(16.r),
+          gradient: const LinearGradient(
+            begin: Alignment.centerRight,
+            end: Alignment.centerLeft,
+            colors: [Color(0xFF292A2D), Color(0xFF1C1D21)],
+          ),
+          borderRadius: BorderRadius.circular(10.r),
           border: Border.all(
             color: Colors.white.withValues(alpha: 0.05),
             width: 1.0,
           ),
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16.r),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // 1. Top Image
-              Expanded(
+        padding: EdgeInsets.fromLTRB(6.w, 6.h, 6.w, 10.h),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // 1. Top Image
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8.r),
                 child: Image.network(
                   item.imageUrl,
                   fit: BoxFit.cover,
@@ -154,57 +158,63 @@ class WishlistScreen extends GetView<WishlistController> {
                     return Container(
                       color: const Color(0xFF1E2022),
                       child: const Center(
-                        child: Icon(Icons.broken_image, color: Colors.white30),
+                        child: Icon(Icons.broken_image, color: Colors.white38),
                       ),
                     );
                   },
                 ),
               ),
+            ),
 
-              // 2. Bottom Details Info
-              Padding(
-                padding: EdgeInsets.all(12.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Brand & Name
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item.brand.toUpperCase(),
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 10.sp,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white38,
-                                  letterSpacing: 0.5,
-                                ),
+            SizedBox(height: 10.h), // Gap: 10px
+            // 2. Bottom Details Info
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 4.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Brand & Name
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item.brand.toUpperCase(),
+                              style: GoogleFonts.dmSans(
+                                fontSize: 10.sp,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white38,
+                                letterSpacing: 0.5,
                               ),
-                              SizedBox(height: 4.h),
-                              Text(
-                                item.itemName,
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 13.sp,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white,
-                                ),
+                            ),
+                            SizedBox(height: 4.h),
+                            Text(
+                              item.itemName,
+                              style: GoogleFonts.dmSans(
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
                               ),
-                            ],
-                          ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
+                      ),
 
-                        SizedBox(width: 8.w),
+                      SizedBox(width: 8.w),
 
-                        // Red Heart Squircle button (Matches design)
-                        GestureDetector(
+                      // Red Heart Squircle button (Matches design)
+                      Obx(() {
+                        final isRemoving = controller.rxRemovingIds.contains(item.id);
+                        return GestureDetector(
                           onTap: () => controller.toggleFavorite(item.id),
                           child: Container(
-                            width: 30.r,
-                            height: 30.r,
+                            width: 32.r,
+                            height: 32.r,
                             decoration: BoxDecoration(
                               color: Colors.white.withValues(alpha: 0.05),
                               borderRadius: BorderRadius.circular(8.r),
@@ -213,43 +223,44 @@ class WishlistScreen extends GetView<WishlistController> {
                                 width: 1.0,
                               ),
                             ),
-                            child: const Center(
+                            child: Center(
                               child: Icon(
-                                Icons.favorite,
-                                color: Colors.red,
-                                size: 16,
+                                Icons.favorite_rounded,
+                                color: isRemoving
+                                    ? Colors.white
+                                    : const Color(0xFFFF453A),
+                                size: 18,
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        );
+                      }),
+                    ],
+                  ),
+                  SizedBox(height: 10.h), // Gap: 10px
+                  // Price Tag Capsule
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8.w,
+                      vertical: 4.h,
                     ),
-                    SizedBox(height: 8.h),
-
-                    // Price Tag Capsule
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 8.w,
-                        vertical: 4.h,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.05),
-                        borderRadius: BorderRadius.circular(6.r),
-                      ),
-                      child: Text(
-                        "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
-                        style: GoogleFonts.dmSans(
-                          fontSize: 11.sp,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(6.r),
+                    ),
+                    child: Text(
+                      "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
