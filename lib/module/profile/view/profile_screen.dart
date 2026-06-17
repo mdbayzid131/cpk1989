@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cpk1989/config/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -262,7 +263,7 @@ class ProfileScreen extends GetView<ProfileController> {
                 fontSize: 11.sp,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                 color: isSelected
-                    ? const Color(0xFFE2B744)
+                    ? const Color(0xFFFFAF2C)
                     : const Color(0xFF8E8E93),
                 letterSpacing: 0.5,
               ),
@@ -344,7 +345,7 @@ class ProfileScreen extends GetView<ProfileController> {
     final isDelivered = status == "Delivered";
     final statusColor = isDelivered
         ? const Color(0xFF30D158)
-        : const Color(0xFFE2B744);
+        : const Color(0xFFFFAF2C);
 
     return GestureDetector(
       onTap: () {
@@ -401,8 +402,8 @@ class ProfileScreen extends GetView<ProfileController> {
                         Text(
                           status,
                           style: GoogleFonts.dmSans(
-                            fontSize: 10.sp,
-                            fontWeight: FontWeight.w700,
+                            fontSize: 10.5.sp,
+                            fontWeight: FontWeight.w500,
                             color: statusColor,
                           ),
                         ),
@@ -415,8 +416,8 @@ class ProfileScreen extends GetView<ProfileController> {
                   Text(
                     item.itemName,
                     style: GoogleFonts.dmSans(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w700,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w500,
                       color: Colors.white,
                     ),
                   ),
@@ -427,7 +428,8 @@ class ProfileScreen extends GetView<ProfileController> {
                     "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
                     style: GoogleFonts.dmSans(
                       fontSize: 12.sp,
-                      color: Colors.white38,
+                      color: AppTheme.gray,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
@@ -557,7 +559,7 @@ class ProfileScreen extends GetView<ProfileController> {
                 top: 8.h,
                 left: 8.w,
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                  padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
                   decoration: BoxDecoration(
                     color: const Color(
                       0xFFFFAF2C,

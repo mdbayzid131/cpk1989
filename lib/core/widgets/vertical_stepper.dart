@@ -71,6 +71,22 @@ class VerticalStepper extends StatelessWidget {
           end: Alignment.bottomRight,
         );
 
+    final lineGradient =
+        goldGradient ??
+        LinearGradient(
+          colors: const [
+            Color(0xFFAF7413),
+            Color(0xFFC98C28),
+            Color(0xFFE2B744),
+            Color(0xFFFFED81),
+            Color(0xFFE1C24E),
+            Color(0xFFA06008),
+          ],
+          stops: const [0.0477, 0.1933, 0.3893, 0.5054, 0.6210, 0.9074],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        );
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(steps.length, (index) {
@@ -98,9 +114,9 @@ class VerticalStepper extends StatelessWidget {
                       bottom: 0,
                       child: Container(
                         width: lineWidth,
-                        color: isLineGold
-                            ? completedLineColor
-                            : inactiveLineColor,
+                        decoration: isLineGold
+                            ? BoxDecoration(gradient: lineGradient)
+                            : BoxDecoration(color: inactiveLineColor),
                       ),
                     ),
                   // Top connector line (for continuous connection)
@@ -112,10 +128,10 @@ class VerticalStepper extends StatelessWidget {
                           : stepHeight - (activeDashedSize / 2),
                       child: Container(
                         width: lineWidth,
-                        color:
+                        decoration:
                             steps[index - 1].state == StepperStepState.completed
-                            ? completedLineColor
-                            : inactiveLineColor,
+                            ? BoxDecoration(gradient: lineGradient)
+                            : BoxDecoration(color: inactiveLineColor),
                       ),
                     ),
                   // The Node

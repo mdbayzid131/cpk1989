@@ -303,10 +303,14 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                     ),
                   ),
                   if (status == null)
-                    Icon(
-                      Icons.edit_outlined,
-                      color: const Color(0xFFE2B744),
-                      size: 18.sp,
+                    SvgPicture.asset(
+                      'assets/icons/edit pen .svg',
+                      width: 18.sp,
+                      height: 18.sp,
+                      colorFilter: const ColorFilter.mode(
+                        Color(0xFFE2B744),
+                        BlendMode.srcIn,
+                      ),
                     ),
                 ],
               ),
@@ -367,7 +371,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                       nodeSize: 36.r,
                       activeDashedSize: 48.r,
                       lineWidth: 2.w,
-                      stepHeight: 88.h,
+                      stepHeight: 70.h,
                       titleStyle: GoogleFonts.dmSans(
                         fontSize: 15.sp,
                         fontWeight: FontWeight.w700,

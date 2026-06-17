@@ -77,7 +77,7 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                             ),
                             // Price tag bottom right
                             Positioned(
-                              bottom: -16.h,
+                              bottom: -22.h,
                               right: 16.w,
                               child: Container(
                                 padding: EdgeInsets.symmetric(
@@ -151,7 +151,7 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                       Text(
                                         item.userName,
                                         style: GoogleFonts.dmSans(
-                                          fontSize: 18.sp,
+                                          fontSize: 16.sp,
                                           fontWeight: FontWeight.w500,
                                           color: Colors.white,
                                         ),
@@ -183,7 +183,7 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                               Text(
                                 item.itemName,
                                 style: GoogleFonts.dmSans(
-                                  fontSize: 28.sp,
+                                  fontSize: 20.sp,
                                   fontWeight: FontWeight.w500,
                                   color: Colors.white,
                                 ),

@@ -141,8 +141,8 @@ class HomeScreen extends GetView<HomeController> {
                                 Text(
                                   item.condition,
                                   style: GoogleFonts.dmSans(
-                                    fontSize: 14.sp,
-                                    color: Colors.white.withValues(alpha: 0.7),
+                                    fontSize: 12.sp,
+                                    color: Colors.white,
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),
@@ -156,7 +156,7 @@ class HomeScreen extends GetView<HomeController> {
                                       child: Text(
                                         item.itemName,
                                         style: GoogleFonts.dmSans(
-                                          fontSize: 24.sp,
+                                          fontSize: 20.sp,
                                           fontWeight: FontWeight.w500,
                                           color: Colors.white,
                                         ),
@@ -175,12 +175,12 @@ class HomeScreen extends GetView<HomeController> {
                                       child: Text(
                                         "View More",
                                         style: GoogleFonts.dmSans(
-                                          fontSize: 14.sp,
+                                          fontSize: 12.sp,
                                           color: Colors.white,
                                           decoration: TextDecoration.underline,
                                           decorationColor: Colors.white,
                                           decorationThickness: 1.5,
-                                          fontWeight: FontWeight.w400,
+                                          fontWeight: FontWeight.w600,
                                         ),
                                       ),
                                     ),
