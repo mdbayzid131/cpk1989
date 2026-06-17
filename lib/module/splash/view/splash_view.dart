@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,8 +15,8 @@ class SplashView extends GetView<SplashController> {
       ), // Dark premium charcoal background
       body: Stack(
         children: [
-          // 1. Rotating sunburst background
-          const Positioned.fill(child: RotatingSunburst()),
+          // 1. Rotating SVG background from Figma
+          const Positioned.fill(child: RotatingBackground()),
 
           // 2. Radial gradient overlay to fade the rays and add central glow (spotlight effect)
           Positioned.fill(
@@ -68,7 +67,7 @@ class SplashView extends GetView<SplashController> {
               },
               child: SvgPicture.asset(
                 'assets/icons/closet_logo.svg',
-                width: 180.w,
+                width: 140.w,
                 fit: BoxFit.contain,
               ),
             ),
@@ -79,72 +78,15 @@ class SplashView extends GetView<SplashController> {
   }
 }
 
-/// A CustomPainter that draws radiating sunburst rays.
-class SunburstPainter extends CustomPainter {
-  final Color rayColor;
-  final int rayCount;
-
-  SunburstPainter({required this.rayColor, this.rayCount = 48});
+/// A stateful wrapper that slowly rotates the background SVG.
+class RotatingBackground extends StatefulWidget {
+  const RotatingBackground({super.key});
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final maxRadius =
-        size.longestSide * 1.2; // exceed the screen edges to be safe
-    final rect = Rect.fromCircle(center: center, radius: maxRadius);
-
-    final paint = Paint()
-      ..style = PaintingStyle.fill
-      ..shader = RadialGradient(
-        colors: [
-          rayColor.withValues(
-            alpha: 0.0,
-          ), // Completely transparent in the center (behind logo)
-          rayColor.withValues(alpha: 0.01), // Keep the center clear of rays
-          rayColor, // Max brightness in the mid-range
-          rayColor.withValues(alpha: 0.01), // Fades out towards the edges
-        ],
-        stops: const [0.0, 0.08, 0.22, 0.6],
-      ).createShader(rect);
-
-    final angleStep = (2 * math.pi) / rayCount;
-    final path = Path();
-
-    for (int i = 0; i < rayCount; i += 2) {
-      final startAngle = i * angleStep;
-      final endAngle = (i + 1) * angleStep;
-
-      path.reset();
-      path.moveTo(center.dx, center.dy);
-      path.lineTo(
-        center.dx + maxRadius * math.cos(startAngle),
-        center.dy + maxRadius * math.sin(startAngle),
-      );
-      path.lineTo(
-        center.dx + maxRadius * math.cos(endAngle),
-        center.dy + maxRadius * math.sin(endAngle),
-      );
-      path.close();
-      canvas.drawPath(path, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant SunburstPainter oldDelegate) {
-    return oldDelegate.rayColor != oldDelegate.rayColor ||
-        oldDelegate.rayCount != rayCount;
-  }
+  State<RotatingBackground> createState() => _RotatingBackgroundState();
 }
 
-/// A stateful wrapper that slowly rotates the sunburst background.
-class RotatingSunburst extends StatefulWidget {
-  const RotatingSunburst({super.key});
-
-  @override
-  State<RotatingSunburst> createState() => _RotatingSunburstState();
-}
-
-class _RotatingSunburstState extends State<RotatingSunburst>
+class _RotatingBackgroundState extends State<RotatingBackground>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
@@ -167,14 +109,13 @@ class _RotatingSunburstState extends State<RotatingSunburst>
   Widget build(BuildContext context) {
     return RotationTransition(
       turns: _controller,
-      child: CustomPaint(
-        painter: SunburstPainter(
-          rayColor: const Color(
-            0xFFE2B744,
-          ).withValues(alpha: 0.30), // warmer, richer gold rays
-          rayCount: 48,
+      child: Transform.scale(
+        scale:
+            1.5, // scale up slightly so screen corners aren't exposed as it rotates
+        child: SvgPicture.asset(
+          'assets/icons/splash_bg.svg',
+          fit: BoxFit.cover,
         ),
-        child: const SizedBox.expand(),
       ),
     );
   }

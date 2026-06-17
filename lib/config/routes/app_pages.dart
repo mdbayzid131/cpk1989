@@ -21,6 +21,8 @@ import 'package:cpk1989/module/secure_checkout/view/terms_and_conditions_screen.
 import 'package:cpk1989/module/secure_checkout/binding/secure_checkout_binding.dart';
 import 'package:cpk1989/module/auth/view/login_screen.dart';
 import 'package:cpk1989/module/auth/binding/auth_binding.dart';
+import 'package:cpk1989/module/my_purchase_ditails/view/my_purchase_ditails.dart';
+import 'package:cpk1989/module/my_purchase_ditails/binding/my_purchase_ditails_binding.dart';
 
 class AppRoutes {
   static const String splash = '/splash';
@@ -35,6 +37,7 @@ class AppRoutes {
   static const String sellItemDetail = '/sell-item-detail';
   static const String secureCheckout = '/secure-checkout';
   static const String termsAndConditions = '/terms-and-conditions';
+  static const String myPurchaseDetails = '/my-purchase-details';
 }
 
 final Transition transition = Transition.fade;
@@ -110,6 +113,12 @@ final pages = [
   GetPage(
     name: AppRoutes.termsAndConditions,
     page: () => const TermsAndConditionsScreen(),
+    transition: transition,
+  ),
+  GetPage(
+    name: AppRoutes.myPurchaseDetails,
+    page: () => const MyPurchaseDitails(),
+    binding: MyPurchaseDitailsBinding(),
     transition: transition,
   ),
 ];

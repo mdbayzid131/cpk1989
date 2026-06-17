@@ -349,7 +349,7 @@ class ProfileScreen extends GetView<ProfileController> {
 
     return GestureDetector(
       onTap: () {
-        Get.toNamed(AppRoutes.purchaseDetail, arguments: item);
+        Get.toNamed(AppRoutes.myPurchaseDetails, arguments: item);
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 12.h),

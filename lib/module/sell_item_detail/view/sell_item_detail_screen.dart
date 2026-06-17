@@ -81,14 +81,16 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.only(bottom: 24.h),
+          padding: EdgeInsets.symmetric(horizontal: 16.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Stack(
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.vertical(bottom: Radius.circular(24.r)),
+                    borderRadius: BorderRadius.vertical(
+                      bottom: Radius.circular(24.r),
+                    ),
                     child: Container(
                       height: 300.h,
                       width: double.infinity,

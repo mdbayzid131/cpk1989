@@ -4,15 +4,6 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cpk1989/module/auth/controller/auth_controller.dart';
 
-
-
-
-
-
-
-
-
-
 class EmailVerificationBottomSheetContent extends GetView<AuthController> {
   const EmailVerificationBottomSheetContent({super.key});
 
@@ -32,7 +23,7 @@ class EmailVerificationBottomSheetContent extends GetView<AuthController> {
             "Verify your email",
             style: TextStyle(
               fontFamily: 'Schnyder L',
-              fontSize: 28.sp,
+              fontSize: 30.sp,
               fontWeight: FontWeight.w300,
               color: Colors.white,
             ),

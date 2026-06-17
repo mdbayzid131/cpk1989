@@ -22,6 +22,8 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
         centerTitle: true,
         leadingWidth: 70.w,
         leading: Padding(
