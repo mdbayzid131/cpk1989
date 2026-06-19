@@ -1,4 +1,4 @@
-package com.example.cpk1989
+package com.closete.app
 
 import io.flutter.embedding.android.FlutterActivity
 
