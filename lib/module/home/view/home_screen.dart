@@ -193,33 +193,33 @@ class HomeScreen extends GetView<HomeController> {
 
                           // Right Price Badge
                           Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 10.w,
-                              vertical: 6.h,
-                            ),
+                            padding: EdgeInsets.all(9.6.r),
+                            alignment: Alignment.center,
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(10.r),
+                              borderRadius: BorderRadius.circular(8.r),
                             ),
                             child: Text(
                               item.price,
+                              textAlign: TextAlign.center,
                               style: GoogleFonts.dmSans(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w800,
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.w700,
                                 color: Colors.black,
+                                height: 1.0,
                               ),
                             ),
                           ),
                         ],
                       ),
 
-                      SizedBox(height: 16.h),
+                      SizedBox(height: 8.h),
 
                       // Trust badge (Authenticity guaranteed)
                       Container(
                         padding: EdgeInsets.symmetric(
-                          horizontal: 12.w,
-                          vertical: 8.h,
+                          horizontal: 8.w,
+                          vertical: 4.h,
                         ),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.12),
@@ -235,7 +235,7 @@ class HomeScreen extends GetView<HomeController> {
                             ),
                             SizedBox(width: 8.w),
                             Text(
-                              "Authenticity guaranteed. Payment protected.",
+                              "Authenticity Verified. Payment protected.",
                               style: GoogleFonts.dmSans(
                                 fontSize: 11.sp,
                                 color: Colors.white.withValues(alpha: 0.95),
@@ -246,7 +246,7 @@ class HomeScreen extends GetView<HomeController> {
                         ),
                       ),
 
-                      SizedBox(height: 16.h),
+                      SizedBox(height: 13.h),
 
                       // Secure This Item Button (Gradient)
                       CustomGoldButton(

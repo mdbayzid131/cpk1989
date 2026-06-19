@@ -593,9 +593,9 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 ),
               ],
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 6.h),
             Divider(color: Colors.white.withValues(alpha: 0.05)),
-            SizedBox(height: 12.h),
+            SizedBox(height: 6.h),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

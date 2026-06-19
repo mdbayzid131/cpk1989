@@ -192,42 +192,53 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                               SizedBox(height: 8.h),
 
                               // 4. Specifications row (Condition & Worn Count & Size)
-                              Row(
+                              Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                spacing: 12.w,
+                                runSpacing: 8.h,
                                 children: [
-                                  SvgPicture.asset(
-                                    'assets/icons/Excellent condition  Warn Twice.svg',
-                                    width: 16.r,
-                                    height: 16.r,
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      SvgPicture.asset(
+                                        'assets/icons/Excellent condition  Warn Twice.svg',
+                                        width: 16.r,
+                                        height: 16.r,
+                                      ),
+                                      SizedBox(width: 6.w),
+                                      Text(
+                                        "${item.condition} : ${item.wornCount}",
+                                        style: GoogleFonts.dmSans(
+                                          fontSize: 13.sp,
+                                          color: const Color(0xFFA2A2A2),
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  SizedBox(width: 6.w),
-                                  Text(
-                                    "${item.condition} : ${item.wornCount}",
-                                    style: GoogleFonts.dmSans(
-                                      fontSize: 13.sp,
-                                      color: const Color(0xFFA2A2A2),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  SizedBox(width: 12.w),
                                   Container(
                                     height: 12.h,
                                     width: 1.w,
                                     color: Colors.white12,
                                   ),
-                                  SizedBox(width: 12.w),
-                                  Icon(
-                                    Icons.straighten_outlined,
-                                    color: const Color(0xFFA2A2A2),
-                                    size: 16.sp,
-                                  ),
-                                  SizedBox(width: 6.w),
-                                  Text(
-                                    item.size,
-                                    style: GoogleFonts.dmSans(
-                                      fontSize: 13.sp,
-                                      color: const Color(0xFFA2A2A2),
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.straighten_outlined,
+                                        color: const Color(0xFFA2A2A2),
+                                        size: 16.sp,
+                                      ),
+                                      SizedBox(width: 6.w),
+                                      Text(
+                                        item.size,
+                                        style: GoogleFonts.dmSans(
+                                          fontSize: 13.sp,
+                                          color: const Color(0xFFA2A2A2),
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),

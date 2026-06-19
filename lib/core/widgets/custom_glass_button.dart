@@ -1,6 +1,5 @@
-import 'dart:math' as math;
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
 
 /// Painter that draws a mathematically precise, crisp gradient border around a circle.
 class CircleGradientBorderPainter extends CustomPainter {
@@ -30,7 +29,7 @@ class CircleGradientBorderPainter extends CustomPainter {
 
 /// ===================== CUSTOM GLASS BUTTON =====================
 /// Reusable glassmorphic circular button with:
-/// - Real-time GPU-accelerated liquid glass shader (via `liquid_glass_renderer`)
+/// - Real-time frosted glass blur (via BackdropFilter)
 /// - Figma specs: 50px x 50px diameter
 /// - 12px internal padding
 /// - Translucent fill (#FFFFFF at 8% opacity)
@@ -73,34 +72,34 @@ class CustomGlassButton extends StatelessWidget {
     return SizedBox(
       width: size,
       height: size,
-      child: CustomPaint(
-        painter: CircleGradientBorderPainter(
-          gradient: borderGradient,
-          strokeWidth: 1.0,
-        ),
-        child: LiquidGlass.withOwnLayer(
-          settings: LiquidGlassSettings(
-            thickness: 10.0, // refraction intensity
-            blur: blurSigma, // blur intensity
-            glassColor: glassColor ?? Colors.white.withValues(
-              alpha: 0.08,
-            ), // Default: #FFFFFF at 8% opacity
-            lightIntensity: 1.0,
-            lightAngle:
-                0.25 *
-                math.pi, // Diagonal light source (top-left to bottom-right highlight)
-          ),
-          shape: LiquidOval(),
-          glassContainsChild:
-              false, // child (e.g. icon) rendered normally on top
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: onTap,
-              customBorder: const CircleBorder(),
-              child: Padding(
-                padding: padding ?? EdgeInsets.all(size > 40.0 ? 12.0 : 6.0),
-                child: Center(child: child),
+      child: ClipOval(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
+          child: CustomPaint(
+            painter: CircleGradientBorderPainter(
+              gradient: borderGradient,
+              strokeWidth: 1.0,
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color:
+                    glassColor ??
+                    Colors.white.withValues(
+                      alpha: 0.08,
+                    ), // Default: #FFFFFF at 8% opacity
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: onTap,
+                  customBorder: const CircleBorder(),
+                  child: Padding(
+                    padding:
+                        padding ?? EdgeInsets.all(size > 40.0 ? 12.0 : 6.0),
+                    child: Center(child: child),
+                  ),
+                ),
               ),
             ),
           ),

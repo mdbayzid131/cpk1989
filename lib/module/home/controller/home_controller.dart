@@ -39,7 +39,7 @@ class HomeController extends GetxController {
       FeedItem(
         imagePath: ImagePaths.onboardingImage2, // assets/images/luxury_bag.png
         userName: "Olivia Mendes",
-        condition: "Excellent condition",
+        condition: "Excellent",
         itemName: "Classic Flap Bag",
         price: "AED 3,200",
         isVerified: true,

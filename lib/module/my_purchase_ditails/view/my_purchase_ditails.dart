@@ -7,7 +7,6 @@ import 'package:cpk1989/config/themes/app_theme.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/core/widgets/vertical_stepper.dart';
 import 'package:cpk1989/module/my_purchase_ditails/controller/my_purchase_ditails_controller.dart';
-import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 
 class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
   const MyPurchaseDitails({super.key});
@@ -293,7 +292,7 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
                     nodeSize: 36.r,
                     activeDashedSize: 48.r,
                     lineWidth: 2.w,
-                    stepHeight: 88.h,
+                    stepHeight: 64.h,
                     titleStyle: GoogleFonts.dmSans(
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w700,

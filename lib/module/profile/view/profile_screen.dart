@@ -219,20 +219,19 @@ class ProfileScreen extends GetView<ProfileController> {
   Widget _buildNavigationTabs() {
     return Column(
       children: [
-        Padding(
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const ScrollPhysics(),
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: Obx(() {
             final selectedIndex = controller.rxSelectedIndex.value;
             return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(child: _buildTabItem("MY WARDROBE", 0, selectedIndex)),
-                Expanded(
-                  child: _buildTabItem("MY PURCHASES", 1, selectedIndex),
-                ),
-                Expanded(
-                  child: _buildTabItem("PERSONAL DETAILS", 2, selectedIndex),
-                ),
+                _buildTabItem("MY WARDROBE", 0, selectedIndex),
+                SizedBox(width: 24.w),
+                _buildTabItem("MY PURCHASES", 1, selectedIndex),
+                SizedBox(width: 24.w),
+                _buildTabItem("PERSONAL DETAILS", 2, selectedIndex),
               ],
             );
           }),
@@ -259,6 +258,8 @@ class ProfileScreen extends GetView<ProfileController> {
             Text(
               label,
               textAlign: TextAlign.center,
+              maxLines: 1,
+              softWrap: false,
               style: GoogleFonts.dmSans(
                 fontSize: 11.sp,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,

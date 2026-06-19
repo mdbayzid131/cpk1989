@@ -650,7 +650,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
           ),
           SizedBox(width: 8.w),
           Text(
-            "Authenticity guaranteed. Payment protected.",
+            "Authenticity Verified. Payment protected.",
             style: GoogleFonts.dmSans(
               fontSize: 11.sp,
               color: Colors.white54,

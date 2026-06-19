@@ -7,9 +7,9 @@ import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 class BottomNavBarBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<BottomNavBarController>(() => BottomNavBarController());
-    Get.lazyPut<HomeController>(() => HomeController());
-    Get.lazyPut<WishlistController>(() => WishlistController());
-    Get.lazyPut<ProfileController>(() => ProfileController());
+    Get.put<BottomNavBarController>(BottomNavBarController());
+    Get.put<HomeController>(HomeController());
+    Get.put<WishlistController>(WishlistController());
+    Get.put<ProfileController>(ProfileController());
   }
 }
