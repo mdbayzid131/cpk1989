@@ -130,7 +130,7 @@ class HomeScreen extends GetView<HomeController> {
                       // Item Details (Condition, Name, View More on left; Price Badge on right)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Left Details Column
                           Expanded(
