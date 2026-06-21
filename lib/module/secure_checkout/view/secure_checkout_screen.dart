@@ -1,6 +1,7 @@
 import 'dart:ui' show ImageFilter;
 import 'package:cpk1989/config/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -295,6 +296,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
     IconData? icon,
     String? svgPath,
     TextInputType keyboardType = TextInputType.text,
+    List<TextInputFormatter>? inputFormatters,
   }) {
     return Container(
       height: 54.h,
@@ -331,6 +333,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
             child: TextField(
               controller: controller,
               keyboardType: keyboardType,
+              inputFormatters: inputFormatters,
               style: GoogleFonts.dmSans(
                 fontSize: 14.sp,
                 color: Colors.white,
@@ -665,7 +668,6 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
   Widget _buildSecureCTAButton(BuildContext context) {
     return CustomGoldButton(
       text: "Secure This Item",
-      height: 54.h,
       suffix: Icon(
         Icons.arrow_forward_rounded,
         color: Colors.black,
@@ -692,11 +694,6 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
   }
 
   void _showAddCardBottomSheet(BuildContext context) {
-    final nameController = TextEditingController();
-    final numberController = TextEditingController();
-    final expiryController = TextEditingController();
-    final cvvController = TextEditingController();
-
     controller.rxIsCardSheetOpen.value = true;
 
     showModalBottomSheet(
@@ -710,142 +707,31 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
           ),
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF0F1012),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(32.r)),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.05),
-                width: 1.0,
-              ),
-            ),
-            padding: EdgeInsets.fromLTRB(
-              24.w,
-              24.h,
-              24.w,
-              MediaQuery.of(sheetContext).padding.bottom + 24.h,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Title Row
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Add a new card",
-                      style: GoogleFonts.dmSans(
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => Navigator.pop(sheetContext),
-                      child: Container(
-                        padding: EdgeInsets.all(4.r),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.transparent,
-                          border: Border.all(color: Colors.white, width: 1.0),
-                        ),
-                        child: Icon(
-                          Icons.close_rounded,
-                          color: Colors.white,
-                          size: 16.sp,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 24.h),
-
-                // Cardholder Name
-                _buildTextInputField(
-                  controller: nameController,
-                  hintText: "Enter Card holder Name",
-                  svgPath: "assets/icons/person.svg",
-                ),
-                SizedBox(height: 16.h),
-
-                // Card Number
-                _buildTextInputField(
-                  controller: numberController,
-                  hintText: "Enter Card number",
-                  svgPath: "assets/icons/card number.svg",
-                  keyboardType: TextInputType.number,
-                ),
-                SizedBox(height: 16.h),
-
-                // Expiry & CVV Row
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildTextInputField(
-                        controller: expiryController,
-                        hintText: "Enter expiry date",
-                        svgPath: "assets/icons/calender.svg",
-                        keyboardType: TextInputType.datetime,
-                      ),
-                    ),
-                    SizedBox(width: 16.w),
-                    Expanded(
-                      child: _buildTextInputField(
-                        controller: cvvController,
-                        hintText: "Enter CVV",
-                        svgPath: "assets/icons/cvv.svg",
-                        keyboardType: TextInputType.number,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 32.h),
-
-                // Add Card Gold Button
-                CustomGoldButton(
-                  text: "Add Card",
-                  height: 54.h,
-                  suffix: Icon(
-                    Icons.arrow_forward_rounded,
-                    color: Colors.black,
-                    size: 18.sp,
-                  ),
-                  onTap: () {
-                    Navigator.pop(sheetContext); // Close sheet
-
-                    // Process the purchase to add the item dynamically
-                    controller.processPurchase(() {});
-
-                    // Show processing dialog, then go to success details
-                    showProcessingOverlay(context, () {
-                      // Convert dynamic FeedItem structure to ProfileItem for routing to PurchaseDetailScreen
-                      if (!Get.isRegistered<ProfileController>()) {
-                        Get.put(ProfileController());
-                      }
-                      final profileController = Get.find<ProfileController>();
-                      final profileItem =
-                          profileController.rxPurchaseItems.first;
-
-                      Get.back(); // Pop SecureCheckoutScreen
-                      Get.toNamed(
-                        AppRoutes.purchaseDetail,
-                        arguments: profileItem,
-                      );
-                    });
-                  },
-                ),
-              ],
-            ),
+          child: _AddCardBottomSheet(
+            controller: controller,
+            buildTextField:
+                ({
+                  required controller,
+                  required hintText,
+                  icon,
+                  svgPath,
+                  keyboardType = TextInputType.text,
+                  inputFormatters,
+                }) {
+                  return _buildTextInputField(
+                    controller: controller,
+                    hintText: hintText,
+                    icon: icon,
+                    svgPath: svgPath,
+                    keyboardType: keyboardType,
+                    inputFormatters: inputFormatters,
+                  );
+                },
           ),
         );
       },
     ).then((_) {
       controller.rxIsCardSheetOpen.value = false;
-      nameController.dispose();
-      numberController.dispose();
-      expiryController.dispose();
-      cvvController.dispose();
     });
   }
 
@@ -881,6 +767,231 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class DateTextInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.isEmpty) {
+      return newValue;
+    }
+
+    final text = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+    final buffer = StringBuffer();
+
+    for (int i = 0; i < text.length; i++) {
+      if (i == 2 || i == 4) {
+        buffer.write('/');
+      }
+      buffer.write(text[i]);
+    }
+
+    final formattedText = buffer.toString();
+
+    if (formattedText.length > 10) {
+      return oldValue;
+    }
+
+    int selectionIndex = formattedText.length;
+    if (newValue.selection.end < newValue.text.length) {
+      int digitCountBeforeCursor = newValue.text
+          .substring(0, newValue.selection.end)
+          .replaceAll(RegExp(r'[^0-9]'), '')
+          .length;
+      int formattedIndex = 0;
+      int digitCount = 0;
+      while (formattedIndex < formattedText.length &&
+          digitCount < digitCountBeforeCursor) {
+        if (formattedText[formattedIndex] != '/') {
+          digitCount++;
+        }
+        formattedIndex++;
+      }
+      selectionIndex = formattedIndex;
+    }
+
+    return TextEditingValue(
+      text: formattedText,
+      selection: TextSelection.collapsed(offset: selectionIndex),
+    );
+  }
+}
+
+class _AddCardBottomSheet extends StatefulWidget {
+  final SecureCheckoutController controller;
+  final Widget Function({
+    required TextEditingController controller,
+    required String hintText,
+    IconData? icon,
+    String? svgPath,
+    TextInputType keyboardType,
+    List<TextInputFormatter>? inputFormatters,
+  })
+  buildTextField;
+
+  const _AddCardBottomSheet({
+    required this.controller,
+    required this.buildTextField,
+  });
+
+  @override
+  State<_AddCardBottomSheet> createState() => _AddCardBottomSheetState();
+}
+
+class _AddCardBottomSheetState extends State<_AddCardBottomSheet> {
+  late final TextEditingController nameController;
+  late final TextEditingController numberController;
+  late final TextEditingController expiryController;
+  late final TextEditingController cvvController;
+
+  @override
+  void initState() {
+    super.initState();
+    nameController = TextEditingController();
+    numberController = TextEditingController();
+    expiryController = TextEditingController();
+    cvvController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    numberController.dispose();
+    expiryController.dispose();
+    cvvController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F1012),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(32.r)),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.05),
+          width: 1.0,
+        ),
+      ),
+      padding: EdgeInsets.fromLTRB(
+        24.w,
+        24.h,
+        24.w,
+        MediaQuery.of(context).padding.bottom + 24.h,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Title Row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Add a new card",
+                style: GoogleFonts.dmSans(
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+              GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Container(
+                  padding: EdgeInsets.all(4.r),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.transparent,
+                    border: Border.all(color: Colors.white, width: 1.0),
+                  ),
+                  child: Icon(
+                    Icons.close_rounded,
+                    color: Colors.white,
+                    size: 16.sp,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 24.h),
+
+          // Cardholder Name
+          widget.buildTextField(
+            controller: nameController,
+            hintText: "Enter Card holder Name",
+            svgPath: "assets/icons/person.svg",
+          ),
+          SizedBox(height: 16.h),
+
+          // Card Number
+          widget.buildTextField(
+            controller: numberController,
+            hintText: "Enter Card number",
+            svgPath: "assets/icons/card number.svg",
+            keyboardType: TextInputType.number,
+          ),
+          SizedBox(height: 16.h),
+
+          // Expiry & CVV Row
+          Row(
+            children: [
+              Expanded(
+                child: widget.buildTextField(
+                  controller: expiryController,
+                  hintText: "Enter expiry date",
+                  svgPath: "assets/icons/calender.svg",
+                  keyboardType: TextInputType.datetime,
+                  inputFormatters: [DateTextInputFormatter()],
+                ),
+              ),
+              SizedBox(width: 16.w),
+              Expanded(
+                child: widget.buildTextField(
+                  controller: cvvController,
+                  hintText: "Enter CVV",
+                  svgPath: "assets/icons/cvv.svg",
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 32.h),
+
+          // Add Card Gold Button
+          CustomGoldButton(
+            text: "Add Card",
+            suffix: Icon(
+              Icons.arrow_forward_rounded,
+              color: Colors.black,
+              size: 18.sp,
+            ),
+            onTap: () {
+              Navigator.pop(context); // Close sheet
+
+              // Process the purchase to add the item dynamically
+              widget.controller.processPurchase(() {});
+
+              // Show processing dialog, then go to success details
+              showProcessingOverlay(context, () {
+                // Convert dynamic FeedItem structure to ProfileItem for routing to PurchaseDetailScreen
+                if (!Get.isRegistered<ProfileController>()) {
+                  Get.put(ProfileController());
+                }
+                final profileController = Get.find<ProfileController>();
+                final profileItem = profileController.rxPurchaseItems.first;
+
+                Get.back(); // Pop SecureCheckoutScreen
+                Get.toNamed(AppRoutes.purchaseDetail, arguments: profileItem);
+              });
+            },
+          ),
+        ],
       ),
     );
   }

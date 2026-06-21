@@ -214,7 +214,6 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                         // 6. Continue Shopping CTA Button
                         CustomGoldButton(
                           text: "Continue Shopping",
-                          height: 54.h,
                           suffix: Icon(
                             Icons.arrow_forward_rounded,
                             color: Colors.black,

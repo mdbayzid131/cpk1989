@@ -759,7 +759,6 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
 
       return CustomGoldButton(
         text: "Post Item",
-        height: 50.h,
         suffix: Icon(
           Icons.arrow_forward_rounded,
           color: Colors.black,

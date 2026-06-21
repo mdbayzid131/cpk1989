@@ -156,18 +156,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOutCubic,
-                width: _currentPage == 2 ? 180.w : 56.w,
-                height: 56.w,
+                width: _currentPage == 2 ? 180.w : 56.h,
+                height: 56.h,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(28.r),
-                  gradient: const LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0x66FFFFFF), // rgba(255, 255, 255, 0.4) at 0%
-                      Color(0x66E8E8E8), // rgba(232, 232, 232, 0.4) at 100%
-                    ],
-                  ),
+                  borderRadius: BorderRadius.circular(100.r),
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xFFE2B744).withValues(alpha: 0.2),
@@ -176,10 +168,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   ],
                 ),
-                padding: const EdgeInsets.all(1.0), // 1px border width
                 child: Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(27.r),
+                    borderRadius: BorderRadius.circular(100.r),
                     gradient: AppTheme.goldGradient,
                   ),
                   child: Center(
@@ -208,7 +199,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ),
                       ),
                       secondChild: SizedBox(
-                        width: 56.w,
+                        width: 56.h,
                         child: Center(
                           child: Icon(
                             Icons.arrow_forward_rounded,

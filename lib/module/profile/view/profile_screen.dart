@@ -776,7 +776,7 @@ class ProfileScreen extends GetView<ProfileController> {
               readOnly: !isEditing,
             ),
 
-            SizedBox(height: 32.h),
+            SizedBox(height: 16.h),
 
             // Save Changes Gold Button (matches mockup)
             if (isEditing) ...[
@@ -789,14 +789,14 @@ class ProfileScreen extends GetView<ProfileController> {
                 ),
                 onTap: () => controller.saveChanges(),
               ),
-              SizedBox(height: 20.h),
+              SizedBox(height: 16.h),
             ],
 
             // Log Out button
             TextButton.icon(
               style: TextButton.styleFrom(
                 foregroundColor: Colors.white30,
-                padding: EdgeInsets.symmetric(vertical: 12.h),
+                padding: EdgeInsets.symmetric(vertical: 8.h),
               ),
               onPressed: () async {
                 await Get.find<AuthService>().logout();
@@ -1008,211 +1008,261 @@ class ProfileScreen extends GetView<ProfileController> {
     Get.bottomSheet(
       Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF111214), // Dark background matching bottom sheet mockup
+          color: const Color(
+            0xFF111214,
+          ), // Dark background matching bottom sheet mockup
           borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
           border: Border.all(
             color: Colors.white.withValues(alpha: 0.05),
             width: 1.0,
           ),
         ),
-        padding: EdgeInsets.fromLTRB(
-          20.w,
-          24.h,
-          20.w,
-          24.h + MediaQuery.of(context).padding.bottom,
-        ),
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Drag handle
-              Center(
-                child: Container(
-                  width: 40.w,
-                  height: 4.h,
-                  decoration: BoxDecoration(
-                    color: Colors.white24,
-                    borderRadius: BorderRadius.circular(2.r),
-                  ),
-                ),
-              ),
-              SizedBox(height: 24.h),
-  
-              // Title: "Remove this item?" (Cormorant Garamond, bold, white, centered)
-              Center(
-                child: Text(
-                  "Remove this item?",
-                  style: GoogleFonts.cormorantGaramond(
-                    fontSize: 28.sp,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              SizedBox(height: 24.h),
-  
-              // Subtitle: "This listing will be removed from your wardrobe..." (Manrope)
-              Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: Text(
-                    "This listing will be removed from your wardrobe and won't be visible to buyers.",
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 13.sp,
-                      color: Colors.white54,
-                      height: 1.4,
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 8.h),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Drag handle
+                  Center(
+                    child: Container(
+                      width: 40.w,
+                      height: 4.h,
+                      decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(2.r),
+                      ),
                     ),
                   ),
-                ),
-              ),
-              SizedBox(height: 24.h),
-              Container(
-                padding: EdgeInsets.all(10.w),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.centerRight,
-                    end: Alignment.centerLeft,
-                    colors: [Color(0xFF292A2D), Color(0xFF1C1D21)],
+                  SizedBox(height: 16.h),
+
+                  // Title: "Remove this item?" (Cormorant Garamond, bold, white, centered)
+                  Center(
+                    child: Text(
+                      "Remove this item?",
+                      style: GoogleFonts.cormorantGaramond(
+                        fontSize: 28.sp,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(16.r),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.05),
-                    width: 1.0,
+                  SizedBox(height: 8.h),
+
+                  // Subtitle: "This listing will be removed from your wardrobe..." (Manrope)
+                  Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: Text(
+                        "This listing will be removed from your wardrobe and won't be visible to buyers.",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 13.sp,
+                          color: Colors.white54,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            item.brand.toUpperCase(),
-                            style: GoogleFonts.dmSans(
-                              fontSize: 11.sp,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white38,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                          SizedBox(height: 4.h),
-                          Text(
-                            item.itemName,
-                            style: GoogleFonts.dmSans(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          SizedBox(height: 12.h),
-                          Row(
+                  SizedBox(height: 16.h),
+                  Container(
+                    padding: EdgeInsets.all(10.w),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment.centerRight,
+                        end: Alignment.centerLeft,
+                        colors: [Color(0xFF292A2D), Color(0xFF1C1D21)],
+                      ),
+                      borderRadius: BorderRadius.circular(16.r),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.05),
+                        width: 1.0,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Listed at  ",
+                                item.brand.toUpperCase(),
                                 style: GoogleFonts.dmSans(
-                                  fontSize: 12.sp,
+                                  fontSize: 11.sp,
+                                  fontWeight: FontWeight.w700,
                                   color: Colors.white38,
-                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: 0.5,
                                 ),
                               ),
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 8.w,
-                                  vertical: 4.h,
+                              SizedBox(height: 4.h),
+                              Text(
+                                item.itemName,
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
                                 ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.08),
-                                  borderRadius: BorderRadius.circular(6.r),
-                                ),
-                                child: Text(
-                                  "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
-                                  style: GoogleFonts.dmSans(
-                                    fontSize: 11.sp,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.white,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              SizedBox(height: 12.h),
+                              Row(
+                                children: [
+                                  Text(
+                                    "Listed at  ",
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 12.sp,
+                                      color: Colors.white38,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
-                                ),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 8.w,
+                                      vertical: 4.h,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.08,
+                                      ),
+                                      borderRadius: BorderRadius.circular(6.r),
+                                    ),
+                                    child: Text(
+                                      "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 11.sp,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                        ],
+                        ),
+                        SizedBox(width: 16.w),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12.r),
+                          child: item.imageUrl.startsWith('http')
+                              ? Image.network(
+                                  item.imageUrl,
+                                  width: 102.r,
+                                  height: 102.r,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                        if (loadingProgress == null) {
+                                          return child;
+                                        }
+                                        return Container(
+                                          width: 102.r,
+                                          height: 102.r,
+                                          color: const Color(0xFF1E2022),
+                                          child: const Center(
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                    Color(0xFFE2B744),
+                                                  ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      width: 102.r,
+                                      height: 102.r,
+                                      color: const Color(0xFF1E2022),
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.image,
+                                          color: Colors.white30,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                )
+                              : Image.file(
+                                  File(item.imageUrl),
+                                  width: 102.r,
+                                  height: 102.r,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      width: 102.r,
+                                      height: 102.r,
+                                      color: const Color(0xFF1E2022),
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.image,
+                                          color: Colors.white30,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Help text
+                  Center(
+                    child: Text(
+                      "You can relist this item anytime",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12.sp,
+                        color: Colors.white38,
                       ),
                     ),
-                    SizedBox(width: 16.w),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12.r),
-                      child: item.imageUrl.startsWith('http')
-                          ? Image.network(
-                              item.imageUrl,
-                              width: 102.r,
-                              height: 102.r,
-                              fit: BoxFit.cover,
-                            )
-                          : Image.file(
-                              File(item.imageUrl),
-                              width: 102.r,
-                              height: 102.r,
-                              fit: BoxFit.cover,
-                            ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 24.h),
-  
-              // Help text
-              Center(
-                child: Text(
-                  "You can relist this item anytime",
-                  style: GoogleFonts.dmSans(
-                    fontSize: 12.sp,
-                    color: Colors.white38,
                   ),
-                ),
-              ),
-              SizedBox(height: 24.h),
-  
-              // Remove Button (using custom gold button styling)
-              CustomGoldButton(
-                text: "Remove Item",
-                suffix: Icon(
-                  Icons.arrow_forward,
-                  size: 16.r,
-                  color: Colors.black,
-                ),
-                onTap: () {
-                  Get.back();
-                  controller.deleteItem(item.id);
-                },
-              ),
-              SizedBox(height: 24.h),
-  
-              // Cancel text button
-              Center(
-                child: TextButton(
-                  onPressed: () => Get.back(),
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 8.h,
-                      horizontal: 16.w,
+                  SizedBox(height: 12.h),
+
+                  // Remove Button (using custom gold button styling)
+                  CustomGoldButton(
+                    text: "Remove Item",
+                    suffix: Icon(
+                      Icons.arrow_forward,
+                      size: 16.r,
+                      color: Colors.black,
+                    ),
+                    onTap: () {
+                      Get.back();
+                      controller.deleteItem(item.id);
+                    },
+                  ),
+                  SizedBox(height: 8.h),
+
+                  // Cancel text button
+                  Center(
+                    child: TextButton(
+                      onPressed: () => Get.back(),
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 8.h,
+                          horizontal: 16.w,
+                        ),
+                      ),
+                      child: Text(
+                        "Cancel",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white60,
+                        ),
+                      ),
                     ),
                   ),
-                  child: Text(
-                    "Cancel",
-                    style: GoogleFonts.dmSans(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white60,
-                    ),
-                  ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
