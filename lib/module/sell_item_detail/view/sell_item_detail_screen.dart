@@ -60,8 +60,10 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                     "Delete Item",
                     "Item deletion triggered...",
                     snackPosition: SnackPosition.TOP,
-                    backgroundColor: const Color(0xFF1E1F22),
+                    backgroundColor: const Color(0xFF161719),
                     colorText: Colors.white,
+                    borderRadius: 16,
+                    margin: const EdgeInsets.all(16),
                   );
                 },
                 child: SvgPicture.asset(
@@ -78,13 +80,12 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
           ),
         ],
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.symmetric(horizontal: 16.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        padding: EdgeInsets.symmetric(horizontal: 16.h),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
               Stack(
                 children: [
                   ClipRRect(
@@ -180,7 +181,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                       vertical: 6.h,
                     ),
                     decoration: BoxDecoration(
-                      color: AppTheme.yellow.withValues(alpha: 0.12),
+                      color: Color(0xFFAF7413).withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(10.r),
                     ),
                     child: Row(
@@ -191,7 +192,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                           width: 12.w,
                           height: 12.h,
                           colorFilter: ColorFilter.mode(
-                            AppTheme.yellow,
+                            Color(0xFFFFAF2C),
                             BlendMode.srcIn,
                           ),
                         ),
@@ -201,7 +202,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                           style: GoogleFonts.dmSans(
                             fontSize: 11.sp,
                             fontWeight: FontWeight.w800,
-                            color: AppTheme.yellow,
+                            color: Color(0xFFFFAF2C),
                           ),
                         ),
                       ],
@@ -210,9 +211,13 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 ],
               ),
 
-              SizedBox(height: 28.h),
+              SizedBox(height: 15.h),
+              Divider(
+                color: Colors.white.withValues(alpha: 0.05),
+                thickness: 1.0,
+              ),
+              SizedBox(height: 15.h),
 
-              SizedBox(height: 28.h),
 
               // ITEM DETAILS Section Header
               Row(
@@ -252,7 +257,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                           : SvgPicture.asset(
                               'assets/icons/edit pen .svg',
                               colorFilter: const ColorFilter.mode(
-                                Color(0xFFE2B744),
+                                Color(0xFFFFAF2C),
                                 BlendMode.srcIn,
                               ),
                               width: 18.w,
@@ -318,7 +323,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                   ),
                 ],
               ),
-              SizedBox(height: 28.h),
+              SizedBox(height: 24.h),
               Text(
                 "SELLER DETAILS",
                 style: GoogleFonts.dmSans(
@@ -334,7 +339,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                     ? _buildCompactSellerDetailsCard()
                     : _buildSellerDetailsCard(),
               ),
-              SizedBox(height: 28.h),
+              SizedBox(height: 24.h),
               Text(
                 "YOUR EARNINGS",
                 style: GoogleFonts.dmSans(
@@ -371,13 +376,17 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
               ),
               SizedBox(height: 16.h),
               _buildPostItemButton(context, item),
-              SizedBox(height: 40.h),
+              SizedBox(
+                height: 24.h +
+                    (MediaQuery.of(context).padding.bottom > 0
+                        ? MediaQuery.of(context).padding.bottom
+                        : 20.h),
+              ),
             ],
           ),
         ),
-      ),
-    );
-  }
+      );
+    }
 
   Widget _buildDetailRow(String label, String value) {
     return Container(

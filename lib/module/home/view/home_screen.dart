@@ -75,7 +75,7 @@ class HomeScreen extends GetView<HomeController> {
                 // 4. Bottom Information Overlay
                 Positioned(
                   bottom:
-                      104.h +
+                      95.h +
                       MediaQuery.of(context)
                           .padding
                           .bottom, // dynamically clears the bottom navigation bar height on all devices
@@ -235,7 +235,7 @@ class HomeScreen extends GetView<HomeController> {
                             ),
                             SizedBox(width: 8.w),
                             Text(
-                              "Authenticity Verified. Payment protected.",
+                              "Authenticity Verified. Payment Protected.",
                               style: GoogleFonts.dmSans(
                                 fontSize: 11.sp,
                                 color: Colors.white.withValues(alpha: 0.95),

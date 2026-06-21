@@ -133,7 +133,7 @@ class SellController extends GetxController {
       cameraController = CameraController(
         targetCam,
         ResolutionPreset.medium,
-        enableAudio: true,
+        enableAudio: false,
       );
 
       await cameraController!.initialize();

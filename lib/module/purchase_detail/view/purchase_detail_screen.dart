@@ -112,7 +112,7 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
 
                         // 3. Product Summary card matching checkout
                         _buildProductSummaryCard(item, formattedPrice),
-                        SizedBox(height: 28.h),
+                        SizedBox(height: 24.h),
 
                         // 4. Delivery Status Timeline Section
                         Text(
@@ -171,7 +171,7 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 20.h),
+                        SizedBox(height: 24.h),
 
                         // 5. Verification Protected Disclaimer Pill
                         Center(
@@ -198,7 +198,7 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                                 ),
                                 SizedBox(width: 8.w),
                                 Text(
-                                  "Authenticity Verified. Payment protected.",
+                                  "Authenticity Verified. Payment Protected.",
                                   style: GoogleFonts.dmSans(
                                     fontSize: 11.sp,
                                     color: Colors.white54,
@@ -209,7 +209,7 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 28.h),
+                        SizedBox(height: 24.h),
 
                         // 6. Continue Shopping CTA Button
                         CustomGoldButton(
@@ -222,7 +222,9 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                           ),
                           onTap: () => Get.offAllNamed(AppRoutes.bottomNavBar),
                         ),
-                        SizedBox(height: 24.h),
+                        SizedBox(
+                          height: 24.h + MediaQuery.of(context).padding.bottom,
+                        ),
                       ],
                     ),
                   ),

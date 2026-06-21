@@ -191,7 +191,7 @@ class SellScreen extends GetView<SellController> {
           Obx(() {
             if (controller.isPreviewMode.value) {
               return Positioned(
-                bottom: 40.h,
+                bottom: 40.h + MediaQuery.of(context).padding.bottom,
                 left: 48.w,
                 right: 48.w,
                 child: Row(
@@ -290,7 +290,7 @@ class SellScreen extends GetView<SellController> {
             } else {
               // Live camera controls
               return Positioned(
-                bottom: 40.h,
+                bottom: 40.h + MediaQuery.of(context).padding.bottom,
                 left: 0,
                 right: 0,
                 child: Center(

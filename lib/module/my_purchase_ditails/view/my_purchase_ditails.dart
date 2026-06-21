@@ -409,8 +409,10 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
                     "Support",
                     "Connecting with support...",
                     snackPosition: SnackPosition.TOP,
-                    backgroundColor: const Color(0xFF1E1F22),
+                    backgroundColor: const Color(0xFF161719),
                     colorText: Colors.white,
+                    borderRadius: 16,
+                    margin: const EdgeInsets.all(16),
                   );
                 },
                 child: Center(

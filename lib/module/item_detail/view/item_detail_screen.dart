@@ -243,9 +243,9 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                 ],
                               ),
 
-                              SizedBox(height: 20.h),
+                              SizedBox(height: 24.h),
                               const Divider(color: Colors.white10),
-                              SizedBox(height: 20.h),
+                              SizedBox(height: 24.h),
 
                               // 5. Description
                               Text(
@@ -267,7 +267,7 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                 ),
                               ),
 
-                              SizedBox(height: 32.h),
+                              SizedBox(height: 24.h),
 
                               // 6. Security Assurances Grid/Row
                               Row(
@@ -307,7 +307,7 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 16.h),
+                              SizedBox(height: 24.h),
                             ],
                           ),
                         ),

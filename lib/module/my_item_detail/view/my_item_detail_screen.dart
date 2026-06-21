@@ -136,8 +136,10 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                       "Delete Item",
                       "Item deletion triggered...",
                       snackPosition: SnackPosition.TOP,
-                      backgroundColor: const Color(0xFF1E1F22),
+                      backgroundColor: const Color(0xFF161719),
                       colorText: Colors.white,
+                      borderRadius: 16,
+                      margin: const EdgeInsets.all(16),
                     );
                   },
                   child: SvgPicture.asset(
@@ -705,8 +707,10 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                             "Listing Created",
                             "Re-listing item to wardrobe...",
                             snackPosition: SnackPosition.TOP,
-                            backgroundColor: const Color(0xFFD4AF37),
-                            colorText: Colors.black,
+                            backgroundColor: const Color(0xFF161719),
+                            colorText: Colors.white,
+                            borderRadius: 16,
+                            margin: const EdgeInsets.all(16),
                           );
                         },
                         borderRadius: BorderRadius.circular(25.r),

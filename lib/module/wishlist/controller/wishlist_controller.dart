@@ -38,11 +38,11 @@ class WishlistController extends GetxController {
       Get.snackbar(
         'Removed',
         'Item removed from your wishlist.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFF1E1F22),
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: const Color(0xFF161719),
         colorText: Colors.white,
         duration: const Duration(seconds: 2),
-        borderRadius: 8,
+        borderRadius: 16,
         margin: const EdgeInsets.all(16),
       );
     });

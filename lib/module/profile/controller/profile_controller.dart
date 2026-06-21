@@ -92,11 +92,11 @@ class ProfileController extends GetxController {
     Get.snackbar(
       'Success',
       'Personal details updated successfully.',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: const Color(0xFF1E1F22),
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: const Color(0xFF161719),
       colorText: Colors.white,
       duration: const Duration(seconds: 2),
-      borderRadius: 8,
+      borderRadius: 16,
       margin: const EdgeInsets.all(16),
     );
   }
@@ -105,12 +105,12 @@ class ProfileController extends GetxController {
     rxWardrobeItems.removeWhere((item) => item.id == id);
     Get.snackbar(
       'Success',
-      'Item removed from your wardrobe.',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: const Color(0xFF1E1F22),
+      'Item successfully removed',
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: const Color(0xFF161719),
       colorText: Colors.white,
       duration: const Duration(seconds: 2),
-      borderRadius: 8,
+      borderRadius: 16,
       margin: const EdgeInsets.all(16),
     );
   }

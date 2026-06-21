@@ -153,7 +153,7 @@ class Helpers {
         reverseAnimationCurve: Curves.easeInCubic,
         animationDuration: const Duration(milliseconds: 450),
         margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-        borderRadius: 14.r,
+        borderRadius: 16,
         padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 12.h),
         titleText: Text(
           title ?? config['defaultTitle'] as String,
@@ -267,8 +267,8 @@ class Helpers {
     switch (type) {
       case SnackBarType.success:
         return {
-          'bg': const Color(0xFF10B981),
-          'iconBg': const Color(0xFF059669),
+          'bg': const Color(0xFF161719),
+          'iconBg': const Color(0xFF161719),
           'icon': Icons.check_rounded,
           'defaultTitle': 'Success',
         };

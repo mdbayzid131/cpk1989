@@ -11,8 +11,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 class CustomDippedBottomSheet extends StatelessWidget {
   final Widget? logo;
   final Widget content;
+  final double? screenBottomPadding;
 
-  const CustomDippedBottomSheet({super.key, this.logo, required this.content});
+  const CustomDippedBottomSheet({
+    super.key,
+    this.logo,
+    required this.content,
+    this.screenBottomPadding,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +30,10 @@ class CustomDippedBottomSheet extends StatelessWidget {
     // We only calculate the bottom padding when the keyboard is closed.
     // When the keyboard is open, viewInsets.bottom handles the spacing,
     // so we only need a clean minimal bottom padding.
+    final double systemBottomPadding = screenBottomPadding ?? MediaQuery.of(context).padding.bottom;
     final double bottomPadding = MediaQuery.of(context).viewInsets.bottom > 0
         ? 16.h
-        : MediaQuery.of(context).padding.bottom + 24.h;
+        : (systemBottomPadding > 0 ? systemBottomPadding : 20.h) + 24.h;
 
     // Flashlight beam with container geometry based on card width 393.0 inside SVG
     final double scaleFlashlight = screenWidth / 393.0;
@@ -244,20 +251,25 @@ Future<T?> showCustomDippedBottomSheet<T>({
   required Widget content,
   bool isDismissible = true,
 }) {
+  final double screenBottomPadding = MediaQuery.of(context).padding.bottom;
   return showModalBottomSheet<T>(
     context: context,
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
     isDismissible: isDismissible,
     barrierColor: Colors.black.withValues(alpha: 0.5),
-    builder: (context) {
+    builder: (sheetContext) {
       return BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
         child: Padding(
           padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
+            bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
           ),
-          child: CustomDippedBottomSheet(logo: logo, content: content),
+          child: CustomDippedBottomSheet(
+            logo: logo,
+            content: content,
+            screenBottomPadding: screenBottomPadding,
+          ),
         ),
       );
     },
