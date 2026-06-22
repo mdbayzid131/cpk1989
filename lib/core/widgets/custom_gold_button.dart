@@ -29,7 +29,7 @@ class CustomGoldButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: width ?? double.infinity,
-      height: height ?? 46.h,
+      height: height ?? 56.h,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(100.r),
         gradient: const LinearGradient(

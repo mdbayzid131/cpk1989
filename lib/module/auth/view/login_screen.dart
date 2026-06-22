@@ -135,7 +135,6 @@ class LoginScreen extends GetView<AuthController> {
                               ),
                               child: CustomGoldButton(
                                 text: "Continue",
-                                height: 52.h,
                                 isLoading: isLoading,
                                 onTap: () async {
                                   final success = await controller.prepareAuth();
