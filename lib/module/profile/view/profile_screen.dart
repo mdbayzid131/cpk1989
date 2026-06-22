@@ -29,13 +29,31 @@ class ProfileScreen extends GetView<ProfileController> {
               // Screen Header (Left-aligned as shown in mockup)
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
-                child: Text(
-                  "My Profile",
-                  style: GoogleFonts.dmSans(
-                    fontSize: 24.sp,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.white,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "My Profile",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 24.sp,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.white,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        await Get.find<AuthService>().logout();
+                        Get.offAllNamed(AppRoutes.login);
+                      },
+                      icon: const Icon(
+                        Icons.logout_rounded,
+                        color: Colors.white30,
+                        size: 22,
+                      ),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ],
                 ),
               ),
 
@@ -488,7 +506,7 @@ class ProfileScreen extends GetView<ProfileController> {
   }) {
     // Format Price nicely with commas
     final formattedPrice =
-        "\$${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
+        "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
     // Format Likes count (e.g. 2000 -> 2K)
     final formattedLikes = item.likes >= 1000
         ? "${(item.likes / 1000).toStringAsFixed(0)}K"
@@ -791,27 +809,6 @@ class ProfileScreen extends GetView<ProfileController> {
               ),
               SizedBox(height: 20.h),
             ],
-
-            // Log Out button
-            TextButton.icon(
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.white30,
-                padding: EdgeInsets.symmetric(vertical: 12.h),
-              ),
-              onPressed: () async {
-                await Get.find<AuthService>().logout();
-                Get.offAllNamed(AppRoutes.login);
-              },
-              icon: const Icon(Icons.logout, size: 16, color: Colors.white30),
-              label: Text(
-                "Log Out",
-                style: GoogleFonts.dmSans(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white38,
-                ),
-              ),
-            ),
           ],
         ),
       );
