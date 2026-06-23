@@ -108,7 +108,7 @@ class _AIAnalysisScreenState extends State<AIAnalysisScreen>
                     final progress = controller.scanProgress.value;
                     String statusText = "Analysing brand";
                     if (progress >= 0.66) {
-                      statusText = "Estimating Market price";
+                      statusText = "Estimating market price";
                     } else if (progress >= 0.33) {
                       statusText = "Assessing condition";
                     }
