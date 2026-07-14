@@ -28,8 +28,8 @@ class CustomGoldButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: width ?? double.infinity,
-      height: height ?? 56.h,
+      width: width ?? 361.w,
+      height: height ?? 46.h,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(100.r),
         gradient: const LinearGradient(
@@ -71,7 +71,7 @@ class CustomGoldButton extends StatelessWidget {
                       Text(
                         text,
                         style: GoogleFonts.dmSans(
-                          fontSize: 15.sp,
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.w700,
                           color:
                               Colors.black, // Dark text color matching design

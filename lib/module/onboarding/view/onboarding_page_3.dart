@@ -9,9 +9,10 @@ class OnboardingPage3 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double paddingTop = MediaQuery.of(context).padding.top;
     return Column(
       children: [
-        SizedBox(height: 70.h),
+        SizedBox(height: paddingTop + 60.h),
 
         ///<================= HEADER TEXT =========================>///
         Text(
@@ -26,10 +27,9 @@ class OnboardingPage3 extends StatelessWidget {
         ),
         SizedBox(height: 5.h),
         ShaderMask(
-          shaderCallback: (bounds) =>
-              AppTheme.goldGradient.createShader(
-                Rect.fromLTWH(0, 0, bounds.width, bounds.height),
-              ),
+          shaderCallback: (bounds) => AppTheme.goldGradient.createShader(
+            Rect.fromLTWH(0, 0, bounds.width, bounds.height),
+          ),
           child: Text(
             'Confidence',
             style: TextStyle(

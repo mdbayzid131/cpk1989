@@ -45,9 +45,10 @@ class _OnboardingPage2State extends State<OnboardingPage2>
 
   @override
   Widget build(BuildContext context) {
+    final double paddingTop = MediaQuery.of(context).padding.top;
     return Column(
       children: [
-        SizedBox(height: 70.h),
+        SizedBox(height: paddingTop + 60.h),
 
         ///<================= HEADER TEXT =========================>///
         Text(
