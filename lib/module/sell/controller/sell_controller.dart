@@ -73,6 +73,13 @@ class SellController extends GetxController {
   // Saved media target path (points to local file if captured/picked, or empty to fallback)
   final rxCapturedPath = "".obs;
 
+  // Multi-image capture state: exactly 4 photo slots (Front, Back, Inside, Serial)
+  final rxCapturedPaths = <String?>[null, null, null, null].obs;
+  final activeSlotIndex = 0.obs;
+  
+  // Flag to check if live camera feed is active/turned on
+  final isCameraActive = false.obs;
+
   // Camera settings state
   final isPhotoMode = true.obs;
   final flashState = "off".obs; // off, on, auto
@@ -178,6 +185,9 @@ class SellController extends GetxController {
     if (index < 0 || index >= galleryProducts.length) return;
     selectedItemIndex.value = index;
     rxCapturedPath.value = "";
+    rxCapturedPaths.value = [null, null, null, null];
+    activeSlotIndex.value = 0;
+    isCameraActive.value = false;
     isPreviewMode.value = false;
 
     final product = galleryProducts[index];
@@ -222,13 +232,30 @@ class SellController extends GetxController {
     }
   }
 
-  // Take photo from real camera
+  // Take photo from real camera or activate camera preview
   Future<void> capturePhoto(void Function() onFinish) async {
+    // If camera feed is not yet active, activate it first
+    if (!isCameraActive.value) {
+      isCameraActive.value = true;
+      onFinish();
+      return;
+    }
+
     if (cameraController != null && isCameraInitialized.value) {
       try {
         final XFile file = await cameraController!.takePicture();
-        rxCapturedPath.value = file.path;
-        confirmCapture();
+        rxCapturedPaths[activeSlotIndex.value] = file.path;
+        rxCapturedPath.value = file.path; // update preview compatibility
+        
+        // Auto-advance to next empty slot
+        final nextEmpty = rxCapturedPaths.indexOf(null);
+        if (nextEmpty != -1) {
+          activeSlotIndex.value = nextEmpty;
+          isCameraActive.value = false; // Turn off camera for next slot to show "+" screen first
+        } else {
+          isCameraActive.value = false; // Turn off once all filled
+        }
+        
         onFinish();
       } catch (e) {
         Get.snackbar(
@@ -238,8 +265,17 @@ class SellController extends GetxController {
       }
     } else {
       // Fallback if camera is unavailable (simulator mode)
-      rxCapturedPath.value = ""; // blank means fallback to mockup network image
-      confirmCapture();
+      rxCapturedPaths[activeSlotIndex.value] = "MOCK_CAPTURE_${activeSlotIndex.value}";
+      rxCapturedPath.value = ""; // fallback
+      
+      // Auto-advance
+      final nextEmpty = rxCapturedPaths.indexOf(null);
+      if (nextEmpty != -1) {
+        activeSlotIndex.value = nextEmpty;
+        isCameraActive.value = false; // Turn off camera for next slot to show "+" screen first
+      } else {
+        isCameraActive.value = false; // Turn off once all filled
+      }
       onFinish();
     }
   }
@@ -252,8 +288,17 @@ class SellController extends GetxController {
         imageQuality: 90,
       );
       if (file != null) {
-        rxCapturedPath.value = file.path;
-        confirmCapture();
+        rxCapturedPaths[activeSlotIndex.value] = file.path;
+        rxCapturedPath.value = file.path; // update preview compatibility
+        
+        // Auto-advance
+        final nextEmpty = rxCapturedPaths.indexOf(null);
+        if (nextEmpty != -1) {
+          activeSlotIndex.value = nextEmpty;
+          isCameraActive.value = false; // Deactivate camera preview for the next slot
+        } else {
+          isCameraActive.value = false;
+        }
         onPicked();
       }
     } catch (e) {
@@ -272,20 +317,21 @@ class SellController extends GetxController {
 
   // Confirm and proceed from camera to AI Analysis
   void confirmCapture() {
-    if (rxCapturedPath.value.isNotEmpty) {
-      // User captured/selected a custom file
-      itemNameInput.value = "Gallery Selected Item";
-      customBrand.value = "Authentic Product";
-      customPrice.value = 15000.0;
+    final selectedProduct = galleryProducts[selectedItemIndex.value];
+    
+    // Fallback info for item fields
+    if (rxCapturedPaths.any((path) => path != null && !path.startsWith("MOCK_CAPTURE_"))) {
+      itemNameInput.value = selectedProduct["itemName"];
+      customBrand.value = selectedProduct["brand"];
+      customPrice.value = selectedProduct["price"];
       customSerial.value =
           "CAPTURED-${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}";
     } else {
       // Simulator template fallback
-      final product = galleryProducts[selectedItemIndex.value];
-      itemNameInput.value = product["itemName"];
-      customBrand.value = product["brand"];
-      customPrice.value = product["price"];
-      customSerial.value = product["serialNumber"];
+      itemNameInput.value = selectedProduct["itemName"];
+      customBrand.value = selectedProduct["brand"];
+      customPrice.value = selectedProduct["price"];
+      customSerial.value = selectedProduct["serialNumber"];
     }
 
     Get.toNamed(AppRoutes.aiAnalysis);
@@ -321,14 +367,18 @@ class SellController extends GetxController {
       final profileController = Get.find<ProfileController>();
       final selectedProduct = galleryProducts[selectedItemIndex.value];
 
-      // If user captured/picked local path, use it; otherwise fallback to selected preset's network url
-      final finalImagePath = rxCapturedPath.value.isNotEmpty
-          ? rxCapturedPath.value
-          : selectedProduct["imageUrl"];
+      // Extract final image paths, substituting presets if empty
+      final List<String> finalImages = rxCapturedPaths.map((path) {
+        if (path == null || path.startsWith("MOCK_CAPTURE_")) {
+          return selectedProduct["imageUrl"] as String;
+        }
+        return path;
+      }).toList();
 
       final newItem = ProfileItem(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
-        imageUrl: finalImagePath,
+        imageUrl: finalImages[0],
+        images: finalImages,
         price: customPrice.value > 0
             ? customPrice.value
             : selectedProduct["price"],
@@ -374,14 +424,17 @@ class SellController extends GetxController {
     final profileController = Get.put(ProfileController());
     final selectedProduct = galleryProducts[selectedItemIndex.value];
 
-    // If user captured/picked local path, use it; otherwise fallback to selected preset's network url
-    final finalImagePath = rxCapturedPath.value.isNotEmpty
-        ? rxCapturedPath.value
-        : selectedProduct["imageUrl"];
+    final List<String> finalImages = rxCapturedPaths.map((path) {
+      if (path == null || path.startsWith("MOCK_CAPTURE_")) {
+        return selectedProduct["imageUrl"] as String;
+      }
+      return path;
+    }).toList();
 
     final newItem = ProfileItem(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      imageUrl: finalImagePath,
+      imageUrl: finalImages[0],
+      images: finalImages,
       price: customPrice.value > 0
           ? customPrice.value
           : selectedProduct["price"],

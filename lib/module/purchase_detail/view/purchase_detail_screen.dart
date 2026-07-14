@@ -11,6 +11,7 @@ import 'package:cpk1989/core/widgets/vertical_stepper.dart';
 import 'package:cpk1989/module/purchase_detail/controller/purchase_detail_controller.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
+import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 
 class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
   const PurchaseDetailScreen({super.key});
@@ -53,7 +54,7 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
           // Main scrollable content starting from top of screen
           Positioned.fill(
             child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
+              physics: const ScrollPhysics(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -78,7 +79,7 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 50.h),
+                  SizedBox(height: 24.h),
 
                   // Content underneath with standard padding
                   Padding(
@@ -128,7 +129,7 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                         Container(
                           padding: EdgeInsets.symmetric(
                             horizontal: 16.w,
-                            vertical: 20.h,
+                            vertical: 16.h,
                           ),
                           decoration: BoxDecoration(
                             color: const Color(0xFF161719),
@@ -156,10 +157,10 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                                 state: state,
                               );
                             }),
-                            nodeSize: 32.r,
-                            activeDashedSize: 32.r,
+                            nodeSize: 26.r,
+                            activeDashedSize: 26.r,
                             lineWidth: 2.w,
-                            stepHeight: 74.h,
+                            stepHeight: 52.h,
                             titleStyle: GoogleFonts.dmSans(
                               fontSize: 15.sp,
                               fontWeight: FontWeight.w700,
@@ -171,7 +172,7 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 24.h),
+                        SizedBox(height: 20.h),
 
                         // 5. Verification Protected Disclaimer Pill
                         Center(
@@ -355,22 +356,41 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
             ),
           ),
           SizedBox(width: 16.w),
-          // Right Image
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8.r),
-            child: item.imageUrl.startsWith('http')
-                ? Image.network(
-                    item.imageUrl,
-                    width: 102.r,
-                    height: 102.r,
-                    fit: BoxFit.cover,
-                  )
-                : Image.asset(
-                    item.imageUrl,
-                    width: 102.r,
-                    height: 102.r,
-                    fit: BoxFit.cover,
+          // Right Image Stack (with small indicator overlay sitting on the bottom border)
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8.r),
+                child: item.imageUrl.startsWith('http')
+                    ? Image.network(
+                        item.imageUrl,
+                        width: 102.r,
+                        height: 102.r,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.asset(
+                        item.imageUrl,
+                        width: 102.r,
+                        height: 102.r,
+                        fit: BoxFit.cover,
+                      ),
+              ),
+              Positioned(
+                bottom: -7.h, // half of the 14.h height of the small variant
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: CustomPageIndicator(
+                    count: 4,
+                    currentPage: 0,
+                    isSmall: true,
+                    backgroundColor: const Color(0xFF2B2C30),
+                    showBorder: false,
                   ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

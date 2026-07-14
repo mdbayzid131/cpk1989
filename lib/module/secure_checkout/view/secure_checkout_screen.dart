@@ -12,6 +12,7 @@ import 'package:cpk1989/module/secure_checkout/controller/secure_checkout_contro
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:cpk1989/core/widgets/processing_overlay.dart';
+import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 
 class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
   const SecureCheckoutScreen({super.key});
@@ -74,7 +75,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                   ),
                   SizedBox(height: 4.h),
                   Text(
-                    "Please confirm your shipping information.",
+                    "Please confirm your shipping information for\nthis order.",
                     style: GoogleFonts.dmSans(
                       fontSize: 13.sp,
                       color: AppTheme.gray,
@@ -147,7 +148,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 24.h),
+                  SizedBox(height: 34.h),
 
                   // Security pill
                   Center(child: _buildSecurityPill()),
@@ -268,22 +269,41 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
             ),
           ),
           SizedBox(width: 16.w),
-          // Right Image
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8.r),
-            child: item.imagePath.startsWith('http')
-                ? Image.network(
-                    item.imagePath,
-                    width: 102.r,
-                    height: 102.r,
-                    fit: BoxFit.cover,
-                  )
-                : Image.asset(
-                    item.imagePath,
-                    width: 102.r,
-                    height: 102.r,
-                    fit: BoxFit.cover,
+          // Right Image Stack (with small indicator overlay sitting on the bottom border)
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8.r),
+                child: item.imagePath.startsWith('http')
+                    ? Image.network(
+                        item.imagePath,
+                        width: 102.r,
+                        height: 102.r,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.asset(
+                        item.imagePath,
+                        width: 102.r,
+                        height: 102.r,
+                        fit: BoxFit.cover,
+                      ),
+              ),
+              Positioned(
+                bottom: -7.h, // half of the 14.h height of the small variant
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: CustomPageIndicator(
+                    count: 4,
+                    currentPage: 0,
+                    isSmall: true,
+                    backgroundColor: const Color(0xFF2B2C30),
+                    showBorder: false,
                   ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -322,12 +342,12 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
               width: 20.r,
               height: 20.r,
               colorFilter: const ColorFilter.mode(
-                Colors.white38,
+                Colors.white,
                 BlendMode.srcIn,
               ),
             )
           else if (icon != null)
-            Icon(icon, color: Colors.white38, size: 20.sp),
+            Icon(icon, color: Colors.white, size: 20.sp),
           SizedBox(width: 12.w),
           Expanded(
             child: TextField(
@@ -387,12 +407,12 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                 width: 20.r,
                 height: 20.r,
                 colorFilter: const ColorFilter.mode(
-                  Colors.white38,
+                  Colors.white,
                   BlendMode.srcIn,
                 ),
               )
             else if (icon != null)
-              Icon(icon, color: Colors.white38, size: 20.sp),
+              Icon(icon, color: Colors.white, size: 20.sp),
             SizedBox(width: 12.w),
             Expanded(
               child: DropdownButtonHideUnderline(
@@ -402,7 +422,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                   icon: Icon(
                     Icons.keyboard_arrow_down_rounded,
                     color: Colors.white38,
-                    size: 24.sp,
+                    size: 30.sp,
                   ),
                   style: GoogleFonts.dmSans(
                     fontSize: 14.sp,
@@ -455,7 +475,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                   padding: EdgeInsets.only(left: 4.w),
                   child: Icon(
                     Icons.keyboard_arrow_down_rounded,
-                    color: Colors.white38,
+                    color: Colors.white,
                     size: 24.sp,
                   ),
                 ),
@@ -650,6 +670,10 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
             'assets/icons/Authenticity guarante_ home page logo.svg',
             width: 14.r,
             height: 14.r,
+            colorFilter: const ColorFilter.mode(
+              Color(0xFFA2A2A2),
+              BlendMode.srcIn,
+            ),
           ),
           SizedBox(width: 8.w),
           Text(

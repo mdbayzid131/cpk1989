@@ -12,6 +12,7 @@ class ProfileItem {
   final String brand;
   final String itemName;
   final String? status;
+  final List<String>? images;
 
   ProfileItem({
     required this.id,
@@ -22,7 +23,11 @@ class ProfileItem {
     required this.brand,
     required this.itemName,
     this.status,
+    this.images,
   });
+
+  List<String> get itemImages =>
+      images ?? [imageUrl, imageUrl, imageUrl, imageUrl];
 }
 
 class ProfileController extends GetxController {
@@ -43,7 +48,9 @@ class ProfileController extends GetxController {
     super.onInit();
     firstNameController = TextEditingController(text: "Gretchen");
     lastNameController = TextEditingController(text: "Bothman");
-    addressController = TextEditingController(text: "Palm Jumeirah, Building 5, Apt 1204");
+    addressController = TextEditingController(
+      text: "Palm Jumeirah, Building 5, Apt 1204",
+    );
     phoneController = TextEditingController(text: "50 123 4567");
     _loadUserData();
     _loadItems();
@@ -83,10 +90,14 @@ class ProfileController extends GetxController {
   }
 
   void saveChanges() async {
-    await StorageService.setString('first_name', firstNameController.text.trim());
+    await StorageService.setString(
+      'first_name',
+      firstNameController.text.trim(),
+    );
     await StorageService.setString('last_name', lastNameController.text.trim());
     await StorageService.setString('phone', phoneController.text.trim());
-    rxUserName.value = "${firstNameController.text.trim()} ${lastNameController.text.trim()}";
+    rxUserName.value =
+        "${firstNameController.text.trim()} ${lastNameController.text.trim()}";
     rxIsEditing.value = false;
 
     Get.snackbar(
@@ -119,7 +130,8 @@ class ProfileController extends GetxController {
     rxWardrobeItems.assignAll([
       ProfileItem(
         id: '1',
-        imageUrl: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=400&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=400&auto=format&fit=crop',
         price: 2450,
         likes: 2000,
         isSold: false,
@@ -129,7 +141,8 @@ class ProfileController extends GetxController {
       ),
       ProfileItem(
         id: '2',
-        imageUrl: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=400&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=400&auto=format&fit=crop',
         price: 2450,
         likes: 2000,
         isSold: false,
@@ -139,7 +152,8 @@ class ProfileController extends GetxController {
       ),
       ProfileItem(
         id: '3',
-        imageUrl: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?q=80&w=400&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?q=80&w=400&auto=format&fit=crop',
         price: 2450,
         likes: 2000,
         isSold: false,
@@ -149,7 +163,8 @@ class ProfileController extends GetxController {
       ),
       ProfileItem(
         id: '4',
-        imageUrl: 'https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?q=80&w=400&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?q=80&w=400&auto=format&fit=crop',
         price: 2450,
         likes: 2000,
         isSold: false,
@@ -159,7 +174,8 @@ class ProfileController extends GetxController {
       ),
       ProfileItem(
         id: '5',
-        imageUrl: 'https://images.unsplash.com/photo-1603808033192-082d6919d3e1?q=80&w=400&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1603808033192-082d6919d3e1?q=80&w=400&auto=format&fit=crop',
         price: 2450,
         likes: 2000,
         isSold: false,
@@ -168,7 +184,8 @@ class ProfileController extends GetxController {
       ),
       ProfileItem(
         id: '6',
-        imageUrl: 'https://images.unsplash.com/photo-1598532163257-ae3c6b2524b6?q=80&w=400&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1598532163257-ae3c6b2524b6?q=80&w=400&auto=format&fit=crop',
         price: 2450,
         likes: 2000,
         isSold: false,
@@ -177,7 +194,8 @@ class ProfileController extends GetxController {
       ),
       ProfileItem(
         id: '7',
-        imageUrl: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=400&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=400&auto=format&fit=crop',
         price: 2450,
         likes: 2000,
         isSold: true,
@@ -186,7 +204,8 @@ class ProfileController extends GetxController {
       ),
       ProfileItem(
         id: '8',
-        imageUrl: 'https://images.unsplash.com/photo-1627123424574-724758594e93?q=80&w=400&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1627123424574-724758594e93?q=80&w=400&auto=format&fit=crop',
         price: 2450,
         likes: 2000,
         isSold: true,
@@ -195,7 +214,8 @@ class ProfileController extends GetxController {
       ),
       ProfileItem(
         id: '9',
-        imageUrl: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?q=80&w=400&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?q=80&w=400&auto=format&fit=crop',
         price: 2450,
         likes: 2000,
         isSold: true,
@@ -207,7 +227,8 @@ class ProfileController extends GetxController {
     rxPurchaseItems.assignAll([
       ProfileItem(
         id: 'p1',
-        imageUrl: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=400&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=400&auto=format&fit=crop',
         price: 3200,
         likes: 2000,
         isSold: true,
@@ -217,7 +238,8 @@ class ProfileController extends GetxController {
       ),
       ProfileItem(
         id: 'p2',
-        imageUrl: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=400&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=400&auto=format&fit=crop',
         price: 3200,
         likes: 2000,
         isSold: true,
@@ -227,7 +249,8 @@ class ProfileController extends GetxController {
       ),
       ProfileItem(
         id: 'p3',
-        imageUrl: 'https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?q=80&w=400&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?q=80&w=400&auto=format&fit=crop',
         price: 3200,
         likes: 2000,
         isSold: true,
@@ -237,7 +260,8 @@ class ProfileController extends GetxController {
       ),
       ProfileItem(
         id: 'p4',
-        imageUrl: 'https://images.unsplash.com/photo-1598532163257-ae3c6b2524b6?q=80&w=400&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1598532163257-ae3c6b2524b6?q=80&w=400&auto=format&fit=crop',
         price: 3200,
         likes: 2000,
         isSold: true,
@@ -247,7 +271,8 @@ class ProfileController extends GetxController {
       ),
       ProfileItem(
         id: 'p5',
-        imageUrl: 'https://images.unsplash.com/photo-1627123424574-724758594e93?q=80&w=400&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1627123424574-724758594e93?q=80&w=400&auto=format&fit=crop',
         price: 3200,
         likes: 2000,
         isSold: true,

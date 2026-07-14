@@ -1,4 +1,3 @@
-import 'package:cpk1989/config/themes/app_theme.dart';
 import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
@@ -6,7 +5,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:cpk1989/config/themes/app_theme.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
+import 'package:cpk1989/core/widgets/custom_gold_button.dart';
 import 'package:cpk1989/module/sell/controller/sell_controller.dart';
 
 class SellScreen extends GetView<SellController> {
@@ -15,120 +17,179 @@ class SellScreen extends GetView<SellController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: const Color(0xFF272729),
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // 1. Live Camera Preview Simulation
+          // 1. Live Camera Preview or Static Review Image
           Obx(() {
-            if (controller.isPreviewMode.value) {
-              final path = controller.rxCapturedPath.value;
-              if (path.isNotEmpty) {
+            final activePath =
+                controller.rxCapturedPaths[controller.activeSlotIndex.value];
+            final selectedProduct =
+                controller.galleryProducts[controller.selectedItemIndex.value];
+
+            if (activePath != null) {
+              // Review static image
+              if (activePath.startsWith("MOCK_CAPTURE_")) {
                 return Positioned.fill(
-                  child: Image.file(File(path), fit: BoxFit.cover),
+                  child: Image.network(
+                    selectedProduct["imageUrl"],
+                    fit: BoxFit.cover,
+                  ),
                 );
               } else {
                 return Positioned.fill(
-                  child: Image.network(
-                    controller.galleryProducts[controller
-                        .selectedItemIndex
-                        .value]["imageUrl"],
-                    fit: BoxFit.cover,
-                  ),
+                  child: Image.file(File(activePath), fit: BoxFit.cover),
                 );
               }
-            } else if (controller.isCameraInitialized.value &&
-                controller.cameraController != null) {
-              return Positioned.fill(
-                child: ClipRect(
-                  child: FittedBox(
-                    fit: BoxFit.cover,
-                    child: SizedBox(
-                      width: controller
-                          .cameraController!
-                          .value
-                          .previewSize!
-                          .height,
-                      height:
-                          controller.cameraController!.value.previewSize!.width,
-                      child: CameraPreview(controller.cameraController!),
-                    ),
-                  ),
-                ),
-              );
-            } else if (controller.isCameraError.value) {
-              final activeIndex = controller.selectedItemIndex.value;
-              final item = controller.galleryProducts[activeIndex];
-              return AnimatedSwitcher(
-                duration: const Duration(milliseconds: 400),
-                transitionBuilder: (child, animation) =>
-                    FadeTransition(opacity: animation, child: child),
-                child: Image.network(
-                  item["imageUrl"],
-                  key: ValueKey<int>(activeIndex),
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: double.infinity,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Container(
-                      color: Colors.black,
-                      child: const Center(
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Color(0xFFE2B744),
-                          ),
+            } else {
+              // Live camera preview (only if active)
+              if (controller.isCameraActive.value) {
+                if (controller.isCameraInitialized.value &&
+                    controller.cameraController != null) {
+                  return Positioned.fill(
+                    child: ClipRect(
+                      child: FittedBox(
+                        fit: BoxFit.cover,
+                        child: SizedBox(
+                          width: controller
+                              .cameraController!
+                              .value
+                              .previewSize!
+                              .height,
+                          height: controller
+                              .cameraController!
+                              .value
+                              .previewSize!
+                              .width,
+                          child: CameraPreview(controller.cameraController!),
                         ),
                       ),
-                    );
-                  },
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    color: Colors.grey[900],
-                    child: const Center(
-                      child: Icon(
-                        Icons.videocam_off,
-                        color: Colors.white54,
-                        size: 48,
-                      ),
                     ),
-                  ),
-                ),
-              );
-            } else {
-              return Container(
-                color: Colors.black,
-                child: const Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      Color(0xFFE2B744),
+                  );
+                } else {
+                  // Simulator Mode live camera simulation
+                  return Positioned.fill(
+                    child: Image.network(
+                      selectedProduct["imageUrl"],
+                      fit: BoxFit.cover,
                     ),
-                  ),
-                ),
-              );
+                  );
+                }
+              } else {
+                // Camera is off (show nothing to let scaffold background show through)
+                return const SizedBox.shrink();
+              }
             }
           }),
 
-          // Vignette overlay
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.black.withValues(alpha: 0.6),
-                    Colors.transparent,
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: 0.8),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  stops: const [0.0, 0.25, 0.7, 1.0],
+          // 1. Top Gradient Overlay with Backdrop Blur
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 151.h,
+            child: ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 13.0, sigmaY: 13.0),
+                child: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [
+                        Color(0x000D0E10),
+                        Color(0xC00D0E10),
+                        Color(0xFF0D0E10),
+                      ],
+                      stops: [0.0, 0.4939, 1.0],
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
 
-          // 2. Viewfinder Bracket Corners
-          _buildViewfinderBrackets(),
+          // 2. Bottom Gradient Overlay
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: 311.h,
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0x000D0E10),
+                    Color(0xC00D0E10),
+                    Color(0xFF0D0E10),
+                  ],
+                  stops: [0.0652, 0.4004, 0.8894],
+                ),
+              ),
+            ),
+          ),
+
+          // 2. Viewfinder container (centered, rounded corners)
+          Positioned(
+            top: 110.h,
+            left: 20.w,
+            right: 20.w,
+            height: 350.h,
+            child: Obx(() {
+              final activePath =
+                  controller.rxCapturedPaths[controller.activeSlotIndex.value];
+              final isSlotEmpty = activePath == null;
+
+              return Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24.r),
+                  // border: Border.all(
+                  //   color: Colors.white.withValues(alpha: 0.12),
+                  //   width: 1.0,
+                  // ),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24.r),
+                  child: Stack(
+                    children: [
+                      // Viewfinder Brackets Overlay
+                      _buildBracketsOverlay(),
+
+                      // Central "+" button if active slot is empty and camera is off (Screenshot 2)
+                      if (isSlotEmpty && !controller.isCameraActive.value)
+                        Positioned.fill(
+                          child: Center(
+                            child: GestureDetector(
+                              onTap: () => controller.capturePhoto(() {}),
+                              child: Container(
+                                width: 56.r,
+                                height: 56.r,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: const Color(0xFF0F1012),
+                                    width: 3.r,
+                                  ),
+                                ),
+                                child: const Icon(
+                                  Icons.add_rounded,
+                                  color: Colors.black,
+                                  size: 32,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          ),
 
           // 3. Top Controller Bar (Close, Title, Flash)
           Positioned(
@@ -187,226 +248,300 @@ class SellScreen extends GetView<SellController> {
             ),
           ),
 
-          // 5. Camera / Preview controls
-          Obx(() {
-            if (controller.isPreviewMode.value) {
-              return Positioned(
-                bottom: 40.h + MediaQuery.of(context).padding.bottom,
-                left: 48.w,
-                right: 48.w,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    // Retake (Cross) Button
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CustomGlassButton(
-                          size: 64.r,
-                          onTap: () => controller.retakeCapture(),
-                          child: Icon(
-                            Icons.close_rounded,
-                            color: const Color(0xFFFF453A),
-                            size: 28.sp,
-                          ),
-                        ),
-                        SizedBox(height: 8.h),
-                        Text(
-                          "Retake",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white70,
-                          ),
-                        ),
-                      ],
+          // 4. Bottom Controls panel containing (Pill Indicator, Instruction, 4-Slots, Action Buttons)
+          Positioned(
+            bottom: 24.h + MediaQuery.of(context).padding.bottom,
+            left: 20.w,
+            right: 20.w,
+            child: Obx(() {
+              final capturedPaths = controller.rxCapturedPaths;
+              final capturedCount = capturedPaths
+                  .where((p) => p != null)
+                  .length;
+              final selectedProduct = controller
+                  .galleryProducts[controller.selectedItemIndex.value];
+              final isActiveSlotEmpty =
+                  capturedPaths[controller.activeSlotIndex.value] == null;
+
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // A. Gold or Grey Pill Capsule Status Badge
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 8.h,
                     ),
-
-                    // Confirm (Tick) Button with Gold Gradient
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        GestureDetector(
-                          onTap: () => controller.confirmCapture(),
-                          child: Container(
-                            width: 76.r,
-                            height: 76.r,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: const LinearGradient(
-                                colors: [
-                                  Color(0xFFAF7413),
-                                  Color(0xFFC98C28),
-                                  Color(0xFFE2B744),
-                                  Color(0xFFFFED81),
-                                  Color(0xFFE1C24E),
-                                  Color(0xFFA06008),
-                                ],
-                                stops: [
-                                  0.0477,
-                                  0.1933,
-                                  0.3893,
-                                  0.5054,
-                                  0.6210,
-                                  0.9074,
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(
-                                    0xFFC98C28,
-                                  ).withValues(alpha: 0.4),
-                                  blurRadius: 16.r,
-                                  spreadRadius: 2.r,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: Icon(
-                                Icons.check_rounded,
-                                color: Colors.black,
-                                size: 36.sp,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 8.h),
-                        Text(
-                          "Confirm",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w700,
-                            color: const Color(0xFFE2B744),
-                          ),
-                        ),
-                      ],
+                    decoration: BoxDecoration(
+                      color: capturedCount > 0
+                          ? const Color(0xFF3F3328)
+                          : Colors.white.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(20.r),
                     ),
-                  ],
-                ),
-              );
-            } else {
-              // Live camera controls
-              return Positioned(
-                bottom: 40.h + MediaQuery.of(context).padding.bottom,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(24.r),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                      child: Container(
-                        width: 250.w,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 22.w,
-                          vertical: 12.h,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.45),
-                          borderRadius: BorderRadius.circular(24.r),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.18),
-                            width: 1.0,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // Gallery Picker (Squircle outline)
-                            GestureDetector(
-                              onTap: () => controller.pickFromGallery(() {}),
-                              child: Container(
-                                width: 32.r,
-                                height: 32.r,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8.r),
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    width: 2.0,
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            // Capture Shutter Button
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                GestureDetector(
-                                  onTap: () => controller.capturePhoto(() {}),
-                                  child: Container(
-                                    width: 48.r,
-                                    height: 48.r,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Colors.white,
-                                        width: 2.2.r,
-                                      ),
-                                    ),
-                                    padding: EdgeInsets.all(3.r),
-                                    child: Container(
-                                      decoration: const BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: 4.h),
-                                Text(
-                                  "CAPTURE",
-                                  style: GoogleFonts.dmSans(
-                                    fontSize: 9.sp,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.white,
-                                    letterSpacing: 1.0,
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                            // Flip Camera (Switches front/back lenses)
-                            GestureDetector(
-                              onTap: () => controller.flipCameraHardware(),
-                              child: Container(
-                                width: 32.r,
-                                height: 32.r,
-                                alignment: Alignment.center,
-                                child: Icon(
-                                  Icons.sync_rounded,
-                                  color: Colors.white,
-                                  size: 26.sp,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                    child: Text(
+                      capturedCount == 0
+                          ? "Add at least 3 photos"
+                          : (capturedCount < 3
+                                ? "$capturedCount Of 3 Uploaded"
+                                : "$capturedCount Of $capturedCount Uploaded"),
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w500,
+                        color: capturedCount > 0
+                            ? const Color(0xFFFFAF2C)
+                            : Colors.white.withValues(alpha: 0.9),
                       ),
                     ),
                   ),
-                ),
+                  if (capturedCount == 0 || capturedCount >= 3) ...[
+                    SizedBox(height: 12.h),
+                    Text(
+                      capturedCount == 0
+                          ? "The first photo will appear in your listing."
+                          : "Drag to reorder your photos,\nThe first photo will be your cover image.",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.dmSans(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.white.withValues(alpha: 0.6),
+                        height: 1.4,
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
+                  ] else ...[
+                    SizedBox(height: 15.h),
+                  ],
+
+                  // C. 4-Slots Container matching Figma CSS
+                  Container(
+                    width: 288.w,
+                    height: 74.h,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8.w,
+                      vertical: 6.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0x1AFFFFFF),
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: List.generate(4, (index) {
+                        final path = capturedPaths[index];
+                        final isActive =
+                            controller.activeSlotIndex.value == index;
+
+                        return GestureDetector(
+                          onTap: () {
+                            controller.activeSlotIndex.value = index;
+                            if (capturedPaths[index] == null) {
+                              controller.isCameraActive.value = false;
+                            }
+                          },
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              Container(
+                                width: 62.r,
+                                height: 62.r,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF252628),
+                                  borderRadius: BorderRadius.circular(10.r),
+                                  border: Border.all(
+                                    color: isActive
+                                        ? const Color(0xFFFFAF2C)
+                                        : const Color(0x1FFFFFFF),
+                                    width: isActive ? 1.5.w : 1.w,
+                                  ),
+                                ),
+                                child: path != null
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(
+                                          10.r,
+                                        ),
+                                        child: path.startsWith("MOCK_CAPTURE_")
+                                            ? Image.network(
+                                                selectedProduct["imageUrl"],
+                                                fit: BoxFit.cover,
+                                              )
+                                            : Image.file(
+                                                File(path),
+                                                fit: BoxFit.cover,
+                                              ),
+                                      )
+                                    : const Center(
+                                        child: Icon(
+                                          Icons.add_rounded,
+                                          color: Colors.white,
+                                          size: 20,
+                                        ),
+                                      ),
+                              ),
+                              // Top-Left Slot Index Badge (flush with image borders)
+                              if (path != null)
+                                Positioned(
+                                  top: 1.h,
+                                  left: 1.w,
+                                  child: Container(
+                                    width: 22.r,
+                                    height: 22.r,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFFFAF2C),
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(9.r),
+                                        bottomRight: Radius.circular(10.r),
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "${index + 1}",
+                                        style: GoogleFonts.dmSans(
+                                          fontSize: 12.sp,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              // Top-Right Close/Remove Button (white circle with black outline)
+                              if (path != null)
+                                Positioned(
+                                  top: -2.h,
+                                  right: -2.w,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      capturedPaths[index] = null;
+                                      controller.activeSlotIndex.value = index;
+                                    },
+                                    child: Container(
+                                      width: 18.r,
+                                      height: 18.r,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Colors.black,
+                                          width: 1.5.w,
+                                        ),
+                                      ),
+                                      child: const Icon(
+                                        Icons.close_rounded,
+                                        color: Colors.black,
+                                        size: 10,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ),
+                  ),
+                  SizedBox(height: 20.h),
+
+                  // D. Shutter / Gallery Picker (Camera Controls) OR Continue button
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: (capturedCount >= 3 && !isActiveSlotEmpty)
+                        ? CustomGoldButton(
+                            key: const ValueKey('continue_btn'),
+                            text: "Continue",
+                            suffix: const Icon(
+                              Icons.arrow_forward_rounded,
+                              color: Colors.black,
+                            ),
+                            onTap: () => controller.confirmCapture(),
+                          )
+                        : Row(
+                            key: const ValueKey('camera_controls'),
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              // Gallery Picker Button
+                              GestureDetector(
+                                onTap: () => controller.pickFromGallery(() {}),
+                                child: Container(
+                                  width: 44.r,
+                                  height: 44.r,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(12.r),
+                                    border: Border.all(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.2,
+                                      ),
+                                      width: 1.w,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: SvgPicture.asset(
+                                      "assets/icons/image_file.svg",
+                                      width: 22.r,
+                                      height: 22.r,
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              // Shutter Capture Button
+                              GestureDetector(
+                                onTap: () => controller.capturePhoto(() {}),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      width: 64.r,
+                                      height: 64.r,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Colors.white,
+                                          width: 3.r,
+                                        ),
+                                      ),
+                                      padding: EdgeInsets.all(4.r),
+                                      child: Container(
+                                        decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 4.h),
+                                    Text(
+                                      "PHOTO",
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 9.sp,
+                                        fontWeight: FontWeight.w800,
+                                        color: Colors.white54,
+                                        letterSpacing: 1.2,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              // Empty placeholder to balance the Shutter button in the center
+                              SizedBox(width: 44.r),
+                            ],
+                          ),
+                  ),
+                ],
               );
-            }
-          }),
+            }),
+          ),
         ],
       ),
     );
   }
 
-  // Bracket overlay rendering corners
-  Widget _buildViewfinderBrackets() {
+  // Bracket overlay rendering corners centered on the viewfinder aspect ratio
+  Widget _buildBracketsOverlay() {
     return Positioned.fill(
       child: Padding(
-        padding: EdgeInsets.only(
-          left: 36.w,
-          right: 36.w,
-          top: 140.h,
-          bottom: 310.h,
-        ),
+        padding: EdgeInsets.all(16.r),
         child: Stack(
           children: [
             // Top Left Corner
@@ -414,15 +549,15 @@ class SellScreen extends GetView<SellController> {
               left: 0,
               top: 0,
               child: Container(
-                width: 36.w,
-                height: 36.h,
+                width: 24.w,
+                height: 24.h,
                 decoration: BoxDecoration(
                   border: Border(
-                    left: BorderSide(color: Colors.white, width: 3.5.w),
-                    top: BorderSide(color: Colors.white, width: 3.5.w),
+                    left: BorderSide(color: Colors.white, width: 3.w),
+                    top: BorderSide(color: Colors.white, width: 3.w),
                   ),
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20.r),
+                    topLeft: Radius.circular(12.r),
                   ),
                 ),
               ),
@@ -432,15 +567,15 @@ class SellScreen extends GetView<SellController> {
               right: 0,
               top: 0,
               child: Container(
-                width: 36.w,
-                height: 36.h,
+                width: 24.w,
+                height: 24.h,
                 decoration: BoxDecoration(
                   border: Border(
-                    right: BorderSide(color: Colors.white, width: 3.5.w),
-                    top: BorderSide(color: Colors.white, width: 3.5.w),
+                    right: BorderSide(color: Colors.white, width: 3.w),
+                    top: BorderSide(color: Colors.white, width: 3.w),
                   ),
                   borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(20.r),
+                    topRight: Radius.circular(12.r),
                   ),
                 ),
               ),
@@ -450,15 +585,15 @@ class SellScreen extends GetView<SellController> {
               left: 0,
               bottom: 0,
               child: Container(
-                width: 36.w,
-                height: 36.h,
+                width: 24.w,
+                height: 24.h,
                 decoration: BoxDecoration(
                   border: Border(
-                    left: BorderSide(color: Colors.white, width: 3.5.w),
-                    bottom: BorderSide(color: Colors.white, width: 3.5.w),
+                    left: BorderSide(color: Colors.white, width: 3.w),
+                    bottom: BorderSide(color: Colors.white, width: 3.w),
                   ),
                   borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(20.r),
+                    bottomLeft: Radius.circular(12.r),
                   ),
                 ),
               ),
@@ -468,15 +603,15 @@ class SellScreen extends GetView<SellController> {
               right: 0,
               bottom: 0,
               child: Container(
-                width: 36.w,
-                height: 36.h,
+                width: 24.w,
+                height: 24.h,
                 decoration: BoxDecoration(
                   border: Border(
-                    right: BorderSide(color: Colors.white, width: 3.5.w),
-                    bottom: BorderSide(color: Colors.white, width: 3.5.w),
+                    right: BorderSide(color: Colors.white, width: 3.w),
+                    bottom: BorderSide(color: Colors.white, width: 3.w),
                   ),
                   borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(20.r),
+                    bottomRight: Radius.circular(12.r),
                   ),
                 ),
               ),
@@ -486,152 +621,4 @@ class SellScreen extends GetView<SellController> {
       ),
     );
   }
-
-  // Viewfinder bracket corners (already drawn above)
-
-  //   // Simulated Gallery Picker modal bottom sheet
-  //   void _showGallerySheet(BuildContext context) {
-  //     showModalBottomSheet(
-  //       context: context,
-  //       backgroundColor: const Color(0xFF121315),
-  //       shape: RoundedRectangleBorder(
-  //         borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-  //       ),
-  //       builder: (context) {
-  //         return SafeArea(
-  //           child: Column(
-  //             mainAxisSize: MainAxisSize.min,
-  //             crossAxisAlignment: CrossAxisAlignment.start,
-  //             children: [
-  //               ListTile(
-  //                 leading: Icon(
-  //                   Icons.photo_library_rounded,
-  //                   color: const Color(0xFFE2B744),
-  //                   size: 22.sp,
-  //                 ),
-  //                 title: Text(
-  //                   "Choose from Device Gallery",
-  //                   style: GoogleFonts.dmSans(
-  //                     fontSize: 14.sp,
-  //                     fontWeight: FontWeight.w600,
-  //                     color: Colors.white,
-  //                   ),
-  //                 ),
-  //                 onTap: () {
-  //                   Navigator.pop(context);
-  //                   controller.pickFromGallery(() {});
-  //                 },
-  //               ),
-  //               const Divider(color: Colors.white10),
-  //               Padding(
-  //                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
-  //                 child: Text(
-  //                   "Or select a test template item:",
-  //                   style: GoogleFonts.dmSans(
-  //                     fontSize: 12.sp,
-  //                     fontWeight: FontWeight.w500,
-  //                     color: Colors.white38,
-  //                   ),
-  //                 ),
-  //               ),
-  //               Container(
-  //                 height: 280.h,
-  //                 padding: EdgeInsets.symmetric(horizontal: 16.w),
-  //                 child: GridView.builder(
-  //                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-  //                     crossAxisCount: 2,
-  //                     crossAxisSpacing: 12.w,
-  //                     mainAxisSpacing: 12.h,
-  //                     childAspectRatio: 1.1,
-  //                   ),
-  //                   itemCount: controller.galleryProducts.length,
-  //                   itemBuilder: (context, index) {
-  //                     final product = controller.galleryProducts[index];
-  //                     return GestureDetector(
-  //                       onTap: () {
-  //                         controller.resetToProduct(index);
-  //                         Navigator.pop(context);
-  //                       },
-  //                       child: Container(
-  //                         decoration: BoxDecoration(
-  //                           borderRadius: BorderRadius.circular(16.r),
-  //                           border: Border.all(
-  //                             color: controller.selectedItemIndex.value == index
-  //                                 ? const Color(0xFFE2B744)
-  //                                 : Colors.white10,
-  //                             width: 2.w,
-  //                           ),
-  //                         ),
-  //                         child: Stack(
-  //                           fit: StackFit.expand,
-  //                           children: [
-  //                             ClipRRect(
-  //                               borderRadius: BorderRadius.circular(14.r),
-  //                               child: Image.network(
-  //                                 product["imageUrl"],
-  //                                 fit: BoxFit.cover,
-  //                               ),
-  //                             ),
-  //                             Positioned(
-  //                               bottom: 0,
-  //                               left: 0,
-  //                               right: 0,
-  //                               child: Container(
-  //                                 decoration: BoxDecoration(
-  //                                   gradient: LinearGradient(
-  //                                     colors: [
-  //                                       Colors.transparent,
-  //                                       Colors.black.withValues(alpha: 0.8),
-  //                                     ],
-  //                                     begin: Alignment.topCenter,
-  //                                     end: Alignment.bottomCenter,
-  //                                   ),
-  //                                   borderRadius: BorderRadius.vertical(
-  //                                     bottom: Radius.circular(14.r),
-  //                                   ),
-  //                                 ),
-  //                                 padding: EdgeInsets.all(8.w),
-  //                                 child: Text(
-  //                                   product["itemName"],
-  //                                   style: GoogleFonts.dmSans(
-  //                                     fontSize: 11.sp,
-  //                                     fontWeight: FontWeight.w600,
-  //                                     color: Colors.white,
-  //                                   ),
-  //                                   maxLines: 1,
-  //                                   overflow: TextOverflow.ellipsis,
-  //                                 ),
-  //                               ),
-  //                             ),
-  //                             if (controller.selectedItemIndex.value == index)
-  //                               Positioned(
-  //                                 top: 8.h,
-  //                                 right: 8.w,
-  //                                 child: Container(
-  //                                   padding: EdgeInsets.all(4.r),
-  //                                   decoration: const BoxDecoration(
-  //                                     color: Color(0xFFE2B744),
-  //                                     shape: BoxShape.circle,
-  //                                   ),
-  //                                   child: const Icon(
-  //                                     Icons.check,
-  //                                     color: Colors.black,
-  //                                     size: 12,
-  //                                   ),
-  //                                 ),
-  //                               ),
-  //                           ],
-  //                         ),
-  //                       ),
-  //                     );
-  //                   },
-  //                 ),
-  //               ),
-  //               SizedBox(height: 12.h),
-  //             ],
-  //           ),
-  //         );
-  //       },
-  //     );
-  //   }
 }
