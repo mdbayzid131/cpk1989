@@ -8,6 +8,8 @@ import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/module/item_detail/controller/item_detail_controller.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/core/widgets/processing_overlay.dart';
+import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
+import 'package:cpk1989/module/home/controller/home_controller.dart';
 
 class ItemDetailScreen extends GetView<ItemDetailController> {
   const ItemDetailScreen({super.key});
@@ -39,39 +41,42 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                               borderRadius: BorderRadius.vertical(
                                 bottom: Radius.circular(24.r),
                               ),
-                              child: Container(
+                              child: DetailImageSlider(
+                                item: item,
                                 height: 380.h,
-                                width: double.infinity,
-                                color: Colors.black,
-                                child: item.imagePath.startsWith('http')
-                                    ? Image.network(
-                                        item.imagePath,
-                                        fit: BoxFit.cover,
-                                      )
-                                    : Image.asset(
-                                        item.imagePath,
-                                        fit: BoxFit.cover,
-                                      ),
                               ),
                             ),
                             // Vignette overlay
                             Positioned.fill(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.vertical(
-                                  bottom: Radius.circular(24.r),
-                                ),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Colors.black.withValues(alpha: 0.3),
-                                        Colors.transparent,
-                                        Colors.black.withValues(alpha: 0.2),
-                                      ],
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
+                              child: IgnorePointer(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.vertical(
+                                    bottom: Radius.circular(24.r),
+                                  ),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Colors.black.withValues(alpha: 0.3),
+                                          Colors.transparent,
+                                          Colors.black.withValues(alpha: 0.2),
+                                        ],
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                      ),
                                     ),
                                   ),
+                                ),
+                              ),
+                            ),
+                            // Page indicator bottom left (half-cut sitting on the boundary line)
+                            Positioned(
+                              bottom: -9.h, // half of 18.h indicator height
+                              left: 41.w,
+                              child: Obx(
+                                () => CustomPageIndicator(
+                                  count: item.itemImages.length,
+                                  currentPage: controller.rxCurrentPage.value,
                                 ),
                               ),
                             ),
@@ -397,6 +402,96 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
             color: Colors.white70,
             fontWeight: FontWeight.w500,
             height: 1.3,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// ===================== DETAIL IMAGE SLIDER =====================
+/// Stateful widget that handles horizontal manual image slider, dots, and Next arrow in ItemDetailScreen.
+class DetailImageSlider extends StatefulWidget {
+  final FeedItem item;
+  final double height;
+  const DetailImageSlider({
+    super.key,
+    required this.item,
+    required this.height,
+  });
+
+  @override
+  State<DetailImageSlider> createState() => _DetailImageSliderState();
+}
+
+class _DetailImageSliderState extends State<DetailImageSlider> {
+  late final PageController _pageController;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentPage = Get.find<ItemDetailController>().rxCurrentPage.value;
+    _pageController = PageController(initialPage: _currentPage);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final images = widget.item.itemImages;
+
+    return Stack(
+      children: [
+        // 1. Horizontal PageView
+        SizedBox(
+          height: widget.height,
+          width: double.infinity,
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: images.length,
+            onPageChanged: (index) {
+              setState(() {
+                _currentPage = index;
+              });
+              Get.find<ItemDetailController>().rxCurrentPage.value = index;
+            },
+            itemBuilder: (context, index) {
+              return Image.asset(
+                images[index],
+                fit: BoxFit.cover,
+                alignment: const Alignment(0.0, -0.3),
+              );
+            },
+          ),
+        ),
+
+        // 2. Next arrow floating button (glassmorphic circle overlay on the right)
+        Positioned(
+          right: 16.w,
+          top: (widget.height / 2) - 22.r,
+          child: CustomGlassButton(
+            size: 44.r,
+            padding: EdgeInsets.all(10.r),
+            onTap: () {
+              if (_pageController.hasClients) {
+                final nextPage = (_currentPage + 1) % images.length;
+                _pageController.animateToPage(
+                  nextPage,
+                  duration: const Duration(milliseconds: 400),
+                  curve: Curves.easeInOut,
+                );
+              }
+            },
+            child: const Icon(
+              Icons.arrow_forward_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
           ),
         ),
       ],

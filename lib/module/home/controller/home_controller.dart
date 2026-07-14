@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:cpk1989/config/constants/image_paths.dart';
 
 class FeedItem {
   final String imagePath;
@@ -11,6 +10,7 @@ class FeedItem {
   final String size;
   final String wornCount;
   final String description;
+  final List<String>? images;
 
   FeedItem({
     required this.imagePath,
@@ -22,7 +22,11 @@ class FeedItem {
     required this.wornCount,
     required this.description,
     this.isVerified = true,
+    this.images,
   });
+
+  List<String> get itemImages =>
+      images ?? [imagePath, imagePath, imagePath, imagePath];
 }
 
 class HomeController extends GetxController {
@@ -37,7 +41,7 @@ class HomeController extends GetxController {
   void _loadFeedItems() {
     rxItems.assignAll([
       FeedItem(
-        imagePath: ImagePaths.onboardingImage2, // assets/images/luxury_bag.png
+        imagePath: "assets/images/rectangle_9.png",
         userName: "Olivia Mendes",
         condition: "Excellent",
         itemName: "Classic Flap Bag",
@@ -45,10 +49,17 @@ class HomeController extends GetxController {
         isVerified: true,
         wornCount: "Warn Twice",
         size: "Medium : 25cm",
-        description: "Black caviar leather with gold hardware. Comes with original dust bag and authenticity card.",
+        description:
+            "Black caviar leather with gold hardware. Comes with original dust bag and authenticity card.",
+        images: [
+          "assets/images/rectangle_9.png",
+          "assets/images/rectangle_9.png",
+          "assets/images/rectangle_9.png",
+          "assets/images/rectangle_9.png",
+        ],
       ),
       FeedItem(
-        imagePath: "assets/images/luxury_heels.png",
+        imagePath: "assets/images/rectangle_9.png",
         userName: "Sophia Rossi",
         condition: "Like New",
         itemName: "Patent Leather Heels",
@@ -56,10 +67,17 @@ class HomeController extends GetxController {
         isVerified: true,
         wornCount: "Worn Once",
         size: "EU 38",
-        description: "Elegant black patent leather heels with iconic red soles. Excellent condition, very minor wear on bottom.",
+        description:
+            "Elegant black patent leather heels with iconic red soles. Excellent condition, very minor wear on bottom.",
+        images: [
+          "assets/images/rectangle_9.png",
+          "assets/images/rectangle_9.png",
+          "assets/images/rectangle_9.png",
+          "assets/images/rectangle_9.png",
+        ],
       ),
       FeedItem(
-        imagePath: "assets/images/luxury_watch.png",
+        imagePath: "assets/images/rectangle_9.png",
         userName: "James Miller",
         condition: "Pristine",
         itemName: "Speedmaster Chronograph",
@@ -67,7 +85,14 @@ class HomeController extends GetxController {
         isVerified: true,
         wornCount: "Never Worn",
         size: "42mm",
-        description: "Classic speedmaster professional chronograph luxury watch. Co-axial master chronometer with box and papers.",
+        description:
+            "Classic speedmaster professional chronograph luxury watch. Co-axial master chronometer with box and papers.",
+        images: [
+          "assets/images/rectangle_9.png",
+          "assets/images/rectangle_9.png",
+          "assets/images/rectangle_9.png",
+          "assets/images/rectangle_9.png",
+        ],
       ),
     ]);
   }

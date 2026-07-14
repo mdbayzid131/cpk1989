@@ -5,6 +5,7 @@ import 'package:cpk1989/module/home/controller/home_controller.dart';
 class ItemDetailController extends GetxController {
   late final FeedItem item;
   final rxIsFavorite = false.obs;
+  final rxCurrentPage = 0.obs;
 
   @override
   void onInit() {
