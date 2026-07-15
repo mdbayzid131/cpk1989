@@ -104,34 +104,23 @@ class _AIAnalysisScreenState extends State<AIAnalysisScreen>
                     ),
                   ),
                   SizedBox(height: 20.h),
-                  Obx(() {
-                    final progress = controller.scanProgress.value;
-                    String statusText = "Analysing brand";
-                    if (progress >= 0.66) {
-                      statusText = "Estimating market price";
-                    } else if (progress >= 0.33) {
-                      statusText = "Assessing condition";
-                    }
-
-                    return AnimatedBuilder(
-                      animation: _rotationController,
-                      builder: (context, child) {
-                        final dotCount = (_rotationController.value * 4)
-                            .floor();
-                        final dots = "." * dotCount;
-                        return Text(
-                          "$statusText$dots",
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.dmSans(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
-                            letterSpacing: 0.2,
-                          ),
-                        );
-                      },
-                    );
-                  }),
+                  AnimatedBuilder(
+                    animation: _rotationController,
+                    builder: (context, child) {
+                      final dotCount = (_rotationController.value * 4).floor();
+                      final dots = "." * dotCount;
+                      return Text(
+                        "Processing$dots",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                          letterSpacing: 0.2,
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),

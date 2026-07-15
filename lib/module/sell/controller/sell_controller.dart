@@ -76,7 +76,7 @@ class SellController extends GetxController {
   // Multi-image capture state: exactly 4 photo slots (Front, Back, Inside, Serial)
   final rxCapturedPaths = <String?>[null, null, null, null].obs;
   final activeSlotIndex = 0.obs;
-  
+
   // Flag to check if live camera feed is active/turned on
   final isCameraActive = false.obs;
 
@@ -246,16 +246,17 @@ class SellController extends GetxController {
         final XFile file = await cameraController!.takePicture();
         rxCapturedPaths[activeSlotIndex.value] = file.path;
         rxCapturedPath.value = file.path; // update preview compatibility
-        
+
         // Auto-advance to next empty slot
         final nextEmpty = rxCapturedPaths.indexOf(null);
         if (nextEmpty != -1) {
           activeSlotIndex.value = nextEmpty;
-          isCameraActive.value = false; // Turn off camera for next slot to show "+" screen first
+          isCameraActive.value =
+              false; // Turn off camera for next slot to show "+" screen first
         } else {
           isCameraActive.value = false; // Turn off once all filled
         }
-        
+
         onFinish();
       } catch (e) {
         Get.snackbar(
@@ -265,14 +266,16 @@ class SellController extends GetxController {
       }
     } else {
       // Fallback if camera is unavailable (simulator mode)
-      rxCapturedPaths[activeSlotIndex.value] = "MOCK_CAPTURE_${activeSlotIndex.value}";
+      rxCapturedPaths[activeSlotIndex.value] =
+          "MOCK_CAPTURE_${activeSlotIndex.value}";
       rxCapturedPath.value = ""; // fallback
-      
+
       // Auto-advance
       final nextEmpty = rxCapturedPaths.indexOf(null);
       if (nextEmpty != -1) {
         activeSlotIndex.value = nextEmpty;
-        isCameraActive.value = false; // Turn off camera for next slot to show "+" screen first
+        isCameraActive.value =
+            false; // Turn off camera for next slot to show "+" screen first
       } else {
         isCameraActive.value = false; // Turn off once all filled
       }
@@ -290,12 +293,13 @@ class SellController extends GetxController {
       if (file != null) {
         rxCapturedPaths[activeSlotIndex.value] = file.path;
         rxCapturedPath.value = file.path; // update preview compatibility
-        
+
         // Auto-advance
         final nextEmpty = rxCapturedPaths.indexOf(null);
         if (nextEmpty != -1) {
           activeSlotIndex.value = nextEmpty;
-          isCameraActive.value = false; // Deactivate camera preview for the next slot
+          isCameraActive.value =
+              false; // Deactivate camera preview for the next slot
         } else {
           isCameraActive.value = false;
         }
@@ -318,9 +322,11 @@ class SellController extends GetxController {
   // Confirm and proceed from camera to AI Analysis
   void confirmCapture() {
     final selectedProduct = galleryProducts[selectedItemIndex.value];
-    
+
     // Fallback info for item fields
-    if (rxCapturedPaths.any((path) => path != null && !path.startsWith("MOCK_CAPTURE_"))) {
+    if (rxCapturedPaths.any(
+      (path) => path != null && !path.startsWith("MOCK_CAPTURE_"),
+    )) {
       itemNameInput.value = selectedProduct["itemName"];
       customBrand.value = selectedProduct["brand"];
       customPrice.value = selectedProduct["price"];
@@ -343,9 +349,9 @@ class SellController extends GetxController {
     scanProgress.value = 0.0;
     currentScanStepIndex.value = 0;
 
-    Timer.periodic(const Duration(milliseconds: 150), (timer) {
+    Timer.periodic(const Duration(milliseconds: 50), (timer) {
       if (scanProgress.value < 1.0) {
-        scanProgress.value += 0.03;
+        scanProgress.value += 0.025;
         if (scanProgress.value > 1.0) scanProgress.value = 1.0;
 
         // Advance status text steps based on progress

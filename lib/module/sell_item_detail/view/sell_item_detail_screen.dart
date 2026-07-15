@@ -1,4 +1,5 @@
 import 'package:cpk1989/config/themes/app_theme.dart';
+import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -49,36 +50,37 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
             color: Colors.white,
           ),
         ),
-        actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 20.w),
-            child: Center(
-              child: CustomGlassButton(
-                size: 40.r,
-                onTap: () {
-                  Get.snackbar(
-                    "Delete Item",
-                    "Item deletion triggered...",
-                    snackPosition: SnackPosition.TOP,
-                    backgroundColor: const Color(0xFF161719),
-                    colorText: Colors.white,
-                    borderRadius: 16,
-                    margin: const EdgeInsets.all(16),
-                  );
-                },
-                child: SvgPicture.asset(
-                  'assets/icons/delete .svg',
-                  width: 16.r,
-                  height: 16.r,
-                  colorFilter: const ColorFilter.mode(
-                    Colors.white,
-                    BlendMode.srcIn,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
+        //   actions: [
+        //     Padding(
+        //       padding: EdgeInsets.only(right: 20.w),
+        //       child: Center(
+        //         child: CustomGlassButton(
+        //           size: 40.r,
+        //           onTap: () {
+        //             Get.snackbar(
+        //               "Delete Item",
+        //               "Item deletion triggered...",
+        //               snackPosition: SnackPosition.TOP,
+        //               backgroundColor: const Color(0xFF161719),
+        //               colorText: Colors.white,
+        //               borderRadius: 16,
+        //               margin: const EdgeInsets.all(16),
+        //             );
+        //           },
+        //           child: SvgPicture.asset(
+        //             'assets/icons/delete .svg',
+        //             width: 16.r,
+        //             height: 16.r,
+        //             colorFilter: const ColorFilter.mode(
+        //               Colors.white,
+        //               BlendMode.srcIn,
+        //             ),
+        //           ),
+        //         ),
+        //       ),
+        //     ),
+        //   ],
+        // ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -86,307 +88,235 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-              Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.vertical(
-                      bottom: Radius.circular(24.r),
-                    ),
-                    child: Container(
-                      height: 300.h,
-                      width: double.infinity,
-                      color: Colors.black,
-                      child: item.imageUrl.startsWith('http')
-                          ? Image.network(
-                              item.imageUrl,
-                              fit: BoxFit.cover,
-                              loadingBuilder:
-                                  (context, child, loadingProgress) {
-                                    if (loadingProgress == null) return child;
-                                    return const Center(
-                                      child: CircularProgressIndicator(
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                              Color(0xFFE2B744),
-                                            ),
+            SizedBox(
+              height: 300.h,
+              child: OverflowBox(
+                minWidth: MediaQuery.of(context).size.width,
+                maxWidth: MediaQuery.of(context).size.width,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    Positioned.fill(
+                      child: PageView.builder(
+                        controller: controller.pageController,
+                        itemCount: item.itemImages.length,
+                        onPageChanged: (index) {
+                          controller.rxCurrentPage.value = index;
+                        },
+                        itemBuilder: (context, index) {
+                          final imgUrl = item.itemImages[index];
+                          return Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 6.w),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(24.r),
+                              child: Container(
+                                color: Colors.black,
+                                child: imgUrl.startsWith('http')
+                                    ? Image.network(
+                                        imgUrl,
+                                        fit: BoxFit.cover,
+                                        loadingBuilder:
+                                            (context, child, loadingProgress) {
+                                              if (loadingProgress == null)
+                                                return child;
+                                              return const Center(
+                                                child: CircularProgressIndicator(
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation<
+                                                        Color
+                                                      >(Color(0xFFE2B744)),
+                                                ),
+                                              );
+                                            },
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                const Center(
+                                                  child: Icon(
+                                                    Icons.broken_image,
+                                                    color: Colors.white30,
+                                                  ),
+                                                ),
+                                      )
+                                    : Image.file(
+                                        File(imgUrl),
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                const Center(
+                                                  child: Icon(
+                                                    Icons.broken_image,
+                                                    color: Colors.white30,
+                                                  ),
+                                                ),
                                       ),
-                                    );
-                                  },
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Center(
-                                    child: Icon(
-                                      Icons.broken_image,
-                                      color: Colors.white30,
-                                    ),
-                                  ),
-                            )
-                          : Image.file(
-                              File(item.imageUrl),
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Center(
-                                    child: Icon(
-                                      Icons.broken_image,
-                                      color: Colors.white30,
-                                    ),
-                                  ),
+                              ),
                             ),
-                    ),
-                  ),
-                  // Vignette overlay
-                  Positioned.fill(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(24.r),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.black.withValues(alpha: 0.3),
-                              Colors.transparent,
-                              Colors.black.withValues(alpha: 0.2),
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                        ),
+                          );
+                        },
                       ),
                     ),
-                  ),
-                ],
+                    // Centered page indicator exactly half-cut on the bottom boundary line
+                    Positioned(
+                      bottom: -9.h,
+                      child: Obx(() {
+                        return CustomPageIndicator(
+                          count: item.itemImages.length,
+                          currentPage: controller.rxCurrentPage.value,
+                          isSmall: false,
+                          showBorder: false,
+                          backgroundColor: const Color(0xFF0F1012),
+                          activeColor: const Color(0xFFFFAF2C),
+                          inactiveColor: const Color(0xFF7E7E7E),
+                        );
+                      }),
+                    ),
+                  ],
+                ),
               ),
+            ),
 
-              SizedBox(height: 20.h),
+            SizedBox(height: 20.h),
 
-              // Title and Status Badge Row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Text(
-                      item.itemName,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  SizedBox(width: 16.w),
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 10.w,
-                      vertical: 6.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Color(0xFFAF7413).withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SvgPicture.asset(
-                          'assets/icons/Excellent condition  Warn Twice.svg',
-                          width: 12.w,
-                          height: 12.h,
-                          colorFilter: ColorFilter.mode(
-                            Color(0xFFFFAF2C),
-                            BlendMode.srcIn,
-                          ),
-                        ),
-                        SizedBox(width: 4.w),
-                        Text(
-                          "AI Ready",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 11.sp,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFFFFAF2C),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 15.h),
-              Divider(
-                color: Colors.white.withValues(alpha: 0.05),
-                thickness: 1.0,
-              ),
-              SizedBox(height: 15.h),
-
-
-              // ITEM DETAILS Section Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "ITEM DETAILS",
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    item.itemName,
                     style: GoogleFonts.dmSans(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white38,
-                      letterSpacing: 1.0,
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  Obx(
-                    () => GestureDetector(
-                      onTap: () => controller.toggleEditMode(),
-                      child: controller.rxIsEditMode.value
-                          ? Container(
-                              width: 22.r,
-                              height: 22.r,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: AppTheme.yellow,
-                                  width: 1.5.w,
-                                ),
-                              ),
-                              child: Center(
-                                child: Icon(
-                                  Icons.check_rounded,
-                                  color: AppTheme.yellow,
-                                  size: 14.sp,
-                                ),
-                              ),
-                            )
-                          : SvgPicture.asset(
-                              'assets/icons/edit pen .svg',
-                              colorFilter: const ColorFilter.mode(
-                                Color(0xFFFFAF2C),
-                                BlendMode.srcIn,
-                              ),
-                              width: 18.w,
-                              height: 18.h,
-                            ),
-                    ),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 12.h),
-
-              // ITEM DETAILS list (Editable or Read-Only based on mode)
-              Obx(() {
-                if (controller.rxIsEditMode.value) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _buildBrandEditRow(),
-                      _buildDescriptionEditRow(),
-                      _buildPriceEditRow(),
-                      _buildConditionEditRow(),
-                      _buildProofOfPurchaseEditRow(),
-                    ],
-                  );
-                } else {
-                  final formattedPriceVal =
-                      "AED ${double.tryParse(controller.rxPrice.value)?.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},') ?? '0'}";
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _buildDetailRow("Brand", controller.rxBrand.value),
-                      _buildDescriptionDetailRow(
-                        "Description",
-                        controller.rxDescription.value,
-                      ),
-                      _buildDetailRow("Suggested price", formattedPriceVal),
-                      _buildDetailRow(
-                        "Condition",
-                        controller.rxCondition.value,
-                      ),
-                      _buildProofOfPurchaseRow("Proof of purchase (Optional)"),
-                    ],
-                  );
-                }
-              }),
-
-              SizedBox(height: 8.h),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(Icons.info_outline, color: Colors.white38, size: 14.sp),
-                  SizedBox(width: 6.w),
-                  Expanded(
-                    child: Text(
-                      "Final verification happens after pickup.",
-                      style: GoogleFonts.dmSans(
-                        fontSize: 12.sp,
-                        color: Colors.white38,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 24.h),
-              Text(
-                "SELLER DETAILS",
-                style: GoogleFonts.dmSans(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white38,
-                  letterSpacing: 1.0,
                 ),
-              ),
-              SizedBox(height: 12.h),
-              Obx(
-                () => controller.rxIsEditMode.value
-                    ? _buildCompactSellerDetailsCard()
-                    : _buildSellerDetailsCard(),
-              ),
-              SizedBox(height: 24.h),
-              Text(
-                "YOUR EARNINGS",
-                style: GoogleFonts.dmSans(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white38,
-                  letterSpacing: 1.0,
+              ],
+            ),
+
+            SizedBox(height: 15.h),
+            Divider(
+              color: Colors.white.withValues(alpha: 0.05),
+              thickness: 1.0,
+            ),
+            SizedBox(height: 15.h),
+
+            // ITEM DETAILS Section Header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "ITEM DETAILS",
+                  style: GoogleFonts.dmSans(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white38,
+                    letterSpacing: 1.0,
+                  ),
                 ),
-              ),
-              SizedBox(height: 12.h),
-              _buildEarningsCard(item.price),
-              SizedBox(height: 24.h),
-              Center(
-                child: Text.rich(
-                  TextSpan(
-                    text: "By posting, you agree to Closeté ",
+              ],
+            ),
+
+            SizedBox(height: 12.h),
+
+            // ITEM DETAILS list (Always Editable)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildBrandEditRow(),
+                _buildDescriptionEditRow(),
+                _buildPriceEditRow(),
+                _buildConditionEditRow(),
+                _buildProofOfPurchaseEditRow(),
+              ],
+            ),
+
+            SizedBox(height: 8.h),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(Icons.info_outline, color: Colors.white38, size: 14.sp),
+                SizedBox(width: 6.w),
+                Expanded(
+                  child: Text(
+                    "Final verification happens after pickup.",
                     style: GoogleFonts.dmSans(
                       fontSize: 12.sp,
                       color: Colors.white38,
                       fontWeight: FontWeight.w500,
                     ),
-                    children: [
-                      const TextSpan(
-                        text: "Terms & Conditions",
-                        style: TextStyle(
-                          decoration: TextDecoration.underline,
-                          decorationColor: Colors.white38,
-                        ),
-                      ),
-                    ],
                   ),
-                  textAlign: TextAlign.center,
                 ),
+              ],
+            ),
+            SizedBox(height: 24.h),
+            Text(
+              "SELLER DETAILS",
+              style: GoogleFonts.dmSans(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w700,
+                color: Colors.white38,
+                letterSpacing: 1.0,
               ),
-              SizedBox(height: 16.h),
-              _buildPostItemButton(context, item),
-              SizedBox(
-                height: 24.h +
-                    (MediaQuery.of(context).padding.bottom > 0
-                        ? MediaQuery.of(context).padding.bottom
-                        : 20.h),
+            ),
+            SizedBox(height: 12.h),
+            Obx(
+              () => controller.rxIsEditMode.value
+                  ? _buildCompactSellerDetailsCard()
+                  : _buildSellerDetailsCard(),
+            ),
+            SizedBox(height: 24.h),
+            Text(
+              "YOUR EARNINGS",
+              style: GoogleFonts.dmSans(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w700,
+                color: Colors.white38,
+                letterSpacing: 1.0,
               ),
-            ],
-          ),
+            ),
+            SizedBox(height: 12.h),
+            _buildEarningsCard(item.price),
+            SizedBox(height: 24.h),
+            Center(
+              child: Text.rich(
+                TextSpan(
+                  text: "By posting, you agree to Closeté ",
+                  style: GoogleFonts.dmSans(
+                    fontSize: 12.sp,
+                    color: Colors.white38,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  children: [
+                    const TextSpan(
+                      text: "Terms & Conditions",
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        decorationColor: Colors.white38,
+                      ),
+                    ),
+                  ],
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(height: 16.h),
+            _buildPostItemButton(context, item),
+            SizedBox(
+              height:
+                  24.h +
+                  (MediaQuery.of(context).padding.bottom > 0
+                      ? MediaQuery.of(context).padding.bottom
+                      : 20.h),
+            ),
+          ],
         ),
-      );
-    }
+      ),
+    );
+  }
 
   Widget _buildDetailRow(String label, String value) {
     return Container(
@@ -838,7 +768,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
   Widget _buildDescriptionEditRow() {
     return Container(
       margin: EdgeInsets.only(bottom: 8.h),
-      padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 12.h),
+      padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 16.h),
       decoration: BoxDecoration(
         color: const Color(0xFF0F1012),
         borderRadius: BorderRadius.circular(12.r),
@@ -862,7 +792,6 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
           TextField(
             controller: controller.descriptionController,
             maxLines: null,
-            maxLength: 100,
             style: GoogleFonts.dmSans(
               fontSize: 14.sp,
               color: Colors.white,
@@ -873,24 +802,6 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
               border: InputBorder.none,
               isDense: true,
               contentPadding: EdgeInsets.zero,
-              counterText: "",
-            ),
-            onChanged: (val) {
-              controller.rxDescriptionLength.value = val.length;
-            },
-          ),
-          SizedBox(height: 8.h),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Obx(
-              () => Text(
-                "${controller.rxDescriptionLength.value}/100",
-                style: GoogleFonts.dmSans(
-                  fontSize: 11.sp,
-                  color: Colors.white38,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
             ),
           ),
         ],
@@ -922,7 +833,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
             child: Row(
               children: [
                 Text(
-                  "Suggested price",
+                  "Listing price",
                   style: GoogleFonts.dmSans(
                     fontSize: 14.sp,
                     color: Colors.white38,

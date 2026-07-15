@@ -4,8 +4,10 @@ import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 
 class SellItemDetailController extends GetxController {
   late final ProfileItem item;
+  final rxCurrentPage = 0.obs;
+  late final PageController pageController;
 
-  final rxIsEditMode = false.obs;
+  final rxIsEditMode = true.obs;
   late final TextEditingController brandController;
   late final TextEditingController descriptionController;
   late final TextEditingController priceController;
@@ -20,6 +22,8 @@ class SellItemDetailController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    pageController = PageController(viewportFraction: 0.88);
+    
     if (Get.arguments is ProfileItem) {
       item = Get.arguments as ProfileItem;
     } else {
@@ -37,35 +41,43 @@ class SellItemDetailController extends GetxController {
       );
     }
 
-    brandController = TextEditingController(text: item.brand);
-    descriptionController = TextEditingController(
-      text:
-          "Black caviar leather with gold hardware. Comes with original dust bag and authenticity card.",
-    );
+    final isFallback = item.id == 'fallback';
+    brandController = TextEditingController(text: isFallback ? "" : item.brand);
+    descriptionController = TextEditingController(text: "");
     priceController = TextEditingController(
-      text: item.price.toInt().toString(),
+      text: isFallback ? "" : item.price.toInt().toString(),
     );
-    conditionController = TextEditingController(text: "Excellent");
-    rxCondition.value = "Excellent";
+    conditionController = TextEditingController(text: "");
+
+    rxCondition.value = "";
     rxPrice.value = priceController.text;
-    rxBrand.value = item.brand;
-    rxDescription.value = descriptionController.text;
-    rxDescriptionLength.value = descriptionController.text.length;
+    rxBrand.value = brandController.text;
+    rxDescription.value = "";
+    rxDescriptionLength.value = 0;
+
+    // Listen to changes in controllers to keep rx variables in sync
+    brandController.addListener(() {
+      rxBrand.value = brandController.text;
+    });
+    priceController.addListener(() {
+      rxPrice.value = priceController.text;
+    });
+    descriptionController.addListener(() {
+      rxDescription.value = descriptionController.text;
+      rxDescriptionLength.value = descriptionController.text.length;
+    });
+    conditionController.addListener(() {
+      rxCondition.value = conditionController.text;
+    });
   }
 
   void toggleEditMode() {
-    if (rxIsEditMode.value) {
-      // Save changes
-      rxBrand.value = brandController.text;
-      rxDescription.value = descriptionController.text;
-      rxPrice.value = priceController.text;
-      rxCondition.value = conditionController.text;
-    }
-    rxIsEditMode.value = !rxIsEditMode.value;
+    // Keep for potential back-compatibility, but edit mode is always true
   }
 
   @override
   void onClose() {
+    pageController.dispose();
     brandController.dispose();
     descriptionController.dispose();
     priceController.dispose();
