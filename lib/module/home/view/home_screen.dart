@@ -90,43 +90,61 @@ class HomeScreen extends GetView<HomeController> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       // User Info Row (Avatar + Username + Verified badge)
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 20.r,
-                            backgroundColor: Colors.grey.shade900,
-                            child: ClipOval(
-                              child: Image.network(
-                                "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150",
-                                width: 40.r,
-                                height: 40.r,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    const Icon(
-                                      Icons.person,
-                                      color: Colors.white70,
-                                    ),
+                      GestureDetector(
+                        onTap: () {
+                          Get.toNamed(
+                            AppRoutes.sellerProfile,
+                            arguments: {
+                              'userName': item.userName,
+                              'isVerified': item.isVerified,
+                            },
+                          );
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CircleAvatar(
+                              radius: 20.r,
+                              backgroundColor: Colors.grey.shade900,
+                              child: ClipOval(
+                                child: Image.network(
+                                  item.userName == "Olivia Mendes"
+                                      ? "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150"
+                                      : item.userName == "Sophia Rossi"
+                                          ? "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=150"
+                                          : item.userName == "James Miller"
+                                              ? "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=150"
+                                              : "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150",
+                                  width: 40.r,
+                                  height: 40.r,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Icon(
+                                        Icons.person,
+                                        color: Colors.white70,
+                                      ),
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(width: 10.w),
-                          Text(
-                            item.userName,
-                            style: GoogleFonts.dmSans(
-                              fontSize: 18.sp,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white,
+                            SizedBox(width: 10.w),
+                            Text(
+                              item.userName,
+                              style: GoogleFonts.dmSans(
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
-                          if (item.isVerified) ...[
-                            SizedBox(width: 6.w),
-                            SvgPicture.asset(
-                              'assets/icons/blue_verify-badg.svg',
-                              width: 18.r,
-                              height: 18.r,
-                            ),
+                            if (item.isVerified) ...[
+                              SizedBox(width: 6.w),
+                              SvgPicture.asset(
+                                'assets/icons/blue_verify-badg.svg',
+                                width: 18.r,
+                                height: 18.r,
+                              ),
+                            ],
                           ],
-                        ],
+                        ),
                       ),
 
                       SizedBox(height: 16.h),

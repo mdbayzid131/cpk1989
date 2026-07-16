@@ -3,6 +3,8 @@ import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 
 class MyPurchaseDitailsController extends GetxController {
   late final ProfileItem item;
+  final rxOriginalPackaging = false.obs;
+  final rxBillName = "Bill.pdf".obs;
 
   @override
   void onInit() {

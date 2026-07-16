@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cpk1989/module/auth/controller/auth_controller.dart';
+import 'package:cpk1989/core/widgets/custom_gold_button.dart';
 
 class EmailVerificationBottomSheetContent extends GetView<AuthController> {
   const EmailVerificationBottomSheetContent({super.key});
@@ -91,75 +92,21 @@ class EmailVerificationBottomSheetContent extends GetView<AuthController> {
 
         // Gold Gradient Verify Button
         Obx(() {
-          final isOtpLoading = controller.rxIsOtpLoading.value;
-          return Container(
-            height: 52.h,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(26.r),
-              gradient: isOtpLoading
-                  ? null
-                  : const LinearGradient(
-                      colors: [
-                        Color(0xFFAF7413),
-                        Color(0xFFC98C28),
-                        Color(0xFFE2B744),
-                        Color(0xFFFFED81),
-                        Color(0xFFE1C24E),
-                        Color(0xFFA06008),
-                      ],
-                      stops: [0.0477, 0.1933, 0.3893, 0.5054, 0.6210, 0.9074],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-              color: isOtpLoading ? const Color(0xFF1E2022) : null,
+          return CustomGoldButton(
+            text: "Verify Email",
+            isLoading: controller.rxIsOtpLoading.value,
+            suffix: Icon(
+              Icons.arrow_forward_rounded,
+              color: Colors.black,
+              size: 18.sp,
             ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: isOtpLoading
-                    ? null
-                    : () async {
-                        final success = await controller.verifyOtp();
-                        if (success && context.mounted) {
-                          Navigator.pop(context); // Close bottom sheet
-                          await controller.handleVerificationSuccess();
-                        }
-                      },
-                borderRadius: BorderRadius.circular(26.r),
-                child: Center(
-                  child: isOtpLoading
-                      ? SizedBox(
-                          height: 20.w,
-                          width: 20.w,
-                          child: const CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Color(0xFFE2B744),
-                            ),
-                          ),
-                        )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Verify Email",
-                              style: GoogleFonts.dmSans(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.black,
-                              ),
-                            ),
-                            SizedBox(width: 6.w),
-                            Icon(
-                              Icons.arrow_forward_rounded,
-                              color: Colors.black,
-                              size: 18.sp,
-                            ),
-                          ],
-                        ),
-                ),
-              ),
-            ),
+            onTap: () async {
+              final success = await controller.verifyOtp();
+              if (success && context.mounted) {
+                Navigator.pop(context); // Close bottom sheet
+                await controller.handleVerificationSuccess();
+              }
+            },
           );
         }),
       ],

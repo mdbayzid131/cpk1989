@@ -245,7 +245,7 @@ class _OnboardingPage2State extends State<OnboardingPage2>
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 24.w),
           child: Text(
-            'Record. Upload. We handle the rest,\nwhile you get paid.',
+            'Capture. Upload. We handle the rest,\nwhile you get paid.',
             textAlign: TextAlign.center,
             style: GoogleFonts.dmSans(
               fontSize: 15.sp,

@@ -35,6 +35,7 @@ class ProfileController extends GetxController {
   final rxIsEditing = false.obs;
   final rxWardrobeItems = <ProfileItem>[].obs;
   final rxPurchaseItems = <ProfileItem>[].obs;
+  final rxCards = <Map<String, String>>[].obs;
 
   late final TextEditingController firstNameController;
   late final TextEditingController lastNameController;

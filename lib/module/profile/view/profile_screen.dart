@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:cpk1989/core/widgets/custom_gold_button.dart';
+import 'package:cpk1989/core/widgets/custom_add_card_bottom_sheet.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/core/services/auth_service.dart';
 
@@ -28,7 +29,12 @@ class ProfileScreen extends GetView<ProfileController> {
 
               // Screen Header (Left-aligned as shown in mockup)
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+                padding: EdgeInsets.only(
+                  left: 20.w,
+                  right: 0.w,
+                  top: 8.h,
+                  bottom: 8.h,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -45,6 +51,7 @@ class ProfileScreen extends GetView<ProfileController> {
                         await Get.find<AuthService>().logout();
                         Get.offAllNamed(AppRoutes.login);
                       },
+                      alignment: Alignment.centerRight,
                       icon: const Icon(
                         Icons.logout_rounded,
                         color: Colors.white30,
@@ -815,12 +822,334 @@ class ProfileScreen extends GetView<ProfileController> {
                 ),
                 onTap: () => controller.saveChanges(),
               ),
-              SizedBox(height: 20.h),
+              SizedBox(height: 32.h),
             ],
+
+            _buildSavedCardsSection(context),
           ],
         ),
       );
     });
+  }
+
+  Widget _buildSavedCardsSection(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Obx(() {
+          final cards = controller.rxCards;
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "SAVED CARDS",
+                style: GoogleFonts.dmSans(
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white60,
+                  letterSpacing: 1.0,
+                ),
+              ),
+              if (cards.isNotEmpty)
+                GestureDetector(
+                  onTap: () => _showAddCardBottomSheet(context),
+                  child: Text(
+                    "Add a new card",
+                    style: GoogleFonts.dmSans(
+                      fontSize: 13.sp,
+                      color: const Color(0xFFFFAF2C),
+                      fontWeight: FontWeight.w700,
+                      decoration: TextDecoration.underline,
+                      decorationColor: const Color(0xFFFFAF2C),
+                      decorationThickness: 1.5,
+                    ),
+                  ),
+                ),
+            ],
+          );
+        }),
+        SizedBox(height: 16.h),
+        Obx(() {
+          final cards = controller.rxCards;
+          if (cards.isEmpty) {
+            return Container(
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+              decoration: BoxDecoration(
+                color: const Color(0xFF161719),
+                borderRadius: BorderRadius.circular(16.r),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.05),
+                  width: 1.0,
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SvgPicture.string(
+                    '''<svg width="40" height="31" viewBox="0 0 40 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 26.0156C0 27.321 0.518553 28.5729 1.44158 29.4959C2.36461 30.4189 3.61651 30.9375 4.92188 30.9375H34.4531C35.7585 30.9375 37.0104 30.4189 37.9334 29.4959C38.8564 28.5729 39.375 27.321 39.375 26.0156V12.4805H0V26.0156ZM5.80078 19.3359C5.80078 18.6366 6.07858 17.966 6.57306 17.4715C7.06754 16.977 7.7382 16.6992 8.4375 16.6992H12.6562C13.3556 16.6992 14.0262 16.977 14.5207 17.4715C15.0152 17.966 15.293 18.6366 15.293 19.3359V21.0938C15.293 21.7931 15.0152 22.4637 14.5207 22.9582C14.0262 23.4527 13.3556 23.7305 12.6562 23.7305H8.4375C7.7382 23.7305 7.06754 23.4527 6.57306 22.9582C6.07858 22.4637 5.80078 21.7931 5.80078 21.0938V19.3359ZM34.4531 0H4.92188C3.61651 0 2.36461 0.518553 1.44158 1.44158C0.518553 2.36461 0 3.61651 0 4.92188V7.20703H39.375V4.92188C39.375 3.61651 38.8564 2.36461 37.9334 1.44158C37.0104 0.518553 35.7585 0 34.4531 0Z" fill="white" fill-opacity="0.1"/>
+</svg>''',
+                    width: 40.r,
+                    height: 31.r,
+                  ),
+                  SizedBox(height: 12.h),
+                  Text(
+                    "No saved cards",
+                    style: GoogleFonts.dmSans(
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    "Add a payment method to make secure purchases or get paid after your buyer accepts delivery",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 12.sp,
+                      color: const Color(0xFFA2A2A2),
+                      fontWeight: FontWeight.w400,
+                      height: 1.4,
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+                  GestureDetector(
+                    onTap: () => _showAddCardBottomSheet(context),
+                    child: Text(
+                      "+ Add payment method",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 14.sp,
+                        color: const Color(0xFFFFAF2C),
+                        fontWeight: FontWeight.w700,
+                        decoration: TextDecoration.underline,
+                        decorationColor: const Color(0xFFFFAF2C),
+                        decorationThickness: 1.5,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          } else {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: List.generate(cards.length, (index) {
+                final card = cards[index];
+                final type = card['type'] ?? '';
+                final logo = card['logo'] ?? '';
+                final cardNumber = card['cardNumber'] ?? '';
+                final expiry = card['expiry'] ?? '';
+                final isVerified = card['verified'] == 'true';
+
+                return Container(
+                  margin: EdgeInsets.only(bottom: 12.h),
+                  padding: EdgeInsets.all(16.r),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF161719),
+                    borderRadius: BorderRadius.circular(16.r),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.05),
+                      width: 1.0,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildProfileCardLogo(logo),
+                          SizedBox(width: 16.w),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  type,
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 16.sp,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                SizedBox(height: 4.h),
+                                Text(
+                                  cardNumber,
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 14.sp,
+                                    color: Colors.white38,
+                                    fontWeight: FontWeight.w400,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(width: 8.w),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                expiry,
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 13.sp,
+                                  color: Colors.white38,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              SizedBox(height: 8.h),
+                              GestureDetector(
+                                onTap: () => controller.rxCards.removeAt(index),
+                                child: Icon(
+                                  Icons.delete_outline_rounded,
+                                  color: Colors.white38,
+                                  size: 18.sp,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      if (isVerified) ...[
+                        SizedBox(height: 12.h),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 10.w,
+                            vertical: 5.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(
+                              0xFF34C759,
+                            ).withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(100.r),
+                            border: Border.all(
+                              color: const Color(
+                                0xFF34C759,
+                              ).withValues(alpha: 0.15),
+                              width: 1.0,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.check_circle_outline_rounded,
+                                color: const Color(0xFF34C759),
+                                size: 14.sp,
+                              ),
+                              SizedBox(width: 6.w),
+                              Text(
+                                "Verified for payments",
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 11.sp,
+                                  color: const Color(0xFF34C759),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                );
+              }),
+            );
+          }
+        }),
+      ],
+    );
+  }
+
+  Widget _buildProfileCardLogo(String logo) {
+    if (logo == 'visa') {
+      return Container(
+        width: 44.r,
+        height: 44.r,
+        decoration: BoxDecoration(
+          color: const Color(0xFF005BAC), // Visa blue
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          "VISA",
+          style: GoogleFonts.dmSans(
+            color: Colors.white,
+            fontWeight: FontWeight.w900,
+            fontStyle: FontStyle.italic,
+            fontSize: 12.sp,
+            letterSpacing: 0.5,
+          ),
+        ),
+      );
+    } else if (logo == 'mastercard') {
+      return Container(
+        width: 44.r,
+        height: 44.r,
+        decoration: BoxDecoration(
+          color: const Color(
+            0xFF161719,
+          ), // Mastercard dark container background
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        alignment: Alignment.center,
+        padding: EdgeInsets.all(8.r),
+        child: SvgPicture.asset(
+          'assets/icons/master card.svg',
+          fit: BoxFit.contain,
+        ),
+      );
+    } else {
+      // General red card logo box
+      return Container(
+        width: 44.r,
+        height: 44.r,
+        decoration: BoxDecoration(
+          color: const Color(0xFFDA3D28), // Mastercard red background
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        alignment: Alignment.center,
+        padding: EdgeInsets.all(8.r),
+        child: SvgPicture.asset(
+          'assets/icons/master card.svg',
+          fit: BoxFit.contain,
+        ),
+      );
+    }
+  }
+
+  void _showAddCardBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => CustomAddCardBottomSheet(
+        onAdd:
+            ({
+              required String name,
+              required String cardNumber,
+              required String expiry,
+              required String cvv,
+            }) {
+              final isVisa = cardNumber.startsWith('4');
+              final formattedExpiry = expiry.isNotEmpty
+                  ? 'Exp $expiry'
+                  : 'Exp 08/28';
+              final hasNoCards = controller.rxCards.isEmpty;
+
+              controller.rxCards.add({
+                'type': isVisa ? 'Visa' : 'Mastercard',
+                'logo': isVisa ? 'visa' : 'mastercard',
+                'cardNumber': cardNumber.length > 4
+                    ? '**** **** **** ${cardNumber.substring(cardNumber.length - 4)}'
+                    : '**** **** **** 4526',
+                'expiry': formattedExpiry,
+                'verified': hasNoCards ? 'true' : 'false',
+              });
+              Navigator.pop(context);
+            },
+      ),
+    );
   }
 
   Widget _buildFieldContainer({

@@ -132,44 +132,61 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Row(
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 20.r,
-                                        backgroundColor: Colors.grey.shade900,
-                                        child: ClipOval(
-                                          child: Image.network(
-                                            "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150",
-                                            width: 40.r,
-                                            height: 40.r,
-                                            fit: BoxFit.cover,
-                                            errorBuilder:
-                                                (context, error, stackTrace) =>
-                                                    const Icon(
-                                                      Icons.person,
-                                                      color: Colors.white70,
-                                                    ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Get.toNamed(
+                                        AppRoutes.sellerProfile,
+                                        arguments: {
+                                          'userName': item.userName,
+                                          'isVerified': item.isVerified,
+                                        },
+                                      );
+                                    },
+                                    child: Row(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 20.r,
+                                          backgroundColor: Colors.grey.shade900,
+                                          child: ClipOval(
+                                            child: Image.network(
+                                              item.userName == "Olivia Mendes"
+                                                  ? "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150"
+                                                  : item.userName == "Sophia Rossi"
+                                                      ? "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=150"
+                                                      : item.userName == "James Miller"
+                                                          ? "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=150"
+                                                          : "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150",
+                                              width: 40.r,
+                                              height: 40.r,
+                                              fit: BoxFit.cover,
+                                              errorBuilder:
+                                                  (context, error, stackTrace) =>
+                                                      const Icon(
+                                                        Icons.person,
+                                                        color: Colors.white70,
+                                                      ),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      SizedBox(width: 10.w),
-                                      Text(
-                                        item.userName,
-                                        style: GoogleFonts.dmSans(
-                                          fontSize: 16.sp,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.white,
+                                        SizedBox(width: 10.w),
+                                        Text(
+                                          item.userName,
+                                          style: GoogleFonts.dmSans(
+                                            fontSize: 16.sp,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.white,
+                                          ),
                                         ),
-                                      ),
-                                      if (item.isVerified) ...[
-                                        SizedBox(width: 6.w),
-                                        SvgPicture.asset(
-                                          'assets/icons/blue_verify-badg.svg',
-                                          width: 18.r,
-                                          height: 18.r,
-                                        ),
+                                        if (item.isVerified) ...[
+                                          SizedBox(width: 6.w),
+                                          SvgPicture.asset(
+                                            'assets/icons/blue_verify-badg.svg',
+                                            width: 18.r,
+                                            height: 18.r,
+                                          ),
+                                        ],
                                       ],
-                                    ],
+                                    ),
                                   ),
                                   Text(
                                     "Listed price",
@@ -182,69 +199,77 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                 ],
                               ),
 
-                              SizedBox(height: 16.h),
-
-                              // 3. Item Title
-                              Text(
-                                item.itemName,
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 20.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                ),
-                              ),
-
-                              SizedBox(height: 8.h),
-
-                              // 4. Specifications row (Condition & Worn Count & Size)
-                              Wrap(
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                spacing: 12.w,
-                                runSpacing: 8.h,
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      SvgPicture.asset(
-                                        'assets/icons/Excellent condition  Warn Twice.svg',
-                                        width: 16.r,
-                                        height: 16.r,
-                                      ),
-                                      SizedBox(width: 6.w),
-                                      Text(
-                                        "${item.condition} : ${item.wornCount}",
-                                        style: GoogleFonts.dmSans(
-                                          fontSize: 13.sp,
-                                          color: const Color(0xFFA2A2A2),
-                                          fontWeight: FontWeight.w500,
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              item.itemName,
+                                              style: GoogleFonts.dmSans(
+                                                fontSize: 22.sp,
+                                                fontWeight: FontWeight.w700,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            _buildProofOfPurchaseButton(),
+                                          ],
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  Container(
-                                    height: 12.h,
-                                    width: 1.w,
-                                    color: Colors.white12,
-                                  ),
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.straighten_outlined,
-                                        color: const Color(0xFFA2A2A2),
-                                        size: 16.sp,
-                                      ),
-                                      SizedBox(width: 6.w),
-                                      Text(
-                                        item.size,
-                                        style: GoogleFonts.dmSans(
-                                          fontSize: 13.sp,
-                                          color: const Color(0xFFA2A2A2),
-                                          fontWeight: FontWeight.w500,
+
+                                        SizedBox(height: 12.h),
+                                        // Bullet 1
+                                        Row(
+                                          children: [
+                                            Text(
+                                              "✦ ",
+                                              style: GoogleFonts.dmSans(
+                                                fontSize: 14.sp,
+                                                color: Colors.white60,
+                                              ),
+                                            ),
+                                            Text(
+                                              "${item.condition} : ${item.wornCount}",
+                                              style: GoogleFonts.dmSans(
+                                                fontSize: 14.sp,
+                                                color: const Color(0xFFA2A2A2),
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                    ],
+                                        SizedBox(height: 6.h),
+                                        // Bullet 2
+                                        Row(
+                                          children: [
+                                            Text(
+                                              "✦ ",
+                                              style: GoogleFonts.dmSans(
+                                                fontSize: 14.sp,
+                                                color: Colors.white60,
+                                              ),
+                                            ),
+                                            Text(
+                                              "Original packaging available",
+                                              style: GoogleFonts.dmSans(
+                                                fontSize: 14.sp,
+                                                color: const Color(0xFFA2A2A2),
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 6.h),
+                                      ],
+                                    ),
                                   ),
+                                  SizedBox(width: 16.w),
                                 ],
                               ),
 
@@ -443,7 +468,11 @@ class _DetailImageSliderState extends State<DetailImageSlider> {
 
   @override
   Widget build(BuildContext context) {
-    final images = widget.item.itemImages;
+    final images = widget.item.itemImages.isNotEmpty
+        ? widget.item.itemImages
+        : [
+            'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=600&auto=format&fit=crop',
+          ];
 
     return Stack(
       children: [
@@ -461,10 +490,27 @@ class _DetailImageSliderState extends State<DetailImageSlider> {
               Get.find<ItemDetailController>().rxCurrentPage.value = index;
             },
             itemBuilder: (context, index) {
+              final img = images[index];
+              if (img.startsWith('http') || img.startsWith('https')) {
+                return Image.network(
+                  img,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Image.network(
+                    'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=600&auto=format&fit=crop',
+                    fit: BoxFit.cover,
+                  ),
+                );
+              }
               return Image.asset(
-                images[index],
+                img,
                 fit: BoxFit.cover,
                 alignment: const Alignment(0.0, -0.3),
+                errorBuilder: (context, error, stackTrace) {
+                  return Image.network(
+                    'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=600&auto=format&fit=crop',
+                    fit: BoxFit.cover,
+                  );
+                },
               );
             },
           ),
@@ -497,4 +543,83 @@ class _DetailImageSliderState extends State<DetailImageSlider> {
       ],
     );
   }
+}
+
+Widget _buildProofOfPurchaseButton() {
+  return Container(
+    padding: EdgeInsets.all(4.r), // inner spacing
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(16.r),
+      gradient: const LinearGradient(
+        begin: Alignment(-1.0, -0.165),
+        end: Alignment(1.0, 0.165),
+        colors: [
+          Color(0xFFAF7413),
+          Color(0xFFC98C28),
+          Color(0xFFE2B744),
+          Color(0xFFFFED81),
+          Color(0xFFE1C24E),
+          Color(0xFFA06008),
+        ],
+        stops: [0.0477, 0.1933, 0.3893, 0.5054, 0.6210, 0.9074],
+      ),
+    ),
+    child: Container(
+      padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14.r),
+        color: Colors.transparent,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            // width: 38.r,
+            // height: 38.r,
+            padding: EdgeInsets.all(10.r),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+            child: SvgPicture.string(
+              '''<svg width="15" height="18" viewBox="0 0 15 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12.6504 9.65039V7.14307C12.6504 6.5299 12.6504 6.22334 12.5362 5.94769C12.422 5.67203 12.2053 5.45526 11.7717 5.02171L8.21932 1.4693C7.84514 1.09514 7.65809 0.908053 7.42627 0.797203C7.37804 0.774141 7.32869 0.753681 7.27829 0.735898C7.03597 0.650391 6.77144 0.650391 6.24224 0.650391C3.80851 0.650391 2.59162 0.650391 1.76739 1.31494C1.60087 1.4492 1.4492 1.60087 1.31494 1.76739C0.65039 2.59162 0.650391 3.80851 0.650391 6.24227V9.65039C0.650391 12.4788 0.650391 13.8931 1.52907 14.7717C2.40775 15.6504 3.82196 15.6504 6.65039 15.6504M7.40039 1.02539V1.40039C7.40039 3.52171 7.40039 4.58237 8.05942 5.24138C8.71844 5.90039 9.77909 5.90039 11.9004 5.90039H12.2754" stroke="#0F1012" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8.90039 14.1504C9.34274 14.6055 10.5202 16.4004 11.1504 16.4004C11.7806 16.4004 12.958 14.6055 13.4004 14.1504M11.1504 15.6504L11.1504 11.1504" stroke="#0F1012" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M2.90039 8.15039H7.40039" stroke="#0F1012" stroke-width="1.3" stroke-linecap="round"/>
+<path d="M2.90039 10.1191H5.99414" stroke="#0F1012" stroke-width="1.3" stroke-linecap="round"/>
+</svg>
+''',
+              width: 18.r,
+              height: 18.r,
+            ),
+          ),
+          SizedBox(width: 8.w),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Proof of",
+                style: GoogleFonts.dmSans(
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black,
+                  height: 1.1,
+                ),
+              ),
+              Text(
+                "purchase",
+                style: GoogleFonts.dmSans(
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black,
+                  height: 1.1,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ),
+  );
 }

@@ -1237,10 +1237,14 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
             SizedBox(height: 12.h),
             Row(
               children: [
-                Icon(
-                  Icons.location_on_outlined,
-                  color: Colors.white38,
-                  size: 18.sp,
+                SvgPicture.asset(
+                  'assets/icons/location.svg',
+                  width: 18.r,
+                  height: 18.r,
+                  colorFilter: const ColorFilter.mode(
+                    Colors.white38,
+                    BlendMode.srcIn,
+                  ),
                 ),
                 SizedBox(width: 10.w),
                 Expanded(
@@ -1258,7 +1262,15 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
             SizedBox(height: 10.h),
             Row(
               children: [
-                Icon(Icons.phone_outlined, color: Colors.white38, size: 18.sp),
+                SvgPicture.asset(
+                  'assets/icons/phone.svg',
+                  width: 18.r,
+                  height: 18.r,
+                  colorFilter: const ColorFilter.mode(
+                    Colors.white38,
+                    BlendMode.srcIn,
+                  ),
+                ),
                 SizedBox(width: 10.w),
                 Text(
                   controller.rxSellerPhone.value,

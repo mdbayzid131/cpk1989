@@ -326,8 +326,9 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                 "Black caviar leather with gold hardware. Comes with original dust bag and authenticity card.",
               ),
               _buildDetailRow("Suggested price", formattedPrice),
-              _buildDetailRow("Condition", "Excellent"),
+              _buildConditionDetailRow("Condition", "Excellent"),
               _buildProofOfPurchaseRow("Proof of purchase (Optional)"),
+              _buildOriginalPackagingRow(),
 
               // ONLY show timeline/buyer details/earnings when status is NOT null
               if (status != null) ...[
@@ -824,6 +825,89 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
     );
   }
 
+  Widget _buildConditionDetailRow(String label, String value) {
+    final description = _getConditionDescription(value);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          margin: EdgeInsets.only(bottom: 8.h),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.centerRight,
+              end: Alignment.centerLeft,
+              colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+            ),
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.05),
+              width: 1.0,
+            ),
+          ),
+          child: Row(
+            children: [
+              Text(
+                label,
+                style: GoogleFonts.dmSans(
+                  fontSize: 14.sp,
+                  color: Colors.white38,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const Spacer(),
+              Expanded(
+                flex: 2,
+                child: Text(
+                  value,
+                  textAlign: TextAlign.end,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (description.isNotEmpty)
+          Padding(
+            padding: EdgeInsets.only(left: 4.w, right: 4.w, bottom: 12.h),
+            child: Text(
+              description,
+              style: GoogleFonts.dmSans(
+                fontSize: 12.sp,
+                color: const Color(0xFFA2A2A2),
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  String _getConditionDescription(String condition) {
+    switch (condition) {
+      case 'New with Tags':
+        return 'Brand new, never used, original tags attached';
+      case 'Like New':
+        return 'Excellent condition with little to no visible signs of wear';
+      case 'Excellent':
+        return 'Light signs of use, very well maintained';
+      case 'Very Good':
+        return 'Noticeable but minor wear, no significant defects';
+      case 'Good':
+        return 'Visible signs of wear but fully functional and presentable';
+      case 'Fair':
+        return 'Heavy wear or imperfections, reflected in the price';
+      default:
+        return '';
+    }
+  }
+
   Widget _buildDescriptionDetailRow(String label, String value) {
     return Container(
       margin: EdgeInsets.only(bottom: 8.h),
@@ -867,67 +951,194 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
   }
 
   Widget _buildProofOfPurchaseRow(String label) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 8.h),
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.centerRight,
-          end: Alignment.centerLeft,
-          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-        ),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
-          width: 1.0,
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Text(
-              label,
-              style: GoogleFonts.dmSans(
-                fontSize: 14.sp,
-                color: Colors.white38,
-                fontWeight: FontWeight.w500,
-              ),
-              overflow: TextOverflow.ellipsis,
+    return Obx(() {
+      if (controller.rxBillName.value.isEmpty) {
+        return Container(
+          margin: EdgeInsets.only(bottom: 8.h),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.centerRight,
+              end: Alignment.centerLeft,
+              colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+            ),
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.05),
+              width: 1.0,
             ),
           ),
-          SizedBox(width: 8.w),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8.r),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.picture_as_pdf_outlined,
-                  color: Colors.white,
-                  size: 14.sp,
-                ),
-                SizedBox(width: 6.w),
-                Text(
-                  "Bill.pdf",
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  label,
                   style: GoogleFonts.dmSans(
-                    fontSize: 12.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 14.sp,
+                    color: Colors.white38,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              GestureDetector(
+                onTap: () => controller.rxBillName.value = "Bill.pdf",
+                child: Text(
+                  "Upload Bill",
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14.sp,
+                    color: const Color(0xFFFFAF2C),
+                    fontWeight: FontWeight.w700,
+                    decoration: TextDecoration.underline,
+                    decorationColor: const Color(0xFFFFAF2C),
+                    decorationThickness: 1.5,
                   ),
                 ),
-                SizedBox(width: 8.w),
-                Icon(Icons.close, color: Colors.white38, size: 12.sp),
-              ],
+              ),
+            ],
+          ),
+        );
+      } else {
+        return Container(
+          margin: EdgeInsets.only(bottom: 8.h),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.centerRight,
+              end: Alignment.centerLeft,
+              colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+            ),
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.05),
+              width: 1.0,
             ),
           ),
-        ],
-      ),
-    );
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  label,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14.sp,
+                    color: Colors.white38,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              SizedBox(width: 8.w),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.picture_as_pdf_outlined,
+                      color: Colors.white,
+                      size: 14.sp,
+                    ),
+                    SizedBox(width: 6.w),
+                    Text(
+                      controller.rxBillName.value,
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+                    GestureDetector(
+                      onTap: () => controller.rxBillName.value = "",
+                      child: Icon(
+                        Icons.close,
+                        color: Colors.white38,
+                        size: 12.sp,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+    });
+  }
+
+  Widget _buildOriginalPackagingRow() {
+    return Obx(() {
+      final isChecked = controller.rxOriginalPackaging.value;
+      return Container(
+        height: 54.h,
+        margin: EdgeInsets.only(bottom: 8.h),
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.05),
+            width: 1.0,
+          ),
+          gradient: const LinearGradient(
+            begin: Alignment.centerRight,
+            end: Alignment.centerLeft,
+            colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+          ),
+        ),
+        child: Row(
+          children: [
+            GestureDetector(
+              onTap: () {
+                controller.rxOriginalPackaging.value = !isChecked;
+              },
+              child: Container(
+                width: 20.r,
+                height: 20.r,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4.r),
+                  border: Border.all(
+                    color: isChecked ? const Color(0xFFFFAF2C) : Colors.white38,
+                    width: 1.5.w,
+                  ),
+                  color: isChecked
+                      ? const Color(0xFFFFAF2C)
+                      : Colors.transparent,
+                ),
+                child: isChecked
+                    ? const Icon(
+                        Icons.check_rounded,
+                        color: Colors.white,
+                        size: 14,
+                      )
+                    : null,
+              ),
+            ),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  controller.rxOriginalPackaging.value = !isChecked;
+                },
+                child: Text(
+                  "Original packaging available?",
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildEarningsRow(String label, String value) {
