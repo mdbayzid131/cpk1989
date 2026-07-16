@@ -13,6 +13,7 @@ import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:cpk1989/core/widgets/processing_overlay.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
+import 'package:cpk1989/core/widgets/custom_add_card_bottom_sheet.dart';
 
 class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
   const SecureCheckoutScreen({super.key});
@@ -731,25 +732,34 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
           ),
-          child: _AddCardBottomSheet(
-            controller: controller,
-            buildTextField:
+          child: CustomAddCardBottomSheet(
+            onAdd:
                 ({
-                  required controller,
-                  required hintText,
-                  icon,
-                  svgPath,
-                  keyboardType = TextInputType.text,
-                  inputFormatters,
+                  required name,
+                  required cardNumber,
+                  required expiry,
+                  required cvv,
                 }) {
-                  return _buildTextInputField(
-                    controller: controller,
-                    hintText: hintText,
-                    icon: icon,
-                    svgPath: svgPath,
-                    keyboardType: keyboardType,
-                    inputFormatters: inputFormatters,
-                  );
+                  Navigator.pop(sheetContext); // Close sheet
+
+                  // Process the purchase to add the item dynamically
+                  controller.processPurchase(() {});
+
+                  // Show processing dialog, then go to success details
+                  showProcessingOverlay(context, () {
+                    // Convert dynamic FeedItem structure to ProfileItem for routing to PurchaseDetailScreen
+                    if (!Get.isRegistered<ProfileController>()) {
+                      Get.put(ProfileController());
+                    }
+                    final profileController = Get.find<ProfileController>();
+                    final profileItem = profileController.rxPurchaseItems.first;
+
+                    Get.back(); // Pop SecureCheckoutScreen
+                    Get.toNamed(
+                      AppRoutes.purchaseDetail,
+                      arguments: profileItem,
+                    );
+                  });
                 },
           ),
         );
@@ -791,231 +801,6 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class DateTextInputFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    if (newValue.text.isEmpty) {
-      return newValue;
-    }
-
-    final text = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
-    final buffer = StringBuffer();
-
-    for (int i = 0; i < text.length; i++) {
-      if (i == 2 || i == 4) {
-        buffer.write('/');
-      }
-      buffer.write(text[i]);
-    }
-
-    final formattedText = buffer.toString();
-
-    if (formattedText.length > 10) {
-      return oldValue;
-    }
-
-    int selectionIndex = formattedText.length;
-    if (newValue.selection.end < newValue.text.length) {
-      int digitCountBeforeCursor = newValue.text
-          .substring(0, newValue.selection.end)
-          .replaceAll(RegExp(r'[^0-9]'), '')
-          .length;
-      int formattedIndex = 0;
-      int digitCount = 0;
-      while (formattedIndex < formattedText.length &&
-          digitCount < digitCountBeforeCursor) {
-        if (formattedText[formattedIndex] != '/') {
-          digitCount++;
-        }
-        formattedIndex++;
-      }
-      selectionIndex = formattedIndex;
-    }
-
-    return TextEditingValue(
-      text: formattedText,
-      selection: TextSelection.collapsed(offset: selectionIndex),
-    );
-  }
-}
-
-class _AddCardBottomSheet extends StatefulWidget {
-  final SecureCheckoutController controller;
-  final Widget Function({
-    required TextEditingController controller,
-    required String hintText,
-    IconData? icon,
-    String? svgPath,
-    TextInputType keyboardType,
-    List<TextInputFormatter>? inputFormatters,
-  })
-  buildTextField;
-
-  const _AddCardBottomSheet({
-    required this.controller,
-    required this.buildTextField,
-  });
-
-  @override
-  State<_AddCardBottomSheet> createState() => _AddCardBottomSheetState();
-}
-
-class _AddCardBottomSheetState extends State<_AddCardBottomSheet> {
-  late final TextEditingController nameController;
-  late final TextEditingController numberController;
-  late final TextEditingController expiryController;
-  late final TextEditingController cvvController;
-
-  @override
-  void initState() {
-    super.initState();
-    nameController = TextEditingController();
-    numberController = TextEditingController();
-    expiryController = TextEditingController();
-    cvvController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    nameController.dispose();
-    numberController.dispose();
-    expiryController.dispose();
-    cvvController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF0F1012),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(32.r)),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
-          width: 1.0,
-        ),
-      ),
-      padding: EdgeInsets.fromLTRB(
-        24.w,
-        24.h,
-        24.w,
-        MediaQuery.of(context).padding.bottom + 24.h,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Title Row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Add a new card",
-                style: GoogleFonts.dmSans(
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-              GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: Container(
-                  padding: EdgeInsets.all(4.r),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.transparent,
-                    border: Border.all(color: Colors.white, width: 1.0),
-                  ),
-                  child: Icon(
-                    Icons.close_rounded,
-                    color: Colors.white,
-                    size: 16.sp,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 24.h),
-
-          // Cardholder Name
-          widget.buildTextField(
-            controller: nameController,
-            hintText: "Enter Card holder Name",
-            svgPath: "assets/icons/person.svg",
-          ),
-          SizedBox(height: 16.h),
-
-          // Card Number
-          widget.buildTextField(
-            controller: numberController,
-            hintText: "Enter Card number",
-            svgPath: "assets/icons/card number.svg",
-            keyboardType: TextInputType.number,
-          ),
-          SizedBox(height: 16.h),
-
-          // Expiry & CVV Row
-          Row(
-            children: [
-              Expanded(
-                child: widget.buildTextField(
-                  controller: expiryController,
-                  hintText: "Enter expiry date",
-                  svgPath: "assets/icons/calender.svg",
-                  keyboardType: TextInputType.datetime,
-                  inputFormatters: [DateTextInputFormatter()],
-                ),
-              ),
-              SizedBox(width: 16.w),
-              Expanded(
-                child: widget.buildTextField(
-                  controller: cvvController,
-                  hintText: "Enter CVV",
-                  svgPath: "assets/icons/cvv.svg",
-                  keyboardType: TextInputType.number,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 32.h),
-
-          // Add Card Gold Button
-          CustomGoldButton(
-            text: "Add Card",
-            suffix: Icon(
-              Icons.arrow_forward_rounded,
-              color: Colors.black,
-              size: 18.sp,
-            ),
-            onTap: () {
-              Navigator.pop(context); // Close sheet
-
-              // Process the purchase to add the item dynamically
-              widget.controller.processPurchase(() {});
-
-              // Show processing dialog, then go to success details
-              showProcessingOverlay(context, () {
-                // Convert dynamic FeedItem structure to ProfileItem for routing to PurchaseDetailScreen
-                if (!Get.isRegistered<ProfileController>()) {
-                  Get.put(ProfileController());
-                }
-                final profileController = Get.find<ProfileController>();
-                final profileItem = profileController.rxPurchaseItems.first;
-
-                Get.back(); // Pop SecureCheckoutScreen
-                Get.toNamed(AppRoutes.purchaseDetail, arguments: profileItem);
-              });
-            },
-          ),
-        ],
       ),
     );
   }
