@@ -1509,7 +1509,9 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
         width: 44.r,
         height: 44.r,
         decoration: BoxDecoration(
-          color: const Color(0xFF161719), // Mastercard dark container background
+          color: const Color(
+            0xFF161719,
+          ), // Mastercard dark container background
           borderRadius: BorderRadius.circular(12.r),
         ),
         alignment: Alignment.center,
@@ -1674,7 +1676,9 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                                           border: Border.all(
                                             color: isSelected
                                                 ? Colors.white
-                                                : Colors.white.withValues(alpha: 0.15),
+                                                : Colors.white.withValues(
+                                                    alpha: 0.15,
+                                                  ),
                                             width: 1.5.r,
                                           ),
                                         ),
@@ -1700,9 +1704,8 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                                           border: isSelected
                                               ? null
                                               : Border.all(
-                                                  color: Colors.white.withValues(
-                                                    alpha: 0.15,
-                                                  ),
+                                                  color: Colors.white
+                                                      .withValues(alpha: 0.15),
                                                   width: 1.5.r,
                                                 ),
                                         ),
@@ -1789,28 +1792,34 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
             bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
           ),
           child: CustomAddCardBottomSheet(
-            onAdd: ({required name, required cardNumber, required expiry, required cvv}) {
-              final number = cardNumber;
-              final hiddenNumber = number.length > 4
-                  ? "**** **** **** ${number.substring(number.length - 4)}"
-                  : "**** **** **** 4526";
-              final expiryText = expiry.isNotEmpty
-                  ? "Exp $expiry"
-                  : "Exp 08/28";
-              final isVisa = number.startsWith('4');
+            onAdd:
+                ({
+                  required name,
+                  required cardNumber,
+                  required expiry,
+                  required cvv,
+                }) {
+                  final number = cardNumber;
+                  final hiddenNumber = number.length > 4
+                      ? "**** **** **** ${number.substring(number.length - 4)}"
+                      : "**** **** **** 4526";
+                  final expiryText = expiry.isNotEmpty
+                      ? "Exp $expiry"
+                      : "Exp 08/28";
+                  final isVisa = number.startsWith('4');
 
-              controller.rxCards.add({
-                'type': isVisa ? 'Visa Card' : 'Master Card',
-                'logo': isVisa ? 'visa' : 'mastercard',
-                'cardNumber': hiddenNumber,
-                'expiry': expiryText,
-              });
-              controller.rxSelectedCardIndex.value =
-                  controller.rxCards.length - 1;
-              controller.rxHasPaymentMethod.value = true;
+                  controller.rxCards.add({
+                    'type': isVisa ? 'Visa Card' : 'Master Card',
+                    'logo': isVisa ? 'visa' : 'mastercard',
+                    'cardNumber': hiddenNumber,
+                    'expiry': expiryText,
+                  });
+                  controller.rxSelectedCardIndex.value =
+                      controller.rxCards.length - 1;
+                  controller.rxHasPaymentMethod.value = true;
 
-              Navigator.pop(sheetContext); // Close sheet
-            },
+                  Navigator.pop(sheetContext); // Close sheet
+                },
           ),
         );
       },
@@ -1857,7 +1866,7 @@ class _SuccessBottomSheetContent extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SizedBox(height: 12.h),
+        // SizedBox(height: 12.h),
         Center(
           child: Text(
             "Your item is live",

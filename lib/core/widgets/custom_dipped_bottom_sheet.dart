@@ -75,7 +75,7 @@ class CustomDippedBottomSheet extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Spacer to push content below the logo and the dip (bottom of dip is at y=180, shifted: 117)
-              SizedBox(height: 117.0 * scale + 24.h),
+              SizedBox(height: 117.0 * scale + 8.h),
 
               // The content
               Padding(
