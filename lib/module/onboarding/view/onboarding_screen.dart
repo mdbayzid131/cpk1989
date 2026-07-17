@@ -156,8 +156,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOutCubic,
-                width: _currentPage == 2 ? 180.w : 56.h,
-                height: 56.h,
+                width: _currentPage == 2 ? 158.w : 46.h,
+                height: 46.h,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(100.r),
                   boxShadow: [
@@ -176,35 +176,37 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: Center(
                     child: AnimatedCrossFade(
                       firstChild: SizedBox(
-                        width: 180.w,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Enter Closete',
-                              maxLines: 1,
-                              style: GoogleFonts.dmSans(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black,
+                        width: 156.w,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12.w),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Enter Closete',
+                                maxLines: 1,
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF0F1012),
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 8.w),
-                            Icon(
-                              Icons.arrow_forward_rounded,
-                              color: Colors.black,
-                              size: 20.w,
-                            ),
-                          ],
+                              Icon(
+                                Icons.arrow_forward_rounded,
+                                color: Color(0xFF0F1012),
+                                size: 18.w,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       secondChild: SizedBox(
-                        width: 56.h,
+                        width: 46.h,
                         child: Center(
                           child: Icon(
                             Icons.arrow_forward_rounded,
                             color: Colors.black,
-                            size: 24.w,
+                            size: 22.w,
                           ),
                         ),
                       ),
