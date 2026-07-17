@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cpk1989/config/themes/app_theme.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/core/widgets/vertical_stepper.dart';
+import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 import 'package:cpk1989/module/my_purchase_ditails/controller/my_purchase_ditails_controller.dart';
 
 class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
@@ -100,84 +101,108 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Product Image with play button overlay
-              Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(24.r),
-                    child: Container(
-                      height: 300.h,
-                      width: double.infinity,
-                      color: Colors.black,
-                      child: item.imageUrl.startsWith('http')
-                          ? Image.network(
-                              item.imageUrl,
-                              fit: BoxFit.cover,
-                              loadingBuilder:
-                                  (context, child, loadingProgress) {
-                                    if (loadingProgress == null) return child;
-                                    return const Center(
-                                      child: CircularProgressIndicator(
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                              Color(0xFFE2B744),
-                                            ),
-                                      ),
-                                    );
-                                  },
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Center(
-                                    child: Icon(
-                                      Icons.broken_image,
-                                      color: Colors.white30,
-                                    ),
-                                  ),
-                            )
-                          : const SizedBox.shrink(),
-                    ),
-                  ),
-                  // Vignette overlay
-                  Positioned.fill(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(24.r),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.black.withValues(alpha: 0.3),
-                              Colors.transparent,
-                              Colors.black.withValues(alpha: 0.2),
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
+              SizedBox(
+                height: 300.h,
+                child: OverflowBox(
+                  minWidth: MediaQuery.of(context).size.width,
+                  maxWidth: MediaQuery.of(context).size.width,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      Positioned.fill(
+                        child: PageView.builder(
+                          controller: controller.pageController,
+                          onPageChanged: (index) {
+                            controller.rxCurrentPage.value = index;
+                          },
+                          itemCount: item.itemImages.length,
+                          itemBuilder: (context, index) {
+                            final imgUrl = item.itemImages[index];
+                            return Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 8.w),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20.r),
+                                child: Container(
+                                  color: const Color(0xFF1C1D20),
+                                  child: imgUrl.startsWith('http')
+                                      ? Image.network(
+                                          imgUrl,
+                                          fit: BoxFit.cover,
+                                          loadingBuilder:
+                                              (
+                                                context,
+                                                child,
+                                                loadingProgress,
+                                              ) {
+                                                if (loadingProgress == null) {
+                                                  return child;
+                                                }
+                                                return const Center(
+                                                  child: CircularProgressIndicator(
+                                                    valueColor:
+                                                        AlwaysStoppedAnimation<
+                                                          Color
+                                                        >(Color(0xFFE2B744)),
+                                                  ),
+                                                );
+                                              },
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  const Center(
+                                                    child: Icon(
+                                                      Icons.broken_image,
+                                                      color: Colors.white30,
+                                                    ),
+                                                  ),
+                                        )
+                                      : const SizedBox.shrink(),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      Positioned(
+                        bottom: -9.h,
+                        child: Obx(
+                          () => CustomPageIndicator(
+                            count: item.itemImages.length,
+                            currentPage: controller.rxCurrentPage.value,
+                            isSmall: false,
+                            showBorder: false,
+                            backgroundColor: const Color(0xFF0F1012),
+                            activeColor: const Color(0xFFFFAF2C),
+                            inactiveColor: const Color(0xFF7E7E7E),
                           ),
                         ),
                       ),
-                    ),
+
+                      // Translucent Play Icon Overlay
+                      // Positioned.fill(
+                      //   child: Center(
+                      //     child: Container(
+                      //       width: 54.r,
+                      //       height: 54.r,
+                      //       decoration: BoxDecoration(
+                      //         color: Colors.white.withValues(alpha: 0.25),
+                      //         shape: BoxShape.circle,
+                      //         border: Border.all(
+                      //           color: Colors.white.withValues(alpha: 0.15),
+                      //           width: 1.5,
+                      //         ),
+                      //       ),
+                      //       child: Icon(
+                      //         Icons.play_arrow_rounded,
+                      //         color: Colors.white,
+                      //         size: 32.sp,
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                    ],
                   ),
-                  // Translucent Play Icon Overlay
-                  Positioned.fill(
-                    child: Center(
-                      child: Container(
-                        width: 54.r,
-                        height: 54.r,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.25),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.15),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Icon(
-                          Icons.play_arrow_rounded,
-                          color: Colors.white,
-                          size: 32.sp,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
 
               SizedBox(height: 20.h),

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 
@@ -6,9 +7,13 @@ class MyPurchaseDitailsController extends GetxController {
   final rxOriginalPackaging = false.obs;
   final rxBillName = "Bill.pdf".obs;
 
+  late final PageController pageController;
+  final rxCurrentPage = 0.obs;
+
   @override
   void onInit() {
     super.onInit();
+    pageController = PageController(viewportFraction: 0.88);
     if (Get.arguments is ProfileItem) {
       item = Get.arguments as ProfileItem;
     } else {
@@ -25,5 +30,11 @@ class MyPurchaseDitailsController extends GetxController {
         status: "Reserved",
       );
     }
+  }
+
+  @override
+  void onClose() {
+    pageController.dispose();
+    super.onClose();
   }
 }

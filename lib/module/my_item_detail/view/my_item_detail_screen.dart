@@ -7,6 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/core/widgets/vertical_stepper.dart';
+import 'package:cpk1989/core/widgets/custom_gold_button.dart';
+import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 import 'package:cpk1989/module/my_item_detail/controller/my_item_detail_controller.dart';
 
 class MyItemDetailScreen extends GetView<MyItemDetailController> {
@@ -163,71 +165,89 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(24.r),
-                    child: Container(
-                      height: 300.h,
-                      width: double.infinity,
-                      color: Colors.black,
-                      child: item.imageUrl.startsWith('http')
-                          ? Image.network(
-                              item.imageUrl,
-                              fit: BoxFit.cover,
-                              loadingBuilder:
-                                  (context, child, loadingProgress) {
-                                    if (loadingProgress == null) return child;
-                                    return const Center(
-                                      child: CircularProgressIndicator(
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                              Color(0xFFE2B744),
+              SizedBox(
+                height: 300.h,
+                child: OverflowBox(
+                  minWidth: MediaQuery.of(context).size.width,
+                  maxWidth: MediaQuery.of(context).size.width,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      Positioned.fill(
+                        child: PageView.builder(
+                          controller: controller.pageController,
+                          onPageChanged: (index) {
+                            controller.rxCurrentPage.value = index;
+                          },
+                          itemCount: item.itemImages.length,
+                          itemBuilder: (context, index) {
+                            final imgUrl = item.itemImages[index];
+                            return Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 8.w),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20.r),
+                                child: Container(
+                                  color: const Color(0xFF1C1D20),
+                                  child: imgUrl.startsWith('http')
+                                      ? Image.network(
+                                          imgUrl,
+                                          fit: BoxFit.cover,
+                                          loadingBuilder:
+                                              (context, child, loadingProgress) {
+                                            if (loadingProgress == null) return child;
+                                            return const Center(
+                                              child: CircularProgressIndicator(
+                                                valueColor:
+                                                    AlwaysStoppedAnimation<Color>(
+                                                        Color(0xFFE2B744)),
+                                              ),
+                                            );
+                                          },
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  const Center(
+                                            child: Icon(
+                                              Icons.broken_image,
+                                              color: Colors.white30,
                                             ),
-                                      ),
-                                    );
-                                  },
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Center(
-                                    child: Icon(
-                                      Icons.broken_image,
-                                      color: Colors.white30,
-                                    ),
-                                  ),
-                            )
-                          : Image.file(
-                              File(item.imageUrl),
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Center(
-                                    child: Icon(
-                                      Icons.broken_image,
-                                      color: Colors.white30,
-                                    ),
-                                  ),
-                            ),
-                    ),
-                  ),
-                  // Vignette overlay
-                  Positioned.fill(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(24.r),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.black.withValues(alpha: 0.3),
-                              Colors.transparent,
-                              Colors.black.withValues(alpha: 0.2),
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
+                                          ),
+                                        )
+                                      : Image.file(
+                                          File(imgUrl),
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  const Center(
+                                            child: Icon(
+                                              Icons.broken_image,
+                                              color: Colors.white30,
+                                            ),
+                                          ),
+                                        ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      Positioned(
+                        bottom: -9.h,
+                        child: Obx(
+                          () => CustomPageIndicator(
+                            count: item.itemImages.length,
+                            currentPage: controller.rxCurrentPage.value,
+                            isSmall: false,
+                            showBorder: false,
+                            backgroundColor: const Color(0xFF0F1012),
+                            activeColor: const Color(0xFFFFAF2C),
+                            inactiveColor: const Color(0xFF7E7E7E),
                           ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
 
               SizedBox(height: 20.h),
@@ -674,70 +694,26 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                     ),
                   ),
                 ] else ...[
-                  // Sell Again gold button
-                  Container(
+                  CustomGoldButton(
+                    text: "Sell Again",
                     height: 50.h,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25.r),
-                      gradient: LinearGradient(
-                        colors: const [
-                          Color(0xFFAF7413),
-                          Color(0xFFC98C28),
-                          Color(0xFFE2B744),
-                          Color(0xFFFFED81),
-                          Color(0xFFE1C24E),
-                          Color(0xFFA06008),
-                        ],
-                        stops: const [
-                          0.0477,
-                          0.1933,
-                          0.3893,
-                          0.5054,
-                          0.6210,
-                          0.9074,
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                    width: double.infinity,
+                    suffix: Icon(
+                      Icons.arrow_forward,
+                      color: Colors.black,
+                      size: 18.sp,
                     ),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () {
-                          Get.snackbar(
-                            "Listing Created",
-                            "Re-listing item to wardrobe...",
-                            snackPosition: SnackPosition.TOP,
-                            backgroundColor: const Color(0xFF161719),
-                            colorText: Colors.white,
-                            borderRadius: 16,
-                            margin: const EdgeInsets.all(16),
-                          );
-                        },
-                        borderRadius: BorderRadius.circular(25.r),
-                        child: Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Sell Again",
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              SizedBox(width: 8.w),
-                              Icon(
-                                Icons.arrow_forward,
-                                color: Colors.black,
-                                size: 18.sp,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+                    onTap: () {
+                      Get.snackbar(
+                        "Listing Created",
+                        "Re-listing item to wardrobe...",
+                        snackPosition: SnackPosition.TOP,
+                        backgroundColor: const Color(0xFF161719),
+                        colorText: Colors.white,
+                        borderRadius: 16,
+                        margin: const EdgeInsets.all(16),
+                      );
+                    },
                   ),
                 ],
 
