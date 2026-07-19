@@ -133,7 +133,7 @@ class OtpInputWidget extends StatelessWidget {
               final hasFocus = Focus.of(context).hasFocus;
               return Container(
                 width: 48.w,
-                height: 54.h,
+                height: 52.h,
                 decoration: BoxDecoration(
                   color: const Color(0xFF1B1C1E),
                   borderRadius: BorderRadius.circular(12.r),

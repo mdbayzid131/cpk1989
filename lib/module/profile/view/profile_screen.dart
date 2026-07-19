@@ -873,7 +873,7 @@ class ProfileScreen extends GetView<ProfileController> {
           final cards = controller.rxCards;
           if (cards.isEmpty) {
             return Container(
-              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
               decoration: BoxDecoration(
                 color: const Color(0xFF161719),
                 borderRadius: BorderRadius.circular(16.r),
@@ -943,7 +943,10 @@ class ProfileScreen extends GetView<ProfileController> {
 
                 return Container(
                   margin: EdgeInsets.only(bottom: 12.h),
-                  padding: EdgeInsets.all(16.r),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 16.h,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF161719),
                     borderRadius: BorderRadius.circular(16.r),
@@ -1170,7 +1173,7 @@ class ProfileScreen extends GetView<ProfileController> {
           borderRadius: 12.r,
         ),
         child: Container(
-          height: 56.h,
+          height: 54.h,
           decoration: BoxDecoration(
             color: Colors.transparent,
             borderRadius: BorderRadius.circular(12.r),
@@ -1182,7 +1185,7 @@ class ProfileScreen extends GetView<ProfileController> {
       );
     } else {
       return Container(
-        height: 56.h,
+        height: 54.h,
         decoration: BoxDecoration(
           gradient: gradient,
           borderRadius: BorderRadius.circular(12.r),

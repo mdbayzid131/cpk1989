@@ -11,12 +11,10 @@ class CustomAddCardBottomSheet extends StatefulWidget {
     required String cardNumber,
     required String expiry,
     required String cvv,
-  }) onAdd;
+  })
+  onAdd;
 
-  const CustomAddCardBottomSheet({
-    super.key,
-    required this.onAdd,
-  });
+  const CustomAddCardBottomSheet({super.key, required this.onAdd});
 
   @override
   State<CustomAddCardBottomSheet> createState() =>
@@ -59,10 +57,10 @@ class _CustomAddCardBottomSheetState extends State<CustomAddCardBottomSheet> {
         ),
       ),
       padding: EdgeInsets.fromLTRB(
-        24.w,
-        24.h,
-        24.w,
-        MediaQuery.of(context).padding.bottom + 24.h,
+        16.w,
+        18.h,
+        16.w,
+        MediaQuery.of(context).padding.bottom + 16.h,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -98,7 +96,7 @@ class _CustomAddCardBottomSheetState extends State<CustomAddCardBottomSheet> {
               ),
             ],
           ),
-          SizedBox(height: 24.h),
+          SizedBox(height: 18.h),
 
           // Cardholder Name
           _buildTextField(
@@ -106,7 +104,7 @@ class _CustomAddCardBottomSheetState extends State<CustomAddCardBottomSheet> {
             hintText: "Enter Card holder Name",
             svgPath: "assets/icons/person.svg",
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: 12.h),
 
           // Card Number
           _buildTextField(
@@ -115,7 +113,7 @@ class _CustomAddCardBottomSheetState extends State<CustomAddCardBottomSheet> {
             svgPath: "assets/icons/card number.svg",
             keyboardType: TextInputType.number,
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: 12.h),
 
           // Expiry & CVV Row
           Row(
@@ -129,7 +127,7 @@ class _CustomAddCardBottomSheetState extends State<CustomAddCardBottomSheet> {
                   inputFormatters: [_DateTextInputFormatter()],
                 ),
               ),
-              SizedBox(width: 16.w),
+              SizedBox(width: 12.w),
               Expanded(
                 child: _buildTextField(
                   controller: cvvController,
@@ -140,7 +138,7 @@ class _CustomAddCardBottomSheetState extends State<CustomAddCardBottomSheet> {
               ),
             ],
           ),
-          SizedBox(height: 32.h),
+          SizedBox(height: 24.h),
 
           // Add Card Gold Button
           CustomGoldButton(
@@ -172,7 +170,7 @@ class _CustomAddCardBottomSheetState extends State<CustomAddCardBottomSheet> {
     List<TextInputFormatter>? inputFormatters,
   }) {
     return Container(
-      height: 54.h,
+      height: 52.h,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],

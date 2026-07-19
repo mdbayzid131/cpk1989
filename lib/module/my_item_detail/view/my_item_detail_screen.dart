@@ -1052,7 +1052,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
     return Obx(() {
       final isChecked = controller.rxOriginalPackaging.value;
       return Container(
-        height: 54.h,
+        height: 52.h,
         margin: EdgeInsets.only(bottom: 8.h),
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         decoration: BoxDecoration(

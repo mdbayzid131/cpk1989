@@ -424,7 +424,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
 
   Widget _buildTitleEditRow() {
     return Container(
-      height: 54.h,
+      height: 52.h,
       margin: EdgeInsets.only(bottom: 8.h),
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: BoxDecoration(
@@ -475,7 +475,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
     return Obx(() {
       final isChecked = controller.rxOriginalPackaging.value;
       return Container(
-        height: 54.h,
+        height: 52.h,
         margin: EdgeInsets.only(bottom: 8.h),
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         decoration: BoxDecoration(
@@ -671,7 +671,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
 
   Widget _buildBrandEditRow() {
     return Container(
-      height: 54.h,
+      height: 52.h,
       margin: EdgeInsets.only(bottom: 8.h),
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: BoxDecoration(
@@ -777,7 +777,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            height: 54.h,
+            height: 52.h,
             margin: EdgeInsets.only(bottom: 8.h),
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             decoration: BoxDecoration(
@@ -879,7 +879,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            height: 54.h,
+            height: 52.h,
             margin: EdgeInsets.only(bottom: 8.h),
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             decoration: BoxDecoration(
@@ -1016,7 +1016,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
 
   Widget _buildProofOfPurchaseEditRow() {
     return Container(
-      height: 54.h,
+      height: 52.h,
       margin: EdgeInsets.only(bottom: 8.h),
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: BoxDecoration(
@@ -1107,7 +1107,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
 
   Widget _buildReadOnlyRow(String label, String value) {
     return Container(
-      height: 54.h,
+      height: 52.h,
       margin: EdgeInsets.only(bottom: 8.h),
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       decoration: BoxDecoration(
@@ -1293,7 +1293,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
     TextEditingController textController,
   ) {
     return Container(
-      height: 54.h,
+      height: 52.h,
       margin: EdgeInsets.only(bottom: 8.h),
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: BoxDecoration(

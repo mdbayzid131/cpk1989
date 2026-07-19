@@ -29,28 +29,19 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
       currentStepIndex = 1;
     } else if (status == "Authenticating") {
       currentStepIndex = 2;
-    } else if (status == "Out for delivery" || status == "On its way") {
-      currentStepIndex = 3;
     } else if (status == "Delivered") {
-      currentStepIndex = 4;
+      currentStepIndex = 3;
     }
 
-    final titles = [
-      "Reserved",
-      "Collected",
-      "Authenticating",
-      "Out for delivery",
-      "Delivered",
-    ];
+    final titles = ["Reserved", "Collected", "Authenticating", "Delivered"];
     final subtitles = [
       "Item reserved for you",
       "Seller preparing pickup",
       "Being verified by experts",
-      "It's on the way",
       "Estimated Delivery on 2 May, 2026",
     ];
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 4; i++) {
       StepperStepState state;
       if (i <= currentStepIndex) {
         state = StepperStepState.completed;
@@ -96,7 +87,7 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
+          physics: const ScrollPhysics(),
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -323,10 +314,12 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
+                      height: 1.1,
                     ),
                     subtitleStyle: GoogleFonts.dmSans(
                       fontSize: 12.sp,
                       color: Colors.white54,
+                      height: 1.1,
                     ),
                   ),
                 ),
@@ -464,7 +457,7 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
                 ),
               ),
 
-              SizedBox(height: 40.h),
+              SizedBox(height: 12.h),
             ],
           ),
         ),
@@ -686,7 +679,7 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
     return Obx(() {
       final isChecked = controller.rxOriginalPackaging.value;
       return Container(
-        height: 54.h,
+        height: 52.h,
         margin: EdgeInsets.only(bottom: 8.h),
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         decoration: BoxDecoration(

@@ -320,7 +320,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
     List<TextInputFormatter>? inputFormatters,
   }) {
     return Container(
-      height: 54.h,
+      height: 52.h,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
@@ -386,7 +386,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
   }) {
     return Obx(
       () => Container(
-        height: 54.h,
+        height: 52.h,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
@@ -450,7 +450,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
 
   Widget _buildPhoneInputField() {
     return Container(
-      height: 54.h,
+      height: 52.h,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
@@ -559,7 +559,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
           onTap: () => controller.selectPaymentMethod(id),
           borderRadius: BorderRadius.circular(16.r),
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -568,7 +568,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                   children: [
                     // Logo Box
                     logoWidget,
-                    SizedBox(width: 16.w),
+                    SizedBox(width: 12.w),
                     // Name label
                     Expanded(
                       child: Text(

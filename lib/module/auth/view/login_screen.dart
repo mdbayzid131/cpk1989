@@ -189,7 +189,7 @@ class LoginScreen extends GetView<AuthController> {
         builder: (context) {
           final hasFocus = Focus.of(context).hasFocus;
           return Container(
-            height: 50.h,
+            height: 48.h,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.r),
               gradient: const LinearGradient(

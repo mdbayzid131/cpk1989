@@ -157,7 +157,7 @@ class VerticalStepper extends StatelessWidget {
                 children: [
                   SizedBox(height: (activeDashedSize - nodeSize) / 2 + 4.0),
                   _buildTitleWidget(step),
-                  const SizedBox(height: 4.0),
+                  const SizedBox(height: 1.0),
                   Text(
                     step.subtitle,
                     style:

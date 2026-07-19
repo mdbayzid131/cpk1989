@@ -60,7 +60,7 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                 children: [
                   // 1. Gold spotlight rays background with luxury shopping bag (full-screen height top container)
                   SizedBox(
-                    height: 232.h,
+                    height: 190.h,
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
@@ -73,13 +73,13 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                         ),
                         // Centered shopping bag graphic
                         Positioned(
-                          top: MediaQuery.of(context).padding.top + 98.h,
+                          top: MediaQuery.of(context).padding.top + 58.h,
                           child: const ShoppingBagWidget(),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 24.h),
+                  SizedBox(height: 16.h),
 
                   // Content underneath with standard padding
                   Padding(
@@ -95,10 +95,11 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                               fontSize: 22.sp,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
+                              height: 1.1,
                             ),
                           ),
                         ),
-                        SizedBox(height: 6.h),
+                        SizedBox(height: 2.h),
                         Center(
                           child: Text(
                             "We'll collect and verify it within 24 hours",
@@ -106,6 +107,7 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w400,
                               color: Colors.white38,
+                              height: 1.1,
                             ),
                           ),
                         ),
@@ -165,10 +167,12 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                               fontSize: 15.sp,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
+                              height: 1.1,
                             ),
                             subtitleStyle: GoogleFonts.dmSans(
                               fontSize: 12.sp,
                               color: Colors.white54,
+                              height: 1.1,
                             ),
                           ),
                         ),

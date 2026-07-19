@@ -151,20 +151,25 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                             child: Image.network(
                                               item.userName == "Olivia Mendes"
                                                   ? "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150"
-                                                  : item.userName == "Sophia Rossi"
-                                                      ? "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=150"
-                                                      : item.userName == "James Miller"
-                                                          ? "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=150"
-                                                          : "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150",
+                                                  : item.userName ==
+                                                        "Sophia Rossi"
+                                                  ? "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=150"
+                                                  : item.userName ==
+                                                        "James Miller"
+                                                  ? "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=150"
+                                                  : "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150",
                                               width: 40.r,
                                               height: 40.r,
                                               fit: BoxFit.cover,
                                               errorBuilder:
-                                                  (context, error, stackTrace) =>
-                                                      const Icon(
-                                                        Icons.person,
-                                                        color: Colors.white70,
-                                                      ),
+                                                  (
+                                                    context,
+                                                    error,
+                                                    stackTrace,
+                                                  ) => const Icon(
+                                                    Icons.person,
+                                                    color: Colors.white70,
+                                                  ),
                                             ),
                                           ),
                                         ),
@@ -199,77 +204,71 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                 ],
                               ),
 
-                              Row(
+                              Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              item.itemName,
-                                              style: GoogleFonts.dmSans(
-                                                fontSize: 22.sp,
-                                                fontWeight: FontWeight.w700,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                            _buildProofOfPurchaseButton(),
-                                          ],
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          item.itemName,
+                                          style: GoogleFonts.dmSans(
+                                            fontSize: 22.sp,
+                                            fontWeight: FontWeight.w700,
+                                            color: Colors.white,
+                                          ),
                                         ),
-
-                                        SizedBox(height: 12.h),
-                                        // Bullet 1
-                                        Row(
-                                          children: [
-                                            Text(
-                                              "✦ ",
-                                              style: GoogleFonts.dmSans(
-                                                fontSize: 14.sp,
-                                                color: Colors.white60,
-                                              ),
-                                            ),
-                                            Text(
-                                              "${item.condition} : ${item.wornCount}",
-                                              style: GoogleFonts.dmSans(
-                                                fontSize: 14.sp,
-                                                color: const Color(0xFFA2A2A2),
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 6.h),
-                                        // Bullet 2
-                                        Row(
-                                          children: [
-                                            Text(
-                                              "✦ ",
-                                              style: GoogleFonts.dmSans(
-                                                fontSize: 14.sp,
-                                                color: Colors.white60,
-                                              ),
-                                            ),
-                                            Text(
-                                              "Original packaging available",
-                                              style: GoogleFonts.dmSans(
-                                                fontSize: 14.sp,
-                                                color: const Color(0xFFA2A2A2),
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 6.h),
-                                      ],
-                                    ),
+                                      ),
+                                      SizedBox(width: 12.w),
+                                      _buildProofOfPurchaseButton(),
+                                    ],
                                   ),
-                                  SizedBox(width: 16.w),
+
+                                  SizedBox(height: 12.h),
+                                  // Bullet 1
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "✦ ",
+                                        style: GoogleFonts.dmSans(
+                                          fontSize: 14.sp,
+                                          color: Colors.white60,
+                                        ),
+                                      ),
+                                      Text(
+                                        "${item.condition} : ${item.wornCount}",
+                                        style: GoogleFonts.dmSans(
+                                          fontSize: 14.sp,
+                                          color: const Color(0xFFA2A2A2),
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 6.h),
+                                  // Bullet 2
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "✦ ",
+                                        style: GoogleFonts.dmSans(
+                                          fontSize: 14.sp,
+                                          color: Colors.white60,
+                                        ),
+                                      ),
+                                      Text(
+                                        "Original packaging available",
+                                        style: GoogleFonts.dmSans(
+                                          fontSize: 14.sp,
+                                          color: const Color(0xFFA2A2A2),
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 6.h),
                                 ],
                               ),
 
@@ -519,24 +518,27 @@ class _DetailImageSliderState extends State<DetailImageSlider> {
         // 2. Next arrow floating button (glassmorphic circle overlay on the right)
         Positioned(
           right: 16.w,
-          top: (widget.height / 2) - 22.r,
-          child: CustomGlassButton(
-            size: 44.r,
-            padding: EdgeInsets.all(10.r),
-            onTap: () {
-              if (_pageController.hasClients) {
-                final nextPage = (_currentPage + 1) % images.length;
-                _pageController.animateToPage(
-                  nextPage,
-                  duration: const Duration(milliseconds: 400),
-                  curve: Curves.easeInOut,
-                );
-              }
-            },
-            child: const Icon(
-              Icons.arrow_forward_rounded,
-              color: Colors.white,
-              size: 20,
+          top: MediaQuery.of(context).padding.top,
+          bottom: 0,
+          child: Center(
+            child: CustomGlassButton(
+              size: 44.r,
+              padding: EdgeInsets.all(10.r),
+              onTap: () {
+                if (_pageController.hasClients) {
+                  final nextPage = (_currentPage + 1) % images.length;
+                  _pageController.animateToPage(
+                    nextPage,
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.easeInOut,
+                  );
+                }
+              },
+              child: const Icon(
+                Icons.arrow_forward_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
             ),
           ),
         ),
@@ -602,7 +604,7 @@ Widget _buildProofOfPurchaseButton() {
                 "Proof of",
                 style: GoogleFonts.dmSans(
                   fontSize: 12.sp,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w500,
                   color: Colors.black,
                   height: 1.1,
                 ),
@@ -611,7 +613,7 @@ Widget _buildProofOfPurchaseButton() {
                 "purchase",
                 style: GoogleFonts.dmSans(
                   fontSize: 12.sp,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w500,
                   color: Colors.black,
                   height: 1.1,
                 ),
