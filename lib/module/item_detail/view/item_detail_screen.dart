@@ -228,24 +228,57 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
 
                                   SizedBox(height: 12.h),
                                   // Bullet 1
-                                  Row(
-                                    children: [
-                                      Text(
-                                        "✦ ",
-                                        style: GoogleFonts.dmSans(
-                                          fontSize: 14.sp,
-                                          color: Colors.white60,
-                                        ),
-                                      ),
-                                      Text(
-                                        "${item.condition} : ${item.wornCount}",
-                                        style: GoogleFonts.dmSans(
-                                          fontSize: 14.sp,
-                                          color: const Color(0xFFA2A2A2),
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                    ],
+                                  Builder(
+                                    builder: (context) {
+                                      final desc = _getConditionDescription(
+                                        item.condition,
+                                      );
+                                      return Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "✦ ",
+                                            style: GoogleFonts.dmSans(
+                                              fontSize: 12.sp,
+                                              color: Colors.white60,
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "Condition: ${item.condition}",
+                                                  style: GoogleFonts.dmSans(
+                                                    fontSize: 12.sp,
+                                                    color: const Color(
+                                                      0xFFA2A2A2,
+                                                    ),
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                                ),
+                                                if (desc.isNotEmpty) ...[
+                                                  SizedBox(height: 2.h),
+                                                  Text(
+                                                    desc,
+                                                    style: GoogleFonts.dmSans(
+                                                      fontSize: 12.sp,
+                                                      color: const Color(
+                                                        0xFFA2A2A2,
+                                                      ),
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   ),
                                   SizedBox(height: 6.h),
                                   // Bullet 2
@@ -254,14 +287,14 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                       Text(
                                         "✦ ",
                                         style: GoogleFonts.dmSans(
-                                          fontSize: 14.sp,
+                                          fontSize: 12.sp,
                                           color: Colors.white60,
                                         ),
                                       ),
                                       Text(
                                         "Original packaging available",
                                         style: GoogleFonts.dmSans(
-                                          fontSize: 14.sp,
+                                          fontSize: 12.sp,
                                           color: const Color(0xFFA2A2A2),
                                           fontWeight: FontWeight.w400,
                                         ),
@@ -624,4 +657,24 @@ Widget _buildProofOfPurchaseButton() {
       ),
     ),
   );
+}
+
+String _getConditionDescription(String? condition) {
+  if (condition == null) return '';
+  switch (condition) {
+    case 'New with Tags':
+      return 'Brand new, never used, original tags attached';
+    case 'Like New':
+      return 'Excellent condition with little to no visible signs of wear';
+    case 'Excellent':
+      return 'Light signs of use, very well maintained';
+    case 'Very Good':
+      return 'Noticeable but minor wear, no significant defects';
+    case 'Good':
+      return 'Visible signs of wear but fully functional and presentable';
+    case 'Fair':
+      return 'Heavy wear or imperfections, reflected in the price';
+    default:
+      return '';
+  }
 }

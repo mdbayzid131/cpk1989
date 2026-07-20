@@ -783,21 +783,12 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
           children: [
             const TextSpan(text: "By clicking continue, you agree to our "),
             TextSpan(
-              text: "Terms of service",
+              text: "Terms & Policies.",
               style: const TextStyle(
                 decoration: TextDecoration.underline,
                 color: Colors.white70,
               ),
               recognizer: controller.termsRecognizer,
-            ),
-            const TextSpan(text: " and "),
-            TextSpan(
-              text: "Purchase Policy.",
-              style: const TextStyle(
-                decoration: TextDecoration.underline,
-                color: Colors.white70,
-              ),
-              recognizer: controller.purchasePolicyRecognizer,
             ),
           ],
         ),
