@@ -75,7 +75,7 @@ class LoginScreen extends GetView<AuthController> {
                           // Card Titles
                           Center(
                             child: Text(
-                              "Create your account",
+                              "Login or create your account",
                               style: TextStyle(
                                 fontFamily: 'Schnyder L',
                                 fontSize: 30.sp,
@@ -137,7 +137,8 @@ class LoginScreen extends GetView<AuthController> {
                                 text: "Continue",
                                 isLoading: isLoading,
                                 onTap: () async {
-                                  final success = await controller.prepareAuth();
+                                  final success = await controller
+                                      .prepareAuth();
                                   if (success && context.mounted) {
                                     controller.clearOtpFields();
                                     controller.startOtpTimer();
@@ -150,7 +151,8 @@ class LoginScreen extends GetView<AuthController> {
                                         height: 75.w,
                                         fit: BoxFit.contain,
                                       ),
-                                      content: const EmailVerificationBottomSheetContent(),
+                                      content:
+                                          const EmailVerificationBottomSheetContent(),
                                     ).then((_) {
                                       controller.stopOtpTimer();
                                     });

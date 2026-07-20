@@ -12,17 +12,19 @@ class OnboardingPage3 extends StatelessWidget {
     final double paddingTop = MediaQuery.of(context).padding.top;
     return Column(
       children: [
-        SizedBox(height: paddingTop + 60.h),
+        SizedBox(height: paddingTop + 20.h),
 
         ///<================= HEADER TEXT =========================>///
         Text(
           'Shop with',
+          textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: 'Schnyder L',
-            fontSize: 38.sp,
+            fontSize: 50.sp,
             fontWeight: FontWeight.w300,
             color: AppTheme.primaryText,
-            height: 1.15,
+            height: 1.22,
+            letterSpacing: 0.0,
           ),
         ),
         SizedBox(height: 5.h),
@@ -32,12 +34,14 @@ class OnboardingPage3 extends StatelessWidget {
           ),
           child: Text(
             'Confidence',
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: 'Schnyder L',
-              fontSize: 38.sp,
+              fontSize: 50.sp,
               fontWeight: FontWeight.w300,
               color: AppTheme.primaryText,
-              height: 1.15,
+              height: 1.22,
+              letterSpacing: 0.0,
             ),
           ),
         ),

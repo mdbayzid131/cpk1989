@@ -48,17 +48,19 @@ class _OnboardingPage2State extends State<OnboardingPage2>
     final double paddingTop = MediaQuery.of(context).padding.top;
     return Column(
       children: [
-        SizedBox(height: paddingTop + 60.h),
+        SizedBox(height: paddingTop + 40.h),
 
         ///<================= HEADER TEXT =========================>///
         Text(
           'Sell in',
+          textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: 'Schnyder L',
-            fontSize: 38.sp,
+            fontSize: 50.sp,
             fontWeight: FontWeight.w300,
             color: AppTheme.primaryText,
-            height: 1.15,
+            height: 1.22,
+            letterSpacing: 0.0,
           ),
         ),
         ShaderMask(
@@ -66,13 +68,15 @@ class _OnboardingPage2State extends State<OnboardingPage2>
             Rect.fromLTWH(0, 0, bounds.width, bounds.height),
           ),
           child: Text(
-            '60 Seconds',
+            'Minutes',
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: 'Schnyder L',
-              fontSize: 38.sp,
+              fontSize: 50.sp,
               fontWeight: FontWeight.w300,
               color: AppTheme.primaryText,
-              height: 1.15,
+              height: 1.22,
+              letterSpacing: 0.0,
             ),
           ),
         ),

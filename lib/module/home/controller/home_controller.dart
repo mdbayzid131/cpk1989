@@ -26,7 +26,7 @@ class FeedItem {
   });
 
   List<String> get itemImages =>
-      images ?? [imagePath, imagePath, imagePath, imagePath];
+      images ?? [imagePath, imagePath, imagePath];
 }
 
 class HomeController extends GetxController {

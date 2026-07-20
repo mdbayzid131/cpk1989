@@ -73,12 +73,12 @@ class SellController extends GetxController {
   // Saved media target path (points to local file if captured/picked, or empty to fallback)
   final rxCapturedPath = "".obs;
 
-  // Multi-image capture state: exactly 4 photo slots (Front, Back, Inside, Serial)
-  final rxCapturedPaths = <String?>[null, null, null, null].obs;
+  // Multi-image capture state: exactly 3 photo slots
+  final rxCapturedPaths = <String?>[null, null, null].obs;
   final activeSlotIndex = 0.obs;
 
   // Flag to check if live camera feed is active/turned on
-  final isCameraActive = false.obs;
+  final isCameraActive = true.obs;
 
   // Camera settings state
   final isPhotoMode = true.obs;
@@ -185,9 +185,9 @@ class SellController extends GetxController {
     if (index < 0 || index >= galleryProducts.length) return;
     selectedItemIndex.value = index;
     rxCapturedPath.value = "";
-    rxCapturedPaths.value = [null, null, null, null];
+    rxCapturedPaths.value = [null, null, null];
     activeSlotIndex.value = 0;
-    isCameraActive.value = false;
+    isCameraActive.value = true;
     isPreviewMode.value = false;
 
     final product = galleryProducts[index];
@@ -251,8 +251,7 @@ class SellController extends GetxController {
         final nextEmpty = rxCapturedPaths.indexOf(null);
         if (nextEmpty != -1) {
           activeSlotIndex.value = nextEmpty;
-          isCameraActive.value =
-              false; // Turn off camera for next slot to show "+" screen first
+          isCameraActive.value = true; // Open camera by default for next slot
         } else {
           isCameraActive.value = false; // Turn off once all filled
         }
@@ -274,8 +273,7 @@ class SellController extends GetxController {
       final nextEmpty = rxCapturedPaths.indexOf(null);
       if (nextEmpty != -1) {
         activeSlotIndex.value = nextEmpty;
-        isCameraActive.value =
-            false; // Turn off camera for next slot to show "+" screen first
+        isCameraActive.value = true; // Open camera by default for next slot
       } else {
         isCameraActive.value = false; // Turn off once all filled
       }
@@ -298,8 +296,7 @@ class SellController extends GetxController {
         final nextEmpty = rxCapturedPaths.indexOf(null);
         if (nextEmpty != -1) {
           activeSlotIndex.value = nextEmpty;
-          isCameraActive.value =
-              false; // Deactivate camera preview for the next slot
+          isCameraActive.value = true; // Open camera by default for next slot
         } else {
           isCameraActive.value = false;
         }

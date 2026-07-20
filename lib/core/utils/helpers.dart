@@ -47,7 +47,6 @@ class Helpers {
   }
 
   // ──────────────────── LOGGING ────────────────────
-  
 
   /// General debug log (only in debug mode)
   static void debug(String message) {
@@ -136,16 +135,39 @@ class Helpers {
     if (useGetxSnackbar) {
       // ── GetX Snackbar (default) ──────────────────────────────
       Get.snackbar(
-        title ?? config['defaultTitle'] as String,
-        message,
+        "",
+        "",
+        titleText: const SizedBox.shrink(),
+        messageText: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              title ?? config['defaultTitle'] as String,
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+                height: 1.25,
+              ),
+            ),
+            SizedBox(height: 4.h),
+            Text(
+              message,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w400,
+                color: Colors.white.withValues(alpha: 0.9),
+                height: 1.25,
+              ),
+            ),
+          ],
+        ),
         snackPosition: SnackPosition.TOP,
         backgroundColor: (config['bg'] as Color).withValues(alpha: 0.92),
         colorText: Colors.white,
-        icon: Icon(
-          config['icon'] as IconData,
-          color: Colors.white,
-          size: 26.sp,
-        ),
         duration: duration,
         isDismissible: true,
         dismissDirection: DismissDirection.horizontal,
@@ -155,24 +177,6 @@ class Helpers {
         margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         borderRadius: 16,
         padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 12.h),
-        titleText: Text(
-          title ?? config['defaultTitle'] as String,
-          style: TextStyle(
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-          ),
-        ),
-        messageText: Text(
-          message,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 13.sp,
-            fontWeight: FontWeight.w400,
-            color: Colors.white.withValues(alpha: 0.9),
-          ),
-        ),
       );
     } else {
       // ── Custom Blur / Glassmorphism Snackbar ─────────────────
@@ -193,23 +197,6 @@ class Helpers {
               ),
               child: Row(
                 children: [
-                  // Left Icon Area
-                  Container(
-                    width: 56.w,
-                    height: double.infinity,
-                    decoration: BoxDecoration(
-                      color: (config['iconBg'] as Color).withValues(alpha: 0.8),
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(16.r),
-                        bottomLeft: Radius.circular(16.r),
-                      ),
-                    ),
-                    child: Icon(
-                      config['icon'],
-                      color: Colors.white,
-                      size: 28.sp,
-                    ),
-                  ),
                   SizedBox(width: 16.w),
                   // Text Content
                   Expanded(
@@ -223,8 +210,10 @@ class Helpers {
                             fontSize: 15.sp,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
+                            height: 1.25,
                           ),
                         ),
+                        SizedBox(height: 4.h),
                         Text(
                           message,
                           maxLines: 1,
@@ -233,6 +222,7 @@ class Helpers {
                             fontSize: 13.sp,
                             fontWeight: FontWeight.w400,
                             color: Colors.white.withValues(alpha: 0.9),
+                            height: 1.25,
                           ),
                         ),
                       ],

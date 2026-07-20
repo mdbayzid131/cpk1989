@@ -27,7 +27,7 @@ class ProfileItem {
   });
 
   List<String> get itemImages =>
-      images ?? [imageUrl, imageUrl, imageUrl, imageUrl];
+      images ?? [imageUrl, imageUrl, imageUrl];
 }
 
 class ProfileController extends GetxController {

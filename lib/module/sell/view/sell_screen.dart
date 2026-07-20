@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -89,22 +88,17 @@ class SellScreen extends GetView<SellController> {
             left: 0,
             right: 0,
             height: 151.h,
-            child: ClipRect(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 13.0, sigmaY: 13.0),
-                child: Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                      colors: [
-                        Color(0x000D0E10),
-                        Color(0xC00D0E10),
-                        Color(0xFF0D0E10),
-                      ],
-                      stops: [0.0, 0.4939, 1.0],
-                    ),
-                  ),
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [
+                    Color(0x000D0E10),
+                    Color(0xC00D0E10),
+                    Color(0xFF0D0E10),
+                  ],
+                  stops: [0.0, 0.4939, 1.0],
                 ),
               ),
             ),
@@ -260,8 +254,6 @@ class SellScreen extends GetView<SellController> {
                   .length;
               final selectedProduct = controller
                   .galleryProducts[controller.selectedItemIndex.value];
-              final isActiveSlotEmpty =
-                  capturedPaths[controller.activeSlotIndex.value] == null;
 
               return Column(
                 mainAxisSize: MainAxisSize.min,
@@ -312,9 +304,9 @@ class SellScreen extends GetView<SellController> {
                     SizedBox(height: 15.h),
                   ],
 
-                  // C. 4-Slots Container matching Figma CSS
+                  // C. 3-Slots Container matching Figma CSS
                   Container(
-                    width: 288.w,
+                    width: 218.w,
                     height: 74.h,
                     padding: EdgeInsets.symmetric(
                       horizontal: 8.w,
@@ -326,116 +318,171 @@ class SellScreen extends GetView<SellController> {
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: List.generate(4, (index) {
+                      children: List.generate(3, (index) {
                         final path = capturedPaths[index];
                         final isActive =
                             controller.activeSlotIndex.value == index;
 
-                        return GestureDetector(
+                        final slotContent = Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Container(
+                              width: 62.r,
+                              height: 62.r,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF252628),
+                                borderRadius: BorderRadius.circular(10.r),
+                                border: Border.all(
+                                  color: isActive
+                                      ? const Color(0xFFFFAF2C)
+                                      : const Color(0x1FFFFFFF),
+                                  width: isActive ? 1.5.w : 1.w,
+                                ),
+                              ),
+                              child: path != null
+                                  ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(10.r),
+                                      child: path.startsWith("MOCK_CAPTURE_")
+                                          ? Image.network(
+                                              selectedProduct["imageUrl"],
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Image.file(
+                                              File(path),
+                                              fit: BoxFit.cover,
+                                            ),
+                                    )
+                                  : const Center(
+                                      child: Icon(
+                                        Icons.add_rounded,
+                                        color: Colors.white,
+                                        size: 20,
+                                      ),
+                                    ),
+                            ),
+                            // Top-Left Slot Index Badge (flush with image borders)
+                            if (path != null)
+                              Positioned(
+                                top: 1.h,
+                                left: 1.w,
+                                child: Container(
+                                  width: 22.r,
+                                  height: 22.r,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFFFAF2C),
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(9.r),
+                                      bottomRight: Radius.circular(10.r),
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      "${index + 1}",
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 12.sp,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            // Top-Right Close/Remove Button (white circle with black outline)
+                            if (path != null)
+                              Positioned(
+                                top: -2.h,
+                                right: -2.w,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    capturedPaths[index] = null;
+                                    controller.activeSlotIndex.value = index;
+                                    controller.isCameraActive.value = true;
+                                  },
+                                  child: Container(
+                                    width: 18.r,
+                                    height: 18.r,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.black,
+                                        width: 1.5.w,
+                                      ),
+                                    ),
+                                    child: const Icon(
+                                      Icons.close_rounded,
+                                      color: Colors.black,
+                                      size: 10,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+
+                        final mainSlotWidget = GestureDetector(
                           onTap: () {
                             controller.activeSlotIndex.value = index;
                             if (capturedPaths[index] == null) {
-                              controller.isCameraActive.value = false;
+                              controller.isCameraActive.value = true;
                             }
                           },
-                          child: Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              Container(
-                                width: 62.r,
-                                height: 62.r,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF252628),
-                                  borderRadius: BorderRadius.circular(10.r),
-                                  border: Border.all(
-                                    color: isActive
-                                        ? const Color(0xFFFFAF2C)
-                                        : const Color(0x1FFFFFFF),
-                                    width: isActive ? 1.5.w : 1.w,
-                                  ),
-                                ),
-                                child: path != null
-                                    ? ClipRRect(
-                                        borderRadius: BorderRadius.circular(
-                                          10.r,
-                                        ),
-                                        child: path.startsWith("MOCK_CAPTURE_")
-                                            ? Image.network(
-                                                selectedProduct["imageUrl"],
-                                                fit: BoxFit.cover,
-                                              )
-                                            : Image.file(
-                                                File(path),
-                                                fit: BoxFit.cover,
-                                              ),
-                                      )
-                                    : const Center(
-                                        child: Icon(
-                                          Icons.add_rounded,
-                                          color: Colors.white,
-                                          size: 20,
-                                        ),
-                                      ),
-                              ),
-                              // Top-Left Slot Index Badge (flush with image borders)
-                              if (path != null)
-                                Positioned(
-                                  top: 1.h,
-                                  left: 1.w,
-                                  child: Container(
-                                    width: 22.r,
-                                    height: 22.r,
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFFFAF2C),
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(9.r),
-                                        bottomRight: Radius.circular(10.r),
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        "${index + 1}",
-                                        style: GoogleFonts.dmSans(
-                                          fontSize: 12.sp,
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              // Top-Right Close/Remove Button (white circle with black outline)
-                              if (path != null)
-                                Positioned(
-                                  top: -2.h,
-                                  right: -2.w,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      capturedPaths[index] = null;
-                                      controller.activeSlotIndex.value = index;
-                                    },
-                                    child: Container(
-                                      width: 18.r,
-                                      height: 18.r,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: Colors.black,
-                                          width: 1.5.w,
-                                        ),
-                                      ),
-                                      child: const Icon(
-                                        Icons.close_rounded,
-                                        color: Colors.black,
-                                        size: 10,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
+                          child: slotContent,
                         );
+
+                        Widget reorderableSlot = DragTarget<int>(
+                          onWillAcceptWithDetails: (details) =>
+                              details.data != index,
+                          onAcceptWithDetails: (details) {
+                            final dragIndex = details.data;
+                            final temp = capturedPaths[dragIndex];
+                            capturedPaths[dragIndex] = capturedPaths[index];
+                            capturedPaths[index] = temp;
+                            controller.activeSlotIndex.value = index;
+                          },
+                          builder: (context, candidateData, rejectedData) {
+                            return mainSlotWidget;
+                          },
+                        );
+
+                        if (path != null) {
+                          return Draggable<int>(
+                            data: index,
+                            feedback: Material(
+                              color: Colors.transparent,
+                              child: Opacity(
+                                opacity: 0.8,
+                                child: Container(
+                                  width: 62.r,
+                                  height: 62.r,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF252628),
+                                    borderRadius: BorderRadius.circular(10.r),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10.r),
+                                    child: path.startsWith("MOCK_CAPTURE_")
+                                        ? Image.network(
+                                            selectedProduct["imageUrl"],
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Image.file(
+                                            File(path),
+                                            fit: BoxFit.cover,
+                                          ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            childWhenDragging: Opacity(
+                              opacity: 0.3,
+                              child: mainSlotWidget,
+                            ),
+                            child: reorderableSlot,
+                          );
+                        }
+
+                        return reorderableSlot;
                       }),
                     ),
                   ),
@@ -444,7 +491,7 @@ class SellScreen extends GetView<SellController> {
                   // D. Shutter / Gallery Picker (Camera Controls) OR Continue button
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
-                    child: (capturedCount >= 3 && !isActiveSlotEmpty)
+                    child: (capturedCount >= 3)
                         ? CustomGoldButton(
                             key: const ValueKey('continue_btn'),
                             text: "Continue",

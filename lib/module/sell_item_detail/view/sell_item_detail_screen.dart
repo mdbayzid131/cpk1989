@@ -189,12 +189,33 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                       _buildBrandEditRow(),
                       _buildDescriptionEditRow(),
                       _buildPriceEditRow(),
-                      _buildConditionEditRow(),
+                      _buildConditionEditRow(context),
                       _buildProofOfPurchaseEditRow(),
                       _buildOriginalPackagingRow(),
                     ],
                   ),
-                  SizedBox(height: 8.h),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(width: 4.w),
+                      Icon(
+                        Icons.info_outline,
+                        color: Colors.white38,
+                        size: 14.sp,
+                      ),
+                      SizedBox(width: 6.w),
+                      Text(
+                        "Final verification happens after pickup.",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 12.sp,
+                          color: Colors.white38,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 24.h),
 
                   SizedBox(height: 2.h),
                   Text(
@@ -228,52 +249,10 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                       ),
                     ],
                   ),
-                  // SizedBox(height: 24.h),
-                  // Center(
-                  //   child: Text.rich(
-                  //     TextSpan(
-                  //       text: "By posting, you agree to Closeté ",
-                  //       style: GoogleFonts.dmSans(
-                  //         fontSize: 12.sp,
-                  //         color: Colors.white38,
-                  //         fontWeight: FontWeight.w500,
-                  //       ),
-                  //       children: [
-                  //         const TextSpan(
-                  //           text: "Terms & Conditions",
-                  //           style: TextStyle(
-                  //             decoration: TextDecoration.underline,
-                  //             decorationColor: Colors.white38,
-                  //           ),
-                  //         ),
-                  //       ],
-                  //     ),
-                  //     textAlign: TextAlign.center,
-                  //   ),
-                  // ),
                   SizedBox(height: 16.h),
 
                   _buildContinueButton(context, scrollController),
                   SizedBox(height: 24.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.info_outline,
-                        color: Colors.white38,
-                        size: 14.sp,
-                      ),
-                      SizedBox(width: 6.w),
-                      Text(
-                        "Final verification happens after pickup.",
-                        style: GoogleFonts.dmSans(
-                          fontSize: 12.sp,
-                          color: Colors.white38,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
                 ] else ...[
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -333,6 +312,18 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                   SizedBox(height: 12.h),
                   _buildSellerDetailsCard(),
                   SizedBox(height: 24.h),
+                  Text(
+                    "YOUR EARNINGS",
+                    style: GoogleFonts.dmSans(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white38,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                  SizedBox(height: 12.h),
+                  _buildEarningsCard(item.price),
+                  SizedBox(height: 24.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -370,18 +361,8 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                   SizedBox(height: 12.h),
                   _buildPaymentMethodCard(),
                   SizedBox(height: 24.h),
-                  Text(
-                    "YOUR EARNINGS",
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white38,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                  SizedBox(height: 12.h),
-                  _buildEarningsCard(item.price),
-                  SizedBox(height: 24.h),
+                  _buildPostItemButton(context, item),
+                  SizedBox(height: 16.h),
                   Center(
                     child: Text.rich(
                       TextSpan(
@@ -404,8 +385,6 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  SizedBox(height: 16.h),
-                  _buildPostItemButton(context, item),
                 ],
                 SizedBox(
                   height:
@@ -770,95 +749,66 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
   }
 
   Widget _buildPriceEditRow() {
-    return Obx(() {
-      final priceVal = double.tryParse(controller.rxPrice.value) ?? 0.0;
-      final isHigher = priceVal > 500.0;
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            height: 52.h,
-            margin: EdgeInsets.only(bottom: 8.h),
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12.r),
-              border: Border.all(
-                color: isHigher
-                    ? const Color(0xFFFF453A)
-                    : Colors.white.withValues(alpha: 0.05),
-                width: 1.0,
-              ),
-              gradient: const LinearGradient(
-                begin: Alignment.centerRight,
-                end: Alignment.centerLeft,
-                colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-              ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          height: 52.h,
+          margin: EdgeInsets.only(bottom: 8.h),
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.05),
+              width: 1.0,
             ),
-            child: Row(
-              children: [
-                Text(
-                  "Listing price",
-                  style: GoogleFonts.dmSans(
-                    fontSize: 14.sp,
-                    color: Colors.white38,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(width: 16.w),
-                Expanded(
-                  child: TextField(
-                    controller: controller.priceController,
-                    textAlign: TextAlign.end,
-                    keyboardType: TextInputType.number,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 14.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    decoration: const InputDecoration(
-                      prefixText: "AED ",
-                      prefixStyle: TextStyle(color: Colors.white38),
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                    onChanged: (val) {
-                      controller.rxPrice.value = val;
-                    },
-                  ),
-                ),
-              ],
+            gradient: const LinearGradient(
+              begin: Alignment.centerRight,
+              end: Alignment.centerLeft,
+              colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
             ),
           ),
-          if (isHigher) ...[
-            Padding(
-              padding: EdgeInsets.only(left: 4.w, bottom: 8.h),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.info_outline_rounded,
-                    color: const Color(0xFFFF453A),
-                    size: 14.sp,
-                  ),
-                  SizedBox(width: 6.w),
-                  Text(
-                    "Listing price is higher than market rate",
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12.sp,
-                      color: const Color(0xFFFF453A),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
+          child: Row(
+            children: [
+              Text(
+                "Listing price",
+                style: GoogleFonts.dmSans(
+                  fontSize: 14.sp,
+                  color: Colors.white38,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
-          ],
-        ],
-      );
-    });
+              SizedBox(width: 16.w),
+              Expanded(
+                child: TextField(
+                  controller: controller.priceController,
+                  textAlign: TextAlign.end,
+                  keyboardType: TextInputType.number,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  decoration: const InputDecoration(
+                    prefixText: "AED ",
+                    prefixStyle: TextStyle(color: Colors.white38),
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  onChanged: (val) {
+                    controller.rxPrice.value = val;
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
-  Widget _buildConditionEditRow() {
+  Widget _buildConditionEditRow(BuildContext context) {
     final List<String> conditions = [
       'New with Tags',
       'Like New',
@@ -905,71 +855,127 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                SizedBox(width: 16.w),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: dropdownValue,
-                        isExpanded: true,
-                        alignment: Alignment.centerRight,
-                        hint: Container(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            "Select condition",
-                            style: GoogleFonts.dmSans(
-                              fontSize: 14.sp,
-                              color: Colors.white.withValues(alpha: 0.6),
-                              fontWeight: FontWeight.w500,
+                SizedBox(
+                  width: 155.w,
+                  child: Theme(
+                    data: Theme.of(context).copyWith(
+                      hoverColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                    ),
+                    child: PopupMenuButton<String>(
+                      offset: Offset(0, 20.h),
+                      padding: EdgeInsets.zero,
+                      color: Colors.transparent,
+                      elevation: 0,
+                      shadowColor: Colors.transparent,
+                      surfaceTintColor: Colors.transparent,
+                      itemBuilder: (BuildContext context) {
+                        return [
+                          PopupMenuItem<String>(
+                            enabled: false,
+                            padding: EdgeInsets.zero,
+                            child: Container(
+                              width: 155.w,
+                              height: 213.h,
+                              padding: EdgeInsets.all(10.r),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF2E3036),
+                                borderRadius: BorderRadius.circular(10.r),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.3),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  for (
+                                    int i = 0;
+                                    i < conditions.length;
+                                    i++
+                                  ) ...[
+                                    if (i > 0) SizedBox(height: 5.h),
+                                    Builder(
+                                      builder: (context) {
+                                        final cond = conditions[i];
+                                        final isSelected =
+                                            cond == currentCondition;
+                                        return GestureDetector(
+                                          onTap: () {
+                                            controller
+                                                    .conditionController
+                                                    .text =
+                                                cond;
+                                            Navigator.pop(context);
+                                          },
+                                          child: Container(
+                                            width: 135.w,
+                                            height: 28.h,
+                                            alignment: Alignment.centerLeft,
+                                            padding: EdgeInsets.only(
+                                              top: 5.h,
+                                              bottom: 5.h,
+                                              left: 8.w,
+                                              right: 8.w,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: isSelected
+                                                  ? const Color(0xFF3C3E46)
+                                                  : Colors.transparent,
+                                              borderRadius:
+                                                  BorderRadius.circular(6.r),
+                                            ),
+                                            child: Text(
+                                              cond,
+                                              style: GoogleFonts.dmSans(
+                                                fontSize: 14.sp,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w400,
+                                                height: 1.0,
+                                                letterSpacing: 0.0,
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        icon: Padding(
-                          padding: EdgeInsets.only(left: 4.w),
-                          child: Icon(
-                            Icons.keyboard_arrow_down_rounded,
-                            color: Colors.white,
-                            size: 20.sp,
-                          ),
-                        ),
-                        dropdownColor: const Color(0xFF1C1D20),
-                        borderRadius: BorderRadius.circular(12.r),
-                        selectedItemBuilder: (BuildContext context) {
-                          return conditions.map<Widget>((String value) {
-                            return Container(
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                value,
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 14.sp,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            );
-                          }).toList();
-                        },
-                        items: conditions.map<DropdownMenuItem<String>>((
-                          String value,
-                        ) {
-                          return DropdownMenuItem<String>(
-                            value: value,
+                        ];
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Expanded(
                             child: Text(
-                              value,
+                              dropdownValue ?? "Select condition",
+                              textAlign: TextAlign.end,
                               style: GoogleFonts.dmSans(
                                 fontSize: 14.sp,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
+                                color: dropdownValue != null
+                                    ? Colors.white
+                                    : Colors.white.withValues(alpha: 0.6),
+                                fontWeight: FontWeight.w400,
+                                height: 1.0,
+                                letterSpacing: 0.0,
                               ),
                             ),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          if (newValue != null) {
-                            controller.conditionController.text = newValue;
-                          }
-                        },
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 4.w),
+                            child: Icon(
+                              Icons.keyboard_arrow_down_rounded,
+                              color: Colors.white,
+                              size: 20.sp,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

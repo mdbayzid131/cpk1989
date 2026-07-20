@@ -15,7 +15,7 @@ class OnboardingPage1 extends StatelessWidget {
         Positioned(
           left: 24.w,
           top: MediaQuery.of(context).padding.top + 100.h,
-          width: 170.w,
+          width: 250.w,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -23,30 +23,30 @@ class OnboardingPage1 extends StatelessWidget {
                 'Scroll it.',
                 style: TextStyle(
                   fontFamily: 'Schnyder L',
-                  fontSize: 38.sp,
+                  fontSize: 50.sp,
                   fontWeight: FontWeight.w300,
                   color: Colors.white,
-                  height: 1.15,
+                  height: 1.22,
                 ),
               ),
               Text(
                 'See it.',
                 style: TextStyle(
                   fontFamily: 'Schnyder L',
-                  fontSize: 38.sp,
+                  fontSize: 50.sp,
                   fontWeight: FontWeight.w300,
                   color: Colors.white,
-                  height: 1.15,
+                  height: 1.22,
                 ),
               ),
               Text(
                 'Love it',
                 style: TextStyle(
                   fontFamily: 'Schnyder L',
-                  fontSize: 38.sp,
+                  fontSize: 50.sp,
                   fontWeight: FontWeight.w300,
                   color: Colors.white,
-                  height: 1.15,
+                  height: 1.22,
                 ),
               ),
               ShaderMask(
@@ -57,10 +57,10 @@ class OnboardingPage1 extends StatelessWidget {
                   'Buy it',
                   style: TextStyle(
                     fontFamily: 'Schnyder L',
-                    fontSize: 38.sp,
+                    fontSize: 50.sp,
                     fontWeight: FontWeight.w300,
                     color: Colors.white,
-                    height: 1.15,
+                    height: 1.22,
                   ),
                 ),
               ),
@@ -73,7 +73,7 @@ class OnboardingPage1 extends StatelessWidget {
               ),
               SizedBox(height: 24.h),
               Text(
-                'Luxury, from\nwomen like\nyou',
+                'Luxury, \nRedefined',
                 style: GoogleFonts.dmSans(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w400,
@@ -313,28 +313,28 @@ class _DiagonalScrollPreviewState extends State<DiagonalScrollPreview> {
               ),
             ),
 
-            // Play Button in the absolute center
-            Center(
-              child: Container(
-                width: 44.w,
-                height: 44.w,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.25),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.5),
-                    width: 1.5,
-                  ),
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.play_arrow_rounded,
-                    color: Colors.white,
-                    size: 26.w,
-                  ),
-                ),
-              ),
-            ),
+            // // Play Button in the absolute center
+            // Center(
+            //   child: Container(
+            //     width: 44.w,
+            //     height: 44.w,
+            //     decoration: BoxDecoration(
+            //       shape: BoxShape.circle,
+            //       color: Colors.white.withValues(alpha: 0.25),
+            //       border: Border.all(
+            //         color: Colors.white.withValues(alpha: 0.5),
+            //         width: 1.5,
+            //       ),
+            //     ),
+            //     child: Center(
+            //       child: Icon(
+            //         Icons.play_arrow_rounded,
+            //         color: Colors.white,
+            //         size: 26.w,
+            //       ),
+            //     ),
+            //   ),
+            // ),
 
             // Bottom glassmorphic metadata info bar
             Positioned(
