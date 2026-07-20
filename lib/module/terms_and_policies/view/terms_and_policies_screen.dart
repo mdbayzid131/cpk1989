@@ -121,10 +121,7 @@ class TermsAndPoliciesScreen extends StatelessWidget {
       alignment: Alignment.center,
       child: RichText(
         text: TextSpan(
-          style: GoogleFonts.dmSans(
-            fontSize: 13.sp,
-            color: Colors.white38,
-          ),
+          style: GoogleFonts.dmSans(fontSize: 13.sp, color: Colors.white38),
           children: [
             const TextSpan(text: "Need help? "),
             TextSpan(

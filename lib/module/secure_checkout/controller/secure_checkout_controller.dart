@@ -31,8 +31,7 @@ class SecureCheckoutController extends GetxController {
     termsRecognizer = TapGestureRecognizer()
       ..onTap = () {
         Get.toNamed(
-          AppRoutes.termsAndConditions,
-          arguments: "Terms And Conditions",
+          AppRoutes.termsAndPolicies,
         );
       };
     purchasePolicyRecognizer = TapGestureRecognizer()
