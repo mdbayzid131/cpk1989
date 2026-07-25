@@ -48,9 +48,12 @@ class OnboardingPage3 extends StatelessWidget {
         SizedBox(height: 12.h),
         // Small gold horizontal accent line
         Container(
-          width: 32.w,
-          height: 2.h,
-          decoration: BoxDecoration(gradient: AppTheme.goldGradient),
+          width: 44.w,
+          height: 3.h,
+          decoration: BoxDecoration(
+            gradient: AppTheme.goldGradient,
+            borderRadius: BorderRadius.circular(100.r),
+          ),
         ),
         SizedBox(height: 16.h),
         Padding(
@@ -59,9 +62,9 @@ class OnboardingPage3 extends StatelessWidget {
             'Verified before delivery. Payment\nprotected until you receive it.',
             textAlign: TextAlign.center,
             style: GoogleFonts.dmSans(
-              fontSize: 15.sp,
+              fontSize: 16.sp,
               fontWeight: FontWeight.w400,
-              color: AppTheme.grayTerritory,
+              color: AppTheme.gray,
               height: 1.4,
             ),
           ),
@@ -71,7 +74,7 @@ class OnboardingPage3 extends StatelessWidget {
         ///<================= MAIN HANDOVER IMAGE (FULL SCREEN WIDTH) =========================>///
         Container(
           width: double.infinity,
-          height: 320.h,
+          height: 275.h,
           color: Colors.transparent,
           child: Stack(
             children: [
@@ -203,9 +206,8 @@ class OnboardingPage3 extends StatelessWidget {
             ],
           ),
         ),
-        SizedBox(height: 50.h),
-
-        const Spacer(flex: 3),
+        const Spacer(),
+        SizedBox(height: 100.h),
       ],
     );
   }

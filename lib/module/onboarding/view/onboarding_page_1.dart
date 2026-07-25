@@ -67,9 +67,12 @@ class OnboardingPage1 extends StatelessWidget {
               SizedBox(height: 12.h),
               // Small gold horizontal accent line
               Container(
-                width: 32.w,
-                height: 2.h,
-                decoration: BoxDecoration(gradient: AppTheme.goldGradient),
+                width: 44.w,
+                height: 3.h,
+                decoration: BoxDecoration(
+                  gradient: AppTheme.goldGradient,
+                  borderRadius: BorderRadius.circular(100.r),
+                ),
               ),
               SizedBox(height: 24.h),
               Text(

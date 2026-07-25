@@ -93,9 +93,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
 
-          // 3. Floating Page Indicator at the bottom-left
           Positioned(
-            bottom: MediaQuery.of(context).padding.bottom + 40.h,
+            bottom: MediaQuery.of(context).padding.bottom + 50.h,
             left: 24.w,
             child: AnimatedBuilder(
               animation: _pageController,
@@ -108,21 +107,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   children: List.generate(3, (index) {
                     final double distance = (page - index).abs();
                     final double progress = (1.0 - distance).clamp(0.0, 1.0);
-                    final double width = 10.w + (18.w * progress);
+                    final double width = 6.w + (12.w * progress);
 
                     return Container(
                       margin: EdgeInsets.symmetric(horizontal: 4.w),
                       width: width,
-                      height: 10.w,
+                      height: 6.w,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5.w),
+                        borderRadius: BorderRadius.circular(3.w),
                         color: const Color(0xFF2E2E33), // Inactive background
                       ),
                       child: Opacity(
                         opacity: progress,
                         child: Container(
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5.w),
+                            borderRadius: BorderRadius.circular(3.w),
                             gradient: AppTheme.goldGradient,
                           ),
                         ),

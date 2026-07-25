@@ -83,16 +83,19 @@ class _OnboardingPage2State extends State<OnboardingPage2>
         SizedBox(height: 12.h),
         // Small gold horizontal accent line
         Container(
-          width: 32.w,
-          height: 2.h,
-          decoration: BoxDecoration(gradient: AppTheme.goldGradient),
+          width: 44.w,
+          height: 3.h,
+          decoration: BoxDecoration(
+            gradient: AppTheme.goldGradient,
+            borderRadius: BorderRadius.circular(100.r),
+          ),
         ),
         const Spacer(),
 
         ///<================= CAMERA PREVIEW WIDGET =========================>///
         Container(
           width: double.infinity,
-          height: 380.h,
+          height: 340.h,
           color: Colors.transparent,
           child: Stack(
             children: [
@@ -124,75 +127,75 @@ class _OnboardingPage2State extends State<OnboardingPage2>
               ),
 
               // 3. Viewfinder focus brackets (pulsing scale)
-              Center(
+              Positioned(
+                left: 24.w,
+                right: 24.w,
+                top: 40.h,
+                bottom: 100.h,
                 child: ScaleTransition(
                   scale: _focusScale,
-                  child: SizedBox(
-                    width: 320.w,
-                    height: 300.w,
-                    child: CustomPaint(painter: FocusBracketsPainter()),
-                  ),
+                  child: CustomPaint(painter: FocusBracketsPainter()),
                 ),
               ),
 
               // 4. Scanner laser line (animating top to bottom inside brackets)
-              Center(
-                child: SizedBox(
-                  width: 300.w,
-                  height: 280.w,
-                  child: AnimatedBuilder(
-                    animation: _scannerController,
-                    builder: (context, child) {
-                      final yOffset = _scannerController.value * 280.w;
-                      return Stack(
-                        children: [
-                          Positioned(
-                            top: yOffset,
-                            left: 0,
-                            right: 0,
-                            child: Container(
-                              height: 3.h,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.transparent,
-                                    const Color(
-                                      0xFFFFED81,
-                                    ).withValues(alpha: 0.8),
-                                    const Color(0xFFE2B744),
-                                    const Color(
-                                      0xFFFFED81,
-                                    ).withValues(alpha: 0.8),
-                                    Colors.transparent,
-                                  ],
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(
-                                      0xFFE2B744,
-                                    ).withValues(alpha: 0.5),
-                                    blurRadius: 8,
-                                    spreadRadius: 2,
-                                  ),
+              Positioned(
+                left: 34.w,
+                right: 34.w,
+                top: 50.h,
+                bottom: 110.h,
+                child: AnimatedBuilder(
+                  animation: _scannerController,
+                  builder: (context, child) {
+                    final yOffset = _scannerController.value * 180.h;
+                    return Stack(
+                      children: [
+                        Positioned(
+                          top: yOffset,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            height: 3.h,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.transparent,
+                                  const Color(
+                                    0xFFFFED81,
+                                  ).withValues(alpha: 0.8),
+                                  const Color(0xFFE2B744),
+                                  const Color(
+                                    0xFFFFED81,
+                                  ).withValues(alpha: 0.8),
+                                  Colors.transparent,
                                 ],
                               ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(
+                                    0xFFE2B744,
+                                  ).withValues(alpha: 0.5),
+                                  blurRadius: 8,
+                                  spreadRadius: 2,
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      );
-                    },
-                  ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
 
               // 5. Camera UI bottom controls (Flash, Shutter, Gallery)
               Positioned(
-                left: 0,
-                right: 0,
+                left: 24.w,
+                right: 24.w,
                 bottom: 20.h,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     // Flash Off Icon
                     Container(
@@ -252,14 +255,15 @@ class _OnboardingPage2State extends State<OnboardingPage2>
             'Capture. Upload. We handle the rest,\nwhile you get paid.',
             textAlign: TextAlign.center,
             style: GoogleFonts.dmSans(
-              fontSize: 15.sp,
+              fontSize: 16.sp,
               fontWeight: FontWeight.w400,
-              color: AppTheme.grayTerritory,
+              color: AppTheme.gray,
               height: 1.4,
             ),
           ),
         ),
-        const Spacer(flex: 2),
+        const Spacer(),
+        SizedBox(height: 90.h),
       ],
     );
   }
@@ -271,11 +275,11 @@ class FocusBracketsPainter extends CustomPainter {
     final paint = Paint()
       ..color = Colors.white.withValues(alpha: 0.95)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.0
+      ..strokeWidth = 4.0
       ..strokeCap = StrokeCap.round;
 
-    final double cornerLength = 24.w;
-    final double radius = 16.r; // Rounded corners for brackets
+    final double cornerLength = 28.w;
+    final double radius = 24.r; // Rounded corners for brackets
 
     // Top-Left corner
     canvas.drawPath(
