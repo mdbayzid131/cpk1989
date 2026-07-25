@@ -1,0 +1,354 @@
+Terms & Conditions
+
+INTRODUCTION
+
+Welcome to Closeté.
+
+Closeté is a platform that enables users to buy and sell luxury items through a managed service including collection, authentication, and delivery.
+
+By using the app, you agree to these Terms & Conditions.
+OUR ROLE
+
+Closeté acts as a facilitated marketplace that:
+
+    Connects buyers and sellers
+    Manages collection, authentication, and delivery
+    Processes payments securely
+
+Closeté is not the original owner of listed items.
+USER ACCOUNTS
+
+Users agree to:
+
+    Provide accurate information
+    Maintain account security
+    Accept responsibility for account activity
+
+Closeté may suspend or terminate accounts for misuse.
+SELLING ON CLOSETÉ
+
+Sellers represent and warrant that:
+
+    Items are authentic and legally owned
+    Listings are accurate (description, condition, images)
+
+Closeté reserves the right to:
+
+    Reject items during verification
+    Remove listings
+    Suspend sellers providing counterfeit or misleading items
+
+BUYING ON CLOSETÉ
+
+Buyers agree to:
+
+    Review listings before purchase
+    Provide accurate delivery details
+
+All purchases are subject to:
+
+    Authentication
+    Successful verification
+
+AUTHENTICATION PROCESS
+
+All items undergo a verification process using:
+
+    Internal expertise
+    Third-party authentication tools
+
+Closeté performs authentication using best efforts and available technology.
+
+Authentication outcomes are:
+
+    Final and binding
+    Based on inspection at the time of verification
+
+Closeté does not guarantee absolute authenticity beyond this process.
+PAYMENTS
+
+    Payments are securely processed via third-party providers
+    Funds are held until:
+        Item is verified
+        Buyer accepts delivery
+
+Payment is only released to the seller after successful delivery acceptance
+COLLECTION & DELIVERY
+
+Closeté manages:
+
+    Seller collection
+    Buyer delivery
+
+Users must:
+
+    Be available at scheduled times
+    Provide accurate address details
+
+Closeté is not liable for:
+
+    Delays caused by logistics partners
+    Failed deliveries due to incorrect information
+
+REJECTION AT DELIVERY
+
+At delivery, the buyer has the right to:
+
+Accept or reject the item
+
+If rejected:
+
+    The item is returned to the seller
+    The buyer receives a full refund
+    The seller is not paid
+
+This replaces the need for a traditional returns process
+DISPUTE RESOLUTION
+
+Closeté's decisions regarding:
+
+    Authentication
+    Item condition
+    Listing accuracy
+
+Are final and binding
+
+Users agree to accept Closeté's determination in resolving disputes.
+CHARGEBACKS & FRAUD
+
+Closeté reserves the right to:
+
+    Contest chargebacks with evidence
+    Suspend accounts involved in disputes
+    Take action against fraudulent activity
+
+LIMITATION OF LIABILITY
+
+To the fullest extent permitted by law:
+
+Closeté shall not be liable for:
+
+    Indirect or consequential losses
+    Loss of profits or opportunity
+    Disputes between users
+
+Total liability is limited to:
+
+the value of the transaction in question
+PLATFORM USE
+
+Closeté may:
+
+    Remove listings
+    Suspend accounts
+    Refuse service
+
+If users:
+
+    Attempt fraud
+    Misuse the platform
+    Circumvent processes
+
+CHANGES TO TERMS
+
+Closeté may update these Terms at any time. Continued use of the app constitutes acceptance.
+
+
+
+
+Privacy Policy
+
+
+
+INTRODUCTION
+
+Closeté ("we", "our", "us") respects your privacy and is committed to protecting your personal data.
+
+This Privacy Policy explains how we collect, use, and protect your information when you use the Closeté mobile application and services.
+INFORMATION WE COLLECT
+
+Account Information
+
+    Name
+    Email address
+    Phone number
+
+Transaction & Listing Information
+
+    Item details (photos, videos, descriptions)
+    Pricing and listing data
+    Purchase and order history
+
+Location & Delivery Information
+
+    Collection address (for sellers)
+    Delivery address (for buyers)
+
+Payment Information
+
+    Payment details (processed securely via third-party providers)
+    We do not store full card details
+
+Authentication Data
+
+    Images and scans used for item verification
+    Results of authentication checks
+
+Device & Usage Data
+
+    Device type
+    App usage
+    Log data (for performance and security)
+
+HOW WE USE YOUR INFORMATION
+
+We use your data to:
+
+    Facilitate buying and selling of luxury items
+    Arrange collection and delivery
+    Authenticate items and prevent fraud
+    Process payments securely
+    Improve app performance and user experience
+    Communicate updates, orders, and support
+
+AUTHENTICATION & FRAUD PREVENTION
+
+Closeté uses a combination of:
+
+    Internal verification processes
+    Third-party authentication tools
+
+We may analyze submitted item data to detect potential fraud and ensure platform trust.
+SHARING YOUR INFORMATION
+
+We only share data when necessary:
+
+With Service Providers
+
+    Payment processors
+    Delivery partners
+    Authentication providers
+
+With Other Users
+
+    Limited information (e.g. first name, listing details)
+
+Legal Requirements
+
+    If required by law or to protect our platform
+
+DATA SECURITY
+
+We implement appropriate security measures to protect your data, including:
+
+    Encrypted data transmission
+    Secure storage systems
+    Access controls
+
+YOUR RIGHTS
+
+You have the right to:
+
+    Access your data
+    Request correction
+    Request deletion
+    Withdraw consent
+
+To do so, contact us at:
+support@closete.app
+DATA RETENTION
+
+We retain your data only as long as necessary to:
+
+    Provide our services
+    Comply with legal obligations
+    Resolve disputes
+
+LOCATION OF SERVICE
+
+Closeté currently operates in Dubai, United Arab Emirates.
+
+Some features may be limited based on your location.
+
+
+
+
+Authenticity & Delivery Policy
+
+OVERVIEW
+
+Closeté operates a verification-before-delivery model.
+
+Every item is:
+
+    Collected
+    Authenticated
+    Delivered only after approval
+
+NO TRADITIONAL RETURNS
+
+Closeté does not operate a traditional returns policy.
+
+This is because:
+
+    Buyers inspect items at the point of delivery
+    Acceptance happens before payment is released
+
+BUYER ACCEPTANCE AT DELIVERY
+
+At delivery, the buyer can:
+
+Accept the item
+
+    Transaction is completed
+    Payment is released to the seller
+
+Reject the item
+
+    Item is returned to the seller
+    Buyer receives a full refund
+    Seller is not paid
+
+AUTHENTICATION PROTECTION
+
+If an item:
+
+    Fails authentication
+    Is significantly not as described
+
+Closeté will:
+
+    Cancel the transaction
+    Refund the buyer in full
+    Return the item to the seller
+
+FINAL SALE AFTER ACCEPTANCE
+
+Once the buyer accepts the item: The transaction is final
+
+Closeté is not responsible for:
+
+    Change of mind
+    Fit or sizing issues
+    Subjective preferences
+
+FRAUD PREVENTION
+
+Closeté may:
+
+    Perform additional verification checks
+    Delay or cancel transactions if risk is detected
+
+DAMAGED ITEMS
+
+If damage occurs while in Closeté's control:
+
+    The issue will be reviewed
+    Appropriate resolution will be determined
+
+REFUNDS
+
+Where applicable, refunds will be:
+
+    Issued to the original payment method
+    Processed within a reasonable timeframe
