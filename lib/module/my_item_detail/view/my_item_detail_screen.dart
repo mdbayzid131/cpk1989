@@ -252,65 +252,6 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
 
               SizedBox(height: 20.h),
 
-              // Title and Status Badge Row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Text(
-                      item.itemName,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  SizedBox(width: 16.w),
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 12.w,
-                      vertical: 6.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: status == "Rejected"
-                          ? const Color(0xFFFF453A)
-                          : status == null
-                          ? Colors.white.withValues(alpha: 0.08)
-                          : AppTheme.yellow,
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                    child: Text(
-                      status == null
-                          ? "Not Reserved yet"
-                          : status == "Rejected"
-                          ? "• Rejected"
-                          : "• $status",
-                      style: GoogleFonts.dmSans(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w500,
-                        color: status == null
-                            ? Colors.white54
-                            : status == "Rejected"
-                            ? Colors.white
-                            : Colors.black,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 16.h),
-              Divider(
-                color: Colors.white.withValues(alpha: 0.08),
-                thickness: 1.0,
-                height: 1.0,
-              ),
-              SizedBox(height: 16.h),
-
               // ITEM DETAILS Section Header
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -333,6 +274,31 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                         Color(0xFFE2B744),
                         BlendMode.srcIn,
                       ),
+                    )
+                  else
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.w,
+                        vertical: 6.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: status == "Rejected"
+                            ? const Color(0xFFFF453A)
+                            : AppTheme.yellow,
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
+                      child: Text(
+                        status == "Rejected"
+                            ? "• Rejected"
+                            : "• $status",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w500,
+                          color: status == "Rejected"
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
                     ),
                 ],
               ),
@@ -340,6 +306,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
               SizedBox(height: 12.h),
 
               // ITEM DETAILS list
+              _buildDetailRow("Title", item.itemName),
               _buildDetailRow("Brand", item.brand),
               _buildDescriptionDetailRow(
                 "Description",

@@ -25,6 +25,12 @@ class SecureCheckoutController extends GetxController {
   final rxPaymentMethod = "card".obs;
   final rxIsCardSheetOpen = false.obs;
 
+  // Added Card Information
+  final rxHasAddedCard = false.obs;
+  final rxCardName = "".obs;
+  final rxCardNumber = "".obs;
+  final rxCardExpiry = "".obs;
+
   @override
   void onInit() {
     super.onInit();

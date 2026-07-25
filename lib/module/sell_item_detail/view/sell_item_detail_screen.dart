@@ -863,7 +863,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                       splashColor: Colors.transparent,
                     ),
                     child: PopupMenuButton<String>(
-                      offset: Offset(0, 20.h),
+                      offset: Offset(16.w, 20.h),
                       padding: EdgeInsets.zero,
                       color: Colors.transparent,
                       elevation: 0,
@@ -1507,17 +1507,17 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
         width: 44.r,
         height: 44.r,
         decoration: BoxDecoration(
-          color: const Color(0xFF005BAC), // Visa blue
+          color: const Color(0xFF161719), // Branded dark background
           borderRadius: BorderRadius.circular(12.r),
         ),
         alignment: Alignment.center,
         child: Text(
           "VISA",
           style: GoogleFonts.dmSans(
-            color: Colors.white,
+            color: const Color(0xFF2566AF), // Branded Visa blue
             fontWeight: FontWeight.w900,
             fontStyle: FontStyle.italic,
-            fontSize: 12.sp,
+            fontSize: 14.sp,
             letterSpacing: 0.5,
           ),
         ),
@@ -1535,7 +1535,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
         alignment: Alignment.center,
         padding: EdgeInsets.all(8.r),
         child: SvgPicture.asset(
-          'assets/icons/master card.svg',
+          'assets/icons/master_card_colored.svg',
           fit: BoxFit.contain,
         ),
       );

@@ -14,6 +14,7 @@ import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:cpk1989/core/widgets/processing_overlay.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 import 'package:cpk1989/core/widgets/custom_add_card_bottom_sheet.dart';
+import 'package:cpk1989/module/home/controller/home_controller.dart';
 
 class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
   const SecureCheckoutScreen({super.key});
@@ -93,6 +94,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                   ),
                   SizedBox(height: 12.h),
                   _buildDropdownField(
+                    context: context,
                     value: controller.rxLocation,
                     svgPath: "assets/icons/country.svg",
                     items: ["UAE", "Bangladesh", "Saudi Arabia", "Qatar"],
@@ -271,41 +273,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
           ),
           SizedBox(width: 16.w),
           // Right Image Stack (with small indicator overlay sitting on the bottom border)
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8.r),
-                child: item.imagePath.startsWith('http')
-                    ? Image.network(
-                        item.imagePath,
-                        width: 102.r,
-                        height: 102.r,
-                        fit: BoxFit.cover,
-                      )
-                    : Image.asset(
-                        item.imagePath,
-                        width: 102.r,
-                        height: 102.r,
-                        fit: BoxFit.cover,
-                      ),
-              ),
-              Positioned(
-                bottom: -7.h, // half of the 14.h height of the small variant
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: CustomPageIndicator(
-                    count: 4,
-                    currentPage: 0,
-                    isSmall: true,
-                    backgroundColor: const Color(0xFF2B2C30),
-                    showBorder: false,
-                  ),
-                ),
-              ),
-            ],
-          ),
+          CheckoutImageCarousel(item: item),
         ],
       ),
     );
@@ -379,71 +347,160 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
   }
 
   Widget _buildDropdownField({
+    required BuildContext context,
     required RxString value,
     IconData? icon,
     String? svgPath,
     required List<String> items,
   }) {
-    return Obx(
-      () => Container(
-        height: 52.h,
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-            begin: Alignment.centerRight,
-            end: Alignment.centerLeft,
-          ),
-          borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.04),
-            width: 1.0,
-          ),
+    final menuWidth = 180.w;
+    final itemHeight = 36.h;
+    final totalHeight = (items.length * itemHeight) + 20.h;
+
+    return Container(
+      height: 52.h,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+          begin: Alignment.centerRight,
+          end: Alignment.centerLeft,
         ),
-        padding: EdgeInsets.symmetric(horizontal: 16.w),
-        child: Row(
-          children: [
-            if (svgPath != null)
-              SvgPicture.asset(
-                svgPath,
-                width: 20.r,
-                height: 20.r,
-                colorFilter: const ColorFilter.mode(
-                  Colors.white,
-                  BlendMode.srcIn,
-                ),
-              )
-            else if (icon != null)
-              Icon(icon, color: Colors.white, size: 20.sp),
-            SizedBox(width: 12.w),
-            Expanded(
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: value.value,
-                  dropdownColor: const Color(0xFF161719),
-                  icon: Icon(
-                    Icons.keyboard_arrow_down_rounded,
-                    color: Colors.white38,
-                    size: 30.sp,
-                  ),
-                  style: GoogleFonts.dmSans(
-                    fontSize: 14.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  items: items.map((String item) {
-                    return DropdownMenuItem<String>(
-                      value: item,
-                      child: Text(item),
-                    );
-                  }).toList(),
-                  onChanged: (val) {
-                    if (val != null) value.value = val;
-                  },
-                ),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.04),
+          width: 1.0,
+        ),
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      child: Row(
+        children: [
+          if (svgPath != null)
+            SvgPicture.asset(
+              svgPath,
+              width: 20.r,
+              height: 20.r,
+              colorFilter: const ColorFilter.mode(
+                Colors.white,
+                BlendMode.srcIn,
               ),
+            )
+          else if (icon != null)
+            Icon(icon, color: Colors.white, size: 20.sp),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final buttonWidth = constraints.maxWidth;
+                final xOffset = buttonWidth - menuWidth + 32.w;
+
+                return Theme(
+                  data: Theme.of(context).copyWith(
+                    hoverColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                  ),
+                  child: PopupMenuButton<String>(
+                    offset: Offset(xOffset, 24.h),
+                    padding: EdgeInsets.zero,
+                    color: Colors.transparent,
+                    elevation: 0,
+                    shadowColor: Colors.transparent,
+                    surfaceTintColor: Colors.transparent,
+                    itemBuilder: (BuildContext context) {
+                      return [
+                        PopupMenuItem<String>(
+                          enabled: false,
+                          padding: EdgeInsets.zero,
+                          child: Container(
+                            width: menuWidth,
+                            height: totalHeight,
+                            padding: EdgeInsets.all(10.r),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF2E3036),
+                              borderRadius: BorderRadius.circular(10.r),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.3),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                for (int i = 0; i < items.length; i++) ...[
+                                  if (i > 0) SizedBox(height: 5.h),
+                                  Builder(
+                                    builder: (context) {
+                                      final item = items[i];
+                                      final isSelected = item == value.value;
+                                      return GestureDetector(
+                                        onTap: () {
+                                          value.value = item;
+                                          Navigator.pop(context);
+                                        },
+                                        child: Container(
+                                          height: itemHeight - 5.h,
+                                          alignment: Alignment.centerLeft,
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 5.h,
+                                            horizontal: 12.w,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: isSelected
+                                                ? const Color(0xFF3C3E46)
+                                                : Colors.transparent,
+                                            borderRadius: BorderRadius.circular(
+                                              6.r,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            item,
+                                            style: GoogleFonts.dmSans(
+                                              fontSize: 14.sp,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w400,
+                                              height: 1.0,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                      ];
+                    },
+                    child: Obx(
+                      () => Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              value.value,
+                              style: GoogleFonts.dmSans(
+                                fontSize: 14.sp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            color: Colors.white38,
+                            size: 30.sp,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -612,28 +669,128 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                     height: 1.h,
                   ),
                   SizedBox(height: 12.h),
-                  // Add New card tap
-                  InkWell(
-                    onTap: () => _showAddCardBottomSheet(context),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 4.h),
-                      child: Row(
-                        children: [
-                          Icon(Icons.add, color: Colors.white70, size: 16.sp),
-                          SizedBox(width: 6.w),
-                          Text(
-                            "Add a New card",
-                            style: GoogleFonts.dmSans(
-                              fontSize: 13.sp,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white70,
-                              decoration: TextDecoration.underline,
+                  if (controller.rxHasAddedCard.value) ...[
+                    Row(
+                      children: [
+                        Builder(
+                          builder: (context) {
+                            final number = controller.rxCardNumber.value;
+                            final isVisa = number.startsWith('4');
+                            if (isVisa) {
+                              return Container(
+                                width: 32.r,
+                                height: 32.r,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF0F1012),
+                                  borderRadius: BorderRadius.circular(8.r),
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.05),
+                                    width: 1.0,
+                                  ),
+                                ),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "VISA",
+                                  style: GoogleFonts.dmSans(
+                                    color: const Color(0xFF2566AF),
+                                    fontWeight: FontWeight.w900,
+                                    fontStyle: FontStyle.italic,
+                                    fontSize: 10.sp,
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
+                              );
+                            } else {
+                              return Container(
+                                width: 32.r,
+                                height: 32.r,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF0F1012),
+                                  borderRadius: BorderRadius.circular(8.r),
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.05),
+                                    width: 1.0,
+                                  ),
+                                ),
+                                alignment: Alignment.center,
+                                padding: EdgeInsets.all(6.r),
+                                child: SvgPicture.asset(
+                                  'assets/icons/master_card_colored.svg',
+                                  fit: BoxFit.contain,
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Card ending in •••• ${controller.rxCardNumber.value.length >= 4 ? controller.rxCardNumber.value.substring(controller.rxCardNumber.value.length - 4) : controller.rxCardNumber.value}",
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              if (controller.rxCardName.value.isNotEmpty)
+                                Text(
+                                  controller.rxCardName.value,
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 11.sp,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.white54,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => _showAddCardBottomSheet(context),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 4.w,
+                              vertical: 2.h,
+                            ),
+                            child: Text(
+                              "Change",
+                              style: GoogleFonts.dmSans(
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFFFFC226),
+                                decoration: TextDecoration.underline,
+                              ),
                             ),
                           ),
-                        ],
+                        ),
+                      ],
+                    ),
+                  ] else ...[
+                    // Add New card tap
+                    InkWell(
+                      onTap: () => _showAddCardBottomSheet(context),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 4.h),
+                        child: Row(
+                          children: [
+                            Icon(Icons.add, color: Colors.white70, size: 16.sp),
+                            SizedBox(width: 6.w),
+                            Text(
+                              "Add a New card",
+                              style: GoogleFonts.dmSans(
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white70,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ],
               ],
             ),
@@ -699,6 +856,13 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
         size: 18.sp,
       ),
       onTap: () {
+        // If payment method is card and no card added, show the bottom sheet
+        if (controller.rxPaymentMethod.value == "card" &&
+            !controller.rxHasAddedCard.value) {
+          _showAddCardBottomSheet(context);
+          return;
+        }
+
         // Process the purchase to add the item dynamically
         controller.processPurchase(() {});
 
@@ -742,24 +906,11 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                 }) {
                   Navigator.pop(sheetContext); // Close sheet
 
-                  // Process the purchase to add the item dynamically
-                  controller.processPurchase(() {});
-
-                  // Show processing dialog, then go to success details
-                  showProcessingOverlay(context, () {
-                    // Convert dynamic FeedItem structure to ProfileItem for routing to PurchaseDetailScreen
-                    if (!Get.isRegistered<ProfileController>()) {
-                      Get.put(ProfileController());
-                    }
-                    final profileController = Get.find<ProfileController>();
-                    final profileItem = profileController.rxPurchaseItems.first;
-
-                    Get.back(); // Pop SecureCheckoutScreen
-                    Get.toNamed(
-                      AppRoutes.purchaseDetail,
-                      arguments: profileItem,
-                    );
-                  });
+                  // Save added card info to controller
+                  controller.rxCardName.value = name;
+                  controller.rxCardNumber.value = cardNumber;
+                  controller.rxCardExpiry.value = expiry;
+                  controller.rxHasAddedCard.value = true;
                 },
           ),
         );
@@ -793,6 +944,88 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class CheckoutImageCarousel extends StatefulWidget {
+  final FeedItem item;
+  const CheckoutImageCarousel({super.key, required this.item});
+
+  @override
+  State<CheckoutImageCarousel> createState() => _CheckoutImageCarouselState();
+}
+
+class _CheckoutImageCarouselState extends State<CheckoutImageCarousel> {
+  late final PageController _pageController;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final images = widget.item.itemImages;
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8.r),
+          child: SizedBox(
+            width: 102.r,
+            height: 102.r,
+            child: PageView.builder(
+              controller: _pageController,
+              itemCount: images.length,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentPage = index;
+                });
+              },
+              itemBuilder: (context, index) {
+                final img = images[index];
+                if (img.startsWith('http') || img.startsWith('https')) {
+                  return Image.network(
+                    img,
+                    width: 102.r,
+                    height: 102.r,
+                    fit: BoxFit.cover,
+                  );
+                }
+                return Image.asset(
+                  img,
+                  width: 102.r,
+                  height: 102.r,
+                  fit: BoxFit.cover,
+                );
+              },
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: -7.h, // half of the 14.h height of the small variant
+          left: 0,
+          right: 0,
+          child: Center(
+            child: CustomPageIndicator(
+              count: images.length,
+              currentPage: _currentPage,
+              isSmall: true,
+              backgroundColor: const Color(0xFF2B2C30),
+              showBorder: false,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

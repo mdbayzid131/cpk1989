@@ -85,10 +85,9 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                               bottom: -22.h,
                               right: 16.w,
                               child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 16.w,
-                                  vertical: 10.h,
-                                ),
+                                width: 120.w,
+                                height: 48.h,
+                                alignment: Alignment.center,
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(20.r),
@@ -582,6 +581,8 @@ class _DetailImageSliderState extends State<DetailImageSlider> {
 
 Widget _buildProofOfPurchaseButton() {
   return Container(
+    width: 120.w,
+    height: 48.h,
     padding: EdgeInsets.all(4.r), // inner spacing
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(16.r),
@@ -600,18 +601,18 @@ Widget _buildProofOfPurchaseButton() {
       ),
     ),
     child: Container(
+      width: double.infinity,
+      height: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14.r),
+        borderRadius: BorderRadius.circular(12.r),
         color: Colors.transparent,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            // width: 38.r,
-            // height: 38.r,
-            padding: EdgeInsets.all(10.r),
+            padding: EdgeInsets.all(8.r),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10.r),
