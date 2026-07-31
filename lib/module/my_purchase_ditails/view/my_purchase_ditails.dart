@@ -36,9 +36,9 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
     final titles = ["Reserved", "Collected", "Authenticating", "Delivered"];
     final subtitles = [
       "Item reserved for you",
-      "Seller preparing pickup",
+      "Picked up from seller",
       "Being verified by experts",
-      "Estimated Delivery on 2 May, 2026",
+      "On its way to you",
     ];
 
     for (int i = 0; i < 4; i++) {

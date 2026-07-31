@@ -21,54 +21,41 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
     final scrollController = ScrollController();
 
     return Obx(() {
-      final isStep2 = controller.rxStep.value == 2;
-      return PopScope(
-        canPop: !isStep2,
-        onPopInvokedWithResult: (didPop, result) {
-          if (didPop) return;
-          if (isStep2) {
-            controller.rxStep.value = 1;
-          }
-        },
-        child: Scaffold(
-          backgroundColor: const Color(0xFF0F1012),
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            scrolledUnderElevation: 0,
-            surfaceTintColor: Colors.transparent,
-            centerTitle: true,
-            leadingWidth: 70.w,
-            leading: Padding(
-              padding: EdgeInsets.only(left: 20.w),
-              child: Center(
-                child: CustomGlassButton(
-                  size: 40.r,
-                  onTap: () {
-                    if (controller.rxStep.value == 2) {
-                      controller.rxStep.value = 1;
-                    } else {
-                      Get.back();
-                    }
-                  },
-                  child: Icon(
-                    Icons.arrow_back_ios_new_rounded,
-                    color: Colors.white,
-                    size: 16.sp,
-                  ),
+      return Scaffold(
+        backgroundColor: const Color(0xFF0F1012),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          surfaceTintColor: Colors.transparent,
+          centerTitle: true,
+          leadingWidth: 70.w,
+          leading: Padding(
+            padding: EdgeInsets.only(left: 20.w),
+            child: Center(
+              child: CustomGlassButton(
+                size: 40.r,
+                onTap: () {
+                  Get.back();
+                },
+                child: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Colors.white,
+                  size: 16.sp,
                 ),
               ),
             ),
-            title: Text(
-              "Review Listing",
-              style: GoogleFonts.dmSans(
-                fontSize: 20.sp,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
+          ),
+          title: Text(
+            "Review Listing",
+            style: GoogleFonts.dmSans(
+              fontSize: 20.sp,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
             ),
           ),
-          body: SingleChildScrollView(
+        ),
+        body: SingleChildScrollView(
             controller: scrollController,
             physics: const BouncingScrollPhysics(),
             padding: EdgeInsets.symmetric(horizontal: 16.h),
@@ -166,226 +153,162 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 ),
                 SizedBox(height: 30.h),
 
-                if (controller.rxStep.value == 1) ...[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "ITEM DETAILS",
-                        style: GoogleFonts.dmSans(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white38,
-                          letterSpacing: 1.0,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 12.h),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _buildTitleEditRow(),
-                      _buildBrandEditRow(),
-                      _buildDescriptionEditRow(),
-                      _buildPriceEditRow(),
-                      _buildConditionEditRow(context),
-                      _buildProofOfPurchaseEditRow(),
-                      _buildOriginalPackagingRow(),
-                    ],
-                  ),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(width: 4.w),
-                      Icon(
-                        Icons.info_outline,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "ITEM DETAILS",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w700,
                         color: Colors.white38,
-                        size: 14.sp,
+                        letterSpacing: 1.0,
                       ),
-                      SizedBox(width: 6.w),
-                      Text(
-                        "Final verification happens after pickup.",
-                        style: GoogleFonts.dmSans(
-                          fontSize: 12.sp,
-                          color: Colors.white38,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 24.h),
-
-                  SizedBox(height: 2.h),
-                  Text(
-                    "SELLER DETAILS",
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white38,
-                      letterSpacing: 1.0,
                     ),
-                  ),
-                  SizedBox(height: 12.h),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _buildSellerInputRow(
-                        "Name",
-                        controller.sellerNameController,
-                      ),
-                      _buildSellerInputRow(
-                        "Location",
-                        controller.sellerLocationController,
-                      ),
-                      _buildSellerInputRow(
-                        "Country",
-                        controller.sellerCountryController,
-                      ),
-                      _buildSellerInputRow(
-                        "Phone number",
-                        controller.sellerPhoneController,
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16.h),
+                  ],
+                ),
+                SizedBox(height: 12.h),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildTitleEditRow(),
+                    _buildBrandEditRow(),
+                    _buildDescriptionEditRow(),
+                    _buildPriceEditRow(),
+                    _buildConditionEditRow(context),
+                    _buildProofOfPurchaseEditRow(),
+                    _buildOriginalPackagingRow(),
+                  ],
+                ),
 
-                  _buildContinueButton(context, scrollController),
-                  SizedBox(height: 24.h),
-                ] else ...[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "ITEM DETAILS",
-                        style: GoogleFonts.dmSans(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white38,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(width: 4.w),
+                    Icon(
+                      Icons.info_outline,
+                      color: Colors.white38,
+                      size: 14.sp,
+                    ),
+                    SizedBox(width: 6.w),
+                    Text(
+                      "Final verification happens after pickup.",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12.sp,
+                        color: Colors.white38,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 24.h),
 
-                          letterSpacing: 1.0,
-                        ),
-                      ),
-                    ],
+                SizedBox(height: 2.h),
+                Text(
+                  "SELLER DETAILS",
+                  style: GoogleFonts.dmSans(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white38,
+                    letterSpacing: 1.0,
                   ),
-                  SizedBox(height: 12.h),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _buildReadOnlyRow("Title", controller.rxTitle.value),
-                      _buildReadOnlyRow("Brand", controller.rxBrand.value),
-                      _buildReadOnlyDescriptionRow(
-                        "Description",
-                        controller.rxDescription.value,
-                      ),
-                      _buildReadOnlyRow(
-                        "Listing price",
-                        "AED ${controller.rxPrice.value}",
-                      ),
-                      _buildReadOnlyRow(
-                        "Condition",
-                        controller.rxCondition.value,
-                      ),
-                      _buildReadOnlyRow(
-                        "Proof of purchase",
-                        controller.rxBillName.value.isNotEmpty
-                            ? controller.rxBillName.value
-                            : "None",
-                      ),
-                      _buildReadOnlyRow(
-                        "Original packaging available?",
-                        controller.rxOriginalPackaging.value ? "Yes" : "No",
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 24.h),
-                  Text(
-                    "SELLER DETAILS",
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white38,
-                      letterSpacing: 1.0,
+                ),
+                SizedBox(height: 12.h),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildSellerInputRow(
+                      "Name",
+                      controller.sellerNameController,
                     ),
-                  ),
-                  SizedBox(height: 12.h),
-                  _buildSellerDetailsCard(),
-                  SizedBox(height: 24.h),
-                  Text(
-                    "YOUR EARNINGS",
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white38,
-                      letterSpacing: 1.0,
+                    _buildSellerInputRow(
+                      "Location",
+                      controller.sellerLocationController,
                     ),
+                    _buildSellerInputRow(
+                      "Country",
+                      controller.sellerCountryController,
+                    ),
+                    _buildSellerInputRow(
+                      "Phone number",
+                      controller.sellerPhoneController,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 24.h),
+                Text(
+                  "YOUR EARNINGS",
+                  style: GoogleFonts.dmSans(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white38,
+                    letterSpacing: 1.0,
                   ),
-                  SizedBox(height: 12.h),
-                  _buildEarningsCard(item.price),
-                  SizedBox(height: 24.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "PAYMENT METHOD",
-                        style: GoogleFonts.dmSans(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white38,
-                          letterSpacing: 1.0,
-                        ),
+                ),
+                SizedBox(height: 12.h),
+                _buildEarningsCard(item.price),
+                SizedBox(height: 24.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "PAYMENT METHOD",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white38,
+                        letterSpacing: 1.0,
                       ),
-                      Obx(() {
-                        if (controller.rxHasPaymentMethod.value) {
-                          return GestureDetector(
-                            onTap: () =>
-                                _showPaymentMethodsBottomSheet(context),
-                            child: Text(
-                              "Change method",
-                              style: GoogleFonts.dmSans(
-                                fontSize: 14.sp,
-                                color: const Color(0xFFFFAF2C),
-                                fontWeight: FontWeight.w600,
-                                decoration: TextDecoration.underline,
-                                decorationColor: const Color(0xFFFFAF2C),
-                                decorationThickness: 1.5,
-                              ),
-                            ),
-                          );
-                        }
-                        return const SizedBox.shrink();
-                      }),
-                    ],
-                  ),
-                  SizedBox(height: 12.h),
-                  _buildPaymentMethodCard(),
-                  SizedBox(height: 24.h),
-                  _buildPostItemButton(context, item),
-                  SizedBox(height: 16.h),
-                  Center(
-                    child: Text.rich(
-                      TextSpan(
-                        text: "By posting, you agree to Closeté ",
-                        style: GoogleFonts.dmSans(
-                          fontSize: 12.sp,
-                          color: Colors.white38,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        children: [
-                          const TextSpan(
-                            text: "Terms & Conditions",
-                            style: TextStyle(
+                    ),
+                    Obx(() {
+                      if (controller.rxHasPaymentMethod.value) {
+                        return GestureDetector(
+                          onTap: () =>
+                              _showPaymentMethodsBottomSheet(context),
+                          child: Text(
+                            "Change method",
+                            style: GoogleFonts.dmSans(
+                              fontSize: 14.sp,
+                              color: const Color(0xFFFFAF2C),
+                              fontWeight: FontWeight.w600,
                               decoration: TextDecoration.underline,
-                              decorationColor: Colors.white38,
+                              decorationColor: const Color(0xFFFFAF2C),
+                              decorationThickness: 1.5,
                             ),
                           ),
-                        ],
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    }),
+                  ],
+                ),
+                SizedBox(height: 12.h),
+                _buildPaymentMethodCard(),
+                SizedBox(height: 24.h),
+                _buildPostItemButton(context, item),
+                SizedBox(height: 16.h),
+                Center(
+                  child: Text.rich(
+                    TextSpan(
+                      text: "By posting, you agree to Closeté ",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12.sp,
+                        color: Colors.white38,
+                        fontWeight: FontWeight.w500,
                       ),
-                      textAlign: TextAlign.center,
+                      children: [
+                        const TextSpan(
+                          text: "Terms & Conditions",
+                          style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            decorationColor: Colors.white38,
+                          ),
+                        ),
+                      ],
                     ),
+                    textAlign: TextAlign.center,
                   ),
-                ],
+                ),
                 SizedBox(
                   height:
                       24.h +
@@ -396,7 +319,6 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
               ],
             ),
           ),
-        ),
       );
     });
   }
