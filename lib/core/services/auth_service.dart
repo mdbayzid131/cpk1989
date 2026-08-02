@@ -33,19 +33,15 @@ class AuthService extends GetxService {
 
   /// ===================== SIGNUP =====================
   Future<Response> signup({
-    required String name,
+    required String firstName,
+    required String lastName,
     required String email,
-    required String password,
-    required String phone,
-    required String country,
   }) async {
     try {
       final response = await _authRepo.signup(
-        name: name,
+        firstName: firstName,
+        lastName: lastName,
         email: email,
-        password: password,
-        phone: phone,
-        country: country,
       );
       return response;
     } catch (e) {
@@ -55,31 +51,22 @@ class AuthService extends GetxService {
 
   /// ===================== LOGIN =====================
   Future<Response> login({
+    required String firstName,
+    required String lastName,
     required String email,
-    required String password,
   }) async {
     try {
-      String? deviceToken = "mock_device_token";
+
 
       final response = await _authRepo.login(
+        firstName: firstName,
+        lastName: lastName,
         email: email,
-        password: password,
-        deviceToken: deviceToken,
       );
       await _handleAuthResponse(response);
       return response;
     } catch (e) {
       rethrow;
-    }
-  }
-
-  /// ===================== SYNC DEVICE TOKEN =====================
-  Future<void> syncDeviceToken(String token) async {
-    try {
-      await _authRepo.syncDeviceToken(token);
-      Helpers.info('🔄 Device token synced with backend');
-    } catch (e) {
-      Helpers.error('❌ Failed to sync device token: $e');
     }
   }
 
@@ -93,26 +80,6 @@ class AuthService extends GetxService {
       await _clearLocalAuth();
       rethrow;
     }
-  }
-
-  /// ===================== FORGOT PASSWORD =====================
-  Future<Response> forgotPassword(String email) async {
-    try {
-      final response = await _authRepo.forgotPassword(email: email);
-      return response;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  /// ===================== SOCIAL LOGIN (GOOGLE) =====================
-  Future<Response?> signInWithGoogle() async {
-    throw UnimplementedError('Google Sign-In is disabled for now');
-  }
-
-  /// ===================== SOCIAL LOGIN (APPLE) =====================
-  Future<Response?> signInWithApple() async {
-    throw UnimplementedError('Apple Sign-In is disabled for now');
   }
 
   /// ===================== OTP VERIFY =====================
@@ -135,38 +102,6 @@ class AuthService extends GetxService {
   Future<Response> resendOtp(String email) async {
     try {
       return await _authRepo.resendOtp(email: email);
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  /// ===================== RESET PASSWORD =====================
-  Future<Response> resetPassword({
-    required String token,
-    required String newPassword,
-  }) async {
-    try {
-      final response = await _authRepo.resetPassword(
-        token: token,
-        newPassword: newPassword,
-      );
-      return response;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  /// ===================== CHANGE PASSWORD =====================
-  Future<void> changePassword({
-    required String currentPassword,
-    required String newPassword,
-    required String confirmPassword,
-  }) async {
-    try {
-      await _authRepo.changePassword(
-        currentPassword: currentPassword,
-        newPassword: newPassword,
-      );
     } catch (e) {
       rethrow;
     }

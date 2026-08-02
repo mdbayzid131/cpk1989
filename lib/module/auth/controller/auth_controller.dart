@@ -8,12 +8,14 @@ import 'package:cpk1989/core/services/storage_service.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
 
 class AuthController extends GetxController {
-  final firstNameController = TextEditingController();
-  final lastNameController = TextEditingController();
-  final emailController = TextEditingController();
-
+  final AuthService authService = Get.find<AuthService>();
+  
   final rxIsLoading = false.obs;
   final formKey = GlobalKey<FormState>();
+
+  TextEditingController firstNameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
 
   // OTP Fields & State
   final otpControllers = List.generate(6, (_) => TextEditingController());
@@ -52,16 +54,54 @@ class AuthController extends GetxController {
   }
 
   Future<bool> verifyOtp() async {
-    rxIsOtpLoading.value = true;
-    
-    // Simulate OTP verification delay for premium feel
-    await Future.delayed(const Duration(milliseconds: 1000));
-    
+    final email = emailController.text.trim();
     final otpCode = otpControllers.map((c) => c.text).join();
-    debugPrint("Verifying OTP code: $otpCode");
     
-    rxIsOtpLoading.value = false;
-    return true;
+    if (otpCode.length < 6) {
+      Helpers.showError("Please enter all 6 digits of the verification code.");
+      return false;
+    }
+
+    rxIsOtpLoading.value = true;
+    try {
+      final response = await authService.verifyOtp(email: email, otp: otpCode);
+      rxIsOtpLoading.value = false;
+      
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        final errorMsg = response.statusMessage ?? "Verification failed";
+        Helpers.showError(errorMsg);
+        return false;
+      }
+    } catch (e) {
+      rxIsOtpLoading.value = false;
+      Helpers.showError("An error occurred during verification: $e");
+      return false;
+    }
+  }
+
+  Future<bool> resendOtp() async {
+    final email = emailController.text.trim();
+    if (email.isEmpty) {
+      Helpers.showError("Email address is missing");
+      return false;
+    }
+    
+    try {
+      final response = await authService.resendOtp(email);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Helpers.showSuccess("OTP has been resent to your email.");
+        return true;
+      } else {
+        final errorMsg = response.statusMessage ?? "Failed to resend OTP";
+        Helpers.showError(errorMsg);
+        return false;
+      }
+    } catch (e) {
+      Helpers.showError("Failed to resend OTP: $e");
+      return false;
+    }
   }
 
   @override
@@ -79,71 +119,81 @@ class AuthController extends GetxController {
     super.onClose();
   }
 
-  String? validateFirstName(String? value) {
-    return null; // Bypassed for now
-  }
-
-  String? validateLastName(String? value) {
-    return null; // Bypassed for now
-  }
-
-  String? validateEmail(String? value) {
-    return null; // Bypassed for now
-  }
-
   Future<bool> prepareAuth() async {
+    if (formKey.currentState == null || !formKey.currentState!.validate()) {
+      return false;
+    }
+
     rxIsLoading.value = true;
 
-    // Simulate minor network/api check delay for premium feel
-    await Future.delayed(const Duration(milliseconds: 600));
-    rxIsLoading.value = false;
+    final email = emailController.text.trim();
+    final firstName = firstNameController.text.trim();
+    final lastName = lastNameController.text.trim();
 
-    return true;
+    try {
+      if (firstName.isNotEmpty && lastName.isNotEmpty) {
+        // Sign up flow
+        final response = await authService.signup(
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+        );
+        rxIsLoading.value = false;
+        
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          Helpers.showSuccess("Registration initiated. OTP sent to your email.");
+          return true;
+        } else {
+          final errorMsg = response.statusMessage ?? "Registration failed";
+          Helpers.showError(errorMsg);
+          return false;
+        }
+      } else {
+        // Login flow
+        final response = await authService.login(
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+        );
+        rxIsLoading.value = false;
+        
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          Helpers.showSuccess("OTP sent to your email.");
+          return true;
+        } else {
+          final errorMsg = response.statusMessage ?? "Login failed";
+          Helpers.showError(errorMsg);
+          return false;
+        }
+      }
+    } catch (e) {
+      rxIsLoading.value = false;
+      Helpers.showError("An error occurred: $e");
+      return false;
+    }
   }
 
   Future<void> handleVerificationSuccess() async {
-    final firstName = firstNameController.text.trim().isNotEmpty
-        ? firstNameController.text.trim()
-        : "Gretchen";
-    final lastName = lastNameController.text.trim().isNotEmpty
-        ? lastNameController.text.trim()
-        : "Bothman";
-    final email = emailController.text.trim().isNotEmpty
-        ? emailController.text.trim()
-        : "gretchen.bothman@gmail.com";
+    String firstName = firstNameController.text.trim();
+    String lastName = lastNameController.text.trim();
+    String email = emailController.text.trim();
 
-    // Perform backend login/signup or save user locally
-    try {
-      final authService = Get.find<AuthService>();
-      final fullName = "$firstName $lastName";
-      final defaultPassword = "Closete@${email.split('@')[0]}";
-
-      // Try to register/log in via API if baseUrl is set
-      try {
-        final response = await authService.login(
-          email: email,
-          password: defaultPassword,
-        );
-        if (response.statusCode != 200) {
-          await authService.signup(
-            name: fullName,
-            email: email,
-            password: defaultPassword,
-            phone: "+971501234567",
-            country: "UAE",
-          );
-          await authService.login(email: email, password: defaultPassword);
-        }
-      } catch (_) {
-        // Bypassed API errors
-      }
-    } catch (_) {}
+    if (firstName.isEmpty) {
+      firstName = await StorageService.getString('first_name');
+      if (firstName.isEmpty) firstName = "User";
+    }
+    if (lastName.isEmpty) {
+      lastName = await StorageService.getString('last_name');
+    }
+    if (email.isEmpty) {
+      email = await StorageService.getString('email');
+    }
 
     // Persist user details in storage
     await _saveLocalUserData(firstName, lastName, email);
 
     Helpers.showSuccess(
-      "Logged in successfully as $firstName $lastName",
+      "Logged in successfully as $firstName $lastName".trim(),
       title: "Welcome to Closeté",
     );
 

@@ -8,6 +8,7 @@ import 'package:cpk1989/config/themes/app_theme.dart';
 import 'package:cpk1989/core/widgets/custom_gold_button.dart';
 import 'package:cpk1989/core/widgets/custom_dipped_bottom_sheet.dart';
 import 'package:cpk1989/module/auth/view/email_verification_bottom_sheet.dart';
+import 'package:cpk1989/core/utils/validators.dart';
 
 class LoginScreen extends GetView<AuthController> {
   const LoginScreen({super.key});
@@ -102,7 +103,9 @@ class LoginScreen extends GetView<AuthController> {
                             controller: controller.firstNameController,
                             hintText: "First name",
                             prefixIconPath: "assets/icons/person.svg",
-                            validator: controller.validateFirstName,
+                            validator: (value) => controller.lastNameController.text.trim().isNotEmpty
+                                ? Validators.required(value, message: "First name is required for registration")
+                                : null,
                           ),
                           SizedBox(height: 10.h),
 
@@ -110,7 +113,9 @@ class LoginScreen extends GetView<AuthController> {
                             controller: controller.lastNameController,
                             hintText: "Mendes",
                             prefixIconPath: "assets/icons/person.svg",
-                            validator: controller.validateLastName,
+                            validator: (value) => controller.firstNameController.text.trim().isNotEmpty
+                                ? Validators.required(value, message: "Last name is required for registration")
+                                : null,
                           ),
                           SizedBox(height: 10.h),
 
@@ -119,7 +124,7 @@ class LoginScreen extends GetView<AuthController> {
                             hintText: "Email",
                             prefixIconPath: "assets/icons/mail.svg",
                             keyboardType: TextInputType.emailAddress,
-                            validator: controller.validateEmail,
+                            validator: Validators.email,
                           ),
 
                           const Spacer(),

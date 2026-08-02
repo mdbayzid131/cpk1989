@@ -74,8 +74,11 @@ class EmailVerificationBottomSheetContent extends GetView<AuthController> {
                     ),
                   )
                 : TextButton(
-                    onPressed: () {
-                      controller.startOtpTimer();
+                    onPressed: () async {
+                      final success = await controller.resendOtp();
+                      if (success) {
+                        controller.startOtpTimer();
+                      }
                     },
                     child: Text(
                       "Resend Code",
