@@ -90,8 +90,7 @@ class ApiClient extends GetxService {
     // 2️⃣ Token expired → refresh & retry
     if (e.response?.statusCode == 401 &&
         !e.requestOptions.path.contains(ApiConstants.refreshToken) &&
-        !e.requestOptions.path.contains(ApiConstants.login) &&
-        !e.requestOptions.path.contains(ApiConstants.signup)) {
+        !e.requestOptions.path.contains(ApiConstants.login)) {
       final refreshToken = await StorageService.getString(
         StorageConstants.refreshToken,
       );

@@ -31,39 +31,18 @@ class AuthService extends GetxService {
     return this;
   }
 
-  /// ===================== SIGNUP =====================
-  Future<Response> signup({
-    required String firstName,
-    required String lastName,
-    required String email,
-  }) async {
-    try {
-      final response = await _authRepo.signup(
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-      );
-      return response;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  /// ===================== LOGIN =====================
+  /// ===================== LOGIN / SIGNUP (OTP REQUEST) =====================
   Future<Response> login({
-    required String firstName,
-    required String lastName,
     required String email,
+    String? firstName,
+    String? lastName,
   }) async {
     try {
-
-
       final response = await _authRepo.login(
+        email: email,
         firstName: firstName,
         lastName: lastName,
-        email: email,
       );
-      await _handleAuthResponse(response);
       return response;
     } catch (e) {
       rethrow;

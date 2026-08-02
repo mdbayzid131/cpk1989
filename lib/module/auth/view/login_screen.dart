@@ -99,25 +99,41 @@ class LoginScreen extends GetView<AuthController> {
                           SizedBox(height: 36.h),
 
                           // Text Input Fields
-                          _buildTextField(
-                            controller: controller.firstNameController,
-                            hintText: "First name",
-                            prefixIconPath: "assets/icons/person.svg",
-                            validator: (value) => controller.lastNameController.text.trim().isNotEmpty
-                                ? Validators.required(value, message: "First name is required for registration")
-                                : null,
-                          ),
-                          SizedBox(height: 10.h),
-
-                          _buildTextField(
-                            controller: controller.lastNameController,
-                            hintText: "Mendes",
-                            prefixIconPath: "assets/icons/person.svg",
-                            validator: (value) => controller.firstNameController.text.trim().isNotEmpty
-                                ? Validators.required(value, message: "Last name is required for registration")
-                                : null,
-                          ),
-                          SizedBox(height: 10.h),
+                          Obx(() {
+                            final isSignUp = controller.rxIsSignUp.value;
+                            return AnimatedSize(
+                              duration: const Duration(milliseconds: 250),
+                              curve: Curves.easeInOut,
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: isSignUp
+                                    ? Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                           _buildTextField(
+                                            controller:
+                                                controller.firstNameController,
+                                            hintText: "First name",
+                                            prefixIconPath:
+                                                "assets/icons/person.svg",
+                                            validator: null,
+                                          ),
+                                          SizedBox(height: 10.h),
+                                          _buildTextField(
+                                            controller:
+                                                controller.lastNameController,
+                                            hintText: "Mendes",
+                                            prefixIconPath:
+                                                "assets/icons/person.svg",
+                                            validator: null,
+                                          ),
+                                          SizedBox(height: 10.h),
+                                        ],
+                                      )
+                                    : const SizedBox.shrink(),
+                              ),
+                            );
+                          }),
 
                           _buildTextField(
                             controller: controller.emailController,
@@ -126,6 +142,49 @@ class LoginScreen extends GetView<AuthController> {
                             keyboardType: TextInputType.emailAddress,
                             validator: Validators.email,
                           ),
+                          SizedBox(height: 16.h),
+
+                          Obx(() {
+                            final isSignUp = controller.rxIsSignUp.value;
+                            return Center(
+                              child: TextButton(
+                                onPressed: () {
+                                  controller.rxIsSignUp.toggle();
+                                  controller.formKey.currentState?.reset();
+                                  controller.firstNameController.clear();
+                                  controller.lastNameController.clear();
+                                },
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16.w,
+                                    vertical: 8.h,
+                                  ),
+                                ),
+                                child: RichText(
+                                  text: TextSpan(
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 14.sp,
+                                      color: AppTheme.gray,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: isSignUp
+                                            ? "Already have an account? "
+                                            : "New to Closeté? ",
+                                      ),
+                                      TextSpan(
+                                        text: isSignUp ? "Log In" : "Sign Up",
+                                        style: const TextStyle(
+                                          color: Color(0xFFE2B744),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          }),
 
                           const Spacer(),
 
@@ -191,73 +250,74 @@ class LoginScreen extends GetView<AuthController> {
     String? Function(String?)? validator,
     TextInputType keyboardType = TextInputType.text,
   }) {
-    return Focus(
-      child: Builder(
-        builder: (context) {
-          final hasFocus = Focus.of(context).hasFocus;
-          return Container(
-            height: 48.h,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10.r),
-              gradient: const LinearGradient(
-                colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-                begin: Alignment.centerRight,
-                end: Alignment.centerLeft,
-              ),
-              border: Border.all(
-                color: hasFocus
-                    ? const Color(0xFFE2B744)
-                    : Colors.white.withValues(alpha: 0.05),
-                width: 1.0,
-              ),
+    return TextFormField(
+      controller: controller,
+      validator: validator,
+      keyboardType: keyboardType,
+      style: GoogleFonts.dmSans(
+        fontSize: 15.sp,
+        fontWeight: FontWeight.w500,
+        color: AppTheme.primaryText,
+      ),
+      decoration: InputDecoration(
+        hintText: hintText,
+        hintStyle: GoogleFonts.dmSans(
+          fontSize: 15.sp,
+          fontWeight: FontWeight.w400,
+          color: AppTheme.grayTerritory,
+        ),
+        prefixIcon: Padding(
+          padding: EdgeInsets.only(left: 15.w, right: 10.w),
+          child: SvgPicture.asset(
+            prefixIconPath,
+            colorFilter: const ColorFilter.mode(
+              Colors.white54,
+              BlendMode.srcIn,
             ),
-            child: Center(
-              child: TextFormField(
-                controller: controller,
-                validator: validator,
-                keyboardType: keyboardType,
-                style: GoogleFonts.dmSans(
-                  fontSize: 15.sp,
-                  fontWeight: FontWeight.w500,
-                  color: AppTheme.primaryText,
-                ),
-                decoration: InputDecoration(
-                  hintText: hintText,
-                  hintStyle: GoogleFonts.dmSans(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w400,
-                    color: AppTheme.grayTerritory,
-                  ),
-                  prefixIcon: Padding(
-                    padding: EdgeInsets.only(left: 15.w, right: 10.w),
-                    child: SvgPicture.asset(
-                      prefixIconPath,
-                      colorFilter: const ColorFilter.mode(
-                        Colors.white54,
-                        BlendMode.srcIn,
-                      ),
-                      width: 18.w,
-                      height: 18.w,
-                    ),
-                  ),
-                  prefixIconConstraints: BoxConstraints(minWidth: 40.w),
-                  filled: true,
-                  fillColor: Colors.transparent,
-                  contentPadding: EdgeInsets.only(
-                    top: 10.h,
-                    bottom: 10.h,
-                    right: 10.w,
-                  ),
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  focusedErrorBorder: InputBorder.none,
-                ),
-              ),
-            ),
-          );
-        },
+            width: 18.w,
+            height: 18.w,
+          ),
+        ),
+        prefixIconConstraints: BoxConstraints(minWidth: 40.w),
+        filled: true,
+        fillColor: const Color(0xFF1B1C1E), // Solid color matching dark theme
+        contentPadding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 10.w),
+        errorStyle: GoogleFonts.dmSans(color: Colors.red, fontSize: 12.sp),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.r),
+          borderSide: BorderSide(
+            color: Colors.white.withValues(alpha: 0.05),
+            width: 1.0,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.r),
+          borderSide: BorderSide(
+            color: Colors.white.withValues(alpha: 0.05),
+            width: 1.0,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.r),
+          borderSide: BorderSide(
+            color: Colors.white.withValues(alpha: 0.05),
+            width: 1.0,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.r),
+          borderSide: BorderSide(
+            color: Colors.white.withValues(alpha: 0.05),
+            width: 1.0,
+          ),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.r),
+          borderSide: BorderSide(
+            color: Colors.white.withValues(alpha: 0.05),
+            width: 1.0,
+          ),
+        ),
       ),
     );
   }

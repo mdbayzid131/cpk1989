@@ -11,6 +11,7 @@ class AuthController extends GetxController {
   final AuthService authService = Get.find<AuthService>();
   
   final rxIsLoading = false.obs;
+  final rxIsSignUp = true.obs;
   final formKey = GlobalKey<FormState>();
 
   TextEditingController firstNameController = TextEditingController();
@@ -131,40 +132,24 @@ class AuthController extends GetxController {
     final lastName = lastNameController.text.trim();
 
     try {
-      if (firstName.isNotEmpty && lastName.isNotEmpty) {
-        // Sign up flow
-        final response = await authService.signup(
-          firstName: firstName,
-          lastName: lastName,
-          email: email,
-        );
-        rxIsLoading.value = false;
-        
-        if (response.statusCode == 200 || response.statusCode == 201) {
+      final response = await authService.login(
+        email: email,
+        firstName: firstName.isNotEmpty ? firstName : null,
+        lastName: lastName.isNotEmpty ? lastName : null,
+      );
+      rxIsLoading.value = false;
+      
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (rxIsSignUp.value) {
           Helpers.showSuccess("Registration initiated. OTP sent to your email.");
-          return true;
         } else {
-          final errorMsg = response.statusMessage ?? "Registration failed";
-          Helpers.showError(errorMsg);
-          return false;
-        }
-      } else {
-        // Login flow
-        final response = await authService.login(
-          firstName: firstName,
-          lastName: lastName,
-          email: email,
-        );
-        rxIsLoading.value = false;
-        
-        if (response.statusCode == 200 || response.statusCode == 201) {
           Helpers.showSuccess("OTP sent to your email.");
-          return true;
-        } else {
-          final errorMsg = response.statusMessage ?? "Login failed";
-          Helpers.showError(errorMsg);
-          return false;
         }
+        return true;
+      } else {
+        final errorMsg = response.statusMessage ?? "Failed to request OTP";
+        Helpers.showError(errorMsg);
+        return false;
       }
     } catch (e) {
       rxIsLoading.value = false;

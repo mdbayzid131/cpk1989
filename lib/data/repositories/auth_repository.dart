@@ -6,33 +6,19 @@ class AuthRepo {
   final ApiClient apiClient;
   AuthRepo({required this.apiClient});
 
-
-  /// ===================== SIGNUP =====================
-  Future<Response> signup({
-    required String firstName,
-    required String lastName,
-    required String email,
-  }) async {
-    final Map<String, dynamic> body = {
-      "firstName": firstName,
-      "lastName": lastName,
-      "email": email,
-    };
-
-    return await apiClient.postData(ApiConstants.signup, body);
-  }
-
-  /// ===================== LOGIN =====================
+  /// ===================== LOGIN / SIGNUP (OTP REQUEST) =====================
   Future<Response> login({
-    required String firstName,
-    required String lastName,
     required String email,
+    String? firstName,
+    String? lastName,
   }) async {
-    final Map<String, dynamic> body = {
-      "firstName": firstName,
-      "lastName": lastName,
-      "email": email,
-    };
+    final Map<String, dynamic> body = {"email": email};
+    if (firstName != null && firstName.trim().isNotEmpty) {
+      body["firstName"] = firstName.trim();
+    }
+    if (lastName != null && lastName.trim().isNotEmpty) {
+      body["lastName"] = lastName.trim();
+    }
     return await apiClient.postData(ApiConstants.login, body);
   }
 
@@ -41,16 +27,15 @@ class AuthRepo {
     required String email,
     required String otp,
   }) async {
+    final code = int.tryParse(otp) ?? 0;
     return await apiClient.postData(ApiConstants.verifyOtp, {
       "email": email,
-      "otp": otp,
+      "oneTimeCode": code,
     });
   }
 
   /// ===================== RESEND OTP =====================
   Future<Response> resendOtp({required String email}) async {
-    return await apiClient.postData(ApiConstants.resendOtp, {
-      "email": email,
-    });
+    return await apiClient.postData(ApiConstants.resendOtp, {"email": email});
   }
 }

@@ -4,11 +4,10 @@ class ApiConstants {
   // static const String baseUrl = 'https://nayem5001.binarybards.online/api/v1';
   // static const String apiVersion = '';
 
-
-//Auth
-static const String signup = '/auth/login';
-static const String login = '/auth/login';
-static const String verifyOtp = '/auth/verify-otp';
-static const String resendOtp = '/auth/resend-otp';
-static const String refreshToken = '/auth/refresh-token';
+  //Auth
+  static const String login = '/auth/login';
+  static const String verifyOtp = '/auth/login-otp';
+  static const String resendOtp = '/auth/resend-otp';
+  static const String refreshToken = '/auth/refresh-token';
+  static const String profile = '/user/profile';
 }
