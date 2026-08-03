@@ -148,15 +148,9 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                           backgroundColor: Colors.grey.shade900,
                                           child: ClipOval(
                                             child: Image.network(
-                                              item.userName == "Olivia Mendes"
-                                                  ? "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150"
-                                                  : item.userName ==
-                                                        "Sophia Rossi"
-                                                  ? "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=150"
-                                                  : item.userName ==
-                                                        "James Miller"
-                                                  ? "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=150"
-                                                  : "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150",
+                                              item.sellerProfileImage.isNotEmpty
+                                                  ? item.sellerProfileImage
+                                                  : "https://i.ibb.co/z5YHLV9/profile.png",
                                               width: 40.r,
                                               height: 40.r,
                                               fit: BoxFit.cover,
@@ -220,8 +214,10 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                           ),
                                         ),
                                       ),
-                                      SizedBox(width: 12.w),
-                                      _buildProofOfPurchaseButton(),
+                                      if (item.proofOfPurchase != null && item.proofOfPurchase!.trim().isNotEmpty) ...[
+                                        SizedBox(width: 12.w),
+                                        _buildProofOfPurchaseButton(),
+                                      ],
                                     ],
                                   ),
 
@@ -291,7 +287,9 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                         ),
                                       ),
                                       Text(
-                                        "Original packaging available",
+                                        item.originalPackagingAvailable
+                                            ? "Original packaging available"
+                                            : "Original packaging unavailable",
                                         style: GoogleFonts.dmSans(
                                           fontSize: 12.sp,
                                           color: const Color(0xFFA2A2A2),

@@ -547,24 +547,27 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
           color: Colors.black,
           size: 18.sp,
         ),
-        onTap: () {
-          showCustomDippedBottomSheet(
-            context: context,
-            logo: Image.asset(
-              'assets/icons/done Logo.png',
-              width: 80.r,
-              height: 80.r,
-            ),
-            content: _SuccessBottomSheetContent(
-              item: item,
-              formattedPrice: formattedPrice,
-              onDismiss: () {
-                Get.back(); // Pop the bottom sheet
-                Get.back(); // Pop SellItemDetailScreen
-                Get.back(); // Pop SellScreen (Camera)
-              },
-            ),
-          );
+        onTap: () async {
+          final success = await controller.postProductListing();
+          if (success) {
+            showCustomDippedBottomSheet(
+              context: context,
+              logo: Image.asset(
+                'assets/icons/done Logo.png',
+                width: 80.r,
+                height: 80.r,
+              ),
+              content: _SuccessBottomSheetContent(
+                item: item,
+                formattedPrice: formattedPrice,
+                onDismiss: () {
+                  Get.back(); // Pop the bottom sheet
+                  Get.back(); // Pop SellItemDetailScreen
+                  Get.back(); // Pop SellScreen (Camera)
+                },
+              ),
+            );
+          }
         },
       );
     });
@@ -977,7 +980,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
           Obx(() {
             if (controller.rxBillName.value.isEmpty) {
               return GestureDetector(
-                onTap: () => controller.rxBillName.value = "Bill.pdf",
+                onTap: () => controller.pickBillFile(),
                 child: Text(
                   "Upload Bill",
                   style: GoogleFonts.dmSans(

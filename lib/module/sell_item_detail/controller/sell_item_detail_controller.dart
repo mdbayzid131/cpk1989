@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:cpk1989/core/utils/helpers.dart';
+import 'package:cpk1989/data/repositories/product_repository.dart';
 
 class SellItemDetailController extends GetxController {
   late final ProfileItem item;
@@ -30,6 +34,70 @@ class SellItemDetailController extends GetxController {
   final rxSellerPhone = "".obs;
   final rxOriginalPackaging = false.obs;
   final rxBillName = "".obs;
+  final rxBillPath = "".obs;
+
+  Future<void> pickBillFile() async {
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: const BoxDecoration(
+          color: Color(0xFF1E1F22),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text(
+              "Upload Proof of Purchase",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            ListTile(
+              leading: const Icon(Icons.image, color: Color(0xFFFFAF2C)),
+              title: const Text("Pick Image from Gallery", style: TextStyle(color: Colors.white)),
+              onTap: () async {
+                Get.back();
+                final picker = ImagePicker();
+                final picked = await picker.pickImage(source: ImageSource.gallery);
+                if (picked != null) {
+                  rxBillPath.value = picked.path;
+                  rxBillName.value = picked.name;
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.picture_as_pdf, color: Color(0xFFFFAF2C)),
+              title: const Text("Pick Document (PDF)", style: TextStyle(color: Colors.white)),
+              onTap: () async {
+                Get.back();
+                try {
+                  FilePickerResult? result = await FilePicker.platform.pickFiles(
+                    type: FileType.custom,
+                    allowedExtensions: ['pdf'],
+                  );
+                  if (result != null && result.files.single.path != null) {
+                    rxBillPath.value = result.files.single.path!;
+                    rxBillName.value = result.files.single.name;
+                  }
+                } catch (e) {
+                  Get.snackbar("Error", "Failed to pick file: $e");
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   // Payment method variables
   final rxHasPaymentMethod = false.obs;
@@ -142,6 +210,53 @@ class SellItemDetailController extends GetxController {
 
   void toggleEditMode() {
     // Edit mode is always true
+  }
+
+  final rxIsPosting = false.obs;
+
+  Future<bool> postProductListing() async {
+    final ProductRepository productRepo = Get.find<ProductRepository>();
+    
+    rxIsPosting.value = true;
+    Helpers.showLoadingDialog(message: "Publishing item...");
+
+    try {
+      final name = rxTitle.value.trim();
+      final brand = rxBrand.value.trim();
+      final price = double.tryParse(rxPrice.value.trim()) ?? item.price.toDouble();
+      final condition = rxCondition.value.trim();
+      final description = rxDescription.value.trim();
+      
+      // Local images from the previous camera flow
+      final List<String> imagePaths = item.images ?? [];
+
+      final response = await productRepo.createProduct(
+        name: name,
+        brand: brand,
+        price: price,
+        condition: condition,
+        description: description,
+        originalPackagingAvailable: rxOriginalPackaging.value,
+        imagePaths: imagePaths,
+        proofOfPurchasePath: rxBillPath.value.isNotEmpty ? rxBillPath.value : null,
+      );
+
+      Helpers.hideLoadingDialog();
+      rxIsPosting.value = false;
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return true;
+      } else {
+        final errorMsg = response.statusMessage ?? "Failed to publish listing";
+        Helpers.showError(errorMsg);
+        return false;
+      }
+    } catch (e) {
+      Helpers.hideLoadingDialog();
+      rxIsPosting.value = false;
+      Helpers.showError("An error occurred while posting: $e");
+      return false;
+    }
   }
 
   @override

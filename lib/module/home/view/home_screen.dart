@@ -29,6 +29,7 @@ class HomeScreen extends GetView<HomeController> {
         return PageView.builder(
           scrollDirection: Axis.vertical,
           itemCount: controller.rxItems.length,
+          onPageChanged: controller.onPageChanged,
           itemBuilder: (context, index) {
             final item = controller.rxItems[index];
             return Stack(
@@ -108,13 +109,9 @@ class HomeScreen extends GetView<HomeController> {
                               backgroundColor: Colors.grey.shade900,
                               child: ClipOval(
                                 child: Image.network(
-                                  item.userName == "Olivia Mendes"
-                                      ? "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150"
-                                      : item.userName == "Sophia Rossi"
-                                          ? "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=150"
-                                          : item.userName == "James Miller"
-                                              ? "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=150"
-                                              : "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150",
+                                  item.sellerProfileImage.isNotEmpty
+                                      ? item.sellerProfileImage
+                                      : "https://i.ibb.co/z5YHLV9/profile.png",
                                   width: 40.r,
                                   height: 40.r,
                                   fit: BoxFit.cover,
@@ -189,10 +186,7 @@ class HomeScreen extends GetView<HomeController> {
                                     SizedBox(width: 12.w),
                                     GestureDetector(
                                       onTap: () {
-                                        Get.toNamed(
-                                          AppRoutes.itemDetail,
-                                          arguments: item,
-                                        );
+                                        controller.viewProductDetails(item);
                                       },
                                       child: Text(
                                         "View More",
@@ -342,7 +336,31 @@ class _ProductImageSliderState extends State<ProductImageSlider> {
             });
           },
           itemBuilder: (context, index) {
-            return Image.asset(widget.images[index], fit: BoxFit.cover);
+            final img = widget.images[index];
+            if (img.startsWith('http') || img.startsWith('https')) {
+              return Image.network(
+                img,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => const Center(
+                  child: Icon(
+                    Icons.broken_image_rounded,
+                    color: Colors.white24,
+                    size: 40,
+                  ),
+                ),
+              );
+            }
+            return Image.asset(
+              img,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => const Center(
+                child: Icon(
+                  Icons.broken_image_rounded,
+                  color: Colors.white24,
+                  size: 40,
+                ),
+              ),
+            );
           },
         ),
 

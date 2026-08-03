@@ -10,4 +10,5 @@ class ApiConstants {
   static const String resendOtp = '/auth/resend-otp';
   static const String refreshToken = '/auth/refresh-token';
   static const String profile = '/user/profile';
+  static const String products = '/products';
 }

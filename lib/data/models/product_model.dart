@@ -1,0 +1,113 @@
+class ProductModel {
+  final String? id;
+  final List<String>? images;
+  final String? proofOfPurchase;
+  final DateTime? reservationExpiresAt;
+  final String? name;
+  final String? brand;
+  final String? description;
+  final double? price;
+  final String? condition;
+  final String? status;
+  final SellerModel? seller;
+  final bool? originalPackagingAvailable;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+
+  ProductModel({
+    this.id,
+    this.images,
+    this.proofOfPurchase,
+    this.reservationExpiresAt,
+    this.name,
+    this.brand,
+    this.description,
+    this.price,
+    this.condition,
+    this.status,
+    this.seller,
+    this.originalPackagingAvailable,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  factory ProductModel.fromJson(Map<String, dynamic> json) {
+    return ProductModel(
+      id: json['id'] ?? json['_id'],
+      images: json['images'] != null ? List<String>.from(json['images']) : [],
+      proofOfPurchase: json['proofOfPurchase'],
+      reservationExpiresAt: json['reservationExpiresAt'] != null
+          ? DateTime.tryParse(json['reservationExpiresAt'])
+          : null,
+      name: json['name'],
+      brand: json['brand'],
+      description: json['description'],
+      price: json['price'] != null ? double.tryParse(json['price'].toString()) : null,
+      condition: json['condition'],
+      status: json['status'],
+      seller: json['seller'] != null ? SellerModel.fromJson(json['seller']) : null,
+      originalPackagingAvailable: json['originalPackagingAvailable'],
+      createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt']) : null,
+      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt']) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'images': images,
+      'proofOfPurchase': proofOfPurchase,
+      'reservationExpiresAt': reservationExpiresAt?.toIso8601String(),
+      'name': name,
+      'brand': brand,
+      'description': description,
+      'price': price,
+      'condition': condition,
+      'status': status,
+      'seller': seller?.toJson(),
+      'originalPackagingAvailable': originalPackagingAvailable,
+      'createdAt': createdAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
+    };
+  }
+}
+
+class SellerModel {
+  final String? id;
+  final String? name;
+  final String? profileImage;
+  final String? contact;
+  final String? location;
+  final String? country;
+
+  SellerModel({
+    this.id,
+    this.name,
+    this.profileImage,
+    this.contact,
+    this.location,
+    this.country,
+  });
+
+  factory SellerModel.fromJson(Map<String, dynamic> json) {
+    return SellerModel(
+      id: json['id'] ?? json['_id'],
+      name: json['name'],
+      profileImage: json['profileImage'],
+      contact: json['contact'],
+      location: json['location'],
+      country: json['country'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'profileImage': profileImage,
+      'contact': contact,
+      'location': location,
+      'country': country,
+    };
+  }
+}
