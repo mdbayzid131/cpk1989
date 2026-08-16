@@ -7,6 +7,7 @@ import 'package:cpk1989/config/themes/app_theme.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/core/widgets/vertical_stepper.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
+import 'package:cpk1989/core/utils/helpers.dart';
 import 'package:cpk1989/module/my_purchase_ditails/controller/my_purchase_ditails_controller.dart';
 
 class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
@@ -403,17 +404,7 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
 
               // Bottom Support Help Text
               GestureDetector(
-                onTap: () {
-                  Get.snackbar(
-                    "Support",
-                    "Connecting with support...",
-                    snackPosition: SnackPosition.TOP,
-                    backgroundColor: const Color(0xFF161719),
-                    colorText: Colors.white,
-                    borderRadius: 16,
-                    margin: const EdgeInsets.all(16),
-                  );
-                },
+                onTap: () => Helpers.openSupportEmail(),
                 child: Center(
                   child: Text.rich(
                     TextSpan(

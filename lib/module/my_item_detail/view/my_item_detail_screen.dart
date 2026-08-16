@@ -9,6 +9,7 @@ import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/core/widgets/vertical_stepper.dart';
 import 'package:cpk1989/core/widgets/custom_gold_button.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
+import 'package:cpk1989/core/utils/helpers.dart';
 import 'package:cpk1989/module/my_item_detail/controller/my_item_detail_controller.dart';
 
 class MyItemDetailScreen extends GetView<MyItemDetailController> {
@@ -745,8 +746,35 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                   ],
                 ),
               ],
+              SizedBox(height: 32.h),
 
-              SizedBox(height: 40.h),
+              // Bottom Support Help Text
+              GestureDetector(
+                onTap: () => Helpers.openSupportEmail(),
+                child: Center(
+                  child: Text.rich(
+                    TextSpan(
+                      text: "Need help? ",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 13.sp,
+                        color: Colors.white54,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: "Contact support",
+                          style: GoogleFonts.dmSans(
+                            color: Colors.white,
+                            decoration: TextDecoration.underline,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 16.h),
             ],
           ),
         ),

@@ -4,12 +4,31 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:url_launcher/url_launcher.dart';
+
 enum SnackBarType { success, error, info, warning, secondary }
 
 /// ===================== HELPERS =====================
 /// Common utility functions used across the app.
 class Helpers {
   Helpers._();
+
+  /// Open default email client with support@closete.app
+  static Future<void> openSupportEmail() async {
+    final Uri emailLaunchUri = Uri(
+      scheme: 'mailto',
+      path: 'support@closete.app',
+    );
+    try {
+      if (await canLaunchUrl(emailLaunchUri)) {
+        await launchUrl(emailLaunchUri, mode: LaunchMode.externalApplication);
+      } else {
+        await launchUrl(emailLaunchUri);
+      }
+    } catch (e) {
+      showError("Could not launch email app for support@closete.app");
+    }
+  }
 
   // ──────────────────── TIME FORMATTING ────────────────────
 

@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
+import 'package:cpk1989/core/utils/helpers.dart';
 
 class TermsAndConditionsScreen extends StatelessWidget {
   const TermsAndConditionsScreen({super.key});
@@ -108,27 +109,29 @@ class TermsAndConditionsScreen extends StatelessWidget {
   }
 
   Widget _buildFooter(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.only(bottom: 24.h, top: 12.h),
-      alignment: Alignment.center,
-      child: RichText(
-        text: TextSpan(
-          style: GoogleFonts.dmSans(
-            fontSize: 13.sp,
-            color: Colors.white38,
-          ),
-          children: [
-            const TextSpan(text: "Need help? "),
-            TextSpan(
-              text: "Contact support",
-              style: const TextStyle(
-                color: Colors.white70,
-                decoration: TextDecoration.underline,
-                fontWeight: FontWeight.w600,
-              ),
-              // Optional: Add gesture recognizer here if support action is needed
+    return GestureDetector(
+      onTap: () => Helpers.openSupportEmail(),
+      child: Container(
+        padding: EdgeInsets.only(bottom: 24.h, top: 12.h),
+        alignment: Alignment.center,
+        child: Text.rich(
+          TextSpan(
+            style: GoogleFonts.dmSans(
+              fontSize: 13.sp,
+              color: Colors.white38,
             ),
-          ],
+            children: [
+              const TextSpan(text: "Need help? "),
+              TextSpan(
+                text: "Contact support",
+                style: const TextStyle(
+                  color: Colors.white70,
+                  decoration: TextDecoration.underline,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
