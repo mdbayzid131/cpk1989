@@ -4,6 +4,7 @@ import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
+import 'package:cpk1989/core/utils/validators.dart';
 import 'package:cpk1989/data/repositories/product_repository.dart';
 
 class SellItemDetailController extends GetxController {
@@ -147,20 +148,11 @@ class SellItemDetailController extends GetxController {
 
     final isFallback = item.id == 'fallback';
 
-    titleController = TextEditingController(
-      text: isFallback ? "Classic Flap Bag" : item.itemName,
-    );
-    brandController = TextEditingController(
-      text: isFallback ? "Channel" : item.brand,
-    );
-    descriptionController = TextEditingController(
-      text:
-          "Black caviar leather with gold hardware. Comes with original dust bag and authenticity card.",
-    );
-    priceController = TextEditingController(
-      text: isFallback ? "3200" : item.price.toInt().toString(),
-    );
-    conditionController = TextEditingController(text: "Excellent");
+    titleController = TextEditingController(text: "");
+    brandController = TextEditingController(text: "");
+    descriptionController = TextEditingController(text: "");
+    priceController = TextEditingController(text: "");
+    conditionController = TextEditingController(text: "Select condition");
     sellerNameController = TextEditingController(text: "Olivia Mendes");
     sellerLocationController = TextEditingController(
       text: "Palm Jumeirah, Building 5, Apt 1204",
@@ -212,9 +204,52 @@ class SellItemDetailController extends GetxController {
     // Edit mode is always true
   }
 
+  final rxFormSubmitted = false.obs;
   final rxIsPosting = false.obs;
 
+  String? validateForm() {
+    final titleError = Validators.required(rxTitle.value, message: "Title is required");
+    if (titleError != null) return titleError;
+
+    final brandError = Validators.required(rxBrand.value, message: "Brand is required");
+    if (brandError != null) return brandError;
+
+    final descriptionError = Validators.required(rxDescription.value, message: "Description is required");
+    if (descriptionError != null) return descriptionError;
+
+    final priceError = Validators.required(rxPrice.value, message: "Listing price is required");
+    if (priceError != null) return priceError;
+
+    final amountError = Validators.amount(rxPrice.value, min: 1, message: "Please enter a valid listing price");
+    if (amountError != null) return amountError;
+
+    if (rxCondition.value.trim().isEmpty || rxCondition.value == "Select condition") {
+      return "Please select item condition";
+    }
+
+    final nameError = Validators.required(rxSellerName.value, message: "Seller name is required");
+    if (nameError != null) return nameError;
+
+    final locationError = Validators.required(rxSellerLocation.value, message: "Seller location is required");
+    if (locationError != null) return locationError;
+
+    final countryError = Validators.required(rxSellerCountry.value, message: "Seller country is required");
+    if (countryError != null) return countryError;
+
+    final phoneError = Validators.phone(rxSellerPhone.value, message: "Valid seller phone number is required");
+    if (phoneError != null) return phoneError;
+
+    return null;
+  }
+
   Future<bool> postProductListing() async {
+    rxFormSubmitted.value = true;
+
+    final validationError = validateForm();
+    if (validationError != null) {
+      return false;
+    }
+
     final ProductRepository productRepo = Get.find<ProductRepository>();
     
     rxIsPosting.value = true;
@@ -223,7 +258,7 @@ class SellItemDetailController extends GetxController {
     try {
       final name = rxTitle.value.trim();
       final brand = rxBrand.value.trim();
-      final price = double.tryParse(rxPrice.value.trim()) ?? item.price.toDouble();
+      final price = double.tryParse(rxPrice.value.trim()) ?? 0.0;
       final condition = rxCondition.value.trim();
       final description = rxDescription.value.trim();
       

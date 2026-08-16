@@ -440,7 +440,7 @@ class SellController extends GetxController {
       images: finalImages,
       price: customPrice.value > 0
           ? customPrice.value
-          : selectedProduct["price"],
+          : 0.0,
       likes: 0,
       isSold: false,
       brand: customBrand.value.isNotEmpty

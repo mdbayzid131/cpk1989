@@ -11,6 +11,8 @@ import 'package:cpk1989/core/widgets/custom_dipped_bottom_sheet.dart';
 import 'package:cpk1989/core/widgets/custom_add_card_bottom_sheet.dart';
 import 'package:cpk1989/module/sell_item_detail/controller/sell_item_detail_controller.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
+import 'package:cpk1989/core/utils/validators.dart';
+import 'package:cpk1989/config/routes/app_pages.dart';
 
 class SellItemDetailScreen extends GetView<SellItemDetailController> {
   const SellItemDetailScreen({super.key});
@@ -220,18 +222,27 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                     _buildSellerInputRow(
                       "Name",
                       controller.sellerNameController,
+                      rxValue: controller.rxSellerName,
+                      errorMessage: "Seller name is required",
                     ),
                     _buildSellerInputRow(
                       "Location",
                       controller.sellerLocationController,
+                      rxValue: controller.rxSellerLocation,
+                      errorMessage: "Seller location is required",
                     ),
                     _buildSellerInputRow(
                       "Country",
                       controller.sellerCountryController,
+                      rxValue: controller.rxSellerCountry,
+                      errorMessage: "Seller country is required",
                     ),
                     _buildSellerInputRow(
                       "Phone number",
                       controller.sellerPhoneController,
+                      rxValue: controller.rxSellerPhone,
+                      errorMessage: "Valid seller phone number is required",
+                      isPhone: true,
                     ),
                   ],
                 ),
@@ -287,26 +298,29 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 SizedBox(height: 24.h),
                 _buildPostItemButton(context, item),
                 SizedBox(height: 16.h),
-                Center(
-                  child: Text.rich(
-                    TextSpan(
-                      text: "By posting, you agree to Closeté ",
-                      style: GoogleFonts.dmSans(
-                        fontSize: 12.sp,
-                        color: Colors.white38,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      children: [
-                        const TextSpan(
-                          text: "Terms & Conditions",
-                          style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            decorationColor: Colors.white38,
-                          ),
+                GestureDetector(
+                  onTap: () => Get.toNamed(AppRoutes.termsAndPolicies),
+                  child: Center(
+                    child: Text.rich(
+                      TextSpan(
+                        text: "By posting, you agree to Closeté ",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 12.sp,
+                          color: Colors.white38,
+                          fontWeight: FontWeight.w500,
                         ),
-                      ],
+                        children: [
+                          const TextSpan(
+                            text: "Terms & Conditions",
+                            style: TextStyle(
+                              decoration: TextDecoration.underline,
+                            decorationColor: Colors.white38,
+                            ),
+                          ),
+                        ],
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
                   ),
                 ),
                 SizedBox(
@@ -324,52 +338,80 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
   }
 
   Widget _buildTitleEditRow() {
-    return Container(
-      height: 52.h,
-      margin: EdgeInsets.only(bottom: 8.h),
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
-          width: 1.0,
-        ),
-        gradient: const LinearGradient(
-          begin: Alignment.centerRight,
-          end: Alignment.centerLeft,
-          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-        ),
-      ),
-      child: Row(
+    return Obx(() {
+      final isInvalid = controller.rxFormSubmitted.value &&
+          controller.rxTitle.value.trim().isEmpty;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "Title",
-            style: GoogleFonts.dmSans(
-              fontSize: 14.sp,
-              color: Colors.white38,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          SizedBox(width: 16.w),
-          Expanded(
-            child: TextField(
-              controller: controller.titleController,
-              textAlign: TextAlign.end,
-              style: GoogleFonts.dmSans(
-                fontSize: 14.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
+          Container(
+            height: 52.h,
+            margin: EdgeInsets.only(bottom: isInvalid ? 4.h : 8.h),
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.05),
+                width: 1.0,
               ),
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: EdgeInsets.zero,
+              gradient: const LinearGradient(
+                begin: Alignment.centerRight,
+                end: Alignment.centerLeft,
+                colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
               ),
             ),
+            child: Row(
+              children: [
+                Text(
+                  "Title",
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14.sp,
+                    color: Colors.white38,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(width: 16.w),
+                Expanded(
+                  child: TextField(
+                    controller: controller.titleController,
+                    textAlign: TextAlign.end,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: "Enter title",
+                      hintStyle: GoogleFonts.dmSans(
+                        fontSize: 14.sp,
+                        color: Colors.white24,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
+          if (isInvalid)
+            Padding(
+              padding: EdgeInsets.only(left: 4.w, bottom: 8.h),
+              child: Text(
+                "Title is required",
+                style: GoogleFonts.dmSans(
+                  fontSize: 12.sp,
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
         ],
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildOriginalPackagingRow() {
@@ -443,16 +485,22 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
 
   Widget _buildEarningsCard(double price) {
     return Obx(() {
-      final currentPrice = double.tryParse(controller.rxPrice.value) ?? price;
+      final double? parsedPrice = double.tryParse(controller.rxPrice.value.trim());
+      final bool hasPrice = parsedPrice != null && parsedPrice > 0;
+
+      final currentPrice = hasPrice ? parsedPrice : 0.0;
       final closetFee = currentPrice * 0.12;
       final youEarn = currentPrice * 0.88;
 
-      final formattedPrice =
-          "AED ${currentPrice.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
-      final formattedFee =
-          "AED ${closetFee.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
-      final formattedEarn =
-          "AED ${youEarn.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
+      final formattedPrice = hasPrice
+          ? "AED ${currentPrice.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}"
+          : "-";
+      final formattedFee = hasPrice
+          ? "AED ${closetFee.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}"
+          : "-";
+      final formattedEarn = hasPrice
+          ? "AED ${youEarn.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}"
+          : "-";
 
       return Container(
         decoration: BoxDecoration(
@@ -574,163 +622,257 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
   }
 
   Widget _buildBrandEditRow() {
-    return Container(
-      height: 52.h,
-      margin: EdgeInsets.only(bottom: 8.h),
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
-          width: 1.0,
-        ),
-        gradient: const LinearGradient(
-          begin: Alignment.centerRight,
-          end: Alignment.centerLeft,
-          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-        ),
-      ),
-      child: Row(
+    return Obx(() {
+      final isInvalid = controller.rxFormSubmitted.value &&
+          controller.rxBrand.value.trim().isEmpty;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "Brand",
-            style: GoogleFonts.dmSans(
-              fontSize: 14.sp,
-              color: Colors.white38,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          SizedBox(width: 16.w),
-          Expanded(
-            child: TextField(
-              controller: controller.brandController,
-              textAlign: TextAlign.end,
-              enableSuggestions: false,
-              autocorrect: false,
-              autofillHints: const [],
-              style: GoogleFonts.dmSans(
-                fontSize: 14.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
+          Container(
+            height: 52.h,
+            margin: EdgeInsets.only(bottom: isInvalid ? 4.h : 8.h),
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.05),
+                width: 1.0,
               ),
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: EdgeInsets.zero,
+              gradient: const LinearGradient(
+                begin: Alignment.centerRight,
+                end: Alignment.centerLeft,
+                colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
               ),
             ),
+            child: Row(
+              children: [
+                Text(
+                  "Brand",
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14.sp,
+                    color: Colors.white38,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(width: 16.w),
+                Expanded(
+                  child: TextField(
+                    controller: controller.brandController,
+                    textAlign: TextAlign.end,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    autofillHints: const [],
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: "Enter brand",
+                      hintStyle: GoogleFonts.dmSans(
+                        fontSize: 14.sp,
+                        color: Colors.white24,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
+          if (isInvalid)
+            Padding(
+              padding: EdgeInsets.only(left: 4.w, bottom: 8.h),
+              child: Text(
+                "Brand is required",
+                style: GoogleFonts.dmSans(
+                  fontSize: 12.sp,
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
         ],
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildDescriptionEditRow() {
-    return Container(
-      margin: EdgeInsets.only(bottom: 8.h),
-      padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 16.h),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
-          width: 1.0,
-        ),
-        gradient: const LinearGradient(
-          begin: Alignment.centerRight,
-          end: Alignment.centerLeft,
-          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-        ),
-      ),
-      child: Column(
+    return Obx(() {
+      final isInvalid = controller.rxFormSubmitted.value &&
+          controller.rxDescription.value.trim().isEmpty;
+
+      return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "Description",
-            style: GoogleFonts.dmSans(
-              fontSize: 13.sp,
-              color: Colors.white38,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          SizedBox(height: 8.h),
-          TextField(
-            controller: controller.descriptionController,
-            maxLines: null,
-            style: GoogleFonts.dmSans(
-              fontSize: 14.sp,
-              color: Colors.white,
-              height: 1.4,
-              fontWeight: FontWeight.w500,
-            ),
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-              isDense: true,
-              contentPadding: EdgeInsets.zero,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPriceEditRow() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Container(
-          height: 52.h,
-          margin: EdgeInsets.only(bottom: 8.h),
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.05),
-              width: 1.0,
-            ),
-            gradient: const LinearGradient(
-              begin: Alignment.centerRight,
-              end: Alignment.centerLeft,
-              colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-            ),
-          ),
-          child: Row(
-            children: [
-              Text(
-                "Listing price",
-                style: GoogleFonts.dmSans(
-                  fontSize: 14.sp,
-                  color: Colors.white38,
-                  fontWeight: FontWeight.w500,
-                ),
+          Container(
+            margin: EdgeInsets.only(bottom: isInvalid ? 4.h : 8.h),
+            padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 16.h),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.05),
+                width: 1.0,
               ),
-              SizedBox(width: 16.w),
-              Expanded(
-                child: TextField(
-                  controller: controller.priceController,
-                  textAlign: TextAlign.end,
-                  keyboardType: TextInputType.number,
+              gradient: const LinearGradient(
+                begin: Alignment.centerRight,
+                end: Alignment.centerLeft,
+                colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Description",
+                  style: GoogleFonts.dmSans(
+                    fontSize: 13.sp,
+                    color: Colors.white38,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                TextField(
+                  controller: controller.descriptionController,
+                  maxLines: null,
                   style: GoogleFonts.dmSans(
                     fontSize: 14.sp,
                     color: Colors.white,
+                    height: 1.4,
                     fontWeight: FontWeight.w500,
                   ),
-                  decoration: const InputDecoration(
-                    prefixText: "AED ",
-                    prefixStyle: TextStyle(color: Colors.white38),
+                  decoration: InputDecoration(
+                    hintText: "Enter description...",
+                    hintStyle: GoogleFonts.dmSans(
+                      fontSize: 14.sp,
+                      color: Colors.white24,
+                      fontWeight: FontWeight.w400,
+                    ),
                     border: InputBorder.none,
                     isDense: true,
                     contentPadding: EdgeInsets.zero,
                   ),
-                  onChanged: (val) {
-                    controller.rxPrice.value = val;
-                  },
+                ),
+              ],
+            ),
+          ),
+          if (isInvalid)
+            Padding(
+              padding: EdgeInsets.only(left: 4.w, bottom: 8.h),
+              child: Text(
+                "Description is required",
+                style: GoogleFonts.dmSans(
+                  fontSize: 12.sp,
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
-            ],
+            ),
+        ],
+      );
+    });
+  }
+
+  Widget _buildPriceEditRow() {
+    return Obx(() {
+      final isPriceEmpty = controller.rxPrice.value.trim().isEmpty;
+      final isInvalidAmount = (double.tryParse(controller.rxPrice.value.trim()) ?? 0) <= 0;
+      final isInvalid = controller.rxFormSubmitted.value && (isPriceEmpty || isInvalidAmount);
+      final errorMsg = isPriceEmpty ? "Listing price is required" : "Please enter a valid listing price";
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 52.h,
+            margin: EdgeInsets.only(bottom: isInvalid ? 4.h : 8.h),
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.05),
+                width: 1.0,
+              ),
+              gradient: const LinearGradient(
+                begin: Alignment.centerRight,
+                end: Alignment.centerLeft,
+                colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+              ),
+            ),
+            child: Row(
+              children: [
+                Text(
+                  "Listing price",
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14.sp,
+                    color: Colors.white38,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const Spacer(),
+                Obx(() {
+                  final hasValue = controller.rxPrice.value.trim().isNotEmpty;
+                  return Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (hasValue)
+                        Padding(
+                          padding: EdgeInsets.only(right: 6.w),
+                          child: Text(
+                            "AED",
+                            style: GoogleFonts.dmSans(
+                              fontSize: 14.sp,
+                              color: Colors.white38,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      SizedBox(
+                        width: 130.w,
+                        child: TextField(
+                          controller: controller.priceController,
+                          textAlign: TextAlign.end,
+                          keyboardType: TextInputType.number,
+                          style: GoogleFonts.dmSans(
+                            fontSize: 14.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          onChanged: (val) {
+                            controller.rxPrice.value = val;
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                }),
+              ],
+            ),
           ),
-        ),
-      ],
-    );
+          if (isInvalid)
+            Padding(
+              padding: EdgeInsets.only(left: 4.w, bottom: 8.h),
+              child: Text(
+                errorMsg,
+                style: GoogleFonts.dmSans(
+                  fontSize: 12.sp,
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
+        ],
+      );
+    });
   }
 
   Widget _buildConditionEditRow(BuildContext context) {
@@ -749,13 +891,15 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
           ? currentCondition
           : null;
       final description = _getConditionDescription(currentCondition);
+      final isInvalid = controller.rxFormSubmitted.value &&
+          (currentCondition.trim().isEmpty || currentCondition == "Select condition");
 
       return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             height: 52.h,
-            margin: EdgeInsets.only(bottom: 8.h),
+            margin: EdgeInsets.only(bottom: (description.isNotEmpty || isInvalid) ? 4.h : 8.h),
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12.r),
@@ -910,7 +1054,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
           ),
           if (description.isNotEmpty) ...[
             Padding(
-              padding: EdgeInsets.only(left: 4.w, right: 4.w, bottom: 12.h),
+              padding: EdgeInsets.only(left: 4.w, right: 4.w, bottom: isInvalid ? 4.h : 12.h),
               child: Text(
                 description,
                 style: GoogleFonts.dmSans(
@@ -921,6 +1065,18 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
               ),
             ),
           ],
+          if (isInvalid)
+            Padding(
+              padding: EdgeInsets.only(left: 4.w, bottom: 8.h),
+              child: Text(
+                "Please select item condition",
+                style: GoogleFonts.dmSans(
+                  fontSize: 12.sp,
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
         ],
       );
     });
@@ -1036,241 +1192,269 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
     );
   }
 
-  Widget _buildReadOnlyRow(String label, String value) {
-    return Container(
-      height: 52.h,
-      margin: EdgeInsets.only(bottom: 8.h),
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
-          width: 1.0,
-        ),
-        gradient: const LinearGradient(
-          begin: Alignment.centerRight,
-          end: Alignment.centerLeft,
-          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.dmSans(
-              fontSize: 14.sp,
-              color: Colors.white38,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          SizedBox(width: 16.w),
-          Expanded(
-            child: Text(
-              value,
-              textAlign: TextAlign.end,
-              style: GoogleFonts.dmSans(
-                fontSize: 14.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildReadOnlyRow(String label, String value) {
+  //   return Container(
+  //     height: 52.h,
+  //     margin: EdgeInsets.only(bottom: 8.h),
+  //     padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+  //     decoration: BoxDecoration(
+  //       borderRadius: BorderRadius.circular(12.r),
+  //       border: Border.all(
+  //         color: Colors.white.withValues(alpha: 0.05),
+  //         width: 1.0,
+  //       ),
+  //       gradient: const LinearGradient(
+  //         begin: Alignment.centerRight,
+  //         end: Alignment.centerLeft,
+  //         colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+  //       ),
+  //     ),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //       children: [
+  //         Text(
+  //           label,
+  //           style: GoogleFonts.dmSans(
+  //             fontSize: 14.sp,
+  //             color: Colors.white38,
+  //             fontWeight: FontWeight.w500,
+  //           ),
+  //         ),
+  //         SizedBox(width: 16.w),
+  //         Expanded(
+  //           child: Text(
+  //             value,
+  //             textAlign: TextAlign.end,
+  //             style: GoogleFonts.dmSans(
+  //               fontSize: 14.sp,
+  //               color: Colors.white,
+  //               fontWeight: FontWeight.w500,
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  Widget _buildReadOnlyDescriptionRow(String label, String value) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 8.h),
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
-          width: 1.0,
-        ),
-        gradient: const LinearGradient(
-          begin: Alignment.centerRight,
-          end: Alignment.centerLeft,
-          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-        ),
-      ),
-      child: Column(
+  // Widget _buildReadOnlyDescriptionRow(String label, String value) {
+  //   return Container(
+  //     margin: EdgeInsets.only(bottom: 8.h),
+  //     padding: EdgeInsets.all(16.w),
+  //     decoration: BoxDecoration(
+  //       borderRadius: BorderRadius.circular(12.r),
+  //       border: Border.all(
+  //         color: Colors.white.withValues(alpha: 0.05),
+  //         width: 1.0,
+  //       ),
+  //       gradient: const LinearGradient(
+  //         begin: Alignment.centerRight,
+  //         end: Alignment.centerLeft,
+  //         colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+  //       ),
+  //     ),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Text(
+  //           label,
+  //           style: GoogleFonts.dmSans(
+  //             fontSize: 13.sp,
+  //             color: Colors.white38,
+  //             fontWeight: FontWeight.w500,
+  //           ),
+  //         ),
+  //         SizedBox(height: 8.h),
+  //         Text(
+  //           value,
+  //           style: GoogleFonts.dmSans(
+  //             fontSize: 14.sp,
+  //             color: Colors.white,
+  //             height: 1.4,
+  //             fontWeight: FontWeight.w500,
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  // Widget _buildSellerDetailsCard() {
+  //   return Obx(() {
+  //     return Container(
+  //       padding: EdgeInsets.all(16.w),
+  //       decoration: BoxDecoration(
+  //         borderRadius: BorderRadius.circular(16.r),
+  //         color: const Color(0xFF1C1D20),
+  //         border: Border.all(
+  //           color: Colors.white.withValues(alpha: 0.05),
+  //           width: 1.0,
+  //         ),
+  //       ),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           Row(
+  //             children: [
+  //               CircleAvatar(
+  //                 radius: 20.r,
+  //                 backgroundImage: const NetworkImage(
+  //                   'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop',
+  //                 ),
+  //               ),
+  //               SizedBox(width: 12.w),
+  //               Text(
+  //                 controller.rxSellerName.value,
+  //                 style: GoogleFonts.dmSans(
+  //                   fontSize: 16.sp,
+  //                   fontWeight: FontWeight.w600,
+  //                   color: Colors.white,
+  //                 ),
+  //               ),
+  //               SizedBox(width: 6.w),
+  //               Icon(
+  //                 Icons.verified_rounded,
+  //                 color: const Color(0xFF007AFF),
+  //                 size: 16.sp,
+  //               ),
+  //             ],
+  //           ),
+  //           SizedBox(height: 12.h),
+  //           const Divider(color: Colors.white10, height: 1),
+  //           SizedBox(height: 12.h),
+  //           Row(
+  //             children: [
+  //               SvgPicture.asset(
+  //                 'assets/icons/location.svg',
+  //                 width: 18.r,
+  //                 height: 18.r,
+  //                 colorFilter: const ColorFilter.mode(
+  //                   Colors.white38,
+  //                   BlendMode.srcIn,
+  //                 ),
+  //               ),
+  //               SizedBox(width: 10.w),
+  //               Expanded(
+  //                 child: Text(
+  //                   controller.rxSellerLocation.value,
+  //                   style: GoogleFonts.dmSans(
+  //                     fontSize: 14.sp,
+  //                     color: Colors.white70,
+  //                     fontWeight: FontWeight.w400,
+  //                   ),
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //           SizedBox(height: 10.h),
+  //           Row(
+  //             children: [
+  //               SvgPicture.asset(
+  //                 'assets/icons/phone.svg',
+  //                 width: 18.r,
+  //                 height: 18.r,
+  //                 colorFilter: const ColorFilter.mode(
+  //                   Colors.white38,
+  //                   BlendMode.srcIn,
+  //                 ),
+  //               ),
+  //               SizedBox(width: 10.w),
+  //               Text(
+  //                 controller.rxSellerPhone.value,
+  //                 style: GoogleFonts.dmSans(
+  //                   fontSize: 14.sp,
+  //                   color: Colors.white70,
+  //                   fontWeight: FontWeight.w400,
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ],
+  //       ),
+  //     );
+  //   });
+  // }
+
+  Widget _buildSellerInputRow(
+    String label,
+    TextEditingController textController, {
+    RxString? rxValue,
+    String? errorMessage,
+    bool isPhone = false,
+  }) {
+    return Obx(() {
+      final value = rxValue?.value ?? textController.text;
+      final isInvalid = controller.rxFormSubmitted.value &&
+          (isPhone
+              ? (Validators.phone(value, message: errorMessage) != null)
+              : value.trim().isEmpty);
+
+      return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: GoogleFonts.dmSans(
-              fontSize: 13.sp,
-              color: Colors.white38,
-              fontWeight: FontWeight.w500,
+          Container(
+            height: 52.h,
+            margin: EdgeInsets.only(bottom: isInvalid ? 4.h : 8.h),
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.05),
+                width: 1.0,
+              ),
+              gradient: const LinearGradient(
+                begin: Alignment.centerRight,
+                end: Alignment.centerLeft,
+                colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+              ),
             ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            value,
-            style: GoogleFonts.dmSans(
-              fontSize: 14.sp,
-              color: Colors.white,
-              height: 1.4,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSellerDetailsCard() {
-    return Obx(() {
-      return Container(
-        padding: EdgeInsets.all(16.w),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16.r),
-          color: const Color(0xFF1C1D20),
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.05),
-            width: 1.0,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+            child: Row(
               children: [
-                CircleAvatar(
-                  radius: 20.r,
-                  backgroundImage: const NetworkImage(
-                    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop',
-                  ),
-                ),
-                SizedBox(width: 12.w),
                 Text(
-                  controller.rxSellerName.value,
+                  label,
                   style: GoogleFonts.dmSans(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    fontSize: 14.sp,
+                    color: Colors.white38,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                SizedBox(width: 6.w),
-                Icon(
-                  Icons.verified_rounded,
-                  color: const Color(0xFF007AFF),
-                  size: 16.sp,
-                ),
-              ],
-            ),
-            SizedBox(height: 12.h),
-            const Divider(color: Colors.white10, height: 1),
-            SizedBox(height: 12.h),
-            Row(
-              children: [
-                SvgPicture.asset(
-                  'assets/icons/location.svg',
-                  width: 18.r,
-                  height: 18.r,
-                  colorFilter: const ColorFilter.mode(
-                    Colors.white38,
-                    BlendMode.srcIn,
-                  ),
-                ),
-                SizedBox(width: 10.w),
+                SizedBox(width: 16.w),
                 Expanded(
-                  child: Text(
-                    controller.rxSellerLocation.value,
+                  child: TextField(
+                    controller: textController,
+                    textAlign: TextAlign.end,
+                    enableSuggestions: false,
+                    autocorrect: false,
                     style: GoogleFonts.dmSans(
                       fontSize: 14.sp,
-                      color: Colors.white70,
-                      fontWeight: FontWeight.w400,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
                     ),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 10.h),
-            Row(
-              children: [
-                SvgPicture.asset(
-                  'assets/icons/phone.svg',
-                  width: 18.r,
-                  height: 18.r,
-                  colorFilter: const ColorFilter.mode(
-                    Colors.white38,
-                    BlendMode.srcIn,
-                  ),
+          ),
+          if (isInvalid && errorMessage != null)
+            Padding(
+              padding: EdgeInsets.only(left: 4.w, bottom: 8.h),
+              child: Text(
+                errorMessage,
+                style: GoogleFonts.dmSans(
+                  fontSize: 12.sp,
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.w400,
                 ),
-                SizedBox(width: 10.w),
-                Text(
-                  controller.rxSellerPhone.value,
-                  style: GoogleFonts.dmSans(
-                    fontSize: 14.sp,
-                    color: Colors.white70,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ],
+              ),
             ),
-          ],
-        ),
+        ],
       );
     });
-  }
-
-  Widget _buildSellerInputRow(
-    String label,
-    TextEditingController textController,
-  ) {
-    return Container(
-      height: 52.h,
-      margin: EdgeInsets.only(bottom: 8.h),
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
-          width: 1.0,
-        ),
-        gradient: const LinearGradient(
-          begin: Alignment.centerRight,
-          end: Alignment.centerLeft,
-          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-        ),
-      ),
-      child: Row(
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.dmSans(
-              fontSize: 14.sp,
-              color: Colors.white38,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          SizedBox(width: 16.w),
-          Expanded(
-            child: TextField(
-              controller: textController,
-              textAlign: TextAlign.end,
-              enableSuggestions: false,
-              autocorrect: false,
-              style: GoogleFonts.dmSans(
-                fontSize: 14.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-              ),
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: EdgeInsets.zero,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildPaymentMethodCard() {

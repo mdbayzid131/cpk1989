@@ -122,7 +122,7 @@ class LoginScreen extends GetView<AuthController> {
                                           _buildTextField(
                                             controller:
                                                 controller.lastNameController,
-                                            hintText: "Mendes",
+                                            hintText: "Last name",
                                             prefixIconPath:
                                                 "assets/icons/person.svg",
                                             validator: null,
