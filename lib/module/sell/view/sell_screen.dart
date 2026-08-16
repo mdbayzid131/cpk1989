@@ -67,11 +67,15 @@ class SellScreen extends GetView<SellController> {
                     ),
                   );
                 } else {
-                  // Simulator Mode live camera simulation
+                  // Camera is initializing: show dark background with sleek loading indicator
                   return Positioned.fill(
-                    child: Image.network(
-                      selectedProduct["imageUrl"],
-                      fit: BoxFit.cover,
+                    child: Container(
+                      color: const Color(0xFF0F1012),
+                      child: const Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFFAF2C)),
+                        ),
+                      ),
                     ),
                   );
                 }

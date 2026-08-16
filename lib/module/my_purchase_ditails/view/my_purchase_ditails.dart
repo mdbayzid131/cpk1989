@@ -261,74 +261,77 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
 
               SizedBox(height: 16.h),
 
-              // Stepper Timeline Tracker
-              CustomPaint(
-                painter: _GradientBorderPainter(
-                  gradient: const LinearGradient(
-                    begin: Alignment.centerRight,
-                    end: Alignment.centerLeft,
-                    colors: [Color(0xFF292A2D), Color(0xFF212226)],
-                  ),
-                  strokeWidth: 1.0,
-                  borderRadius: 16.r,
+              // Stepper Timeline Tracker (Matching Order Confirmation UI)
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 16.w,
+                  vertical: 16.h,
                 ),
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 20.h,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF161719),
+                  borderRadius: BorderRadius.circular(16.r),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.08),
+                    width: 1.0,
                   ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.04),
-                    borderRadius: BorderRadius.circular(16.r),
+                ),
+                child: VerticalStepper(
+                  steps: steps,
+                  nodeSize: 26.r,
+                  activeDashedSize: 26.r,
+                  lineWidth: 2.w,
+                  stepHeight: 52.h,
+                  titleStyle: GoogleFonts.dmSans(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    height: 1.1,
                   ),
-                  child: VerticalStepper(
-                    steps: steps,
-                    nodeSize: 36.r,
-                    activeDashedSize: 48.r,
-                    lineWidth: 2.w,
-                    stepHeight: 64.h,
-                    titleStyle: GoogleFonts.dmSans(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                      height: 1.1,
-                    ),
-                    subtitleStyle: GoogleFonts.dmSans(
-                      fontSize: 12.sp,
-                      color: Colors.white54,
-                      height: 1.1,
-                    ),
+                  subtitleStyle: GoogleFonts.dmSans(
+                    fontSize: 12.sp,
+                    color: Colors.white54,
+                    height: 1.1,
                   ),
                 ),
               ),
 
               SizedBox(height: 16.h),
 
-              // Shield Secure Payment Disclaimer
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(
-                    'assets/icons/Authenticity guarante_ home page logo.svg',
-                    width: 14.sp,
-                    height: 14.sp,
-                    colorFilter: const ColorFilter.mode(
-                      Colors.white38,
-                      BlendMode.srcIn,
-                    ),
+              // Shield Secure Payment Disclaimer (Matching Order Confirmation Pill UI)
+              Center(
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 14.w,
+                    vertical: 8.h,
                   ),
-                  SizedBox(width: 8.w),
-                  Expanded(
-                    child: Text(
-                      "Your payment is protected until verification is complete.",
-                      style: GoogleFonts.dmSans(
-                        fontSize: 12.sp,
-                        color: Colors.white38,
-                        fontWeight: FontWeight.w500,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.04),
+                    borderRadius: BorderRadius.circular(20.r),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/icons/Authenticity guarante_ home page logo.svg',
+                        width: 14.r,
+                        height: 14.r,
+                        colorFilter: const ColorFilter.mode(
+                          Colors.white38,
+                          BlendMode.srcIn,
+                        ),
                       ),
-                    ),
+                      SizedBox(width: 8.w),
+                      Text(
+                        "Authenticity Verified. Payment Protected.",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 11.sp,
+                          color: Colors.white54,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
 
               SizedBox(height: 28.h),
