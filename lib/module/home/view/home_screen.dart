@@ -90,124 +90,72 @@ class HomeScreen extends GetView<HomeController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // User Info Row (Avatar + Username + Verified badge)
-                      GestureDetector(
-                        onTap: () {
-                          Get.toNamed(
-                            AppRoutes.sellerProfile,
-                            arguments: {
-                              'userName': item.userName,
-                              'isVerified': item.isVerified,
-                            },
-                          );
-                        },
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            CircleAvatar(
-                              radius: 20.r,
-                              backgroundColor: Colors.grey.shade900,
-                              child: ClipOval(
-                                child: Image.network(
-                                  item.sellerProfileImage.isNotEmpty
-                                      ? item.sellerProfileImage
-                                      : "https://i.ibb.co/z5YHLV9/profile.png",
-                                  width: 40.r,
-                                  height: 40.r,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      const Icon(
-                                        Icons.person,
-                                        color: Colors.white70,
-                                      ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 10.w),
-                            Text(
-                              item.userName,
-                              style: GoogleFonts.dmSans(
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white,
-                              ),
-                            ),
-                            if (item.isVerified) ...[
-                              SizedBox(width: 6.w),
-                              SvgPicture.asset(
-                                'assets/icons/blue_verify-badg.svg',
-                                width: 18.r,
-                                height: 18.r,
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-
-                      SizedBox(height: 16.h),
-
-                      // Item Details (Condition, Name, View More on left; Price Badge on right)
+                      // User Info Row (Avatar + Username + Verified badge on left; Price Card right-aligned)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // Left Details Column
                           Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  item.condition,
-                                  style: GoogleFonts.dmSans(
-                                    fontSize: 12.sp,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                                SizedBox(height: 4.h),
-                                Row(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.baseline,
-                                  textBaseline: TextBaseline.alphabetic,
-                                  children: [
-                                    Flexible(
-                                      child: Text(
-                                        item.itemName,
-                                        style: GoogleFonts.dmSans(
-                                          fontSize: 20.sp,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.white,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+                            child: GestureDetector(
+                              onTap: () {
+                                Get.toNamed(
+                                  AppRoutes.sellerProfile,
+                                  arguments: {
+                                    'userName': item.userName,
+                                    'isVerified': item.isVerified,
+                                  },
+                                );
+                              },
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 20.r,
+                                    backgroundColor: Colors.grey.shade900,
+                                    child: ClipOval(
+                                      child: Image.network(
+                                        item.sellerProfileImage.isNotEmpty
+                                            ? item.sellerProfileImage
+                                            : "https://i.ibb.co/z5YHLV9/profile.png",
+                                        width: 40.r,
+                                        height: 40.r,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) =>
+                                            const Icon(
+                                              Icons.person,
+                                              color: Colors.white70,
+                                            ),
                                       ),
                                     ),
-                                    SizedBox(width: 12.w),
-                                    GestureDetector(
-                                      onTap: () {
-                                        controller.viewProductDetails(item);
-                                      },
-                                      child: Text(
-                                        "View More",
-                                        style: GoogleFonts.dmSans(
-                                          fontSize: 12.sp,
-                                          color: Colors.white,
-                                          decoration: TextDecoration.underline,
-                                          decorationColor: Colors.white,
-                                          decorationThickness: 1.5,
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                                  ),
+                                  SizedBox(width: 10.w),
+                                  Flexible(
+                                    child: Text(
+                                      item.userName,
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 18.sp,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.white,
                                       ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  if (item.isVerified) ...[
+                                    SizedBox(width: 6.w),
+                                    SvgPicture.asset(
+                                      'assets/icons/blue_verify-badg.svg',
+                                      width: 18.r,
+                                      height: 18.r,
                                     ),
                                   ],
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                          SizedBox(width: 8.w),
+                          SizedBox(width: 12.w),
 
-                          // Right Price Badge
+                          // Right Price Badge (Inline with User Name)
                           Container(
                             padding: EdgeInsets.all(9.6.r),
                             alignment: Alignment.center,
@@ -225,6 +173,60 @@ class HomeScreen extends GetView<HomeController> {
                                 height: 1.0,
                               ),
                             ),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: 12.h),
+
+                      // Item Details (Condition text + Item Title with View More right-aligned)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            item.condition,
+                            style: GoogleFonts.dmSans(
+                              fontSize: 12.sp,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          SizedBox(height: 4.h),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  item.itemName,
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 20.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              SizedBox(width: 12.w),
+                              GestureDetector(
+                                onTap: () {
+                                  controller.viewProductDetails(item);
+                                },
+                                child: Text(
+                                  "View More",
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 12.sp,
+                                    color: Colors.white,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: Colors.white,
+                                    decorationThickness: 1.5,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),

@@ -311,7 +311,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                         ),
                         children: [
                           const TextSpan(
-                            text: "Terms & Conditions",
+                            text: "Terms & Policies",
                             style: TextStyle(
                               decoration: TextDecoration.underline,
                             decorationColor: Colors.white38,
