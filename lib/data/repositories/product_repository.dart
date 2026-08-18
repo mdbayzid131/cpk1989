@@ -15,10 +15,7 @@ class ProductRepository {
     int limit = 10,
     String? status,
   }) async {
-    final Map<String, dynamic> query = {
-      'page': page,
-      'limit': limit,
-    };
+    final Map<String, dynamic> query = {'page': page, 'limit': limit};
     if (status != null) {
       query['status'] = status;
     }
@@ -40,7 +37,7 @@ class ProductRepository {
     required String description,
     required bool originalPackagingAvailable,
     required List<String> imagePaths, // camera or gallery local file paths
-    String? proofOfPurchasePath,      // proof of purchase PDF file path (optional)
+    String? proofOfPurchasePath, // proof of purchase PDF file path (optional)
   }) async {
     final formData = FormData();
 
@@ -58,40 +55,44 @@ class ProductRepository {
     // 2. Add multiple images under the standard key name 'image'
     for (int i = 0; i < imagePaths.length; i++) {
       final path = imagePaths[i];
-      if (path.isNotEmpty && !path.startsWith('http') && !path.startsWith('MOCK_')) {
+      if (path.isNotEmpty &&
+          !path.startsWith('http') &&
+          !path.startsWith('MOCK_')) {
         final file = File(path);
         if (await file.exists()) {
-          formData.files.add(MapEntry(
-            'image', // key name is 'image' for all items
-            await MultipartFile.fromFile(
-              path,
-              filename: 'product_image_$i.jpg',
+          formData.files.add(
+            MapEntry(
+              'image', // key name is 'image' for all items
+              await MultipartFile.fromFile(
+                path,
+                filename: 'product_image_$i.jpg',
+              ),
             ),
-          ));
+          );
         }
       }
     }
 
     // 3. Add proof of purchase PDF or image file under key name 'doc'
     if (proofOfPurchasePath != null && proofOfPurchasePath.isNotEmpty) {
-      if (!proofOfPurchasePath.startsWith('http') && !proofOfPurchasePath.startsWith('MOCK_')) {
+      if (!proofOfPurchasePath.startsWith('http') &&
+          !proofOfPurchasePath.startsWith('MOCK_')) {
         final file = File(proofOfPurchasePath);
         if (await file.exists()) {
-          formData.files.add(MapEntry(
-            'doc',
-            await MultipartFile.fromFile(
-              proofOfPurchasePath,
-              filename: proofOfPurchasePath.split('/').last,
+          formData.files.add(
+            MapEntry(
+              'doc',
+              await MultipartFile.fromFile(
+                proofOfPurchasePath,
+                filename: proofOfPurchasePath.split('/').last,
+              ),
             ),
-          ));
+          );
         }
       }
     }
 
     // 4. Send POST request
-    return await apiClient.postData(
-      ApiConstants.products,
-      formData,
-    );
+    return await apiClient.postData(ApiConstants.products, formData);
   }
 }

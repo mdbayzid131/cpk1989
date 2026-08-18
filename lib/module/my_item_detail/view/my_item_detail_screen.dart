@@ -195,24 +195,31 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                                           imgUrl,
                                           fit: BoxFit.cover,
                                           loadingBuilder:
-                                              (context, child, loadingProgress) {
-                                            if (loadingProgress == null) return child;
-                                            return const Center(
-                                              child: CircularProgressIndicator(
-                                                valueColor:
-                                                    AlwaysStoppedAnimation<Color>(
-                                                        Color(0xFFE2B744)),
-                                              ),
-                                            );
-                                          },
+                                              (
+                                                context,
+                                                child,
+                                                loadingProgress,
+                                              ) {
+                                                if (loadingProgress == null) {
+                                                  return child;
+                                                }
+                                                return const Center(
+                                                  child: CircularProgressIndicator(
+                                                    valueColor:
+                                                        AlwaysStoppedAnimation<
+                                                          Color
+                                                        >(Color(0xFFE2B744)),
+                                                  ),
+                                                );
+                                              },
                                           errorBuilder:
                                               (context, error, stackTrace) =>
                                                   const Center(
-                                            child: Icon(
-                                              Icons.broken_image,
-                                              color: Colors.white30,
-                                            ),
-                                          ),
+                                                    child: Icon(
+                                                      Icons.broken_image,
+                                                      color: Colors.white30,
+                                                    ),
+                                                  ),
                                         )
                                       : Image.file(
                                           File(imgUrl),
@@ -220,11 +227,11 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                                           errorBuilder:
                                               (context, error, stackTrace) =>
                                                   const Center(
-                                            child: Icon(
-                                              Icons.broken_image,
-                                              color: Colors.white30,
-                                            ),
-                                          ),
+                                                    child: Icon(
+                                                      Icons.broken_image,
+                                                      color: Colors.white30,
+                                                    ),
+                                                  ),
                                         ),
                                 ),
                               ),
@@ -289,9 +296,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                         borderRadius: BorderRadius.circular(10.r),
                       ),
                       child: Text(
-                        status == "Rejected"
-                            ? "• Rejected"
-                            : "• $status",
+                        status == "Rejected" ? "• Rejected" : "• $status",
                         style: GoogleFonts.dmSans(
                           fontSize: 12.sp,
                           fontWeight: FontWeight.w500,

@@ -38,12 +38,18 @@ class NotificationModel {
       subtitle: json['subtitle'] ?? '',
       resourceType: json['resourceType'] ?? '',
       resourceId: json['resourceId'] ?? '',
-      link: json['link'] != null ? NotificationLink.fromJson(json['link']) : null,
+      link: json['link'] != null
+          ? NotificationLink.fromJson(json['link'])
+          : null,
       isRead: json['isRead'] ?? false,
       readAt: json['readAt'] != null ? DateTime.parse(json['readAt']) : null,
       icon: json['icon'],
-      createdAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
-      updatedAt: DateTime.parse(json['updatedAt'] ?? DateTime.now().toIso8601String()),
+      createdAt: DateTime.parse(
+        json['createdAt'] ?? DateTime.now().toIso8601String(),
+      ),
+      updatedAt: DateTime.parse(
+        json['updatedAt'] ?? DateTime.now().toIso8601String(),
+      ),
     );
   }
 }
@@ -55,10 +61,7 @@ class NotificationLink {
   NotificationLink({required this.label, required this.url});
 
   factory NotificationLink.fromJson(Map<String, dynamic> json) {
-    return NotificationLink(
-      label: json['label'] ?? '',
-      url: json['url'] ?? '',
-    );
+    return NotificationLink(label: json['label'] ?? '', url: json['url'] ?? '');
   }
 }
 

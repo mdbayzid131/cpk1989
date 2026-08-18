@@ -44,7 +44,8 @@ class SafeNetworkImage extends StatelessWidget {
         if (loadingProgress == null) return child;
         return placeholder ?? _buildLoadingIndicator(loadingProgress);
       },
-      errorBuilder: (context, error, stackTrace) => errorWidget ?? _buildFallback(),
+      errorBuilder: (context, error, stackTrace) =>
+          errorWidget ?? _buildFallback(),
     );
 
     if (borderRadius != null) {
@@ -81,10 +82,7 @@ class SafeNetworkImage extends StatelessWidget {
       child: SizedBox(
         width: 20.sp,
         height: 20.sp,
-        child: CircularProgressIndicator(
-          strokeWidth: 2,
-          value: value,
-        ),
+        child: CircularProgressIndicator(strokeWidth: 2, value: value),
       ),
     );
   }

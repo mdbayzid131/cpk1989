@@ -1,0 +1,306 @@
+1. API overview
+All endpoints require a regular USER access token:
+Authorization: Bearer <access-token>
+Content-Type: application/json
+Base URL:
+https://your-domain.com/api/v1
+Do not use an admin token. These endpoints intentionally reject ADMIN and SUPER_ADMIN.
+2. Initialize Stripe in Flutter
+Dependencies:
+dependencies:
+  dio: ^5.0.0
+  flutter_stripe: ^11.0.0
+  uuid: ^4.0.0
+Initialize Stripe with the publishable key only:
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  Stripe.publishableKey = const String.fromEnvironment(
+    'STRIPE_PUBLISHABLE_KEY',
+  );
+
+  // Required only when Apple Pay is enabled.
+  Stripe.merchantIdentifier = 'merchant.com.smartshoppingmall';
+
+  await Stripe.instance.applySettings();
+
+  runApp(const App());
+}
+Important:
+Never put sk_test_... or sk_live_... in Flutter.
+Only use pk_test_... or pk_live_....
+Do not set Stripe.stripeAccountId; cards belong to the platform Customer, not a seller’s Connect account.
+Follow the package’s Android/iOS platform setup requirements. The current SDK requires FlutterFragmentActivity on Android and the relevant iOS deployment configuration. Official flutter_stripe setup.
+3. Response models
+class SavedCard {
+  final String id;
+  final String brand;
+  final String last4;
+  final int expMonth;
+  final int expYear;
+  final String funding;
+
+  const SavedCard({
+    required this.id,
+    required this.brand,
+    required this.last4,
+    required this.expMonth,
+    required this.expYear,
+    required this.funding,
+  });
+
+  factory SavedCard.fromJson(Map<String, dynamic> json) {
+    return SavedCard(
+      id: json['id'] as String,
+      brand: json['brand'] as String,
+      last4: json['last4'] as String,
+      expMonth: json['expMonth'] as int,
+      expYear: json['expYear'] as int,
+      funding: json['funding'] as String,
+    );
+  }
+
+  String get maskedNumber => '•••• $last4';
+  String get expiry =>
+      '${expMonth.toString().padLeft(2, '0')}/$expYear';
+}
+
+class PaymentMethodsPage {
+  final List<SavedCard> paymentMethods;
+  final bool hasMore;
+  final String? nextCursor;
+
+  const PaymentMethodsPage({
+    required this.paymentMethods,
+    required this.hasMore,
+    required this.nextCursor,
+  });
+
+  factory PaymentMethodsPage.fromJson(Map<String, dynamic> json) {
+    return PaymentMethodsPage(
+      paymentMethods: (json['paymentMethods'] as List<dynamic>)
+          .map(
+            (item) => SavedCard.fromJson(
+              Map<String, dynamic>.from(item as Map),
+            ),
+          )
+          .toList(),
+      hasMore: json['hasMore'] as bool,
+      nextCursor: json['nextCursor'] as String?,
+    );
+  }
+}
+4. Dio API client
+Configure Dio so the base URL already includes /api/v1:
+final dio = Dio(
+  BaseOptions(
+    baseUrl: 'https://your-domain.com/api/v1',
+    connectTimeout: const Duration(seconds: 20),
+    receiveTimeout: const Duration(seconds: 20),
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+  ),
+);
+
+dio.interceptors.add(
+  InterceptorsWrapper(
+    onRequest: (options, handler) async {
+      final token = await secureStorage.read(key: 'accessToken');
+
+      if (token != null) {
+        options.headers['Authorization'] = 'Bearer $token';
+      }
+
+      handler.next(options);
+    },
+  ),
+);
+Payment-method data source:
+class PaymentMethodsApi {
+  final Dio _dio;
+
+  PaymentMethodsApi(this._dio);
+
+  Future<PaymentMethodsPage> getPaymentMethods({
+    int limit = 20,
+    String? startingAfter,
+  }) async {
+    final response = await _dio.get(
+      '/payment-methods',
+      queryParameters: {
+        'limit': limit,
+        if (startingAfter != null) 'startingAfter': startingAfter,
+      },
+    );
+
+    return PaymentMethodsPage.fromJson(
+      Map<String, dynamic>.from(response.data['data'] as Map),
+    );
+  }
+
+  Future<String> createSetupIntent({
+    required String idempotencyKey,
+  }) async {
+    final response = await _dio.post(
+      '/payment-methods/setup-intent',
+      data: const {},
+      options: Options(
+        headers: {
+          'Idempotency-Key': idempotencyKey,
+        },
+      ),
+    );
+
+    return response.data['data']['clientSecret'] as String;
+  }
+
+  Future<void> deletePaymentMethod(String paymentMethodId) async {
+    await _dio.delete('/payment-methods/$paymentMethodId');
+  }
+}
+5. List saved cards
+Request:
+GET /api/v1/payment-methods?limit=20
+Response:
+{
+  "success": true,
+  "message": "Payment methods retrieved successfully",
+  "data": {
+    "paymentMethods": [
+      {
+        "id": "pm_123",
+        "brand": "Visa",
+        "last4": "4242",
+        "expMonth": 12,
+        "expYear": 2030,
+        "funding": "credit"
+      }
+    ],
+    "hasMore": false,
+    "nextCursor": null
+  }
+}
+Pagination:
+final firstPage = await api.getPaymentMethods();
+
+if (firstPage.hasMore && firstPage.nextCursor != null) {
+  final nextPage = await api.getPaymentMethods(
+    startingAfter: firstPage.nextCursor,
+  );
+}
+Rules:
+Default limit: 20
+Minimum: 1
+Maximum: 100
+Use nextCursor as the next startingAfter
+Deduplicate cards by id when merging pages
+A user without a Stripe Customer receives an empty list, not an error
+6. Add a new card
+Step 1: Create a SetupIntent
+Generate one idempotency key for each Add Card operation:
+final operationId = const Uuid().v4();
+
+final clientSecret = await api.createSetupIntent(
+  idempotencyKey: operationId,
+);
+Reuse the same key only when retrying the same failed network request. Generate a new key when the user deliberately starts another Add Card operation.
+Step 2: Present Stripe PaymentSheet
+Future<void> addCard() async {
+  final operationId = const Uuid().v4();
+
+  try {
+    final clientSecret = await api.createSetupIntent(
+      idempotencyKey: operationId,
+    );
+
+    await Stripe.instance.initPaymentSheet(
+      paymentSheetParameters: SetupPaymentSheetParameters(
+        setupIntentClientSecret: clientSecret,
+        merchantDisplayName: 'Smart Shopping Mall',
+        primaryButtonLabel: 'Save card',
+        style: ThemeMode.system,
+      ),
+    );
+
+    await Stripe.instance.presentPaymentSheet();
+
+    // SetupIntent succeeded and Stripe attached the card.
+    await loadPaymentMethods();
+  } on StripeException catch (error) {
+    final message =
+        error.error.localizedMessage ?? 'Unable to save this card';
+
+    showError(message);
+  } on DioException catch (error) {
+    handleApiError(error);
+  }
+}
+setupIntentClientSecret must be used here—not paymentIntentClientSecret. PaymentSheet officially supports SetupIntent client secrets. SetupPaymentSheetParameters reference.
+Stripe receives the card number and CVC directly. The Flutter app must never send them to this backend. A successful customer-bound SetupIntent automatically attaches the resulting PaymentMethod to that Customer. Stripe SetupIntent documentation.
+Do not:
+// Never do this:
+dio.post('/payment-methods/setup-intent', data: {
+  'cardNumber': cardNumber,
+  'cvc': cvc,
+});
+The backend rejects raw card data.
+Consent requirement
+The current backend creates SetupIntents with usage: off_session. Show clear consent before saving the card, explaining that it may be used for future authorized charges. Stripe requires appropriate customer permission for saved/off-session methods. Stripe consent guidance.
+If cards will only ever be used while the customer is actively checking out, consider changing the backend to on_session.
+7. Delete a card
+Show a confirmation dialog first:
+Future<void> removeCard(SavedCard card) async {
+  final confirmed = await showDeleteConfirmation(card);
+  if (!confirmed) return;
+
+  try {
+    await api.deletePaymentMethod(card.id);
+
+    // Either remove locally or reload from the server.
+    cards.removeWhere((item) => item.id == card.id);
+    notifyListeners();
+  } on DioException catch (error) {
+    if (error.response?.statusCode == 404) {
+      // Already deleted, or not owned by this user.
+      cards.removeWhere((item) => item.id == card.id);
+      notifyListeners();
+      return;
+    }
+
+    handleApiError(error);
+  }
+}
+Response:
+{
+  "success": true,
+  "message": "Payment method removed successfully",
+  "data": null
+}
+The backend verifies that the card belongs to the authenticated user before detaching it.
+8. Pay using a selected saved card
+Render the cards returned from GET /payment-methods in your own checkout UI.
+After creating the order:
+POST /api/v1/orders/:productId/checkout
+Extract its PaymentIntent client secret and confirm it using the selected PaymentMethod ID:
+Future<void> payWithSavedCard({
+  required String paymentIntentClientSecret,
+  required SavedCard card,
+}) async {
+  await Stripe.instance.confirmPayment(
+    paymentIntentClientSecret: paymentIntentClientSecret,
+    data: PaymentMethodParams.cardFromMethodId(
+      paymentMethodData: PaymentMethodDataCardFromMethod(
+        paymentMethodId: card.id,
+      ),
+    ),
+  );
+}
+flutter_stripe supports cardFromMethodId for this purpose. PaymentMethodParams reference.
+After confirmation:
+Do not treat the Flutter result as the final business status.
+The Stripe webhook is authoritative.
+Reload the order or listen for an order-status socket event.
+Show success only when the backend order status becomes secured or the appropriate paid status.
+Important: the backend currently supports a custom saved-card list through GET /payment-methods. A PaymentSheet initialized only with a PaymentIntent secret will not automatically display the customer’s saved cards. Native PaymentSheet saved-card display requires customer credentials such as a Customer ID plus ephemeral key/customer session. Flutter PaymentSheet guide.

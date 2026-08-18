@@ -68,16 +68,23 @@ class FavoriteCard {
     required this.totalDownloads,
     required this.createdAt,
     required this.updatedAt,
-    required this.isFavorite,   
+    required this.isFavorite,
   });
 
   factory FavoriteCard.fromJson(Map<String, dynamic> json) {
-    return FavoriteCard( 
+    return FavoriteCard(
       id: json['id'] ?? json['_id'] ?? '',
       cardTitle: json['cardTitle'] ?? '',
-      surgeonName: json['surgeon']?['name'] ?? json['surgeon']?['fullName'] ?? json['surgeonName'] ?? '',
-      surgeonSpecialty: json['surgeon']?['specialty'] ?? json['surgeonSpecialty'] ?? '',
-      isVerified: json['verificationStatus'] == 'VERIFIED' || json['isVerified'] == true,
+      surgeonName:
+          json['surgeon']?['name'] ??
+          json['surgeon']?['fullName'] ??
+          json['surgeonName'] ??
+          '',
+      surgeonSpecialty:
+          json['surgeon']?['specialty'] ?? json['surgeonSpecialty'] ?? '',
+      isVerified:
+          json['verificationStatus'] == 'VERIFIED' ||
+          json['isVerified'] == true,
       totalDownloads: json['downloadCount'] ?? json['totalDownloads'] ?? 0,
       isFavorite: json['isFavorited'] ?? json['isFavorite'] ?? false,
       createdAt: json['createdAt'] != null

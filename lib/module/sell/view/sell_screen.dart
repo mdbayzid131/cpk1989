@@ -73,7 +73,9 @@ class SellScreen extends GetView<SellController> {
                       color: const Color(0xFF0F1012),
                       child: const Center(
                         child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFFAF2C)),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Color(0xFFFFAF2C),
+                          ),
                         ),
                       ),
                     ),

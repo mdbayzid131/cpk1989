@@ -12,6 +12,7 @@ import 'package:cpk1989/module/purchase_detail/controller/purchase_detail_contro
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
+import 'package:cpk1989/config/constants/api_constants.dart';
 
 class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
   const PurchaseDetailScreen({super.key});
@@ -20,13 +21,16 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
   Widget build(BuildContext context) {
     final item = controller.item;
     final status = item.status ?? "Reserved";
-    final String orderId = item.id.startsWith('p')
-        ? "CLT-2489${item.id.substring(1)}"
-        : "CLT-24891";
+    final String orderId = item.id.startsWith('CLT-')
+        ? item.id
+        : (item.id.length >= 5
+              ? "CLT-${item.id.substring(item.id.length - 5).toUpperCase()}"
+              : "CLT-24891");
 
     // Format price nicely
-    final formattedPrice =
-        "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
+    final formattedPrice = item.price > 0
+        ? "AED ${item.price % 1 == 0 ? item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},') : item.price.toStringAsFixed(2)}"
+        : "AED 3,200";
 
     // Stepper steps configuration matching the mockup
     final List<Map<String, String>> steps = [
@@ -366,19 +370,7 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8.r),
-                child: item.imageUrl.startsWith('http')
-                    ? Image.network(
-                        item.imageUrl,
-                        width: 102.r,
-                        height: 102.r,
-                        fit: BoxFit.cover,
-                      )
-                    : Image.asset(
-                        item.imageUrl,
-                        width: 102.r,
-                        height: 102.r,
-                        fit: BoxFit.cover,
-                      ),
+                child: _buildPurchaseImage(item.imageUrl),
               ),
               Positioned(
                 bottom: -7.h, // half of the 14.h height of the small variant
@@ -395,6 +387,90 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                 ),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPurchaseImage(String imgUrl) {
+    final cleanUrl = imgUrl.trim();
+    if (cleanUrl.isEmpty) {
+      return _buildImagePlaceholder();
+    }
+
+    String finalUrl = cleanUrl;
+    if (!cleanUrl.startsWith('http') && !cleanUrl.startsWith('assets/')) {
+      try {
+        final origin = Uri.parse(ApiConstants.baseUrl).origin;
+        final path = cleanUrl.startsWith('/') ? cleanUrl : '/$cleanUrl';
+        finalUrl = '$origin$path';
+      } catch (_) {
+        finalUrl = cleanUrl;
+      }
+    }
+
+    if (finalUrl.startsWith('http://') || finalUrl.startsWith('https://')) {
+      return Image.network(
+        finalUrl,
+        width: 102.r,
+        height: 102.r,
+        fit: BoxFit.cover,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Container(
+            width: 102.r,
+            height: 102.r,
+            color: const Color(0xFF1E1F23),
+            child: Center(
+              child: SizedBox(
+                width: 18.r,
+                height: 18.r,
+                child: const CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Color(0xFFE2B744),
+                ),
+              ),
+            ),
+          );
+        },
+        errorBuilder: (context, error, stackTrace) => _buildImagePlaceholder(),
+      );
+    }
+
+    if (finalUrl.startsWith('assets/')) {
+      return Image.asset(
+        finalUrl,
+        width: 102.r,
+        height: 102.r,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => _buildImagePlaceholder(),
+      );
+    }
+
+    return _buildImagePlaceholder();
+  }
+
+  Widget _buildImagePlaceholder() {
+    return Container(
+      width: 102.r,
+      height: 102.r,
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1F23),
+        borderRadius: BorderRadius.circular(8.r),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.shopping_bag_outlined, color: Colors.white38, size: 28.r),
+          SizedBox(height: 4.h),
+          Text(
+            'Item',
+            style: GoogleFonts.dmSans(
+              fontSize: 10.sp,
+              color: Colors.white38,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),

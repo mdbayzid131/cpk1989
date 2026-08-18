@@ -1,3 +1,4 @@
+import 'package:cpk1989/core/services/payment_service.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:io';
@@ -58,288 +59,284 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
           ),
         ),
         body: SingleChildScrollView(
-            controller: scrollController,
-            physics: const BouncingScrollPhysics(),
-            padding: EdgeInsets.symmetric(horizontal: 16.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(
-                  height: 300.h,
-                  child: OverflowBox(
-                    minWidth: MediaQuery.of(context).size.width,
-                    maxWidth: MediaQuery.of(context).size.width,
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      alignment: Alignment.bottomCenter,
-                      children: [
-                        Positioned.fill(
-                          child: PageView.builder(
-                            controller: controller.pageController,
-                            onPageChanged: (index) {
-                              controller.rxCurrentPage.value = index;
-                            },
-                            itemCount: item.itemImages.length,
-                            itemBuilder: (context, index) {
-                              final imgUrl = item.itemImages[index];
-                              return Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 8.w),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(20.r),
-                                  child: Container(
-                                    color: const Color(0xFF1C1D20),
-                                    child: imgUrl.startsWith('http')
-                                        ? Image.network(
-                                            imgUrl,
-                                            fit: BoxFit.cover,
-                                            loadingBuilder:
-                                                (
-                                                  context,
-                                                  child,
-                                                  loadingProgress,
-                                                ) {
-                                                  if (loadingProgress == null) {
-                                                    return child;
-                                                  }
-                                                  return const Center(
-                                                    child: CircularProgressIndicator(
-                                                      valueColor:
-                                                          AlwaysStoppedAnimation<
-                                                            Color
-                                                          >(Color(0xFFE2B744)),
+          controller: scrollController,
+          physics: const BouncingScrollPhysics(),
+          padding: EdgeInsets.symmetric(horizontal: 16.h),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(
+                height: 300.h,
+                child: OverflowBox(
+                  minWidth: MediaQuery.of(context).size.width,
+                  maxWidth: MediaQuery.of(context).size.width,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      Positioned.fill(
+                        child: PageView.builder(
+                          controller: controller.pageController,
+                          onPageChanged: (index) {
+                            controller.rxCurrentPage.value = index;
+                          },
+                          itemCount: item.itemImages.length,
+                          itemBuilder: (context, index) {
+                            final imgUrl = item.itemImages[index];
+                            return Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 8.w),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20.r),
+                                child: Container(
+                                  color: const Color(0xFF1C1D20),
+                                  child: imgUrl.startsWith('http')
+                                      ? Image.network(
+                                          imgUrl,
+                                          fit: BoxFit.cover,
+                                          loadingBuilder:
+                                              (
+                                                context,
+                                                child,
+                                                loadingProgress,
+                                              ) {
+                                                if (loadingProgress == null) {
+                                                  return child;
+                                                }
+                                                return const Center(
+                                                  child: CircularProgressIndicator(
+                                                    valueColor:
+                                                        AlwaysStoppedAnimation<
+                                                          Color
+                                                        >(Color(0xFFE2B744)),
+                                                  ),
+                                                );
+                                              },
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  const Center(
+                                                    child: Icon(
+                                                      Icons.broken_image,
+                                                      color: Colors.white30,
                                                     ),
-                                                  );
-                                                },
-                                            errorBuilder:
-                                                (context, error, stackTrace) =>
-                                                    const Center(
-                                                      child: Icon(
-                                                        Icons.broken_image,
-                                                        color: Colors.white30,
-                                                      ),
+                                                  ),
+                                        )
+                                      : Image.file(
+                                          File(imgUrl),
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  const Center(
+                                                    child: Icon(
+                                                      Icons.broken_image,
+                                                      color: Colors.white30,
                                                     ),
-                                          )
-                                        : Image.file(
-                                            File(imgUrl),
-                                            fit: BoxFit.cover,
-                                            errorBuilder:
-                                                (context, error, stackTrace) =>
-                                                    const Center(
-                                                      child: Icon(
-                                                        Icons.broken_image,
-                                                        color: Colors.white30,
-                                                      ),
-                                                    ),
-                                          ),
-                                  ),
+                                                  ),
+                                        ),
                                 ),
-                              );
-                            },
-                          ),
+                              ),
+                            );
+                          },
                         ),
-                        Positioned(
-                          bottom: -9.h,
-                          child: CustomPageIndicator(
-                            count: item.itemImages.length,
-                            currentPage: controller.rxCurrentPage.value,
-                            isSmall: false,
-                            showBorder: false,
-                            backgroundColor: const Color(0xFF0F1012),
-                            activeColor: const Color(0xFFFFAF2C),
-                            inactiveColor: const Color(0xFF7E7E7E),
-                          ),
+                      ),
+                      Positioned(
+                        bottom: -9.h,
+                        child: CustomPageIndicator(
+                          count: item.itemImages.length,
+                          currentPage: controller.rxCurrentPage.value,
+                          isSmall: false,
+                          showBorder: false,
+                          backgroundColor: const Color(0xFF0F1012),
+                          activeColor: const Color(0xFFFFAF2C),
+                          inactiveColor: const Color(0xFF7E7E7E),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-                SizedBox(height: 30.h),
+              ),
+              SizedBox(height: 30.h),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "ITEM DETAILS",
-                      style: GoogleFonts.dmSans(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white38,
-                        letterSpacing: 1.0,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 12.h),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildTitleEditRow(),
-                    _buildBrandEditRow(),
-                    _buildDescriptionEditRow(),
-                    _buildPriceEditRow(),
-                    _buildConditionEditRow(context),
-                    _buildProofOfPurchaseEditRow(),
-                    _buildOriginalPackagingRow(),
-                  ],
-                ),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    SizedBox(width: 4.w),
-                    Icon(
-                      Icons.info_outline,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "ITEM DETAILS",
+                    style: GoogleFonts.dmSans(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w700,
                       color: Colors.white38,
-                      size: 14.sp,
+                      letterSpacing: 1.0,
                     ),
-                    SizedBox(width: 6.w),
-                    Text(
-                      "Final verification happens after pickup.",
+                  ),
+                ],
+              ),
+              SizedBox(height: 12.h),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildTitleEditRow(),
+                  _buildBrandEditRow(),
+                  _buildDescriptionEditRow(),
+                  _buildPriceEditRow(),
+                  _buildConditionEditRow(context),
+                  _buildProofOfPurchaseEditRow(),
+                  _buildOriginalPackagingRow(),
+                ],
+              ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(width: 4.w),
+                  Icon(Icons.info_outline, color: Colors.white38, size: 14.sp),
+                  SizedBox(width: 6.w),
+                  Text(
+                    "Final verification happens after pickup.",
+                    style: GoogleFonts.dmSans(
+                      fontSize: 12.sp,
+                      color: Colors.white38,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 24.h),
+
+              SizedBox(height: 2.h),
+              Text(
+                "SELLER DETAILS",
+                style: GoogleFonts.dmSans(
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white38,
+                  letterSpacing: 1.0,
+                ),
+              ),
+              SizedBox(height: 12.h),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildSellerInputRow(
+                    "Name",
+                    controller.sellerNameController,
+                    rxValue: controller.rxSellerName,
+                    errorMessage: "Seller name is required",
+                  ),
+                  _buildSellerInputRow(
+                    "Location",
+                    controller.sellerLocationController,
+                    rxValue: controller.rxSellerLocation,
+                    errorMessage: "Seller location is required",
+                  ),
+                  _buildSellerInputRow(
+                    "Country",
+                    controller.sellerCountryController,
+                    rxValue: controller.rxSellerCountry,
+                    errorMessage: "Seller country is required",
+                  ),
+                  _buildSellerInputRow(
+                    "Phone number",
+                    controller.sellerPhoneController,
+                    rxValue: controller.rxSellerPhone,
+                    errorMessage: "Valid seller phone number is required",
+                    isPhone: true,
+                  ),
+                ],
+              ),
+              SizedBox(height: 24.h),
+              Text(
+                "YOUR EARNINGS",
+                style: GoogleFonts.dmSans(
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white38,
+                  letterSpacing: 1.0,
+                ),
+              ),
+              SizedBox(height: 12.h),
+              _buildEarningsCard(item.price),
+              SizedBox(height: 24.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "PAYMENT METHOD",
+                    style: GoogleFonts.dmSans(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white38,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                  Obx(() {
+                    if (controller.profileController.rxSavedCards.isNotEmpty) {
+                      return GestureDetector(
+                        onTap: () => _showPaymentMethodsBottomSheet(context),
+                        child: Text(
+                          "Change method",
+                          style: GoogleFonts.dmSans(
+                            fontSize: 14.sp,
+                            color: const Color(0xFFFFAF2C),
+                            fontWeight: FontWeight.w600,
+                            decoration: TextDecoration.underline,
+                            decorationColor: const Color(0xFFFFAF2C),
+                            decorationThickness: 1.5,
+                          ),
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  }),
+                ],
+              ),
+              SizedBox(height: 12.h),
+              _buildPaymentMethodCard(),
+              SizedBox(height: 24.h),
+              _buildPostItemButton(context, item),
+              SizedBox(height: 16.h),
+              GestureDetector(
+                onTap: () => Get.toNamed(AppRoutes.termsAndPolicies),
+                child: Center(
+                  child: Text.rich(
+                    TextSpan(
+                      text: "By posting, you agree to Closeté ",
                       style: GoogleFonts.dmSans(
                         fontSize: 12.sp,
                         color: Colors.white38,
                         fontWeight: FontWeight.w500,
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 24.h),
-
-                SizedBox(height: 2.h),
-                Text(
-                  "SELLER DETAILS",
-                  style: GoogleFonts.dmSans(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white38,
-                    letterSpacing: 1.0,
-                  ),
-                ),
-                SizedBox(height: 12.h),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildSellerInputRow(
-                      "Name",
-                      controller.sellerNameController,
-                      rxValue: controller.rxSellerName,
-                      errorMessage: "Seller name is required",
-                    ),
-                    _buildSellerInputRow(
-                      "Location",
-                      controller.sellerLocationController,
-                      rxValue: controller.rxSellerLocation,
-                      errorMessage: "Seller location is required",
-                    ),
-                    _buildSellerInputRow(
-                      "Country",
-                      controller.sellerCountryController,
-                      rxValue: controller.rxSellerCountry,
-                      errorMessage: "Seller country is required",
-                    ),
-                    _buildSellerInputRow(
-                      "Phone number",
-                      controller.sellerPhoneController,
-                      rxValue: controller.rxSellerPhone,
-                      errorMessage: "Valid seller phone number is required",
-                      isPhone: true,
-                    ),
-                  ],
-                ),
-                SizedBox(height: 24.h),
-                Text(
-                  "YOUR EARNINGS",
-                  style: GoogleFonts.dmSans(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white38,
-                    letterSpacing: 1.0,
-                  ),
-                ),
-                SizedBox(height: 12.h),
-                _buildEarningsCard(item.price),
-                SizedBox(height: 24.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "PAYMENT METHOD",
-                      style: GoogleFonts.dmSans(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white38,
-                        letterSpacing: 1.0,
-                      ),
-                    ),
-                    Obx(() {
-                      if (controller.rxHasPaymentMethod.value) {
-                        return GestureDetector(
-                          onTap: () =>
-                              _showPaymentMethodsBottomSheet(context),
-                          child: Text(
-                            "Change method",
-                            style: GoogleFonts.dmSans(
-                              fontSize: 14.sp,
-                              color: const Color(0xFFFFAF2C),
-                              fontWeight: FontWeight.w600,
-                              decoration: TextDecoration.underline,
-                              decorationColor: const Color(0xFFFFAF2C),
-                              decorationThickness: 1.5,
-                            ),
-                          ),
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    }),
-                  ],
-                ),
-                SizedBox(height: 12.h),
-                _buildPaymentMethodCard(),
-                SizedBox(height: 24.h),
-                _buildPostItemButton(context, item),
-                SizedBox(height: 16.h),
-                GestureDetector(
-                  onTap: () => Get.toNamed(AppRoutes.termsAndPolicies),
-                  child: Center(
-                    child: Text.rich(
-                      TextSpan(
-                        text: "By posting, you agree to Closeté ",
-                        style: GoogleFonts.dmSans(
-                          fontSize: 12.sp,
-                          color: Colors.white38,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        children: [
-                          const TextSpan(
-                            text: "Terms & Policies",
-                            style: TextStyle(
-                              decoration: TextDecoration.underline,
+                      children: [
+                        const TextSpan(
+                          text: "Terms & Policies",
+                          style: TextStyle(
+                            decoration: TextDecoration.underline,
                             decorationColor: Colors.white38,
-                            ),
                           ),
-                        ],
-                      ),
-                      textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-                SizedBox(
-                  height:
-                      24.h +
-                      (MediaQuery.of(context).padding.bottom > 0
-                          ? MediaQuery.of(context).padding.bottom
-                          : 20.h),
-                ),
-              ],
-            ),
+              ),
+              SizedBox(
+                height:
+                    24.h +
+                    (MediaQuery.of(context).padding.bottom > 0
+                        ? MediaQuery.of(context).padding.bottom
+                        : 20.h),
+              ),
+            ],
           ),
+        ),
       );
     });
   }
 
   Widget _buildTitleEditRow() {
     return Obx(() {
-      final isInvalid = controller.rxFormSubmitted.value &&
+      final isInvalid =
+          controller.rxFormSubmitted.value &&
           controller.rxTitle.value.trim().isEmpty;
 
       return Column(
@@ -485,7 +482,9 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
 
   Widget _buildEarningsCard(double price) {
     return Obx(() {
-      final double? parsedPrice = double.tryParse(controller.rxPrice.value.trim());
+      final double? parsedPrice = double.tryParse(
+        controller.rxPrice.value.trim(),
+      );
       final bool hasPrice = parsedPrice != null && parsedPrice > 0;
 
       final currentPrice = hasPrice ? parsedPrice : 0.0;
@@ -597,7 +596,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
         ),
         onTap: () async {
           final success = await controller.postProductListing();
-          if (success) {
+          if (success && context.mounted) {
             showCustomDippedBottomSheet(
               context: context,
               logo: Image.asset(
@@ -623,7 +622,8 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
 
   Widget _buildBrandEditRow() {
     return Obx(() {
-      final isInvalid = controller.rxFormSubmitted.value &&
+      final isInvalid =
+          controller.rxFormSubmitted.value &&
           controller.rxBrand.value.trim().isEmpty;
 
       return Column(
@@ -703,7 +703,8 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
 
   Widget _buildDescriptionEditRow() {
     return Obx(() {
-      final isInvalid = controller.rxFormSubmitted.value &&
+      final isInvalid =
+          controller.rxFormSubmitted.value &&
           controller.rxDescription.value.trim().isEmpty;
 
       return Column(
@@ -780,9 +781,13 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
   Widget _buildPriceEditRow() {
     return Obx(() {
       final isPriceEmpty = controller.rxPrice.value.trim().isEmpty;
-      final isInvalidAmount = (double.tryParse(controller.rxPrice.value.trim()) ?? 0) <= 0;
-      final isInvalid = controller.rxFormSubmitted.value && (isPriceEmpty || isInvalidAmount);
-      final errorMsg = isPriceEmpty ? "Listing price is required" : "Please enter a valid listing price";
+      final isInvalidAmount =
+          (double.tryParse(controller.rxPrice.value.trim()) ?? 0) <= 0;
+      final isInvalid =
+          controller.rxFormSubmitted.value && (isPriceEmpty || isInvalidAmount);
+      final errorMsg = isPriceEmpty
+          ? "Listing price is required"
+          : "Please enter a valid listing price";
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -891,15 +896,19 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
           ? currentCondition
           : null;
       final description = _getConditionDescription(currentCondition);
-      final isInvalid = controller.rxFormSubmitted.value &&
-          (currentCondition.trim().isEmpty || currentCondition == "Select condition");
+      final isInvalid =
+          controller.rxFormSubmitted.value &&
+          (currentCondition.trim().isEmpty ||
+              currentCondition == "Select condition");
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             height: 52.h,
-            margin: EdgeInsets.only(bottom: (description.isNotEmpty || isInvalid) ? 4.h : 8.h),
+            margin: EdgeInsets.only(
+              bottom: (description.isNotEmpty || isInvalid) ? 4.h : 8.h,
+            ),
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12.r),
@@ -1054,7 +1063,11 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
           ),
           if (description.isNotEmpty) ...[
             Padding(
-              padding: EdgeInsets.only(left: 4.w, right: 4.w, bottom: isInvalid ? 4.h : 12.h),
+              padding: EdgeInsets.only(
+                left: 4.w,
+                right: 4.w,
+                bottom: isInvalid ? 4.h : 12.h,
+              ),
               child: Text(
                 description,
                 style: GoogleFonts.dmSans(
@@ -1384,7 +1397,8 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
   }) {
     return Obx(() {
       final value = rxValue?.value ?? textController.text;
-      final isInvalid = controller.rxFormSubmitted.value &&
+      final isInvalid =
+          controller.rxFormSubmitted.value &&
           (isPhone
               ? (Validators.phone(value, message: errorMessage) != null)
               : value.trim().isEmpty);
@@ -1459,7 +1473,8 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
 
   Widget _buildPaymentMethodCard() {
     return Obx(() {
-      if (!controller.rxHasPaymentMethod.value) {
+      final savedCards = controller.profileController.rxSavedCards;
+      if (savedCards.isEmpty) {
         return Container(
           padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 16.w),
           decoration: BoxDecoration(
@@ -1522,13 +1537,17 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
           ),
         );
       } else {
-        // Render the Visa / added card view
-        final selectedCard =
-            controller.rxCards[controller.rxSelectedCardIndex.value];
-        final type = selectedCard['type'] ?? 'Card';
-        final logo = selectedCard['logo'] ?? 'visa';
-        final cardNumber = selectedCard['cardNumber'] ?? '';
-        final expiry = selectedCard['expiry'] ?? '';
+        final selectedCardId = controller.rxSelectedCardId.value;
+        final selectedCard = savedCards.firstWhere(
+          (c) => c.id == selectedCardId,
+          orElse: () => savedCards.first,
+        );
+        final brand = selectedCard.brand;
+        final isVisa = brand.toLowerCase().contains('visa');
+        final logo = isVisa ? 'visa' : 'mastercard';
+        final cardNumber = '**** **** **** ${selectedCard.last4}';
+        final expiry =
+            'Exp ${selectedCard.expMonth.toString().padLeft(2, '0')}/${(selectedCard.expYear % 100).toString().padLeft(2, '0')}';
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1552,36 +1571,33 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          type,
+                          '$brand Card',
                           style: GoogleFonts.dmSans(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
                           ),
                         ),
-                        if (cardNumber.isNotEmpty) ...[
-                          SizedBox(height: 4.h),
-                          Text(
-                            cardNumber,
-                            style: GoogleFonts.dmSans(
-                              fontSize: 14.sp,
-                              color: Colors.white38,
-                              fontWeight: FontWeight.w400,
-                            ),
+                        SizedBox(height: 4.h),
+                        Text(
+                          cardNumber,
+                          style: GoogleFonts.dmSans(
+                            fontSize: 14.sp,
+                            color: Colors.white38,
+                            fontWeight: FontWeight.w400,
                           ),
-                        ],
+                        ),
                       ],
                     ),
                   ),
-                  if (expiry.isNotEmpty)
-                    Text(
-                      expiry,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 14.sp,
-                        color: Colors.white38,
-                        fontWeight: FontWeight.w400,
-                      ),
+                  Text(
+                    expiry,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14.sp,
+                      color: Colors.white38,
+                      fontWeight: FontWeight.w400,
                     ),
+                  ),
                 ],
               ),
             ),
@@ -1616,14 +1632,14 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
         width: 44.r,
         height: 44.r,
         decoration: BoxDecoration(
-          color: const Color(0xFF161719), // Branded dark background
+          color: const Color(0xFF161719),
           borderRadius: BorderRadius.circular(12.r),
         ),
         alignment: Alignment.center,
         child: Text(
           "VISA",
           style: GoogleFonts.dmSans(
-            color: const Color(0xFF2566AF), // Branded Visa blue
+            color: const Color(0xFF2566AF),
             fontWeight: FontWeight.w900,
             fontStyle: FontStyle.italic,
             fontSize: 14.sp,
@@ -1636,9 +1652,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
         width: 44.r,
         height: 44.r,
         decoration: BoxDecoration(
-          color: const Color(
-            0xFF161719,
-          ), // Mastercard dark container background
+          color: const Color(0xFF161719),
           borderRadius: BorderRadius.circular(12.r),
         ),
         alignment: Alignment.center,
@@ -1649,12 +1663,11 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
         ),
       );
     } else {
-      // General red card logo box
       return Container(
         width: 44.r,
         height: 44.r,
         decoration: BoxDecoration(
-          color: const Color(0xFFDA3D28), // Mastercard red background
+          color: const Color(0xFFDA3D28),
           borderRadius: BorderRadius.circular(12.r),
         ),
         alignment: Alignment.center,
@@ -1692,7 +1705,6 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Header
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -1724,7 +1736,6 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
               ),
               SizedBox(height: 24.h),
 
-              // Box container holding methods
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16.r),
@@ -1736,23 +1747,27 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 ),
                 padding: EdgeInsets.symmetric(vertical: 8.h),
                 child: Obx(() {
+                  final savedCards = controller.profileController.rxSavedCards;
                   return Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      ...List.generate(controller.rxCards.length, (index) {
-                        final card = controller.rxCards[index];
-                        final type = card['type'] ?? '';
-                        final logo = card['logo'] ?? '';
-                        final cardNumber = card['cardNumber'] ?? '';
+                      ...List.generate(savedCards.length, (index) {
+                        final card = savedCards[index];
+                        final brand = card.brand;
+                        final isVisa = brand.toLowerCase().contains('visa');
+                        final logo = isVisa ? 'visa' : 'mastercard';
+                        final cardNumber = '**** **** **** ${card.last4}';
                         final isSelected =
-                            controller.rxSelectedCardIndex.value == index;
+                            controller.rxSelectedCardId.value == card.id ||
+                            (controller.rxSelectedCardId.value.isEmpty &&
+                                index == 0);
 
                         return Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             GestureDetector(
                               onTap: () {
-                                controller.rxSelectedCardIndex.value = index;
+                                controller.rxSelectedCardId.value = card.id;
                                 Navigator.pop(context);
                               },
                               behavior: HitTestBehavior.opaque,
@@ -1771,84 +1786,55 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            type,
+                                            '$brand Card',
                                             style: GoogleFonts.dmSans(
                                               fontSize: 15.sp,
                                               color: Colors.white,
                                               fontWeight: FontWeight.w700,
                                             ),
                                           ),
-                                          if (cardNumber.isNotEmpty &&
-                                              cardNumber != 'Card') ...[
-                                            SizedBox(height: 4.h),
-                                            Text(
-                                              cardNumber,
-                                              style: GoogleFonts.dmSans(
-                                                fontSize: 13.sp,
-                                                color: Colors.white38,
-                                                fontWeight: FontWeight.w400,
-                                              ),
+                                          SizedBox(height: 4.h),
+                                          Text(
+                                            cardNumber,
+                                            style: GoogleFonts.dmSans(
+                                              fontSize: 13.sp,
+                                              color: Colors.white38,
+                                              fontWeight: FontWeight.w400,
                                             ),
-                                          ],
+                                          ),
                                         ],
                                       ),
                                     ),
-                                    // Selection circle / radio indicator
-                                    if (logo == 'card')
-                                      Container(
-                                        width: 20.r,
-                                        height: 20.r,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: isSelected
-                                                ? Colors.white
-                                                : Colors.white.withValues(
-                                                    alpha: 0.15,
-                                                  ),
-                                            width: 1.5.r,
-                                          ),
-                                        ),
-                                        padding: EdgeInsets.all(3.r),
-                                        child: isSelected
-                                            ? Container(
-                                                decoration: const BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color: Colors.white,
+                                    Container(
+                                      width: 20.r,
+                                      height: 20.r,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: isSelected
+                                            ? Colors.white
+                                            : Colors.transparent,
+                                        border: isSelected
+                                            ? null
+                                            : Border.all(
+                                                color: Colors.white.withValues(
+                                                  alpha: 0.15,
                                                 ),
-                                              )
-                                            : null,
-                                      )
-                                    else
-                                      Container(
-                                        width: 20.r,
-                                        height: 20.r,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: isSelected
-                                              ? Colors.white
-                                              : Colors.transparent,
-                                          border: isSelected
-                                              ? null
-                                              : Border.all(
-                                                  color: Colors.white
-                                                      .withValues(alpha: 0.15),
-                                                  width: 1.5.r,
-                                                ),
-                                        ),
-                                        child: isSelected
-                                            ? const Icon(
-                                                Icons.check_rounded,
-                                                color: Colors.black,
-                                                size: 14,
-                                              )
-                                            : null,
+                                                width: 1.5.r,
+                                              ),
                                       ),
+                                      child: isSelected
+                                          ? const Icon(
+                                              Icons.check_rounded,
+                                              color: Colors.black,
+                                              size: 14,
+                                            )
+                                          : null,
+                                    ),
                                   ],
                                 ),
                               ),
                             ),
-                            if (index < controller.rxCards.length - 1)
+                            if (index < savedCards.length - 1)
                               const Divider(
                                 color: Colors.white10,
                                 height: 1,
@@ -1858,12 +1844,13 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                           ],
                         );
                       }),
-                      const Divider(
-                        color: Colors.white10,
-                        height: 1,
-                        indent: 16,
-                        endIndent: 16,
-                      ),
+                      if (savedCards.isNotEmpty)
+                        const Divider(
+                          color: Colors.white10,
+                          height: 1,
+                          indent: 16,
+                          endIndent: 16,
+                        ),
                       GestureDetector(
                         onTap: () {
                           Navigator.pop(context);
@@ -1911,67 +1898,62 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
   void _showAddCardBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (sheetContext) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
-          ),
-          child: CustomAddCardBottomSheet(
-            onAdd:
-                ({
-                  required name,
-                  required cardNumber,
-                  required expiry,
-                  required cvv,
-                }) {
-                  final number = cardNumber;
-                  final hiddenNumber = number.length > 4
-                      ? "**** **** **** ${number.substring(number.length - 4)}"
-                      : "**** **** **** 4526";
-                  final expiryText = expiry.isNotEmpty
-                      ? "Exp $expiry"
-                      : "Exp 08/28";
-                  final isVisa = number.startsWith('4');
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => CustomAddCardBottomSheet(
+        onAdd:
+            ({
+              required String name,
+              required String cardNumber,
+              required String expiry,
+              required String cvv,
+            }) async {
+              Get.dialog(
+                const Center(
+                  child: CircularProgressIndicator(color: Color(0xFFE2B744)),
+                ),
+                barrierDismissible: false,
+              );
 
-                  controller.rxCards.add({
-                    'type': isVisa ? 'Visa Card' : 'Master Card',
-                    'logo': isVisa ? 'visa' : 'mastercard',
-                    'cardNumber': hiddenNumber,
-                    'expiry': expiryText,
-                  });
-                  controller.rxSelectedCardIndex.value =
-                      controller.rxCards.length - 1;
-                  controller.rxHasPaymentMethod.value = true;
+              final result = await PaymentService.to.addCardWithDetails(
+                name: name,
+                cardNumber: cardNumber,
+                expiry: expiry,
+                cvv: cvv,
+              );
 
-                  Navigator.pop(sheetContext); // Close sheet
-                },
-          ),
-        );
-      },
-    );
-  }
+              if (Get.isDialogOpen ?? false) {
+                Get.back();
+              }
 
-  Widget _buildContinueButton(
-    BuildContext context,
-    ScrollController scrollController,
-  ) {
-    return CustomGoldButton(
-      text: "Continue",
-      suffix: Icon(
-        Icons.arrow_forward_rounded,
-        color: Colors.black,
-        size: 18.sp,
+              if (result.success) {
+                if (sheetContext.mounted && Navigator.canPop(sheetContext)) {
+                  Navigator.pop(sheetContext);
+                }
+                Get.snackbar(
+                  'Success',
+                  'Card saved successfully!',
+                  snackPosition: SnackPosition.TOP,
+                  backgroundColor: const Color(0xFF161719),
+                  colorText: Colors.white,
+                  duration: const Duration(seconds: 2),
+                );
+                await controller.profileController.fetchSavedCards();
+                if (controller.profileController.rxSavedCards.isNotEmpty) {
+                  controller.rxSelectedCardId.value =
+                      controller.profileController.rxSavedCards.last.id;
+                }
+              } else if (!result.isCancelled && result.errorMessage != null) {
+                Get.snackbar(
+                  'Card Error',
+                  result.errorMessage!,
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.redAccent,
+                  colorText: Colors.white,
+                );
+              }
+            },
       ),
-      onTap: () {
-        scrollController.animateTo(
-          0.0,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-        controller.rxStep.value = 2;
-      },
     );
   }
 }

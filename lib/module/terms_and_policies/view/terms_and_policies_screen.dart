@@ -109,7 +109,7 @@ class TermsAndPoliciesScreen extends StatelessWidget {
                       "CHANGES TO TERMS",
                       "Closeté may update these Terms at any time. Continued use of the app constitutes acceptance.",
                     ),
-                    
+
                     SizedBox(height: 24.h),
                     const Divider(color: Colors.white10),
                     SizedBox(height: 24.h),

@@ -37,18 +37,26 @@ class ProductModel {
       images: json['images'] != null ? List<String>.from(json['images']) : [],
       proofOfPurchase: json['proofOfPurchase'],
       reservationExpiresAt: json['reservationExpiresAt'] != null
-          ? DateTime.tryParse(json['reservationExpiresAt'])
+          ? DateTime.tryParse(json['reservationExpiresAt'].toString())
           : null,
       name: json['name'],
       brand: json['brand'],
       description: json['description'],
-      price: json['price'] != null ? double.tryParse(json['price'].toString()) : null,
+      price: json['price'] != null
+          ? double.tryParse(json['price'].toString())
+          : null,
       condition: json['condition'],
       status: json['status'],
-      seller: json['seller'] != null ? SellerModel.fromJson(json['seller']) : null,
+      seller: json['seller'] != null
+          ? SellerModel.fromJson(json['seller'])
+          : null,
       originalPackagingAvailable: json['originalPackagingAvailable'],
-      createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt']) : null,
-      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt']) : null,
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'].toString())
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.tryParse(json['updatedAt'].toString())
+          : null,
     );
   }
 
@@ -89,15 +97,22 @@ class SellerModel {
     this.country,
   });
 
-  factory SellerModel.fromJson(Map<String, dynamic> json) {
-    return SellerModel(
-      id: json['id'] ?? json['_id'],
-      name: json['name'],
-      profileImage: json['profileImage'],
-      contact: json['contact'],
-      location: json['location'],
-      country: json['country'],
-    );
+  factory SellerModel.fromJson(dynamic json) {
+    if (json is String) {
+      return SellerModel(id: json);
+    }
+    if (json is Map) {
+      final map = Map<String, dynamic>.from(json);
+      return SellerModel(
+        id: map['id'] ?? map['_id'],
+        name: map['name'],
+        profileImage: map['profileImage'],
+        contact: map['contact'],
+        location: map['location'],
+        country: map['country'],
+      );
+    }
+    return SellerModel();
   }
 
   Map<String, dynamic> toJson() {

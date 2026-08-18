@@ -30,7 +30,8 @@ class CustomDippedBottomSheet extends StatelessWidget {
     // We only calculate the bottom padding when the keyboard is closed.
     // When the keyboard is open, viewInsets.bottom handles the spacing,
     // so we only need a clean minimal bottom padding.
-    final double systemBottomPadding = screenBottomPadding ?? MediaQuery.of(context).padding.bottom;
+    final double systemBottomPadding =
+        screenBottomPadding ?? MediaQuery.of(context).padding.bottom;
     final double bottomPadding = MediaQuery.of(context).viewInsets.bottom > 0
         ? 16.h
         : (systemBottomPadding > 0 ? systemBottomPadding : 20.h) + 24.h;

@@ -264,10 +264,7 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
 
               // Stepper Timeline Tracker (Matching Order Confirmation UI)
               Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 16.w,
-                  vertical: 16.h,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
                 decoration: BoxDecoration(
                   color: const Color(0xFF161719),
                   borderRadius: BorderRadius.circular(16.r),

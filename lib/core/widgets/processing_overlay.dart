@@ -3,14 +3,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ProcessingOverlay extends StatefulWidget {
-  final VoidCallback onComplete;
-  const ProcessingOverlay({super.key, required this.onComplete});
+  final Future<void> Function()? asyncTask;
+  final VoidCallback? onComplete;
+
+  const ProcessingOverlay({super.key, this.asyncTask, this.onComplete});
 
   @override
   State<ProcessingOverlay> createState() => _ProcessingOverlayState();
 }
 
-class _ProcessingOverlayState extends State<ProcessingOverlay> with SingleTickerProviderStateMixin {
+class _ProcessingOverlayState extends State<ProcessingOverlay>
+    with SingleTickerProviderStateMixin {
   late AnimationController _rotationController;
 
   @override
@@ -21,12 +24,27 @@ class _ProcessingOverlayState extends State<ProcessingOverlay> with SingleTicker
       duration: const Duration(seconds: 1),
     )..repeat();
 
-    // End after 2 seconds
-    Future.delayed(const Duration(milliseconds: 2000), () {
-      if (mounted) {
-        widget.onComplete();
+    _runTask();
+  }
+
+  Future<void> _runTask() async {
+    if (widget.asyncTask != null) {
+      final startTime = DateTime.now();
+      await widget.asyncTask!();
+      final elapsed = DateTime.now().difference(startTime).inMilliseconds;
+      if (elapsed < 1200) {
+        await Future.delayed(Duration(milliseconds: 1200 - elapsed));
       }
-    });
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    } else if (widget.onComplete != null) {
+      await Future.delayed(const Duration(milliseconds: 1500));
+      if (mounted) {
+        Navigator.of(context).pop();
+        widget.onComplete!();
+      }
+    }
   }
 
   @override
@@ -47,9 +65,7 @@ class _ProcessingOverlayState extends State<ProcessingOverlay> with SingleTicker
             child: SizedBox(
               width: 80.r,
               height: 80.r,
-              child: CustomPaint(
-                painter: _RotatingLoaderPainter(),
-              ),
+              child: CustomPaint(painter: _RotatingLoaderPainter()),
             ),
           ),
           SizedBox(height: 24.h),
@@ -111,19 +127,21 @@ class _RotatingLoaderPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-// Global static helper to show processing overlay
-void showProcessingOverlay(BuildContext context, VoidCallback onComplete) {
-  showGeneralDialog(
+// Global static helper to show processing overlay with async task execution
+Future<void> showProcessingOverlay(
+  BuildContext context,
+  VoidCallback onComplete, {
+  Future<void> Function()? asyncTask,
+}) async {
+  await showGeneralDialog(
     context: context,
     barrierDismissible: false,
     barrierColor: Colors.black.withValues(alpha: 0.75),
     transitionDuration: const Duration(milliseconds: 300),
-    pageBuilder: (context, anim1, anim2) {
+    pageBuilder: (dialogContext, anim1, anim2) {
       return ProcessingOverlay(
-        onComplete: () {
-          Navigator.pop(context); // Pop overlay dialog
-          onComplete();
-        },
+        asyncTask: asyncTask,
+        onComplete: asyncTask == null ? onComplete : null,
       );
     },
   );

@@ -4,6 +4,8 @@ import 'package:cpk1989/module/my_purchase_ditails/controller/my_purchase_ditail
 class MyPurchaseDitailsBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<MyPurchaseDitailsController>(() => MyPurchaseDitailsController());
+    Get.lazyPut<MyPurchaseDitailsController>(
+      () => MyPurchaseDitailsController(),
+    );
   }
 }

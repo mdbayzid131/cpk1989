@@ -438,9 +438,7 @@ class SellController extends GetxController {
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       imageUrl: finalImages[0],
       images: finalImages,
-      price: customPrice.value > 0
-          ? customPrice.value
-          : 0.0,
+      price: customPrice.value > 0 ? customPrice.value : 0.0,
       likes: 0,
       isSold: false,
       brand: customBrand.value.isNotEmpty

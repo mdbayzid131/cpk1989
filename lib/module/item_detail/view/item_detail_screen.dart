@@ -214,7 +214,10 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                           ),
                                         ),
                                       ),
-                                      if (item.proofOfPurchase != null && item.proofOfPurchase!.trim().isNotEmpty) ...[
+                                      if (item.proofOfPurchase != null &&
+                                          item.proofOfPurchase!
+                                              .trim()
+                                              .isNotEmpty) ...[
                                         SizedBox(width: 12.w),
                                         _buildProofOfPurchaseButton(),
                                       ],

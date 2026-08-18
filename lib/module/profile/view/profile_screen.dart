@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cpk1989/config/themes/app_theme.dart';
+import 'package:cpk1989/core/services/payment_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,80 +21,85 @@ class ProfileScreen extends GetView<ProfileController> {
     return Scaffold(
       backgroundColor: const Color(0xFF0F1012),
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const ScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(height: 12.h),
+        child: RefreshIndicator(
+          color: const Color(0xFFE2B744),
+          backgroundColor: const Color(0xFF1E2022),
+          onRefresh: () => controller.fetchProfileApiData(),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: 12.h),
 
-              // Screen Header (Left-aligned as shown in mockup)
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 20.w,
-                  right: 0.w,
-                  top: 8.h,
-                  bottom: 8.h,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "My Profile",
-                      style: GoogleFonts.dmSans(
-                        fontSize: 24.sp,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.white,
+                // Screen Header (Left-aligned as shown in mockup)
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 20.w,
+                    right: 0.w,
+                    top: 8.h,
+                    bottom: 8.h,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "My Profile",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 24.sp,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () async {
-                        await Get.find<AuthService>().logout();
-                        Get.offAllNamed(AppRoutes.login);
-                      },
-                      alignment: Alignment.centerRight,
-                      icon: const Icon(
-                        Icons.logout_rounded,
-                        color: Colors.white30,
-                        size: 22,
+                      IconButton(
+                        onPressed: () async {
+                          await Get.find<AuthService>().logout();
+                          Get.offAllNamed(AppRoutes.login);
+                        },
+                        alignment: Alignment.centerRight,
+                        icon: const Icon(
+                          Icons.logout_rounded,
+                          color: Colors.white30,
+                          size: 22,
+                        ),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
                       ),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
 
-              SizedBox(height: 12.h),
+                SizedBox(height: 12.h),
 
-              // Profile Card Details (Horizontal layout matching mockup)
-              _buildProfileCard(context),
+                // Profile Card Details (Horizontal layout matching mockup)
+                _buildProfileCard(context),
 
-              SizedBox(height: 20.h),
+                SizedBox(height: 20.h),
 
-              // Navigation Tabs
-              _buildNavigationTabs(),
+                // Navigation Tabs
+                _buildNavigationTabs(),
 
-              SizedBox(height: 16.h),
+                SizedBox(height: 16.h),
 
-              // Selected Tab Content
-              Obx(() {
-                final tabIndex = controller.rxSelectedIndex.value;
-                switch (tabIndex) {
-                  case 0:
-                    return _buildWardrobeGrid();
-                  case 1:
-                    return _buildPurchasesGrid();
-                  case 2:
-                    return _buildPersonalDetails(context);
-                  default:
-                    return const SizedBox.shrink();
-                }
-              }),
+                // Selected Tab Content
+                Obx(() {
+                  final tabIndex = controller.rxSelectedIndex.value;
+                  switch (tabIndex) {
+                    case 0:
+                      return _buildWardrobeGrid();
+                    case 1:
+                      return _buildPurchasesGrid();
+                    case 2:
+                      return _buildPersonalDetails(context);
+                    default:
+                      return const SizedBox.shrink();
+                  }
+                }),
 
-              // Bottom spacing to avoid overlap with floating bottom navigation bar
-              SizedBox(height: 120.h),
-            ],
+                // Bottom spacing to avoid overlap with floating bottom navigation bar
+                SizedBox(height: 120.h),
+              ],
+            ),
           ),
         ),
       ),
@@ -109,13 +115,21 @@ class ProfileScreen extends GetView<ProfileController> {
           // Circular avatar with edit badge
           Stack(
             children: [
-              CircleAvatar(
-                radius: 46.r,
-                backgroundColor: const Color(0xFF282A2E),
-                backgroundImage: const NetworkImage(
-                  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop',
-                ),
-              ),
+              Obx(() {
+                final img = controller.rxProfileImage.value;
+                return CircleAvatar(
+                  radius: 46.r,
+                  backgroundColor: const Color(0xFF282A2E),
+                  backgroundImage: img.isNotEmpty ? NetworkImage(img) : null,
+                  child: img.isEmpty
+                      ? Icon(
+                          Icons.person_rounded,
+                          size: 40.r,
+                          color: Colors.white70,
+                        )
+                      : null,
+                );
+              }),
               Positioned(
                 bottom: 0,
                 right: 0,
@@ -158,7 +172,9 @@ class ProfileScreen extends GetView<ProfileController> {
                   () => Row(
                     children: [
                       Text(
-                        controller.rxUserName.value,
+                        controller.rxUserName.value.isNotEmpty
+                            ? controller.rxUserName.value
+                            : 'Profile',
                         style: GoogleFonts.dmSans(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w500,
@@ -177,30 +193,55 @@ class ProfileScreen extends GetView<ProfileController> {
 
                 SizedBox(height: 8.h),
 
-                // Translucent Stats Container (Label on TOP, Value on BOTTOM)
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 4.w),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.05),
-                      width: 1.0,
+                // Translucent Stats Container (Dynamic counts from API)
+                Obx(() {
+                  final wardrobeCount = controller.rxWardrobeItems.length;
+                  final purchasesCount = controller.rxPurchaseItems.length;
+                  final closetValue = controller.rxWardrobeItems.fold(
+                    0.0,
+                    (sum, item) => sum + item.price,
+                  );
+                  final closetValueText = closetValue > 0
+                      ? "AED ${closetValue.toStringAsFixed(0)}"
+                      : "AED 0";
+
+                  return Container(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 8.h,
+                      horizontal: 4.w,
                     ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Expanded(child: _buildStatItem("Items Listed", "24")),
-                      _buildStatDivider(),
-                      Expanded(child: _buildStatItem("Purchases", "12")),
-                      _buildStatDivider(),
-                      Expanded(
-                        child: _buildStatItem("Closet Value", "AED 12.2k"),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12.r),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.05),
+                        width: 1.0,
                       ),
-                    ],
-                  ),
-                ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                          child: _buildStatItem(
+                            "Items Listed",
+                            "$wardrobeCount",
+                          ),
+                        ),
+                        _buildStatDivider(),
+                        Expanded(
+                          child: _buildStatItem("Purchases", "$purchasesCount"),
+                        ),
+                        _buildStatDivider(),
+                        Expanded(
+                          child: _buildStatItem(
+                            "Closet Value",
+                            closetValueText,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
               ],
             ),
           ),
@@ -320,6 +361,16 @@ class ProfileScreen extends GetView<ProfileController> {
 
   Widget _buildWardrobeGrid() {
     return Obx(() {
+      if (controller.rxIsLoadingWardrobe.value) {
+        return Container(
+          height: 200.h,
+          alignment: Alignment.center,
+          child: const CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE2B744)),
+          ),
+        );
+      }
+
       final items = controller.rxWardrobeItems;
       if (items.isEmpty) {
         return Container(
@@ -353,6 +404,16 @@ class ProfileScreen extends GetView<ProfileController> {
 
   Widget _buildPurchasesGrid() {
     return Obx(() {
+      if (controller.rxIsLoadingOrders.value) {
+        return Container(
+          height: 200.h,
+          alignment: Alignment.center,
+          child: const CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE2B744)),
+          ),
+        );
+      }
+
       final items = controller.rxPurchaseItems;
       if (items.isEmpty) {
         return Container(
@@ -475,38 +536,54 @@ class ProfileScreen extends GetView<ProfileController> {
             // Right product photo
             ClipRRect(
               borderRadius: BorderRadius.circular(12.r),
-              child: Image.network(
-                item.imageUrl,
-                width: 102.r,
-                height: 102.r,
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
-                    width: 102.r,
-                    height: 102.r,
-                    color: const Color(0xFF1E2022),
-                    child: const Center(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          Color(0xFFE2B744),
+              child:
+                  item.imageUrl.isNotEmpty && item.imageUrl.startsWith('http')
+                  ? Image.network(
+                      item.imageUrl,
+                      width: 102.r,
+                      height: 102.r,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          width: 102.r,
+                          height: 102.r,
+                          color: const Color(0xFF1E2022),
+                          child: const Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Color(0xFFE2B744),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: 102.r,
+                          height: 102.r,
+                          color: const Color(0xFF1E2022),
+                          child: const Center(
+                            child: Icon(
+                              Icons.shopping_bag_outlined,
+                              color: Colors.white30,
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  : Container(
+                      width: 102.r,
+                      height: 102.r,
+                      color: const Color(0xFF1E2022),
+                      child: const Center(
+                        child: Icon(
+                          Icons.shopping_bag_outlined,
+                          color: Colors.white30,
                         ),
                       ),
                     ),
-                  );
-                },
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    width: 80.r,
-                    height: 80.r,
-                    color: const Color(0xFF1E2022),
-                    child: const Center(
-                      child: Icon(Icons.broken_image, color: Colors.white30),
-                    ),
-                  );
-                },
-              ),
             ),
           ],
         ),
@@ -703,12 +780,20 @@ class ProfileScreen extends GetView<ProfileController> {
   }
 
   Widget _buildPersonalDetails(BuildContext context) {
-    final locationController = TextEditingController(
-      text: controller.rxLocation.value,
-    );
-
     return Obx(() {
       final isEditing = controller.rxIsEditing.value;
+      final isLoading = controller.rxIsLoadingProfile.value;
+
+      if (isLoading) {
+        return Container(
+          height: 200.h,
+          alignment: Alignment.center,
+          child: const CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE2B744)),
+          ),
+        );
+      }
+
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.w),
         child: Column(
@@ -765,9 +850,9 @@ class ProfileScreen extends GetView<ProfileController> {
             ),
             SizedBox(height: 12.h),
 
-            // Address Line 1
+            // Location
             _buildInputField(
-              controller: controller.addressController,
+              controller: controller.locationController,
               prefixIcon: 'assets/icons/location.svg',
               hintText: "Enter location here",
               readOnly: !isEditing,
@@ -775,28 +860,12 @@ class ProfileScreen extends GetView<ProfileController> {
             ),
             SizedBox(height: 12.h),
 
-            // Location
+            // Country
             _buildInputField(
-              controller: locationController,
+              controller: controller.countryController,
               prefixIcon: 'assets/icons/location.svg',
-              hintText: "Select country",
-              readOnly: true,
-              suffix: Icon(
-                Icons.keyboard_arrow_down,
-                color: Colors.white54,
-                size: 20.sp,
-              ),
-              onTap: isEditing
-                  ? () {
-                      Get.snackbar(
-                        'Location Selector',
-                        'Location editing coming soon!',
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: const Color(0xFF1E1F22),
-                        colorText: Colors.white,
-                      );
-                    }
-                  : null,
+              hintText: "Enter country here",
+              readOnly: !isEditing,
               isEditing: isEditing,
             ),
             SizedBox(height: 12.h),
@@ -837,7 +906,7 @@ class ProfileScreen extends GetView<ProfileController> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Obx(() {
-          final cards = controller.rxCards;
+          final cards = controller.rxSavedCards;
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -870,7 +939,7 @@ class ProfileScreen extends GetView<ProfileController> {
         }),
         SizedBox(height: 16.h),
         Obx(() {
-          final cards = controller.rxCards;
+          final cards = controller.rxSavedCards;
           if (cards.isEmpty) {
             return Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
@@ -935,11 +1004,11 @@ class ProfileScreen extends GetView<ProfileController> {
               mainAxisSize: MainAxisSize.min,
               children: List.generate(cards.length, (index) {
                 final card = cards[index];
-                final type = card['type'] ?? '';
-                final logo = card['logo'] ?? '';
-                final cardNumber = card['cardNumber'] ?? '';
-                final expiry = card['expiry'] ?? '';
-                final isVerified = card['verified'] == 'true';
+                final type = card.brand.toUpperCase();
+                final logo = card.brand.toLowerCase();
+                final cardNumber = card.maskedNumber;
+                final expiry = card.expiry;
+                final isVerified = true;
 
                 return Container(
                   margin: EdgeInsets.only(bottom: 12.h),
@@ -1002,7 +1071,8 @@ class ProfileScreen extends GetView<ProfileController> {
                               ),
                               SizedBox(height: 8.h),
                               GestureDetector(
-                                onTap: () => controller.rxCards.removeAt(index),
+                                onTap: () =>
+                                    controller.deleteSavedCard(card.id),
                                 child: Icon(
                                   Icons.delete_outline_rounded,
                                   color: Colors.white38,
@@ -1126,30 +1196,54 @@ class ProfileScreen extends GetView<ProfileController> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => CustomAddCardBottomSheet(
+      builder: (sheetContext) => CustomAddCardBottomSheet(
         onAdd:
             ({
               required String name,
               required String cardNumber,
               required String expiry,
               required String cvv,
-            }) {
-              final isVisa = cardNumber.startsWith('4');
-              final formattedExpiry = expiry.isNotEmpty
-                  ? 'Exp $expiry'
-                  : 'Exp 08/28';
-              final hasNoCards = controller.rxCards.isEmpty;
+            }) async {
+              Get.dialog(
+                const Center(
+                  child: CircularProgressIndicator(color: Color(0xFFE2B744)),
+                ),
+                barrierDismissible: false,
+              );
 
-              controller.rxCards.add({
-                'type': isVisa ? 'Visa' : 'Mastercard',
-                'logo': isVisa ? 'visa' : 'mastercard',
-                'cardNumber': cardNumber.length > 4
-                    ? '**** **** **** ${cardNumber.substring(cardNumber.length - 4)}'
-                    : '**** **** **** 4526',
-                'expiry': formattedExpiry,
-                'verified': hasNoCards ? 'true' : 'false',
-              });
-              Navigator.pop(context);
+              final result = await PaymentService.to.addCardWithDetails(
+                name: name,
+                cardNumber: cardNumber,
+                expiry: expiry,
+                cvv: cvv,
+              );
+
+              if (Get.isDialogOpen ?? false) {
+                Get.back();
+              }
+
+              if (result.success) {
+                if (sheetContext.mounted && Navigator.canPop(sheetContext)) {
+                  Navigator.pop(sheetContext);
+                }
+                Get.snackbar(
+                  'Success',
+                  'Card saved successfully!',
+                  snackPosition: SnackPosition.TOP,
+                  backgroundColor: const Color(0xFF161719),
+                  colorText: Colors.white,
+                  duration: const Duration(seconds: 2),
+                );
+                await controller.fetchSavedCards();
+              } else if (!result.isCancelled && result.errorMessage != null) {
+                Get.snackbar(
+                  'Card Error',
+                  result.errorMessage!,
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.redAccent,
+                  colorText: Colors.white,
+                );
+              }
             },
       ),
     );

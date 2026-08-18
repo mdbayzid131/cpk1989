@@ -136,9 +136,7 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
                       _buildStatDivider(),
                       Expanded(child: _buildStatItem("Items Sold", "12")),
                       _buildStatDivider(),
-                      Expanded(
-                        child: _buildStatItem("Closet Value", "12.2k"),
-                      ),
+                      Expanded(child: _buildStatItem("Closet Value", "12.2k")),
                     ],
                   ),
                 ),
@@ -236,7 +234,8 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
           price: formattedPrice,
           size: "Medium",
           wornCount: "Warn Twice",
-          description: "${item.brand} ${item.itemName} in pristine condition. Part of luxury closet sale.",
+          description:
+              "${item.brand} ${item.itemName} in pristine condition. Part of luxury closet sale.",
           isVerified: controller.rxIsVerified.value,
           images: item.itemImages,
         );
@@ -269,10 +268,7 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
                 return Container(
                   color: const Color(0xFF1E2022),
                   child: const Center(
-                    child: Icon(
-                      Icons.broken_image,
-                      color: Colors.white30,
-                    ),
+                    child: Icon(Icons.broken_image, color: Colors.white30),
                   ),
                 );
               },

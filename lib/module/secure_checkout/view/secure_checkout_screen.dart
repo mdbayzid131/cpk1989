@@ -1,5 +1,6 @@
 import 'dart:ui' show ImageFilter;
 import 'package:cpk1989/config/themes/app_theme.dart';
+import 'package:cpk1989/core/services/payment_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,6 +16,7 @@ import 'package:cpk1989/core/widgets/processing_overlay.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 import 'package:cpk1989/core/widgets/custom_add_card_bottom_sheet.dart';
 import 'package:cpk1989/module/home/controller/home_controller.dart';
+import 'package:cpk1989/config/constants/api_constants.dart';
 
 class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
   const SecureCheckoutScreen({super.key});
@@ -610,18 +612,18 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
           width: 1.5,
         ),
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => controller.selectPaymentMethod(id),
-          borderRadius: BorderRadius.circular(16.r),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => controller.selectPaymentMethod(id),
+              borderRadius: BorderRadius.circular(16.r),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+                child: Row(
                   children: [
                     // Logo Box
                     logoWidget,
@@ -662,128 +664,129 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                     ),
                   ],
                 ),
-                if (isCard && isSelected) ...[
-                  SizedBox(height: 12.h),
-                  Divider(
-                    color: Colors.white.withValues(alpha: 0.05),
-                    height: 1.h,
-                  ),
-                  SizedBox(height: 12.h),
-                  if (controller.rxHasAddedCard.value) ...[
-                    Row(
-                      children: [
-                        Builder(
-                          builder: (context) {
-                            final number = controller.rxCardNumber.value;
-                            final isVisa = number.startsWith('4');
-                            if (isVisa) {
-                              return Container(
-                                width: 32.r,
-                                height: 32.r,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF0F1012),
-                                  borderRadius: BorderRadius.circular(8.r),
-                                  border: Border.all(
-                                    color: Colors.white.withValues(alpha: 0.05),
-                                    width: 1.0,
-                                  ),
-                                ),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  "VISA",
-                                  style: GoogleFonts.dmSans(
-                                    color: const Color(0xFF2566AF),
-                                    fontWeight: FontWeight.w900,
-                                    fontStyle: FontStyle.italic,
-                                    fontSize: 10.sp,
-                                    letterSpacing: 0.3,
-                                  ),
-                                ),
-                              );
-                            } else {
-                              return Container(
-                                width: 32.r,
-                                height: 32.r,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF0F1012),
-                                  borderRadius: BorderRadius.circular(8.r),
-                                  border: Border.all(
-                                    color: Colors.white.withValues(alpha: 0.05),
-                                    width: 1.0,
-                                  ),
-                                ),
-                                alignment: Alignment.center,
-                                padding: EdgeInsets.all(6.r),
-                                child: SvgPicture.asset(
-                                  'assets/icons/master_card_colored.svg',
-                                  fit: BoxFit.contain,
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                        SizedBox(width: 12.w),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Card ending in •••• ${controller.rxCardNumber.value.length >= 4 ? controller.rxCardNumber.value.substring(controller.rxCardNumber.value.length - 4) : controller.rxCardNumber.value}",
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 13.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              if (controller.rxCardName.value.isNotEmpty)
-                                Text(
-                                  controller.rxCardName.value,
-                                  style: GoogleFonts.dmSans(
-                                    fontSize: 11.sp,
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.white54,
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () => _showAddCardBottomSheet(context),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 4.w,
-                              vertical: 2.h,
-                            ),
-                            child: Text(
-                              "Change",
-                              style: GoogleFonts.dmSans(
-                                fontSize: 13.sp,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFFFFC226),
-                                decoration: TextDecoration.underline,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+              ),
+            ),
+          ),
+          if (isCard && isSelected) ...[
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12.w),
+              child: Obx(() {
+                final savedCards = controller.profileController.rxSavedCards;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Divider(
+                      color: Colors.white.withValues(alpha: 0.08),
+                      height: 1.h,
                     ),
-                  ] else ...[
-                    // Add New card tap
-                    InkWell(
+                    ...List.generate(savedCards.length, (index) {
+                      final card = savedCards[index];
+                      final brand = card.brand;
+                      final isVisa = brand.toLowerCase().contains('visa');
+                      final last4 = card.last4;
+                      final isCardSelected =
+                          controller.rxSelectedCardId.value == card.id ||
+                          (controller.rxSelectedCardId.value.isEmpty &&
+                              index == 0);
+
+                      return Column(
+                        children: [
+                          GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () {
+                              controller.rxSelectedCardId.value = card.id;
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10.h),
+                              child: Row(
+                                children: [
+                                  _buildCardLogoBox(isVisa),
+                                  SizedBox(width: 12.w),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          isVisa ? "Visa Card" : "Master Card",
+                                          style: GoogleFonts.dmSans(
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        SizedBox(height: 2.h),
+                                        Text(
+                                          "•••• •••• •••• $last4",
+                                          style: GoogleFonts.dmSans(
+                                            fontSize: 12.sp,
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.white54,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 18.r,
+                                    height: 18.r,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: isCardSelected
+                                          ? Colors.white
+                                          : Colors.transparent,
+                                      border: isCardSelected
+                                          ? null
+                                          : Border.all(
+                                              color: Colors.white.withValues(
+                                                alpha: 0.2,
+                                              ),
+                                              width: 1.5.r,
+                                            ),
+                                    ),
+                                    child: isCardSelected
+                                        ? const Icon(
+                                            Icons.check_rounded,
+                                            color: Colors.black,
+                                            size: 13,
+                                          )
+                                        : null,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Divider(
+                            color: Colors.white.withValues(alpha: 0.08),
+                            height: 1.h,
+                          ),
+                        ],
+                      );
+                    }),
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
                       onTap: () => _showAddCardBottomSheet(context),
                       child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 4.h),
+                        padding: EdgeInsets.symmetric(vertical: 10.h),
                         child: Row(
                           children: [
-                            Icon(Icons.add, color: Colors.white70, size: 16.sp),
+                            Text(
+                              "+",
+                              style: GoogleFonts.dmSans(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                              ),
+                            ),
                             SizedBox(width: 6.w),
                             Text(
                               "Add a New card",
                               style: GoogleFonts.dmSans(
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.white70,
+                                color: Colors.white,
                                 decoration: TextDecoration.underline,
+                                decorationColor: Colors.white,
                               ),
                             ),
                           ],
@@ -791,11 +794,11 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                       ),
                     ),
                   ],
-                ],
-              ],
+                );
+              }),
             ),
-          ),
-        ),
+          ],
+        ],
       ),
     );
   }
@@ -855,29 +858,28 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
         color: Colors.black,
         size: 18.sp,
       ),
-      onTap: () {
+      onTap: () async {
+        if (!controller.validateDeliveryDetails()) return;
+
         // If payment method is card and no card added, show the bottom sheet
         if (controller.rxPaymentMethod.value == "card" &&
-            !controller.rxHasAddedCard.value) {
+            controller.profileController.rxSavedCards.isEmpty) {
           _showAddCardBottomSheet(context);
           return;
         }
 
-        // Process the purchase to add the item dynamically
-        controller.processPurchase(() {});
+        ProfileItem? purchasedItem;
+        await showProcessingOverlay(
+          context,
+          () {},
+          asyncTask: () async {
+            purchasedItem = await controller.processPurchase();
+          },
+        );
 
-        // Show processing overlay, then go to success details
-        showProcessingOverlay(context, () {
-          // Convert dynamic FeedItem structure to ProfileItem for routing to PurchaseDetailScreen
-          if (!Get.isRegistered<ProfileController>()) {
-            Get.put(ProfileController());
-          }
-          final profileController = Get.find<ProfileController>();
-          final profileItem = profileController.rxPurchaseItems.first;
-
-          Get.back(); // Pop SecureCheckoutScreen
-          Get.toNamed(AppRoutes.purchaseDetail, arguments: profileItem);
-        });
+        if (purchasedItem != null) {
+          Get.offNamed(AppRoutes.purchaseDetail, arguments: purchasedItem);
+        }
       },
     );
   }
@@ -889,8 +891,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      barrierColor:
-          Colors.transparent, // Handled by our custom BackdropFilter overlay
+      useRootNavigator: true,
       builder: (sheetContext) {
         return Padding(
           padding: EdgeInsets.only(
@@ -899,18 +900,64 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
           child: CustomAddCardBottomSheet(
             onAdd:
                 ({
-                  required name,
-                  required cardNumber,
-                  required expiry,
-                  required cvv,
-                }) {
-                  Navigator.pop(sheetContext); // Close sheet
+                  required String name,
+                  required String cardNumber,
+                  required String expiry,
+                  required String cvv,
+                }) async {
+                  Get.dialog(
+                    const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFFE2B744),
+                      ),
+                    ),
+                    barrierDismissible: false,
+                  );
 
-                  // Save added card info to controller
-                  controller.rxCardName.value = name;
-                  controller.rxCardNumber.value = cardNumber;
-                  controller.rxCardExpiry.value = expiry;
-                  controller.rxHasAddedCard.value = true;
+                  final result = await PaymentService.to.addCardWithDetails(
+                    name: name,
+                    cardNumber: cardNumber,
+                    expiry: expiry,
+                    cvv: cvv,
+                  );
+
+                  if (Get.isDialogOpen ?? false) {
+                    Get.back();
+                  }
+
+                  if (result.success) {
+                    if (sheetContext.mounted &&
+                        Navigator.canPop(sheetContext)) {
+                      Navigator.pop(sheetContext);
+                    }
+                    Get.snackbar(
+                      'Success',
+                      'Card saved successfully!',
+                      snackPosition: SnackPosition.TOP,
+                      backgroundColor: const Color(0xFF161719),
+                      colorText: Colors.white,
+                      duration: const Duration(seconds: 2),
+                    );
+                    try {
+                      await controller.profileController.fetchSavedCards();
+                      if (controller
+                          .profileController
+                          .rxSavedCards
+                          .isNotEmpty) {
+                        controller.rxSelectedCardId.value =
+                            controller.profileController.rxSavedCards.last.id;
+                      }
+                    } catch (_) {}
+                  } else if (!result.isCancelled &&
+                      result.errorMessage != null) {
+                    Get.snackbar(
+                      'Card Error',
+                      result.errorMessage!,
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.redAccent,
+                      colorText: Colors.white,
+                    );
+                  }
                 },
           ),
         );
@@ -943,6 +990,48 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildCardLogoBox(bool isVisa) {
+    if (isVisa) {
+      return Container(
+        width: 38.w,
+        height: 24.h,
+        decoration: BoxDecoration(
+          color: const Color(0xFF0057B8),
+          borderRadius: BorderRadius.circular(4.r),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          "VISA",
+          style: GoogleFonts.dmSans(
+            color: Colors.white,
+            fontWeight: FontWeight.w900,
+            fontStyle: FontStyle.italic,
+            fontSize: 11.sp,
+            letterSpacing: 0.5,
+          ),
+        ),
+      );
+    }
+    return Container(
+      width: 38.w,
+      height: 24.h,
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F1012),
+        borderRadius: BorderRadius.circular(4.r),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.05),
+          width: 1.0,
+        ),
+      ),
+      alignment: Alignment.center,
+      padding: EdgeInsets.all(3.r),
+      child: SvgPicture.asset(
+        'assets/icons/master_card_colored.svg',
+        fit: BoxFit.contain,
       ),
     );
   }
@@ -993,20 +1082,7 @@ class _CheckoutImageCarouselState extends State<CheckoutImageCarousel> {
               },
               itemBuilder: (context, index) {
                 final img = images[index];
-                if (img.startsWith('http') || img.startsWith('https')) {
-                  return Image.network(
-                    img,
-                    width: 102.r,
-                    height: 102.r,
-                    fit: BoxFit.cover,
-                  );
-                }
-                return Image.asset(
-                  img,
-                  width: 102.r,
-                  height: 102.r,
-                  fit: BoxFit.cover,
-                );
+                return _buildImageItem(img);
               },
             ),
           ),
@@ -1026,6 +1102,92 @@ class _CheckoutImageCarouselState extends State<CheckoutImageCarousel> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildImageItem(String imgPath) {
+    final cleanPath = imgPath.trim();
+    if (cleanPath.isEmpty) {
+      return _buildFallbackPlaceholder();
+    }
+
+    String finalUrl = cleanPath;
+    if (!cleanPath.startsWith('http') && !cleanPath.startsWith('assets/')) {
+      try {
+        final origin = Uri.parse(ApiConstants.baseUrl).origin;
+        final path = cleanPath.startsWith('/') ? cleanPath : '/$cleanPath';
+        finalUrl = '$origin$path';
+      } catch (_) {
+        finalUrl = cleanPath;
+      }
+    }
+
+    if (finalUrl.startsWith('http://') || finalUrl.startsWith('https://')) {
+      return Image.network(
+        finalUrl,
+        width: 102.r,
+        height: 102.r,
+        fit: BoxFit.cover,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Container(
+            width: 102.r,
+            height: 102.r,
+            color: const Color(0xFF1E1F23),
+            child: Center(
+              child: SizedBox(
+                width: 18.r,
+                height: 18.r,
+                child: const CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Color(0xFFE2B744),
+                ),
+              ),
+            ),
+          );
+        },
+        errorBuilder: (context, error, stackTrace) =>
+            _buildFallbackPlaceholder(),
+      );
+    }
+
+    if (finalUrl.startsWith('assets/')) {
+      return Image.asset(
+        finalUrl,
+        width: 102.r,
+        height: 102.r,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) =>
+            _buildFallbackPlaceholder(),
+      );
+    }
+
+    return _buildFallbackPlaceholder();
+  }
+
+  Widget _buildFallbackPlaceholder() {
+    return Container(
+      width: 102.r,
+      height: 102.r,
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1F23),
+        borderRadius: BorderRadius.circular(8.r),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.shopping_bag_outlined, color: Colors.white38, size: 28.r),
+          SizedBox(height: 4.h),
+          Text(
+            'Luxury Item',
+            style: GoogleFonts.dmSans(
+              fontSize: 10.sp,
+              color: Colors.white38,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

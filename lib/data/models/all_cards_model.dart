@@ -21,6 +21,7 @@ class AllCardsResponse {
     );
   }
 }
+
 class PreferenceCard {
   final String id;
   final String createdBy;

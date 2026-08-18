@@ -120,11 +120,12 @@ class HomeScreen extends GetView<HomeController> {
                                         width: 40.r,
                                         height: 40.r,
                                         fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) =>
-                                            const Icon(
-                                              Icons.person,
-                                              color: Colors.white70,
-                                            ),
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                const Icon(
+                                                  Icons.person,
+                                                  color: Colors.white70,
+                                                ),
                                       ),
                                     ),
                                   ),

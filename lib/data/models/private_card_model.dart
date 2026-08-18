@@ -68,11 +68,11 @@ class PrivateCard {
     required this.totalDownloads,
     required this.createdAt,
     required this.updatedAt,
-    required this.isFavorite,   
+    required this.isFavorite,
   });
 
   factory PrivateCard.fromJson(Map<String, dynamic> json) {
-    return PrivateCard( 
+    return PrivateCard(
       id: json['_id'] ?? '',
       cardTitle: json['cardTitle'] ?? '',
       surgeonName: json['surgeonName'] ?? '',

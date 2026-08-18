@@ -18,7 +18,9 @@ class CustomPageIndicator extends StatelessWidget {
     required this.count,
     required this.currentPage,
     this.activeColor = const Color(0xFFFFAF2C),
-    this.inactiveColor = const Color(0xFF7E7E7E), // Solid grey matching figma screenshot
+    this.inactiveColor = const Color(
+      0xFF7E7E7E,
+    ), // Solid grey matching figma screenshot
     this.backgroundColor,
     this.isSmall = false,
     this.showBorder = true,

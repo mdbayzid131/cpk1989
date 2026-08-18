@@ -110,7 +110,7 @@ class LoginScreen extends GetView<AuthController> {
                                     ? Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                           _buildTextField(
+                                          _buildTextField(
                                             controller:
                                                 controller.firstNameController,
                                             hintText: "First name",

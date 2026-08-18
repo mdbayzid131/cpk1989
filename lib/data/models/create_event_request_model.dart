@@ -51,7 +51,7 @@ class PersonnelRequestModel {
   Map<String, dynamic> toJson() {
     return {
       "leadSurgeon": leadSurgeon,
-      "surgicalTeamMembers": surgicalTeamMembers
+      "surgicalTeamMembers": surgicalTeamMembers,
     };
   }
 }

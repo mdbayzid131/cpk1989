@@ -9,7 +9,7 @@ import 'package:cpk1989/core/utils/helpers.dart';
 
 class AuthController extends GetxController {
   final AuthService authService = Get.find<AuthService>();
-  
+
   final rxIsLoading = false.obs;
   final rxIsSignUp = true.obs;
   final formKey = GlobalKey<FormState>();
@@ -57,7 +57,7 @@ class AuthController extends GetxController {
   Future<bool> verifyOtp() async {
     final email = emailController.text.trim();
     final otpCode = otpControllers.map((c) => c.text).join();
-    
+
     if (otpCode.length < 6) {
       Helpers.showError("Please enter all 6 digits of the verification code.");
       return false;
@@ -67,7 +67,7 @@ class AuthController extends GetxController {
     try {
       final response = await authService.verifyOtp(email: email, otp: otpCode);
       rxIsOtpLoading.value = false;
-      
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
@@ -88,7 +88,7 @@ class AuthController extends GetxController {
       Helpers.showError("Email address is missing");
       return false;
     }
-    
+
     try {
       final response = await authService.resendOtp(email);
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -138,10 +138,12 @@ class AuthController extends GetxController {
         lastName: lastName.isNotEmpty ? lastName : null,
       );
       rxIsLoading.value = false;
-      
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (rxIsSignUp.value) {
-          Helpers.showSuccess("Registration initiated. OTP sent to your email.");
+          Helpers.showSuccess(
+            "Registration initiated. OTP sent to your email.",
+          );
         } else {
           Helpers.showSuccess("OTP sent to your email.");
         }

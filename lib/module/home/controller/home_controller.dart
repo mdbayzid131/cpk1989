@@ -10,6 +10,7 @@ class FeedItem {
   final String userName;
   final String condition;
   final String itemName;
+  final String brand;
   final String price;
   final bool isVerified;
   final String size;
@@ -26,6 +27,7 @@ class FeedItem {
     required this.userName,
     required this.condition,
     required this.itemName,
+    this.brand = '',
     required this.price,
     required this.size,
     required this.wornCount,
@@ -37,15 +39,12 @@ class FeedItem {
     this.proofOfPurchase,
   });
 
-  List<String> get itemImages =>
-      images ?? [imagePath, imagePath, imagePath];
+  List<String> get itemImages => images ?? [imagePath, imagePath, imagePath];
 
   factory FeedItem.fromProductModel(ProductModel product) {
     final double rawPrice = product.price ?? 0.0;
-    final formattedPrice = "AED ${rawPrice.toStringAsFixed(0).replaceAllMapped(
-          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-          (Match m) => '${m[1]},',
-        )}";
+    final formattedPrice =
+        "AED ${rawPrice.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
 
     return FeedItem(
       id: product.id ?? '',
@@ -55,9 +54,12 @@ class FeedItem {
       userName: product.seller?.name ?? 'Unknown',
       condition: product.condition ?? 'Unknown',
       itemName: product.name ?? 'Luxury Item',
+      brand: product.brand ?? '',
       price: formattedPrice,
       size: 'Standard',
-      wornCount: product.originalPackagingAvailable == true ? 'With Packaging' : 'Item Only',
+      wornCount: product.originalPackagingAvailable == true
+          ? 'With Packaging'
+          : 'Item Only',
       description: product.description ?? '',
       isVerified: true,
       images: product.images,
@@ -146,25 +148,16 @@ class HomeController extends GetxController {
         if (data != null) {
           final product = ProductModel.fromJson(data);
           final detailedItem = FeedItem.fromProductModel(product);
-          Get.toNamed(
-            AppRoutes.itemDetail,
-            arguments: detailedItem,
-          );
+          Get.toNamed(AppRoutes.itemDetail, arguments: detailedItem);
           return;
         }
       }
       // Fallback
-      Get.toNamed(
-        AppRoutes.itemDetail,
-        arguments: item,
-      );
+      Get.toNamed(AppRoutes.itemDetail, arguments: item);
     } catch (e) {
       Helpers.hideLoadingDialog();
       // Fallback
-      Get.toNamed(
-        AppRoutes.itemDetail,
-        arguments: item,
-      );
+      Get.toNamed(AppRoutes.itemDetail, arguments: item);
     }
   }
 }

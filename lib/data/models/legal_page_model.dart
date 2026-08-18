@@ -2,16 +2,10 @@ class LegalPage {
   final String slug;
   final String title;
 
-  LegalPage({
-    required this.slug,
-    required this.title,
-  });
+  LegalPage({required this.slug, required this.title});
 
   factory LegalPage.fromJson(Map<String, dynamic> json) {
-    return LegalPage(
-      slug: json['slug'] ?? '',
-      title: json['title'] ?? '',
-    );
+    return LegalPage(slug: json['slug'] ?? '', title: json['title'] ?? '');
   }
 }
 

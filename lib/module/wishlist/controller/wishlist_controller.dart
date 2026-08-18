@@ -52,42 +52,48 @@ class WishlistController extends GetxController {
     rxItems.assignAll([
       WishlistItem(
         id: 'w1',
-        imageUrl: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=400&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=400&auto=format&fit=crop',
         price: 3200,
         brand: "CHANEL",
         itemName: "Classic Flap Bag",
       ),
       WishlistItem(
         id: 'w2',
-        imageUrl: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=400&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=400&auto=format&fit=crop',
         price: 3200,
         brand: "CHANEL",
         itemName: "Classic Flap Bag",
       ),
       WishlistItem(
         id: 'w3',
-        imageUrl: 'https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?q=80&w=400&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?q=80&w=400&auto=format&fit=crop',
         price: 3200,
         brand: "CHANEL",
         itemName: "Classic Flap Bag",
       ),
       WishlistItem(
         id: 'w4',
-        imageUrl: 'https://images.unsplash.com/photo-1603808033192-082d6919d3e1?q=80&w=400&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1603808033192-082d6919d3e1?q=80&w=400&auto=format&fit=crop',
         price: 3200,
         brand: "CHANEL",
         itemName: "Classic Flap Bag",
       ),
       WishlistItem(
         id: 'w5',
-        imageUrl: 'https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?q=80&w=400&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?q=80&w=400&auto=format&fit=crop',
         price: 3200,
         brand: "CHANEL",
         itemName: "Classic Flap Bag",
       ),
       WishlistItem(
         id: 'w6',
-        imageUrl: 'https://images.unsplash.com/photo-1603808033192-082d6919d3e1?q=80&w=400&auto=format&fit=crop',
+        imageUrl:
+            'https://images.unsplash.com/photo-1603808033192-082d6919d3e1?q=80&w=400&auto=format&fit=crop',
         price: 3200,
         brand: "CHANEL",
         itemName: "Classic Flap Bag",
