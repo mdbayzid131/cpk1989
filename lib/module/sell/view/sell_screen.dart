@@ -9,6 +9,7 @@ import 'package:cpk1989/config/themes/app_theme.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/core/widgets/custom_gold_button.dart';
 import 'package:cpk1989/module/sell/controller/sell_controller.dart';
+import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 
 class SellScreen extends GetView<SellController> {
   const SellScreen({super.key});
@@ -24,23 +25,11 @@ class SellScreen extends GetView<SellController> {
           Obx(() {
             final activePath =
                 controller.rxCapturedPaths[controller.activeSlotIndex.value];
-            final selectedProduct =
-                controller.galleryProducts[controller.selectedItemIndex.value];
 
-            if (activePath != null) {
-              // Review static image
-              if (activePath.startsWith("MOCK_CAPTURE_")) {
-                return Positioned.fill(
-                  child: Image.network(
-                    selectedProduct["imageUrl"],
-                    fit: BoxFit.cover,
-                  ),
-                );
-              } else {
-                return Positioned.fill(
-                  child: Image.file(File(activePath), fit: BoxFit.cover),
-                );
-              }
+            if (activePath != null && !activePath.startsWith("MOCK_CAPTURE_")) {
+              return Positioned.fill(
+                child: Image.file(File(activePath), fit: BoxFit.cover),
+              );
             } else {
               // Live camera preview (only if active)
               if (controller.isCameraActive.value) {
@@ -71,13 +60,7 @@ class SellScreen extends GetView<SellController> {
                   return Positioned.fill(
                     child: Container(
                       color: const Color(0xFF0F1012),
-                      child: const Center(
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Color(0xFFFFAF2C),
-                          ),
-                        ),
-                      ),
+                      child: Center(child: CustomGoldLoader(size: 40.r)),
                     ),
                   );
                 }
@@ -258,8 +241,6 @@ class SellScreen extends GetView<SellController> {
               final capturedCount = capturedPaths
                   .where((p) => p != null)
                   .length;
-              final selectedProduct = controller
-                  .galleryProducts[controller.selectedItemIndex.value];
 
               return Column(
                 mainAxisSize: MainAxisSize.min,
@@ -345,18 +326,13 @@ class SellScreen extends GetView<SellController> {
                                   width: isActive ? 1.5.w : 1.w,
                                 ),
                               ),
-                              child: path != null
+                              child: path != null && !path.startsWith("MOCK_CAPTURE_")
                                   ? ClipRRect(
                                       borderRadius: BorderRadius.circular(10.r),
-                                      child: path.startsWith("MOCK_CAPTURE_")
-                                          ? Image.network(
-                                              selectedProduct["imageUrl"],
-                                              fit: BoxFit.cover,
-                                            )
-                                          : Image.file(
-                                              File(path),
-                                              fit: BoxFit.cover,
-                                            ),
+                                      child: Image.file(
+                                        File(path),
+                                        fit: BoxFit.cover,
+                                      ),
                                     )
                                   : const Center(
                                       child: Icon(
@@ -467,15 +443,12 @@ class SellScreen extends GetView<SellController> {
                                   ),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(10.r),
-                                    child: path.startsWith("MOCK_CAPTURE_")
-                                        ? Image.network(
-                                            selectedProduct["imageUrl"],
-                                            fit: BoxFit.cover,
-                                          )
-                                        : Image.file(
+                                    child: !path.startsWith("MOCK_CAPTURE_")
+                                        ? Image.file(
                                             File(path),
                                             fit: BoxFit.cover,
-                                          ),
+                                          )
+                                        : const SizedBox.shrink(),
                                   ),
                                 ),
                               ),

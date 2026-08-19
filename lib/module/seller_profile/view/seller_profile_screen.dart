@@ -8,6 +8,7 @@ import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:cpk1989/module/home/controller/home_controller.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
+import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 
 class SellerProfileScreen extends GetView<SellerProfileController> {
   const SellerProfileScreen({super.key});
@@ -254,13 +255,8 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
                 if (loadingProgress == null) return child;
                 return Container(
                   color: const Color(0xFF1E2022),
-                  child: const Center(
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Color(0xFFE2B744),
-                      ),
-                    ),
+                  child: Center(
+                    child: CustomGoldLoader(size: 24.r, strokeWidth: 2.5.r),
                   ),
                 );
               },

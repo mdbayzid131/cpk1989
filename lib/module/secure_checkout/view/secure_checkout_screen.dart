@@ -17,6 +17,8 @@ import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 import 'package:cpk1989/core/widgets/custom_add_card_bottom_sheet.dart';
 import 'package:cpk1989/module/home/controller/home_controller.dart';
 import 'package:cpk1989/config/constants/api_constants.dart';
+import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
+import 'package:cpk1989/core/utils/helpers.dart';
 
 class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
   const SecureCheckoutScreen({super.key});
@@ -905,14 +907,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                   required String expiry,
                   required String cvv,
                 }) async {
-                  Get.dialog(
-                    const Center(
-                      child: CircularProgressIndicator(
-                        color: Color(0xFFE2B744),
-                      ),
-                    ),
-                    barrierDismissible: false,
-                  );
+                  Helpers.showLoadingDialog();
 
                   final result = await PaymentService.to.addCardWithDetails(
                     name: name,
@@ -1135,14 +1130,7 @@ class _CheckoutImageCarouselState extends State<CheckoutImageCarousel> {
             height: 102.r,
             color: const Color(0xFF1E1F23),
             child: Center(
-              child: SizedBox(
-                width: 18.r,
-                height: 18.r,
-                child: const CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Color(0xFFE2B744),
-                ),
-              ),
+              child: CustomGoldLoader(size: 20.r, strokeWidth: 2.r),
             ),
           );
         },

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
+
 /// ===================== CUSTOM GOLD BUTTON =====================
 /// Reusable premium gold button with:
 /// - CSS-matching background linear gradient
@@ -56,13 +58,10 @@ class CustomGoldButton extends StatelessWidget {
           onTap: isLoading ? null : onTap,
           child: Center(
             child: isLoading
-                ? SizedBox(
-                    height: 20.w,
-                    width: 20.w,
-                    child: const CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
-                    ),
+                ? CustomGoldLoader(
+                    size: 20.r,
+                    strokeWidth: 2.5.r,
+                    color: Colors.black,
                   )
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.center,

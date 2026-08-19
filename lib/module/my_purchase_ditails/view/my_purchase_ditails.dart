@@ -9,6 +9,7 @@ import 'package:cpk1989/core/widgets/vertical_stepper.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
 import 'package:cpk1989/module/my_purchase_ditails/controller/my_purchase_ditails_controller.dart';
+import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 
 class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
   const MyPurchaseDitails({super.key});
@@ -130,12 +131,10 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
                                                 if (loadingProgress == null) {
                                                   return child;
                                                 }
-                                                return const Center(
-                                                  child: CircularProgressIndicator(
-                                                    valueColor:
-                                                        AlwaysStoppedAnimation<
-                                                          Color
-                                                        >(Color(0xFFE2B744)),
+                                                return Center(
+                                                  child: CustomGoldLoader(
+                                                    size: 24.r,
+                                                    strokeWidth: 2.5.r,
                                                   ),
                                                 );
                                               },

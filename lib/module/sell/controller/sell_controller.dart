@@ -5,60 +5,9 @@ import 'package:camera/camera.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
+import 'package:cpk1989/core/utils/helpers.dart';
 
 class SellController extends GetxController {
-  // Predefined luxury products for high-fidelity mock experience
-  final List<Map<String, dynamic>> galleryProducts = [
-    {
-      "id": "lv_capucines",
-      "itemName": "Louis Vuitton Capucines",
-      "brand": "Louis Vuitton",
-      "imageUrl":
-          "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=80&w=600&auto=format&fit=crop",
-      "price": 18200.0,
-      "condition": "Pristine",
-      "whySelling": "Upgrading collection",
-      "serialNumber": "TR0221",
-      "authScore": "99.1%",
-    },
-    {
-      "id": "chanel_flap",
-      "itemName": "Chanel Classic Flap Bag",
-      "brand": "Chanel",
-      "imageUrl":
-          "https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=600&auto=format&fit=crop",
-      "price": 28500.0,
-      "condition": "Excellent",
-      "whySelling": "Not in use",
-      "serialNumber": "31xxxxxx",
-      "authScore": "98.6%",
-    },
-    {
-      "id": "dior_saddle",
-      "itemName": "Dior Saddle Bag",
-      "brand": "Dior",
-      "imageUrl":
-          "https://images.unsplash.com/photo-1598532163257-ae3c6b2524b6?q=80&w=600&auto=format&fit=crop",
-      "price": 12400.0,
-      "condition": "Very Good",
-      "whySelling": "Closet clearance",
-      "serialNumber": "12-MA-0198",
-      "authScore": "97.4%",
-    },
-    {
-      "id": "rolex_submariner",
-      "itemName": "Rolex Submariner Date",
-      "brand": "Rolex",
-      "imageUrl":
-          "https://images.unsplash.com/photo-1547996160-81dfa63595aa?q=80&w=600&auto=format&fit=crop",
-      "price": 52000.0,
-      "condition": "Pristine",
-      "whySelling": "Investment flip",
-      "serialNumber": "V839201",
-      "authScore": "99.8%",
-    },
-  ];
-
   // Real Camera Hardware Controller state
   CameraController? cameraController;
   final isCameraInitialized = false.obs;
@@ -111,7 +60,7 @@ class SellController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    resetToProduct(1);
+    resetToProduct();
     initializeCameraHardware();
   }
 
@@ -181,8 +130,7 @@ class SellController extends GetxController {
     await initializeCameraHardware();
   }
 
-  void resetToProduct(int index) {
-    if (index < 0 || index >= galleryProducts.length) return;
+  void resetToProduct([int index = 0]) {
     selectedItemIndex.value = index;
     rxCapturedPath.value = "";
     rxCapturedPaths.value = [null, null, null];
@@ -190,13 +138,12 @@ class SellController extends GetxController {
     isCameraActive.value = true;
     isPreviewMode.value = false;
 
-    final product = galleryProducts[index];
-    itemNameInput.value = product["itemName"];
-    conditionInput.value = product["condition"];
-    whySellingInput.value = product["whySelling"];
-    customBrand.value = product["brand"];
-    customPrice.value = product["price"];
-    customSerial.value = product["serialNumber"];
+    itemNameInput.value = "";
+    conditionInput.value = "";
+    whySellingInput.value = "";
+    customBrand.value = "";
+    customPrice.value = 0.0;
+    customSerial.value = "";
   }
 
   void toggleFlash() {
@@ -316,28 +263,18 @@ class SellController extends GetxController {
     isPreviewMode.value = false;
   }
 
-  // Confirm and proceed from camera to AI Analysis
-  void confirmCapture() {
-    final selectedProduct = galleryProducts[selectedItemIndex.value];
-
-    // Fallback info for item fields
-    if (rxCapturedPaths.any(
-      (path) => path != null && !path.startsWith("MOCK_CAPTURE_"),
-    )) {
-      itemNameInput.value = selectedProduct["itemName"];
-      customBrand.value = selectedProduct["brand"];
-      customPrice.value = selectedProduct["price"];
+  // Confirm and proceed from camera directly to Item Detail via loading dialog
+  Future<void> confirmCapture() async {
+    if (customSerial.value.isEmpty) {
       customSerial.value =
           "CAPTURED-${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}";
-    } else {
-      // Simulator template fallback
-      itemNameInput.value = selectedProduct["itemName"];
-      customBrand.value = selectedProduct["brand"];
-      customPrice.value = selectedProduct["price"];
-      customSerial.value = selectedProduct["serialNumber"];
     }
 
-    Get.toNamed(AppRoutes.aiAnalysis);
+    Helpers.showLoadingDialog(message: "Processing..");
+    await Future.delayed(const Duration(milliseconds: 1200));
+    final newItem = addScannedItemToWardrobeSilently();
+    Helpers.hideLoadingDialog();
+    Get.toNamed(AppRoutes.sellItemDetail, arguments: newItem);
   }
 
   // Trigger AI analysis flow
@@ -368,31 +305,25 @@ class SellController extends GetxController {
   void addScannedItemToWardrobe() {
     try {
       final profileController = Get.find<ProfileController>();
-      final selectedProduct = galleryProducts[selectedItemIndex.value];
 
-      // Extract final image paths, substituting presets if empty
-      final List<String> finalImages = rxCapturedPaths.map((path) {
-        if (path == null || path.startsWith("MOCK_CAPTURE_")) {
-          return selectedProduct["imageUrl"] as String;
-        }
-        return path;
-      }).toList();
+      final List<String> finalImages = rxCapturedPaths
+          .where((path) => path != null && path.isNotEmpty && !path.startsWith("MOCK_CAPTURE_"))
+          .cast<String>()
+          .toList();
+
+      final String primaryImage = finalImages.isNotEmpty ? finalImages[0] : "";
 
       final newItem = ProfileItem(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
-        imageUrl: finalImages[0],
-        images: finalImages,
-        price: customPrice.value > 0
-            ? customPrice.value
-            : selectedProduct["price"],
+        imageUrl: primaryImage,
+        images: finalImages.isNotEmpty ? finalImages : [primaryImage, primaryImage, primaryImage],
+        price: customPrice.value,
         likes: 0,
         isSold: false,
-        brand: customBrand.value.isNotEmpty
-            ? customBrand.value
-            : selectedProduct["brand"],
+        brand: customBrand.value,
         itemName: itemNameInput.value.isNotEmpty
             ? itemNameInput.value
-            : selectedProduct["itemName"],
+            : "Item Details",
         status: null, // Null status means active wardrobe listing
       );
 
@@ -417,7 +348,7 @@ class SellController extends GetxController {
       Get.back();
       Get.snackbar(
         "Listed",
-        "Item has been simulated to be listed in your Wardrobe.",
+        "Item has been listed in your Wardrobe.",
       );
     }
   }
@@ -425,28 +356,25 @@ class SellController extends GetxController {
   // Add scanned item to wardrobe silently and return the profile item (for automatic details route)
   ProfileItem addScannedItemToWardrobeSilently() {
     final profileController = Get.put(ProfileController());
-    final selectedProduct = galleryProducts[selectedItemIndex.value];
 
-    final List<String> finalImages = rxCapturedPaths.map((path) {
-      if (path == null || path.startsWith("MOCK_CAPTURE_")) {
-        return selectedProduct["imageUrl"] as String;
-      }
-      return path;
-    }).toList();
+    final List<String> finalImages = rxCapturedPaths
+        .where((path) => path != null && path.isNotEmpty && !path.startsWith("MOCK_CAPTURE_"))
+        .cast<String>()
+        .toList();
+
+    final String primaryImage = finalImages.isNotEmpty ? finalImages[0] : "";
 
     final newItem = ProfileItem(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      imageUrl: finalImages[0],
-      images: finalImages,
-      price: customPrice.value > 0 ? customPrice.value : 0.0,
+      imageUrl: primaryImage,
+      images: finalImages.isNotEmpty ? finalImages : [primaryImage, primaryImage, primaryImage],
+      price: customPrice.value,
       likes: 0,
       isSold: false,
-      brand: customBrand.value.isNotEmpty
-          ? customBrand.value
-          : selectedProduct["brand"],
+      brand: customBrand.value,
       itemName: itemNameInput.value.isNotEmpty
           ? itemNameInput.value
-          : selectedProduct["itemName"],
+          : "Item Details",
       status: null, // Null status means active wardrobe listing
     );
 

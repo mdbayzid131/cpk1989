@@ -14,6 +14,8 @@ import 'package:cpk1989/module/sell_item_detail/controller/sell_item_detail_cont
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:cpk1989/core/utils/validators.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
+import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
+import 'package:cpk1989/core/utils/helpers.dart';
 
 class SellItemDetailScreen extends GetView<SellItemDetailController> {
   const SellItemDetailScreen({super.key});
@@ -102,12 +104,10 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                                                 if (loadingProgress == null) {
                                                   return child;
                                                 }
-                                                return const Center(
-                                                  child: CircularProgressIndicator(
-                                                    valueColor:
-                                                        AlwaysStoppedAnimation<
-                                                          Color
-                                                        >(Color(0xFFE2B744)),
+                                                return Center(
+                                                  child: CustomGoldLoader(
+                                                    size: 24.r,
+                                                    strokeWidth: 2.5.r,
                                                   ),
                                                 );
                                               },
@@ -1908,12 +1908,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
               required String expiry,
               required String cvv,
             }) async {
-              Get.dialog(
-                const Center(
-                  child: CircularProgressIndicator(color: Color(0xFFE2B744)),
-                ),
-                barrierDismissible: false,
-              );
+              Helpers.showLoadingDialog();
 
               final result = await PaymentService.to.addCardWithDetails(
                 name: name,

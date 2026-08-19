@@ -10,6 +10,8 @@ import 'package:cpk1989/core/widgets/processing_overlay.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 
+import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
+
 class HomeScreen extends GetView<HomeController> {
   const HomeScreen({super.key});
 
@@ -19,11 +21,7 @@ class HomeScreen extends GetView<HomeController> {
       backgroundColor: const Color(0xFF0F1012),
       body: Obx(() {
         if (controller.rxItems.isEmpty) {
-          return const Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFFF0CA)),
-            ),
-          );
+          return Center(child: CustomGoldLoader(size: 44.r));
         }
 
         return PageView.builder(

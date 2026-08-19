@@ -12,6 +12,8 @@ import 'package:cpk1989/core/widgets/custom_gold_button.dart';
 import 'package:cpk1989/core/widgets/custom_add_card_bottom_sheet.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/core/services/auth_service.dart';
+import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
+import 'package:cpk1989/core/utils/helpers.dart';
 
 class ProfileScreen extends GetView<ProfileController> {
   const ProfileScreen({super.key});
@@ -365,9 +367,7 @@ class ProfileScreen extends GetView<ProfileController> {
         return Container(
           height: 200.h,
           alignment: Alignment.center,
-          child: const CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE2B744)),
-          ),
+          child: CustomGoldLoader(size: 40.r),
         );
       }
 
@@ -408,9 +408,7 @@ class ProfileScreen extends GetView<ProfileController> {
         return Container(
           height: 200.h,
           alignment: Alignment.center,
-          child: const CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE2B744)),
-          ),
+          child: CustomGoldLoader(size: 40.r),
         );
       }
 
@@ -549,12 +547,10 @@ class ProfileScreen extends GetView<ProfileController> {
                           width: 102.r,
                           height: 102.r,
                           color: const Color(0xFF1E2022),
-                          child: const Center(
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Color(0xFFE2B744),
-                              ),
+                          child: Center(
+                            child: CustomGoldLoader(
+                              size: 24.r,
+                              strokeWidth: 2.5.r,
                             ),
                           ),
                         );
@@ -622,12 +618,10 @@ class ProfileScreen extends GetView<ProfileController> {
                       if (loadingProgress == null) return child;
                       return Container(
                         color: const Color(0xFF1E2022),
-                        child: const Center(
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Color(0xFFE2B744),
-                            ),
+                        child: Center(
+                          child: CustomGoldLoader(
+                            size: 24.r,
+                            strokeWidth: 2.5.r,
                           ),
                         ),
                       );
@@ -788,9 +782,7 @@ class ProfileScreen extends GetView<ProfileController> {
         return Container(
           height: 200.h,
           alignment: Alignment.center,
-          child: const CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE2B744)),
-          ),
+          child: CustomGoldLoader(size: 40.r),
         );
       }
 
@@ -1204,12 +1196,7 @@ class ProfileScreen extends GetView<ProfileController> {
               required String expiry,
               required String cvv,
             }) async {
-              Get.dialog(
-                const Center(
-                  child: CircularProgressIndicator(color: Color(0xFFE2B744)),
-                ),
-                barrierDismissible: false,
-              );
+              Helpers.showLoadingDialog();
 
               final result = await PaymentService.to.addCardWithDetails(
                 name: name,
@@ -1594,13 +1581,10 @@ class ProfileScreen extends GetView<ProfileController> {
                                           width: 102.r,
                                           height: 102.r,
                                           color: const Color(0xFF1E2022),
-                                          child: const Center(
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              valueColor:
-                                                  AlwaysStoppedAnimation<Color>(
-                                                    Color(0xFFE2B744),
-                                                  ),
+                                          child: Center(
+                                            child: CustomGoldLoader(
+                                              size: 24.r,
+                                              strokeWidth: 2.5.r,
                                             ),
                                           ),
                                         );

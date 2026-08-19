@@ -11,6 +11,7 @@ import 'package:cpk1989/core/widgets/custom_gold_button.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
 import 'package:cpk1989/module/my_item_detail/controller/my_item_detail_controller.dart';
+import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 
 class MyItemDetailScreen extends GetView<MyItemDetailController> {
   const MyItemDetailScreen({super.key});
@@ -203,12 +204,10 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                                                 if (loadingProgress == null) {
                                                   return child;
                                                 }
-                                                return const Center(
-                                                  child: CircularProgressIndicator(
-                                                    valueColor:
-                                                        AlwaysStoppedAnimation<
-                                                          Color
-                                                        >(Color(0xFFE2B744)),
+                                                return Center(
+                                                  child: CustomGoldLoader(
+                                                    size: 24.r,
+                                                    strokeWidth: 2.5.r,
                                                   ),
                                                 );
                                               },

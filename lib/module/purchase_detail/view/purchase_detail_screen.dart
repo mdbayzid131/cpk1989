@@ -13,6 +13,7 @@ import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 import 'package:cpk1989/config/constants/api_constants.dart';
+import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 
 class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
   const PurchaseDetailScreen({super.key});
@@ -423,14 +424,7 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
             height: 102.r,
             color: const Color(0xFF1E1F23),
             child: Center(
-              child: SizedBox(
-                width: 18.r,
-                height: 18.r,
-                child: const CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Color(0xFFE2B744),
-                ),
-              ),
+              child: CustomGoldLoader(size: 20.r, strokeWidth: 2.r),
             ),
           );
         },

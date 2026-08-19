@@ -21,6 +21,17 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             brightness: Brightness.dark,
             scaffoldBackgroundColor: const Color(0xFF0F1012),
+            primaryColor: const Color(0xFFE2B744),
+            colorScheme: const ColorScheme.dark(
+              primary: Color(0xFFE2B744),
+              secondary: Color(0xFFE2B744),
+              surface: Color(0xFF1E2022),
+            ),
+            progressIndicatorTheme: const ProgressIndicatorThemeData(
+              color: Color(0xFFE2B744),
+              circularTrackColor: Color(0x22E2B744),
+              refreshBackgroundColor: Color(0xFF1E2022),
+            ),
             appBarTheme: const AppBarTheme(
               systemOverlayStyle: SystemUiOverlayStyle(
                 statusBarColor: Colors.transparent,

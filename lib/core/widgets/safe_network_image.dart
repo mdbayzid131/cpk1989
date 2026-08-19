@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cpk1989/core/controllers/internet_controller.dart';
+import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 
 /// ===================== SAFE NETWORK IMAGE =====================
 /// Network image widget with graceful error/offline fallback.
@@ -42,7 +43,7 @@ class SafeNetworkImage extends StatelessWidget {
       fit: fit,
       loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) return child;
-        return placeholder ?? _buildLoadingIndicator(loadingProgress);
+        return placeholder ?? _buildLoadingIndicator();
       },
       errorBuilder: (context, error, stackTrace) =>
           errorWidget ?? _buildFallback(),
@@ -71,19 +72,12 @@ class SafeNetworkImage extends StatelessWidget {
     );
   }
 
-  Widget _buildLoadingIndicator(ImageChunkEvent progress) {
-    final total = progress.expectedTotalBytes;
-    final value = total != null ? progress.cumulativeBytesLoaded / total : null;
-
+  Widget _buildLoadingIndicator() {
     return Container(
       width: width,
       height: height,
       alignment: Alignment.center,
-      child: SizedBox(
-        width: 20.sp,
-        height: 20.sp,
-        child: CircularProgressIndicator(strokeWidth: 2, value: value),
-      ),
+      child: CustomGoldLoader(size: 20.r, strokeWidth: 2.r),
     );
   }
 }

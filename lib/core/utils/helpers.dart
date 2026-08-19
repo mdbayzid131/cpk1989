@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
@@ -110,23 +112,26 @@ class Helpers {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const CircularProgressIndicator(),
-              if (message != null) ...[
-                SizedBox(height: 16.h),
-                Material(
-                  color: Colors.transparent,
-                  child: Text(
-                    message,
-                    style: TextStyle(color: Colors.white, fontSize: 14.sp),
+              CustomGoldLoader(size: 52.r, strokeWidth: 3.5.r),
+              SizedBox(height: 16.h),
+              Material(
+                color: Colors.transparent,
+                child: Text(
+                  message ?? "Processing..",
+                  style: GoogleFonts.dmSans(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                    decoration: TextDecoration.none,
                   ),
                 ),
-              ],
+              ),
             ],
           ),
         ),
       ),
       barrierDismissible: false,
-      barrierColor: Colors.black54,
+      barrierColor: Colors.black.withValues(alpha: 0.75),
     );
   }
 

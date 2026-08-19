@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cpk1989/config/themes/app_theme.dart';
+import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 
 /// ===================== CUSTOM BUTTON =====================
 /// A full-width elevated button with loading state, customizable colors,
@@ -72,15 +73,10 @@ class CustomButton extends StatelessWidget {
 
   Widget _buildChild(Color? outlineColor) {
     if (isLoading) {
-      return SizedBox(
-        width: 22.h,
-        height: 22.h,
-        child: CircularProgressIndicator(
-          strokeWidth: 2.5,
-          valueColor: AlwaysStoppedAnimation<Color>(
-            outlineColor ?? Colors.white,
-          ),
-        ),
+      return CustomGoldLoader(
+        size: 22.r,
+        strokeWidth: 2.5.r,
+        color: outlineColor ?? Colors.white,
       );
     }
 
