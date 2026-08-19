@@ -1351,34 +1351,88 @@ class ProfileScreen extends GetView<ProfileController> {
           ),
           SizedBox(width: 12.w),
 
-          // Country code selector
-          GestureDetector(
-            onTap: !readOnly
-                ? () {
-                    Get.snackbar(
-                      'Country Code',
-                      'Country code selection coming soon!',
-                      snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor: const Color(0xFF1E1F22),
-                      colorText: Colors.white,
-                    );
-                  }
-                : null,
+          // Custom Styled Country Code Selector Popup (Matches Condition Dropdown Design)
+          PopupMenuButton<String>(
+            color: const Color(0xFF2E3036),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+            elevation: 10,
+            offset: Offset(0, 36.h),
+            enabled: !readOnly && isEditing,
+            onSelected: (String code) {
+              this.controller.rxPhoneCode.value = code;
+            },
+            itemBuilder: (context) {
+              final phoneCodes = [
+                "+971 (UAE)",
+                "+1 (USA)",
+                "+44 (UK)",
+                "+880 (BD)",
+                "+966 (KSA)",
+                "+974 (Qatar)",
+                "+965 (Kuwait)",
+                "+968 (Oman)",
+                "+973 (Bahrain)",
+              ];
+              final currentCode = this.controller.rxPhoneCode.value;
+
+              return phoneCodes.map((fullCode) {
+                final codeOnly = fullCode.split(' ').first;
+                final isSelected = currentCode == codeOnly;
+
+                return PopupMenuItem<String>(
+                  value: codeOnly,
+                  height: 36.h,
+                  padding: EdgeInsets.symmetric(horizontal: 6.w),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? const Color(0xFF3C3E46)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(6.r),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          fullCode,
+                          style: GoogleFonts.dmSans(
+                            fontSize: 13.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        if (isSelected)
+                          Icon(
+                            Icons.check_rounded,
+                            size: 16.sp,
+                            color: const Color(0xFFE2B744),
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList();
+            },
             child: Row(
               children: [
-                Text(
-                  "+971",
-                  style: GoogleFonts.dmSans(
-                    fontSize: 14.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
+                Obx(
+                  () => Text(
+                    this.controller.rxPhoneCode.value,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
                 SizedBox(width: 4.w),
                 Icon(
-                  Icons.keyboard_arrow_down,
-                  size: 16.sp,
-                  color: Colors.white54,
+                  Icons.keyboard_arrow_down_rounded,
+                  size: 18.sp,
+                  color: isEditing ? Colors.white54 : Colors.white24,
                 ),
               ],
             ),

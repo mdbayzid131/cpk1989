@@ -90,19 +90,37 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                   ),
                   SizedBox(height: 16.h),
 
-                  // Form inputs (only location, country, and phone number)
+                  // Form inputs (Location, Country, Phone number)
                   _buildTextInputField(
-                    controller: controller.addressController,
-                    hintText: "Palm Jumeirah, Building 5, Apt 1204",
+                    controller: controller.locationController,
+                    hintText: "Location (e.g. Dhaka)",
                     svgPath: "assets/icons/location.svg",
                   ),
                   SizedBox(height: 12.h),
-                  _buildDropdownField(
-                    context: context,
-                    value: controller.rxLocation,
-                    svgPath: "assets/icons/country.svg",
-                    items: ["UAE", "Bangladesh", "Saudi Arabia", "Qatar"],
-                  ),
+                  Obx(() {
+                    final currentCountry = controller.rxLocation.value;
+                    final countries = [
+                      "UAE",
+                      "Bangladesh",
+                      "Saudi Arabia",
+                      "Qatar",
+                      "Kuwait",
+                      "USA",
+                      "UK",
+                      "Oman",
+                      "Bahrain",
+                    ];
+                    if (currentCountry.isNotEmpty &&
+                        !countries.contains(currentCountry)) {
+                      countries.insert(0, currentCountry);
+                    }
+                    return _buildDropdownField(
+                      context: context,
+                      value: controller.rxLocation,
+                      svgPath: "assets/icons/country.svg",
+                      items: countries,
+                    );
+                  }),
                   SizedBox(height: 12.h),
                   _buildPhoneInputField(),
                   SizedBox(height: 28.h),
@@ -546,7 +564,17 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                   color: Colors.white,
                   fontWeight: FontWeight.w500,
                 ),
-                items: ["+971", "+1", "+44", "+880"].map((String code) {
+                items: [
+                  "+971",
+                  "+1",
+                  "+44",
+                  "+880",
+                  "+966",
+                  "+974",
+                  "+965",
+                  "+968",
+                  "+973",
+                ].map((String code) {
                   return DropdownMenuItem<String>(
                     value: code,
                     child: Text(code),

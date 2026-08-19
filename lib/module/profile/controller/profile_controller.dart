@@ -55,6 +55,7 @@ class ProfileController extends GetxController {
   late final TextEditingController locationController;
   late final TextEditingController countryController;
   late final TextEditingController phoneController;
+  final rxPhoneCode = "+971".obs;
   final rxLocation = "".obs;
   final rxUserName = "".obs;
   final rxUserId = "".obs;

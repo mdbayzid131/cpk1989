@@ -18,6 +18,7 @@ class SecureCheckoutController extends GetxController {
   // Form Field Controllers
   late final TextEditingController firstNameController;
   late final TextEditingController lastNameController;
+  late final TextEditingController locationController;
   late final TextEditingController addressController;
   late final TextEditingController phoneController;
 
@@ -82,41 +83,54 @@ class SecureCheckoutController extends GetxController {
       );
     }
 
-    // Try to load default user info from ProfileController if available
+    firstNameController = TextEditingController();
+    lastNameController = TextEditingController();
+    locationController = TextEditingController();
+    addressController = TextEditingController();
+    phoneController = TextEditingController();
+
     try {
       if (!Get.isRegistered<ProfileController>()) {
-        Get.put(ProfileController());
+        Get.put(ProfileController(), permanent: true);
       }
-      final profileController = Get.find<ProfileController>();
-      firstNameController = TextEditingController(
-        text: profileController.firstNameController.text.isEmpty
-            ? "Olivia"
-            : profileController.firstNameController.text,
-      );
-      lastNameController = TextEditingController(
-        text: profileController.lastNameController.text.isEmpty
-            ? "Mendes"
-            : profileController.lastNameController.text,
-      );
-      addressController = TextEditingController(
-        text: profileController.addressController.text.isEmpty
-            ? "Palm Jumeirah, Building 5, Apt 1204"
-            : profileController.addressController.text,
-      );
-      phoneController = TextEditingController(
-        text: profileController.phoneController.text.isEmpty
-            ? "50 123 4567"
-            : profileController.phoneController.text,
-      );
-      rxLocation.value = "UAE";
-    } catch (_) {
-      firstNameController = TextEditingController(text: "");
-      lastNameController = TextEditingController(text: "");
-      addressController = TextEditingController(
-        text: "Palm Jumeirah, Building 5, Apt 1204",
-      );
-      phoneController = TextEditingController(text: "50 123 4567");
-      rxLocation.value = "UAE";
+      final profileCtrl = Get.find<ProfileController>();
+      syncFromProfile(profileCtrl);
+
+      // Fetch fresh profile from API & sync
+      profileCtrl.fetchUserProfile().then((_) {
+        syncFromProfile(profileCtrl);
+      });
+    } catch (e) {
+      debugPrint("⚠️ Sync profile in checkout error: $e");
+    }
+  }
+
+  void syncFromProfile(ProfileController profileCtrl) {
+    firstNameController.text = profileCtrl.firstNameController.text;
+    lastNameController.text = profileCtrl.lastNameController.text;
+    
+    final locVal = profileCtrl.locationController.text.isNotEmpty
+        ? profileCtrl.locationController.text
+        : (profileCtrl.addressController.text.isNotEmpty
+            ? profileCtrl.addressController.text
+            : '');
+    locationController.text = locVal;
+
+    addressController.text = profileCtrl.addressController.text.isNotEmpty
+        ? profileCtrl.addressController.text
+        : locVal;
+
+    phoneController.text = profileCtrl.phoneController.text;
+
+    final countryVal = profileCtrl.countryController.text.isNotEmpty
+        ? profileCtrl.countryController.text
+        : (profileCtrl.rxLocation.value.isNotEmpty
+            ? profileCtrl.rxLocation.value
+            : "UAE");
+    rxLocation.value = countryVal;
+
+    if (profileCtrl.rxPhoneCode.value.isNotEmpty) {
+      rxPhoneCode.value = profileCtrl.rxPhoneCode.value;
     }
   }
 
@@ -124,6 +138,7 @@ class SecureCheckoutController extends GetxController {
   void onClose() {
     firstNameController.dispose();
     lastNameController.dispose();
+    locationController.dispose();
     addressController.dispose();
     phoneController.dispose();
     termsRecognizer.dispose();
