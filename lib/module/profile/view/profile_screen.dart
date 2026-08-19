@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:cpk1989/config/constants/api_constants.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:cpk1989/core/widgets/custom_gold_button.dart';
@@ -116,11 +118,26 @@ class ProfileScreen extends GetView<ProfileController> {
             children: [
               Obx(() {
                 final img = controller.rxProfileImage.value;
+                String fullUrl = img;
+                if (fullUrl.isNotEmpty &&
+                    !fullUrl.startsWith('http://') &&
+                    !fullUrl.startsWith('https://')) {
+                  final serverBase = ApiConstants.baseUrl.replaceAll(
+                    RegExp(r'/api/v1/?$'),
+                    '',
+                  );
+                  fullUrl = fullUrl.startsWith('/')
+                      ? '$serverBase$fullUrl'
+                      : '$serverBase/$fullUrl';
+                }
+
                 return CircleAvatar(
                   radius: 46.r,
                   backgroundColor: const Color(0xFF282A2E),
-                  backgroundImage: img.isNotEmpty ? NetworkImage(img) : null,
-                  child: img.isEmpty
+                  backgroundImage: fullUrl.isNotEmpty
+                      ? NetworkImage(fullUrl)
+                      : null,
+                  child: fullUrl.isEmpty
                       ? Icon(
                           Icons.person_rounded,
                           size: 40.r,
@@ -136,18 +153,7 @@ class ProfileScreen extends GetView<ProfileController> {
                   size: 24.r,
                   padding: EdgeInsets.zero,
                   glassColor: Colors.grey.withValues(alpha: 0.35),
-                  onTap: () {
-                    Get.snackbar(
-                      'Profile Photo',
-                      'Edit photo functionality coming soon!',
-                      snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor: const Color(0xFF1E1F22),
-                      colorText: Colors.white,
-                      duration: const Duration(seconds: 2),
-                      borderRadius: 8,
-                      margin: const EdgeInsets.all(16),
-                    );
-                  },
+                  onTap: () => _showImageSourceBottomSheet(context),
                   child: SvgPicture.asset(
                     'assets/icons/edit pen .svg',
                     width: 12.r,
@@ -245,6 +251,164 @@ class ProfileScreen extends GetView<ProfileController> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showImageSourceBottomSheet(BuildContext context) {
+    Get.bottomSheet(
+      Container(
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E2022),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(24.r),
+            topRight: Radius.circular(24.r),
+          ),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.1),
+            width: 1.0,
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Container(
+                width: 36.w,
+                height: 4.h,
+                decoration: BoxDecoration(
+                  color: Colors.white24,
+                  borderRadius: BorderRadius.circular(2.r),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.h),
+            Text(
+              "Update Profile Photo",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.dmSans(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(height: 6.h),
+            Text(
+              "Choose photo source",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.dmSans(
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w400,
+                color: Colors.white54,
+              ),
+            ),
+            SizedBox(height: 20.h),
+            Row(
+              children: [
+                // Camera Button
+                Expanded(
+                  child: InkWell(
+                    onTap: () {
+                      Get.back();
+                      controller.updateProfileImage(ImageSource.camera);
+                    },
+                    borderRadius: BorderRadius.circular(16.r),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 18.h),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF282A2E),
+                        borderRadius: BorderRadius.circular(16.r),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.08),
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(12.r),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE2B744).withValues(
+                                alpha: 0.15,
+                              ),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.camera_alt_rounded,
+                              color: const Color(0xFFE2B744),
+                              size: 24.r,
+                            ),
+                          ),
+                          SizedBox(height: 10.h),
+                          Text(
+                            "Camera",
+                            style: GoogleFonts.dmSans(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 14.w),
+                // Gallery Button
+                Expanded(
+                  child: InkWell(
+                    onTap: () {
+                      Get.back();
+                      controller.updateProfileImage(ImageSource.gallery);
+                    },
+                    borderRadius: BorderRadius.circular(16.r),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 18.h),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF282A2E),
+                        borderRadius: BorderRadius.circular(16.r),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.08),
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(12.r),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE2B744).withValues(
+                                alpha: 0.15,
+                              ),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.photo_library_rounded,
+                              color: const Color(0xFFE2B744),
+                              size: 24.r,
+                            ),
+                          ),
+                          SizedBox(height: 10.h),
+                          Text(
+                            "Gallery",
+                            style: GoogleFonts.dmSans(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 12.h),
+          ],
+        ),
       ),
     );
   }

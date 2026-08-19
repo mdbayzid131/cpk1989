@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:cpk1989/core/utils/helpers.dart';
 import 'package:cpk1989/core/services/storage_service.dart';
 import 'package:cpk1989/data/models/user_model.dart';
 import 'package:cpk1989/data/models/product_model.dart';
@@ -409,5 +411,62 @@ class ProfileController extends GetxController {
       borderRadius: 16,
       margin: const EdgeInsets.all(16),
     );
+  }
+
+  /// Update Profile Picture (via Camera or Gallery)
+  Future<void> updateProfileImage(ImageSource source) async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? pickedFile = await picker.pickImage(
+        source: source,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
+      );
+
+      if (pickedFile == null) return;
+
+      final File imageFile = File(pickedFile.path);
+
+      Helpers.showLoadingDialog(message: "Updating profile photo...");
+
+      final response = await _userRepo.updateProfile({}, imageFile: imageFile);
+
+      Helpers.hideLoadingDialog();
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final profileResp = ProfileResponseModel.fromJson(response.data);
+        if (profileResp.data != null) {
+          final user = profileResp.data!;
+          rxUserProfile.value = user;
+          if (user.displayImage.isNotEmpty) {
+            rxProfileImage.value = user.displayImage;
+          }
+        } else if (response.data != null && response.data['data'] != null) {
+          final imgUrl =
+              response.data['data']['image'] ?? response.data['data']['avatar'];
+          if (imgUrl != null && imgUrl.toString().isNotEmpty) {
+            rxProfileImage.value = imgUrl.toString();
+          }
+        }
+
+        Get.snackbar(
+          'Success',
+          'Profile picture updated successfully.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: const Color(0xFF161719),
+          colorText: Colors.white,
+          duration: const Duration(seconds: 2),
+          borderRadius: 16,
+          margin: const EdgeInsets.all(16),
+        );
+      } else {
+        Helpers.showError("Failed to update profile picture.");
+      }
+    } catch (e) {
+      Helpers.hideLoadingDialog();
+      Helpers.debug("Update profile image error: $e");
+      Helpers.showError("Something went wrong while updating photo.");
+    }
   }
 }

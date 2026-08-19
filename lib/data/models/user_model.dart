@@ -1,3 +1,5 @@
+import 'package:cpk1989/config/constants/api_constants.dart';
+
 class ProfileResponseModel {
   final bool? success;
   final String? message;
@@ -61,11 +63,22 @@ class UserModel {
     this.updatedAt,
   });
 
-  String get displayImage => (image != null && image!.isNotEmpty)
-      ? image!
-      : (avatar != null && avatar!.isNotEmpty)
-      ? avatar!
-      : '';
+  String get displayImage {
+    final raw = (image != null && image!.isNotEmpty)
+        ? image!
+        : (avatar != null && avatar!.isNotEmpty)
+        ? avatar!
+        : '';
+    if (raw.isEmpty) return '';
+    if (raw.startsWith('http://') || raw.startsWith('https://')) {
+      return raw;
+    }
+    final serverBase = ApiConstants.baseUrl.replaceAll(
+      RegExp(r'/api/v1/?$'),
+      '',
+    );
+    return raw.startsWith('/') ? '$serverBase$raw' : '$serverBase/$raw';
+  }
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
