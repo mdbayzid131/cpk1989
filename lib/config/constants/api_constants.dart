@@ -12,6 +12,7 @@ class ApiConstants {
   static const String refreshToken = '/auth/refresh-token';
   static const String profile = '/user/profile';
   static const String products = '/products';
+  static const String wishlist = '/wishlist';
   static const String orders = '/orders';
   static const String paymentMethods = '/payment-methods';
   static const String setupIntent = '/payment-methods/setup-intent';

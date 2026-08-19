@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -500,11 +501,7 @@ class _DetailImageSliderState extends State<DetailImageSlider> {
 
   @override
   Widget build(BuildContext context) {
-    final images = widget.item.itemImages.isNotEmpty
-        ? widget.item.itemImages
-        : [
-            'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=600&auto=format&fit=crop',
-          ];
+    final images = widget.item.itemImages.where((img) => img.isNotEmpty).toList();
 
     return Stack(
       children: [
@@ -512,40 +509,62 @@ class _DetailImageSliderState extends State<DetailImageSlider> {
         SizedBox(
           height: widget.height,
           width: double.infinity,
-          child: PageView.builder(
-            controller: _pageController,
-            itemCount: images.length,
-            onPageChanged: (index) {
-              setState(() {
-                _currentPage = index;
-              });
-              Get.find<ItemDetailController>().rxCurrentPage.value = index;
-            },
-            itemBuilder: (context, index) {
-              final img = images[index];
-              if (img.startsWith('http') || img.startsWith('https')) {
-                return Image.network(
-                  img,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Image.network(
-                    'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=600&auto=format&fit=crop',
-                    fit: BoxFit.cover,
+          child: images.isEmpty
+              ? Container(
+                  color: const Color(0xFF1E2022),
+                  child: Center(
+                    child: Icon(
+                      Icons.image_not_supported_outlined,
+                      color: Colors.white38,
+                      size: 48.r,
+                    ),
                   ),
-                );
-              }
-              return Image.asset(
-                img,
-                fit: BoxFit.cover,
-                alignment: const Alignment(0.0, -0.3),
-                errorBuilder: (context, error, stackTrace) {
-                  return Image.network(
-                    'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=600&auto=format&fit=crop',
-                    fit: BoxFit.cover,
-                  );
-                },
-              );
-            },
-          ),
+                )
+              : PageView.builder(
+                  controller: _pageController,
+                  itemCount: images.length,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentPage = index;
+                    });
+                    Get.find<ItemDetailController>().rxCurrentPage.value = index;
+                  },
+                  itemBuilder: (context, index) {
+                    final img = images[index];
+                    if (img.startsWith('http') || img.startsWith('https')) {
+                      return Image.network(
+                        img,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: const Color(0xFF1E2022),
+                          child: Center(
+                            child: Icon(
+                              Icons.broken_image_outlined,
+                              color: Colors.white38,
+                              size: 48.r,
+                            ),
+                          ),
+                        ),
+                      );
+                    } else if (img.isNotEmpty && File(img).existsSync()) {
+                      return Image.file(
+                        File(img),
+                        fit: BoxFit.cover,
+                        alignment: const Alignment(0.0, -0.3),
+                      );
+                    }
+                    return Container(
+                      color: const Color(0xFF1E2022),
+                      child: Center(
+                        child: Icon(
+                          Icons.image_not_supported_outlined,
+                          color: Colors.white38,
+                          size: 48.r,
+                        ),
+                      ),
+                    );
+                  },
+                ),
         ),
 
         // 2. Next arrow floating button (glassmorphic circle overlay on the right)

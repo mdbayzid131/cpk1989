@@ -16,86 +16,101 @@ class WishlistScreen extends GetView<WishlistController> {
     return Scaffold(
       backgroundColor: const Color(0xFF0F1012),
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(height: 12.h),
+        child: RefreshIndicator(
+          color: const Color(0xFFE2B744),
+          backgroundColor: const Color(0xFF1E2022),
+          onRefresh: () => controller.fetchWishlist(),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: 12.h),
 
-              // Title Header (Left-aligned as shown in mockup)
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                child: Text(
-                  "Wishlist",
-                  style: GoogleFonts.dmSans(
-                    fontSize: 24.sp,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.white,
+                // Title Header (Left-aligned as shown in mockup)
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                  child: Text(
+                    "Wishlist",
+                    style: GoogleFonts.dmSans(
+                      fontSize: 24.sp,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-              ),
 
-              SizedBox(height: 8.h),
+                SizedBox(height: 8.h),
 
-              // Grid Content
-              Obx(() {
-                final items = controller.rxItems;
-                if (items.isEmpty) {
-                  return Container(
-                    height: 400.h,
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.favorite_outline,
-                          size: 64.sp,
-                          color: const Color(0xFF8E8E93),
-                        ),
-                        SizedBox(height: 16.h),
-                        Text(
-                          "Your Wishlist is empty",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                // Grid Content
+                Obx(() {
+                  if (controller.rxIsLoading.value && controller.rxItems.isEmpty) {
+                    return Container(
+                      height: 400.h,
+                      alignment: Alignment.center,
+                      child: CustomGoldLoader(size: 40.r, strokeWidth: 3.5.r),
+                    );
+                  }
+
+                  final items = controller.rxItems;
+                  if (items.isEmpty) {
+                    return Container(
+                      height: 400.h,
+                      alignment: Alignment.center,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.favorite_outline,
+                            size: 64.sp,
+                            color: const Color(0xFF8E8E93),
                           ),
-                        ),
-                        SizedBox(height: 8.h),
-                        Text(
-                          "Save luxury items here to track them.",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 12.sp,
-                            color: Colors.white38,
+                          SizedBox(height: 16.h),
+                          Text(
+                            "Your Wishlist is empty",
+                            style: GoogleFonts.dmSans(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                      ],
+                          SizedBox(height: 8.h),
+                          Text(
+                            "Save luxury items here to track them.",
+                            style: GoogleFonts.dmSans(
+                              fontSize: 12.sp,
+                              color: Colors.white38,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    itemCount: items.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 12.w,
+                      mainAxisSpacing: 12.h,
+                      childAspectRatio: 175 / 204,
                     ),
+                    itemBuilder: (context, index) {
+                      final item = items[index];
+                      return _buildWishlistCard(item);
+                    },
                   );
-                }
+                }),
 
-                return GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  itemCount: items.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 12.w,
-                    mainAxisSpacing: 12.h,
-                    childAspectRatio: 175 / 204,
-                  ),
-                  itemBuilder: (context, index) {
-                    final item = items[index];
-                    return _buildWishlistCard(item);
-                  },
-                );
-              }),
-
-              // Bottom spacing to avoid overlap with bottom navigation bar
-              SizedBox(height: 120.h),
-            ],
+                // Bottom spacing to avoid overlap with bottom navigation bar
+                SizedBox(height: 120.h),
+              ],
+            ),
           ),
         ),
       ),
@@ -105,18 +120,27 @@ class WishlistScreen extends GetView<WishlistController> {
   Widget _buildWishlistCard(WishlistItem item) {
     return GestureDetector(
       onTap: () {
-        final feedItem = FeedItem(
-          imagePath: item.imageUrl,
-          userName: "Olivia Mendes",
-          condition: "Excellent condition",
-          itemName: item.itemName,
-          price:
-              "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
-          wornCount: "Worn Twice",
-          size: "Medium",
-          description: "Luxury ${item.itemName} from ${item.brand}.",
-        );
-        Get.toNamed(AppRoutes.itemDetail, arguments: feedItem);
+        if (item.rawProduct != null) {
+          final feedItem = FeedItem.fromProductModel(item.rawProduct!);
+          Get.toNamed(AppRoutes.itemDetail, arguments: feedItem);
+        } else {
+          final formattedPrice =
+              "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
+          final feedItem = FeedItem(
+            id: item.id,
+            imagePath: item.imageUrl,
+            userName: '',
+            condition: item.condition ?? '',
+            itemName: item.itemName,
+            brand: item.brand,
+            price: formattedPrice,
+            size: '',
+            wornCount: '',
+            description: item.description ?? '',
+            images: item.imageUrl.isNotEmpty ? [item.imageUrl] : [],
+          );
+          Get.toNamed(AppRoutes.itemDetail, arguments: feedItem);
+        }
       },
       child: Container(
         decoration: BoxDecoration(
