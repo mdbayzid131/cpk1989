@@ -137,7 +137,9 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                       Get.toNamed(
                                         AppRoutes.sellerProfile,
                                         arguments: {
+                                          'sellerId': item.sellerId,
                                           'userName': item.userName,
+                                          'avatarUrl': item.sellerProfileImage,
                                           'isVerified': item.isVerified,
                                         },
                                       );

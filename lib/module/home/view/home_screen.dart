@@ -20,16 +20,64 @@ class HomeScreen extends GetView<HomeController> {
     return Scaffold(
       backgroundColor: const Color(0xFF0F1012),
       body: Obx(() {
-        if (controller.rxItems.isEmpty) {
+        if (controller.rxIsLoading.value && controller.rxItems.isEmpty) {
           return Center(child: CustomGoldLoader(size: 44.r));
         }
 
-        return PageView.builder(
-          scrollDirection: Axis.vertical,
-          itemCount: controller.rxItems.length,
-          onPageChanged: controller.onPageChanged,
-          itemBuilder: (context, index) {
-            final item = controller.rxItems[index];
+        if (controller.rxItems.isEmpty) {
+          return RefreshIndicator(
+            color: const Color(0xFFE2B744),
+            backgroundColor: const Color(0xFF1E2022),
+            onRefresh: () => controller.fetchFeedItems(refresh: true),
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Container(
+                height: MediaQuery.of(context).size.height - 100.h,
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.inventory_2_outlined,
+                      size: 64.sp,
+                      color: Colors.white38,
+                    ),
+                    SizedBox(height: 16.h),
+                    Text(
+                      "No products available right now",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 16.sp,
+                        color: Colors.white70,
+                      ),
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      "Pull down to refresh",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12.sp,
+                        color: Colors.white38,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+
+        return RefreshIndicator(
+          color: const Color(0xFFE2B744),
+          backgroundColor: const Color(0xFF1E2022),
+          onRefresh: () => controller.fetchFeedItems(refresh: true),
+          child: PageView.builder(
+            scrollDirection: Axis.vertical,
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            itemCount: controller.rxItems.length,
+            onPageChanged: controller.onPageChanged,
+            itemBuilder: (context, index) {
+              final item = controller.rxItems[index];
             return Stack(
               fit: StackFit.expand,
               children: [
@@ -99,7 +147,9 @@ class HomeScreen extends GetView<HomeController> {
                                 Get.toNamed(
                                   AppRoutes.sellerProfile,
                                   arguments: {
+                                    'sellerId': item.sellerId,
                                     'userName': item.userName,
+                                    'avatarUrl': item.sellerProfileImage,
                                     'isVerified': item.isVerified,
                                   },
                                 );
@@ -290,8 +340,9 @@ class HomeScreen extends GetView<HomeController> {
               ],
             );
           },
-        );
-      }),
+        ),
+      );
+    }),
     );
   }
 }

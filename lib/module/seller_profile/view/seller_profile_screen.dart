@@ -81,11 +81,15 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Circular avatar (Without edit button)
+          // Circular avatar (Without edit button)
           Obx(
             () => CircleAvatar(
               radius: 46.r,
               backgroundColor: const Color(0xFF282A2E),
-              backgroundImage: NetworkImage(controller.rxAvatarUrl.value),
+              backgroundImage: (controller.rxAvatarUrl.value.isNotEmpty &&
+                      controller.rxAvatarUrl.value.startsWith('http'))
+                  ? NetworkImage(controller.rxAvatarUrl.value)
+                  : const NetworkImage("https://i.ibb.co/z5YHLV9/profile.png"),
             ),
           ),
           SizedBox(width: 16.w),
@@ -120,25 +124,45 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
                 SizedBox(height: 8.h),
 
                 // Translucent Stats Container (Label on TOP, Value on BOTTOM)
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 4.w),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.05),
-                      width: 1.0,
+                Obx(
+                  () => Container(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 8.h,
+                      horizontal: 4.w,
                     ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Expanded(child: _buildStatItem("Items Listed", "24")),
-                      _buildStatDivider(),
-                      Expanded(child: _buildStatItem("Items Sold", "12")),
-                      _buildStatDivider(),
-                      Expanded(child: _buildStatItem("Closet Value", "12.2k")),
-                    ],
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12.r),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.05),
+                        width: 1.0,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                          child: _buildStatItem(
+                            "Items Listed",
+                            controller.itemsListedCount.toString(),
+                          ),
+                        ),
+                        _buildStatDivider(),
+                        Expanded(
+                          child: _buildStatItem(
+                            "Items Sold",
+                            controller.itemsSoldCount.toString(),
+                          ),
+                        ),
+                        _buildStatDivider(),
+                        Expanded(
+                          child: _buildStatItem(
+                            "Closet Value",
+                            controller.closetValueFormatted,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -184,6 +208,14 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
 
   Widget _buildSellerItemsGrid() {
     return Obx(() {
+      if (controller.rxIsLoading.value && controller.rxItems.isEmpty) {
+        return Container(
+          height: 200.h,
+          alignment: Alignment.center,
+          child: CustomGoldLoader(size: 36.r, strokeWidth: 3.5.r),
+        );
+      }
+
       final items = controller.rxItems;
       if (items.isEmpty) {
         return Container(
@@ -228,17 +260,20 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
       onTap: () {
         // Convert ProfileItem to FeedItem to fit ItemDetailScreen model
         final feedItem = FeedItem(
+          id: item.id,
+          sellerId: controller.rxSellerId.value,
           imagePath: item.imageUrl,
           userName: controller.rxUserName.value,
           condition: "Excellent",
           itemName: item.itemName,
           price: formattedPrice,
           size: "Medium",
-          wornCount: "Warn Twice",
+          wornCount: "Worn Twice",
           description:
-              "${item.brand} ${item.itemName} in pristine condition. Part of luxury closet sale.",
+              "${item.brand} ${item.itemName} in pristine condition.",
           isVerified: controller.rxIsVerified.value,
           images: item.itemImages,
+          sellerProfileImage: controller.rxAvatarUrl.value,
         );
         Get.toNamed(AppRoutes.itemDetail, arguments: feedItem);
       },

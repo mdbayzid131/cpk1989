@@ -6,6 +6,7 @@ import 'package:cpk1989/config/routes/app_pages.dart';
 
 class FeedItem {
   final String id;
+  final String sellerId;
   final String imagePath;
   final String userName;
   final String condition;
@@ -23,6 +24,7 @@ class FeedItem {
 
   FeedItem({
     this.id = '',
+    this.sellerId = '',
     required this.imagePath,
     required this.userName,
     required this.condition,
@@ -48,6 +50,7 @@ class FeedItem {
 
     return FeedItem(
       id: product.id ?? '',
+      sellerId: product.seller?.id ?? '',
       imagePath: (product.images != null && product.images!.isNotEmpty)
           ? product.images!.first
           : '',
