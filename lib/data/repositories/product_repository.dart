@@ -27,6 +27,19 @@ class ProductRepository {
     return await apiClient.getData('${ApiConstants.products}/$id');
   }
 
+  /// Update product details by ID (PATCH /products/:id - JSON only)
+  Future<Response> updateProduct(
+    String id,
+    Map<String, dynamic> data,
+  ) async {
+    return await apiClient.patchData('${ApiConstants.products}/$id', data);
+  }
+
+  /// Delete a product listing by ID (DELETE /products/:id)
+  Future<Response> deleteProduct(String id) async {
+    return await apiClient.deleteData('${ApiConstants.products}/$id');
+  }
+
   /// ===================== CREATE PRODUCT (SELL FLOW) =====================
   /// Create a new product listing with multiple images and optional purchase proof PDF.
   Future<Response> createProduct({

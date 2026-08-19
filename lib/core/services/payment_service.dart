@@ -30,8 +30,7 @@ class PaymentService extends GetxService {
     return Get.find<PaymentService>();
   }
 
-  final String stripePublishableKey =
-      'pk_test_51RqgJZGXJvAsdd7omGPG7Z1sPRl3dJb9QY9oCfrl8tSn1StxRIAig3I5xK9hKk1gCVKwSQka5lUi683927AaIoPu00TYnG8Xx6';
+  String get stripePublishableKey => ApiConstants.stripePublishableKey;
 
   bool _isStripeInitialized = false;
 
@@ -41,14 +40,17 @@ class PaymentService extends GetxService {
     _initStripe();
   }
 
-  Future<void> _initStripe() async {
+  Future<void> _initStripe({String? customKey}) async {
     try {
-      Stripe.publishableKey = stripePublishableKey;
+      final keyToUse = (customKey != null && customKey.isNotEmpty)
+          ? customKey
+          : ApiConstants.stripePublishableKey;
+      Stripe.publishableKey = keyToUse;
       Stripe.merchantIdentifier = 'merchant.app.closete';
       Stripe.urlScheme = 'closete';
       await Stripe.instance.applySettings();
       _isStripeInitialized = true;
-      debugPrint('✅ Stripe initialized successfully');
+      debugPrint('✅ Stripe initialized with key: ${Stripe.publishableKey}');
     } catch (e) {
       debugPrint('❌ Stripe init error: $e');
     }
@@ -218,6 +220,7 @@ class PaymentService extends GetxService {
   Future<PaymentResult> addCardWithSetupIntent() async {
     final operationId = const Uuid().v4();
     try {
+      await _initStripe();
       final paymentRepo = Get.find<PaymentRepository>();
       final clientSecret = await paymentRepo.createSetupIntent(
         idempotencyKey: operationId,
@@ -283,6 +286,7 @@ class PaymentService extends GetxService {
       }
 
       // Step 1: Hit backend API POST /payment-methods/setup-intent
+      await _initStripe();
       final paymentRepo = Get.find<PaymentRepository>();
       final clientSecret = await paymentRepo.createSetupIntent(
         idempotencyKey: operationId,

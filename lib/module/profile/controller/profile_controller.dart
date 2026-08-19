@@ -8,8 +8,10 @@ import 'package:cpk1989/data/models/user_model.dart';
 import 'package:cpk1989/data/models/product_model.dart';
 import 'package:cpk1989/data/models/order_model.dart';
 import 'package:cpk1989/data/models/saved_card_model.dart';
+import 'package:cpk1989/data/models/profile_stats_model.dart';
 import 'package:cpk1989/data/repositories/user_repository.dart';
 import 'package:cpk1989/data/repositories/payment_repository.dart';
+import 'package:cpk1989/data/repositories/product_repository.dart';
 import 'package:cpk1989/core/services/payment_service.dart';
 
 class ProfileItem {
@@ -22,6 +24,9 @@ class ProfileItem {
   final String itemName;
   final String? status;
   final List<String>? images;
+  final String? proofOfPurchase;
+  final bool? originalPackagingAvailable;
+  final OrderModel? orderModel;
 
   ProfileItem({
     required this.id,
@@ -33,9 +38,33 @@ class ProfileItem {
     required this.itemName,
     this.status,
     this.images,
+    this.proofOfPurchase,
+    this.originalPackagingAvailable,
+    this.orderModel,
   });
 
   List<String> get itemImages => images ?? [imageUrl, imageUrl, imageUrl];
+
+  String get displayStatus {
+    final st = (status ?? '').toLowerCase();
+    if (st == 'secured' || st == 'reserved' || st == 'pending' || st == 'pending_payment') {
+      return 'Reserved';
+    }
+    if (st == 'collected' || st == 'in_transit') {
+      return 'Collected';
+    }
+    if (st == 'authenticating') {
+      return 'Authenticating';
+    }
+    if (st == 'delivered' || st == 'completed') {
+      return 'Delivered';
+    }
+    if (st == 'cancelled') {
+      return 'Cancelled';
+    }
+    // Unknown status: show capitalised raw value
+    return st.isNotEmpty ? (st[0].toUpperCase() + st.substring(1)) : 'Reserved';
+  }
 }
 
 class ProfileController extends GetxController {
@@ -44,6 +73,10 @@ class ProfileController extends GetxController {
   final rxIsLoadingProfile = false.obs;
   final rxIsLoadingWardrobe = false.obs;
   final rxIsLoadingOrders = false.obs;
+  final rxOrdersPage = 1.obs;
+  final rxOrdersTotalPages = 1.obs;
+  final rxHasMoreOrders = true.obs;
+  final rxIsLoadingMoreOrders = false.obs;
 
   final rxWardrobeItems = <ProfileItem>[].obs;
   final rxPurchaseItems = <ProfileItem>[].obs;
@@ -63,8 +96,10 @@ class ProfileController extends GetxController {
   final rxUserId = "".obs;
   final rxProfileImage = "".obs;
   final rxUserProfile = Rxn<UserModel>();
+  final rxProfileStats = ProfileStatsModel().obs;
 
   UserRepository get _userRepo => Get.find<UserRepository>();
+  ProductRepository get _productRepo => Get.find<ProductRepository>();
 
   @override
   void onInit() {
@@ -80,14 +115,27 @@ class ProfileController extends GetxController {
     fetchProfileApiData();
   }
 
-  /// Main API loader for Profile, Wardrobe & Purchases
+  /// Main API loader for Profile, Stats, Wardrobe & Purchases
   Future<void> fetchProfileApiData() async {
     await fetchUserProfile();
+    await fetchProfileStats();
     if (rxUserId.value.isNotEmpty) {
       await fetchMyWardrobe();
     }
     await fetchMyPurchases();
     await fetchSavedCards();
+  }
+
+  /// Fetch profile statistics from GET /user/profile/stats
+  Future<void> fetchProfileStats() async {
+    try {
+      final response = await _userRepo.getProfileStats();
+      if (response.statusCode == 200 && response.data != null) {
+        rxProfileStats.value = ProfileStatsModel.fromJson(response.data);
+      }
+    } catch (e) {
+      debugPrint('⚠️ Fetch profile stats error: $e');
+    }
   }
 
   /// 1. Fetch User Profile from GET /user/profile
@@ -173,6 +221,8 @@ class ProfileController extends GetxController {
             itemName: prod.name ?? 'Item',
             status: prod.status,
             images: prod.images,
+            proofOfPurchase: prod.proofOfPurchase,
+            originalPackagingAvailable: prod.originalPackagingAvailable,
           );
         }).toList();
 
@@ -185,11 +235,19 @@ class ProfileController extends GetxController {
     }
   }
 
-  /// 3. Fetch User Purchases / Orders from GET /orders
-  Future<void> fetchMyPurchases() async {
-    rxIsLoadingOrders.value = true;
+  /// 3. Fetch User Purchases / Orders from GET /orders with pagination
+  Future<void> fetchMyPurchases({bool refresh = false}) async {
+    if (refresh || rxPurchaseItems.isEmpty) {
+      rxOrdersPage.value = 1;
+      rxHasMoreOrders.value = true;
+      rxIsLoadingOrders.value = true;
+    }
+
     try {
-      final response = await _userRepo.getMyOrders();
+      final response = await _userRepo.getMyOrders(
+        page: rxOrdersPage.value,
+        limit: 10,
+      );
       if (response.statusCode == 200) {
         final List list = response.data['data'] ?? [];
         final List<ProfileItem> items = [];
@@ -202,6 +260,9 @@ class ProfileController extends GetxController {
             final img = (prod?.images != null && prod!.images!.isNotEmpty)
                 ? prod.images!.first
                 : '';
+            final rootStatus =
+                (map['status'] ?? order.status ?? prod?.status ?? 'secured')
+                    .toString();
 
             items.add(
               ProfileItem(
@@ -212,13 +273,23 @@ class ProfileController extends GetxController {
                 isSold: true,
                 brand: prod?.brand ?? 'LUXURY',
                 itemName: prod?.name ?? order.orderNumber ?? 'Order',
-                status: order.status ?? 'Pending',
+                status: rootStatus,
                 images: prod?.images,
+                proofOfPurchase: prod?.proofOfPurchase,
+                originalPackagingAvailable: prod?.originalPackagingAvailable,
+                orderModel: order,
               ),
             );
           } catch (itemErr) {
             debugPrint('⚠️ Error parsing order item: $itemErr');
           }
+        }
+
+        final pagination = response.data['pagination'];
+        if (pagination != null) {
+          final totalPage = pagination['totalPage'] ?? 1;
+          rxOrdersTotalPages.value = totalPage;
+          rxHasMoreOrders.value = rxOrdersPage.value < totalPage;
         }
 
         rxPurchaseItems.assignAll(items);
@@ -227,6 +298,78 @@ class ProfileController extends GetxController {
       debugPrint('⚠️ Fetch purchases error: $e');
     } finally {
       rxIsLoadingOrders.value = false;
+    }
+  }
+
+  /// Load next page of purchases
+  Future<void> loadMorePurchases() async {
+    if (rxIsLoadingOrders.value ||
+        rxIsLoadingMoreOrders.value ||
+        !rxHasMoreOrders.value) {
+      return;
+    }
+
+    rxIsLoadingMoreOrders.value = true;
+    try {
+      final nextPage = rxOrdersPage.value + 1;
+      final response = await _userRepo.getMyOrders(
+        page: nextPage,
+        limit: 10,
+      );
+
+      if (response.statusCode == 200) {
+        final List list = response.data['data'] ?? [];
+        final List<ProfileItem> newItems = [];
+
+        for (var json in list) {
+          try {
+            final map = Map<String, dynamic>.from(json);
+            final order = OrderModel.fromJson(map);
+            final prod = order.productModel;
+            final img = (prod?.images != null && prod!.images!.isNotEmpty)
+                ? prod.images!.first
+                : '';
+            final rootStatus =
+                (map['status'] ?? order.status ?? prod?.status ?? 'secured')
+                    .toString();
+
+            newItems.add(
+              ProfileItem(
+                id: order.id ?? '',
+                imageUrl: img,
+                price: order.price ?? prod?.price ?? 0.0,
+                likes: 1200,
+                isSold: true,
+                brand: prod?.brand ?? 'LUXURY',
+                itemName: prod?.name ?? order.orderNumber ?? 'Order',
+                status: rootStatus,
+                images: prod?.images,
+                proofOfPurchase: prod?.proofOfPurchase,
+                originalPackagingAvailable: prod?.originalPackagingAvailable,
+                orderModel: order,
+              ),
+            );
+          } catch (itemErr) {
+            debugPrint('⚠️ Error parsing order item: $itemErr');
+          }
+        }
+
+        rxPurchaseItems.addAll(newItems);
+        rxOrdersPage.value = nextPage;
+
+        final pagination = response.data['pagination'];
+        if (pagination != null) {
+          final totalPage = pagination['totalPage'] ?? 1;
+          rxOrdersTotalPages.value = totalPage;
+          rxHasMoreOrders.value = nextPage < totalPage;
+        } else {
+          rxHasMoreOrders.value = newItems.isNotEmpty;
+        }
+      }
+    } catch (e) {
+      debugPrint('⚠️ Load more purchases error: $e');
+    } finally {
+      rxIsLoadingMoreOrders.value = false;
     }
   }
 
@@ -284,6 +427,112 @@ class ProfileController extends GetxController {
     } catch (e) {
       debugPrint('⚠️ Delete card error: $e');
       rxSavedCards.removeWhere((card) => card.id == cardId);
+    }
+  }
+
+  /// Delete a product listing from My Wardrobe (DELETE /products/:id)
+  Future<bool> deleteWardrobeItem(ProfileItem item) async {
+    // Check if item is reserved or sold
+    final status = (item.status ?? '').toLowerCase();
+    if (status == 'secured' || status == 'sold') {
+      Get.snackbar(
+        'Action Blocked',
+        'Reserved or sold items cannot be deleted.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: const Color(0xFF161719),
+        colorText: const Color(0xFFFF453A),
+        duration: const Duration(seconds: 3),
+      );
+      return false;
+    }
+
+    try {
+      Helpers.showLoadingDialog(message: "Deleting item...");
+      final response = await _productRepo.deleteProduct(item.id);
+      Get.back(); // Dismiss loading
+
+      if (response.statusCode == 200 ||
+          response.statusCode == 201 ||
+          response.statusCode == 204) {
+        rxWardrobeItems.removeWhere((i) => i.id == item.id);
+        Get.snackbar(
+          'Success',
+          'Item deleted from wardrobe successfully',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: const Color(0xFF161719),
+          colorText: Colors.white,
+          duration: const Duration(seconds: 2),
+        );
+        fetchProfileStats(); // Update listed stats count
+        return true;
+      } else {
+        final msg = response.data?['message'] ?? 'Failed to delete item';
+        Get.snackbar(
+          'Error',
+          msg,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: const Color(0xFF161719),
+          colorText: const Color(0xFFFF453A),
+        );
+        return false;
+      }
+    } catch (e) {
+      Get.back(); // Dismiss loading if open
+      debugPrint('⚠️ Delete product error: $e');
+      Get.snackbar(
+        'Error',
+        'Unable to delete item. Please try again.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: const Color(0xFF161719),
+        colorText: const Color(0xFFFF453A),
+      );
+      return false;
+    }
+  }
+
+  /// Update product details (PATCH /products/:id)
+  Future<bool> updateWardrobeItem(
+    String productId,
+    Map<String, dynamic> updatedData,
+  ) async {
+    try {
+      Helpers.showLoadingDialog(message: "Updating item...");
+      final response =
+          await _productRepo.updateProduct(productId, updatedData);
+      Get.back(); // Dismiss loading
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Get.snackbar(
+          'Success',
+          'Item updated successfully!',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: const Color(0xFF161719),
+          colorText: Colors.white,
+        );
+        await fetchMyWardrobe();
+        return true;
+      } else {
+        final msg = response.data?['message'] ?? 'Failed to update item';
+        Get.snackbar(
+          'Error',
+          msg,
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: const Color(0xFF161719),
+          colorText: const Color(0xFFFF453A),
+        );
+        return false;
+      }
+    } catch (e) {
+      Get.back();
+      debugPrint('⚠️ Update product error: $e');
+      Get.snackbar(
+        'Error',
+        'Unable to update item. Please try again.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: const Color(0xFF161719),
+        colorText: const Color(0xFFFF453A),
+      );
+      return false;
     }
   }
 

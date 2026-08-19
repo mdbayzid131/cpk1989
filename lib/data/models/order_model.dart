@@ -51,8 +51,8 @@ class OrderModel {
   final String? orderNumber;
   final String? product;
   final ProductModel? productModel;
-  final String? buyer;
-  final String? seller;
+  final OrderBuyerModel? buyerModel;
+  final OrderSellerModel? sellerModel;
   final double? price;
   final double? platformFee;
   final double? sellerPayout;
@@ -69,8 +69,8 @@ class OrderModel {
     this.orderNumber,
     this.product,
     this.productModel,
-    this.buyer,
-    this.seller,
+    this.buyerModel,
+    this.sellerModel,
     this.price,
     this.platformFee,
     this.sellerPayout,
@@ -82,6 +82,12 @@ class OrderModel {
     this.createdAt,
     this.updatedAt,
   });
+
+  /// Convenience: buyer display name
+  String get buyerName => buyerModel?.name ?? '';
+
+  /// Convenience: seller display name
+  String get sellerName => sellerModel?.name ?? '';
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     ProductModel? parsedProd;
@@ -95,17 +101,31 @@ class OrderModel {
       prodId = json['product'];
     }
 
+    OrderBuyerModel? parsedBuyer;
+    if (json['buyer'] is Map) {
+      parsedBuyer = OrderBuyerModel.fromJson(
+        Map<String, dynamic>.from(json['buyer']),
+      );
+    } else if (json['buyer'] is String) {
+      parsedBuyer = OrderBuyerModel(id: json['buyer']);
+    }
+
+    OrderSellerModel? parsedSeller;
+    if (json['seller'] is Map) {
+      parsedSeller = OrderSellerModel.fromJson(
+        Map<String, dynamic>.from(json['seller']),
+      );
+    } else if (json['seller'] is String) {
+      parsedSeller = OrderSellerModel(id: json['seller']);
+    }
+
     return OrderModel(
       id: json['id'] ?? json['_id'],
       orderNumber: json['orderNumber'],
       product: prodId,
       productModel: parsedProd,
-      buyer: json['buyer'] is String
-          ? json['buyer']
-          : json['buyer']?['_id'] ?? json['buyer']?['id'],
-      seller: json['seller'] is String
-          ? json['seller']
-          : json['seller']?['_id'] ?? json['seller']?['id'],
+      buyerModel: parsedBuyer,
+      sellerModel: parsedSeller,
       price: json['price'] != null
           ? double.tryParse(json['price'].toString())
           : parsedProd?.price,
@@ -151,8 +171,8 @@ class OrderModel {
       'id': id,
       'orderNumber': orderNumber,
       'product': product,
-      'buyer': buyer,
-      'seller': seller,
+      'buyer': buyerModel?.toJson(),
+      'seller': sellerModel?.toJson(),
       'price': price,
       'platformFee': platformFee,
       'sellerPayout': sellerPayout,
@@ -164,6 +184,48 @@ class OrderModel {
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
     };
+  }
+}
+
+class OrderBuyerModel {
+  final String? id;
+  final String? name;
+  final String? email;
+
+  OrderBuyerModel({this.id, this.name, this.email});
+
+  factory OrderBuyerModel.fromJson(Map<String, dynamic> json) {
+    return OrderBuyerModel(
+      id: json['_id'] ?? json['id'],
+      name: json['name'],
+      email: json['email'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'name': name, 'email': email};
+  }
+}
+
+class OrderSellerModel {
+  final String? id;
+  final String? name;
+  final String? email;
+  final String? contact;
+
+  OrderSellerModel({this.id, this.name, this.email, this.contact});
+
+  factory OrderSellerModel.fromJson(Map<String, dynamic> json) {
+    return OrderSellerModel(
+      id: json['_id'] ?? json['id'],
+      name: json['name'],
+      email: json['email'],
+      contact: json['contact'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'name': name, 'email': email, 'contact': contact};
   }
 }
 

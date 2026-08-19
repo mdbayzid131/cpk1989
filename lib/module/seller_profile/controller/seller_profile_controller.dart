@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:cpk1989/data/models/product_model.dart';
+import 'package:cpk1989/data/models/profile_stats_model.dart';
 import 'package:cpk1989/data/repositories/user_repository.dart';
 import 'package:cpk1989/core/services/api_client.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
@@ -13,6 +14,7 @@ class SellerProfileController extends GetxController {
   final rxIsLoading = false.obs;
 
   final rxItems = <ProfileItem>[].obs;
+  final rxSellerStats = ProfileStatsModel().obs;
 
   UserRepository get _userRepo {
     if (!Get.isRegistered<UserRepository>()) {
@@ -41,6 +43,20 @@ class SellerProfileController extends GetxController {
     }
 
     fetchSellerProducts();
+    fetchSellerStats();
+  }
+
+  /// Fetch seller statistics from GET /user/profile/stats/:userId
+  Future<void> fetchSellerStats() async {
+    if (rxSellerId.value.isEmpty) return;
+    try {
+      final response = await _userRepo.getProfileStats(userId: rxSellerId.value);
+      if (response.statusCode == 200 && response.data != null) {
+        rxSellerStats.value = ProfileStatsModel.fromJson(response.data);
+      }
+    } catch (e) {
+      Helpers.debug("Fetch seller stats error: $e");
+    }
   }
 
   /// Fetch seller products from GET /products?seller={sellerId}

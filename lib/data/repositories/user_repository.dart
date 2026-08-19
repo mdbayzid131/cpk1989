@@ -28,9 +28,12 @@ class UserRepository {
     return await apiClient.patchData(ApiConstants.profile, body);
   }
 
-  /// Get user's purchased items / orders history
-  Future<Response> getMyOrders() async {
-    return await apiClient.getData(ApiConstants.orders);
+  /// Get user's purchased items / orders history with pagination
+  Future<Response> getMyOrders({int page = 1, int limit = 10}) async {
+    return await apiClient.getData(
+      ApiConstants.orders,
+      query: {'page': page, 'limit': limit},
+    );
   }
 
   /// Get user's listed items (My Wardrobe)
@@ -43,5 +46,13 @@ class UserRepository {
       ApiConstants.products,
       query: {'seller': sellerId, 'page': page, 'limit': limit},
     );
+  }
+
+  /// Get profile statistics (GET /user/profile/stats or GET /user/profile/stats/:userId)
+  Future<Response> getProfileStats({String? userId}) async {
+    final endpoint = (userId != null && userId.isNotEmpty)
+        ? '${ApiConstants.profileStats}/$userId'
+        : ApiConstants.profileStats;
+    return await apiClient.getData(endpoint);
   }
 }

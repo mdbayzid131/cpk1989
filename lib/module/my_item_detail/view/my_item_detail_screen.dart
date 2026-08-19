@@ -1,4 +1,3 @@
-import 'package:cpk1989/config/themes/app_theme.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,9 +8,10 @@ import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/core/widgets/vertical_stepper.dart';
 import 'package:cpk1989/core/widgets/custom_gold_button.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
+import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
 import 'package:cpk1989/module/my_item_detail/controller/my_item_detail_controller.dart';
-import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
+import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 
 class MyItemDetailScreen extends GetView<MyItemDetailController> {
   const MyItemDetailScreen({super.key});
@@ -19,83 +19,65 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
   @override
   Widget build(BuildContext context) {
     final item = controller.item;
-    final status = item.status; // null, "Reserved", "Delivered", "Rejected"
+    final isReserved = controller.isReserved;
+    final rawStatus = item.status ?? (isReserved ? "Reserved" : null);
 
-    final formattedPrice =
-        "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
+    final String currentStatus = (item.status ?? '').toLowerCase();
 
-    // Setup timeline steps based on status
-    final List<StepperStep> steps = [];
-    if (status == "Reserved") {
-      steps.addAll(const [
-        StepperStep(
-          title: "Reserved",
-          subtitle: "Item reserved for you",
-          state: StepperStepState.completed,
-        ),
-        StepperStep(
-          title: "Collected",
-          subtitle: "Picked up from seller",
-          state: StepperStepState.active,
-        ),
-        StepperStep(
-          title: "Authenticating",
-          subtitle: "Being verified by experts",
-          state: StepperStepState.inactive,
-        ),
-        StepperStep(
-          title: "Delivered",
-          subtitle: "On its way to you",
-          state: StepperStepState.inactive,
-        ),
-      ]);
-    } else if (status == "Delivered") {
-      steps.addAll(const [
-        StepperStep(
-          title: "Reserved",
-          subtitle: "Item reserved for you",
-          state: StepperStepState.completed,
-        ),
-        StepperStep(
-          title: "Collected",
-          subtitle: "Picked up from seller",
-          state: StepperStepState.completed,
-        ),
-        StepperStep(
-          title: "Authenticating",
-          subtitle: "Being verified by experts",
-          state: StepperStepState.completed,
-        ),
-        StepperStep(
-          title: "Delivered",
-          subtitle: "On its way to you",
-          state: StepperStepState.completed,
-        ),
-      ]);
-    } else if (status == "Rejected") {
-      steps.addAll(const [
-        StepperStep(
-          title: "Reserved",
-          subtitle: "Item reserved for you",
-          state: StepperStepState.completed,
-        ),
-        StepperStep(
-          title: "Collected",
-          subtitle: "Picked up from seller",
-          state: StepperStepState.completed,
-        ),
-        StepperStep(
-          title: "Authenticating (Failed)",
-          subtitle: "Being verified by experts",
-          state: StepperStepState.failed,
-        ),
-        StepperStep(
-          title: "Delivered",
-          subtitle: "On its way to you",
-          state: StepperStepState.failed,
-        ),
-      ]);
+    // Determine states for exact 4 UI steps: Reserved -> Collected -> Authenticating -> Delivered
+    // Uses same mapping as ProfileItem.displayStatus
+    StepperStepState step1State = StepperStepState.completed;
+    StepperStepState step2State = StepperStepState.inactive;
+    StepperStepState step3State = StepperStepState.inactive;
+    StepperStepState step4State = StepperStepState.inactive;
+
+    if (currentStatus == 'collected' || currentStatus == 'in_transit') {
+      // Collected: step 1 done, step 2 done, step 3 active
+      step1State = StepperStepState.completed;
+      step2State = StepperStepState.completed;
+      step3State = StepperStepState.active;
+    } else if (currentStatus == 'authenticating') {
+      // Authenticating: steps 1-3 done, step 4 active
+      step1State = StepperStepState.completed;
+      step2State = StepperStepState.completed;
+      step3State = StepperStepState.completed;
+      step4State = StepperStepState.active;
+    } else if (currentStatus == 'delivered' || currentStatus == 'completed') {
+      // Delivered: all done
+      step1State = StepperStepState.completed;
+      step2State = StepperStepState.completed;
+      step3State = StepperStepState.completed;
+      step4State = StepperStepState.completed;
+    } else {
+      // Reserved / Secured / Pending / Unknown: step 1 done, step 2 active
+      step1State = StepperStepState.completed;
+      step2State = StepperStepState.active;
+      step3State = StepperStepState.inactive;
+      step4State = StepperStepState.inactive;
     }
+
+    final List<StepperStep> steps = [
+      StepperStep(
+        title: "Reserved",
+        subtitle: "Item reserved for you",
+        state: step1State,
+      ),
+      StepperStep(
+        title: "Collected",
+        subtitle: "Picked up from seller",
+        state: step2State,
+      ),
+      StepperStep(
+        title: "Authenticating",
+        subtitle: "Being verified by experts",
+        state: step3State,
+      ),
+      StepperStep(
+        title: "Delivered",
+        subtitle: "On its way to you",
+        state: step4State,
+      ),
+    ];
 
     return Scaffold(
       backgroundColor: const Color(0xFF0F1012),
@@ -129,22 +111,26 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
           ),
         ),
         actions: [
-          if (status == null)
+          // Top right Delete button shown only when item is NOT reserved
+          if (!isReserved)
             Padding(
               padding: EdgeInsets.only(right: 20.w),
               child: Center(
                 child: CustomGlassButton(
                   size: 40.r,
                   onTap: () {
-                    Get.snackbar(
-                      "Delete Item",
-                      "Item deletion triggered...",
-                      snackPosition: SnackPosition.TOP,
-                      backgroundColor: const Color(0xFF161719),
-                      colorText: Colors.white,
-                      borderRadius: 16,
-                      margin: const EdgeInsets.all(16),
-                    );
+                    if (Get.isRegistered<ProfileController>()) {
+                      Get.find<ProfileController>()
+                          .deleteWardrobeItem(controller.item);
+                    } else {
+                      Get.snackbar(
+                        "Delete Item",
+                        "Are you sure you want to delete this item?",
+                        snackPosition: SnackPosition.TOP,
+                        backgroundColor: const Color(0xFF161719),
+                        colorText: Colors.white,
+                      );
+                    }
                   },
                   child: SvgPicture.asset(
                     'assets/icons/delete .svg',
@@ -167,6 +153,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Product Image Carousel
               SizedBox(
                 height: 300.h,
                 child: OverflowBox(
@@ -196,21 +183,15 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                                           imgUrl,
                                           fit: BoxFit.cover,
                                           loadingBuilder:
-                                              (
-                                                context,
-                                                child,
-                                                loadingProgress,
-                                              ) {
-                                                if (loadingProgress == null) {
-                                                  return child;
-                                                }
-                                                return Center(
-                                                  child: CustomGoldLoader(
-                                                    size: 24.r,
-                                                    strokeWidth: 2.5.r,
-                                                  ),
-                                                );
-                                              },
+                                              (context, child, loadingProgress) {
+                                            if (loadingProgress == null) return child;
+                                            return Center(
+                                              child: CustomGoldLoader(
+                                                size: 24.r,
+                                                strokeWidth: 2.5.r,
+                                              ),
+                                            );
+                                          },
                                           errorBuilder:
                                               (context, error, stackTrace) =>
                                                   const Center(
@@ -257,9 +238,9 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                 ),
               ),
 
-              SizedBox(height: 20.h),
+              SizedBox(height: 24.h),
 
-              // ITEM DETAILS Section Header
+              // ITEM DETAILS Header Row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -272,37 +253,63 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                       letterSpacing: 1.0,
                     ),
                   ),
-                  if (status == null)
-                    SvgPicture.asset(
-                      'assets/icons/edit pen .svg',
-                      width: 18.sp,
-                      height: 18.sp,
-                      colorFilter: const ColorFilter.mode(
-                        Color(0xFFE2B744),
-                        BlendMode.srcIn,
+                  // If item is NOT reserved: show Gold Edit Pencil icon
+                  if (!isReserved)
+                    Obx(
+                      () => GestureDetector(
+                        onTap: controller.toggleEdit,
+                        child: Container(
+                          padding: EdgeInsets.all(6.r),
+                          decoration: BoxDecoration(
+                            color: controller.rxIsEditing.value
+                                ? const Color(0xFFFFAF2C).withValues(alpha: 0.2)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: SvgPicture.asset(
+                            'assets/icons/edit pen .svg',
+                            width: 18.sp,
+                            height: 18.sp,
+                            colorFilter: const ColorFilter.mode(
+                              Color(0xFFFFAF2C),
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                        ),
                       ),
                     )
                   else
+                    // If item IS reserved: show Status Pill Badge (● Reserved)
                     Container(
                       padding: EdgeInsets.symmetric(
                         horizontal: 12.w,
                         vertical: 6.h,
                       ),
                       decoration: BoxDecoration(
-                        color: status == "Rejected"
-                            ? const Color(0xFFFF453A)
-                            : AppTheme.yellow,
+                        color: const Color(0xFFFFAF2C),
                         borderRadius: BorderRadius.circular(10.r),
                       ),
-                      child: Text(
-                        status == "Rejected" ? "• Rejected" : "• $status",
-                        style: GoogleFonts.dmSans(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w500,
-                          color: status == "Rejected"
-                              ? Colors.white
-                              : Colors.black,
-                        ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 6.r,
+                            height: 6.r,
+                            decoration: const BoxDecoration(
+                              color: Colors.black,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          SizedBox(width: 6.w),
+                          Text(
+                            rawStatus ?? "Reserved",
+                            style: GoogleFonts.dmSans(
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                 ],
@@ -310,449 +317,306 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
 
               SizedBox(height: 12.h),
 
-              // ITEM DETAILS list
-              _buildDetailRow("Title", item.itemName),
-              _buildDetailRow("Brand", item.brand),
-              _buildDescriptionDetailRow(
-                "Description",
-                "Black caviar leather with gold hardware. Comes with original dust bag and authenticity card.",
-              ),
-              _buildDetailRow("Suggested price", formattedPrice),
-              _buildConditionDetailRow("Condition", "Excellent"),
-              _buildProofOfPurchaseRow("Proof of purchase (Optional)"),
-              _buildOriginalPackagingRow(),
+              // ITEM DETAILS Fields (View vs Edit mode)
+              Obx(() {
+                final isEditing = controller.rxIsEditing.value;
+                if (isEditing) {
+                  return _buildEditForm(context);
+                } else {
+                  return _buildReadonlyDetails(context);
+                }
+              }),
 
-              // ONLY show timeline/buyer details/earnings when status is NOT null
-              if (status != null) ...[
-                SizedBox(height: 28.h),
+              // -------------------------------------------------------------
+              // EXTRA SECTIONS: ONLY SHOWN WHEN ITEM IS RESERVED (isReserved == true)
+              // -------------------------------------------------------------
+              if (isReserved) ...[
+                Builder(
+                  builder: (context) {
+                    final order = item.orderModel;
+                    final buyerName = order?.buyerModel?.name ?? order?.buyerName ?? "Aisha Khan";
+                    final delivery = order?.deliveryDetails;
+                    final buyerAddress =
+                        (delivery?.address != null && delivery!.address!.isNotEmpty)
+                            ? "${delivery.address}${delivery.location != null ? ', ${delivery.location}' : ''}"
+                            : "Palm Jumeirah, Building 5, Apt 1204";
+                    final buyerPhone =
+                        (delivery?.phone != null && delivery!.phone!.isNotEmpty)
+                            ? delivery.phone!
+                            : "+971 50 123 4567";
 
-                // ITEM CURRENT STATUS Section Header
-                Text(
-                  "ITEM CURRENT STATUS",
-                  style: GoogleFonts.dmSans(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white38,
-                    letterSpacing: 1.0,
-                  ),
-                ),
+                    final listingPriceVal = (order?.price ?? item.price) > 0
+                        ? (order?.price ?? item.price)
+                        : 4000.0;
+                    final platformFeeVal =
+                        order?.platformFee ?? (listingPriceVal * 0.12);
+                    final sellerPayoutVal =
+                        order?.sellerPayout ?? (listingPriceVal - platformFeeVal);
 
-                SizedBox(height: 16.h),
-
-                // Stepper Timeline Tracker (Matching Order Confirmation UI)
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 16.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF161719),
-                    borderRadius: BorderRadius.circular(16.r),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.08),
-                      width: 1.0,
-                    ),
-                  ),
-                  child: VerticalStepper(
-                    steps: steps,
-                    nodeSize: 26.r,
-                    activeDashedSize: 26.r,
-                    lineWidth: 2.w,
-                    stepHeight: 52.h,
-                    titleStyle: GoogleFonts.dmSans(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                      height: 1.1,
-                    ),
-                    subtitleStyle: GoogleFonts.dmSans(
-                      fontSize: 12.sp,
-                      color: Colors.white54,
-                      height: 1.1,
-                    ),
-                  ),
-                ),
-
-                SizedBox(height: 16.h),
-
-                // Shield Secure Payment Disclaimer (Matching Order Confirmation Pill UI)
-                Center(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 14.w,
-                      vertical: 8.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.04),
-                      borderRadius: BorderRadius.circular(20.r),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        SvgPicture.asset(
-                          'assets/icons/Authenticity guarante_ home page logo.svg',
-                          width: 14.r,
-                          height: 14.r,
-                          colorFilter: const ColorFilter.mode(
-                            Colors.white38,
-                            BlendMode.srcIn,
-                          ),
-                        ),
-                        SizedBox(width: 8.w),
+                        SizedBox(height: 28.h),
+
+                        // 1. ITEM CURRENT STATUS Section Header & Timeline
                         Text(
-                          "Authenticity Verified. Payment Protected.",
+                          "ITEM CURRENT STATUS",
                           style: GoogleFonts.dmSans(
-                            fontSize: 11.sp,
-                            color: Colors.white54,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white38,
+                            letterSpacing: 1.0,
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
+                        SizedBox(height: 16.h),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 16.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF161719),
+                            borderRadius: BorderRadius.circular(16.r),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.08),
+                              width: 1.0,
+                            ),
+                          ),
+                          child: VerticalStepper(
+                            steps: steps,
+                            nodeSize: 26.r,
+                            activeDashedSize: 26.r,
+                            lineWidth: 2.w,
+                            stepHeight: 52.h,
+                            titleStyle: GoogleFonts.dmSans(
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                              height: 1.1,
+                            ),
+                            subtitleStyle: GoogleFonts.dmSans(
+                              fontSize: 12.sp,
+                              color: Colors.white54,
+                              height: 1.1,
+                            ),
+                          ),
+                        ),
 
-                if (status == "Rejected") ...[
-                  SizedBox(height: 16.h),
-                  // Red Rejection Warning card
-                  Container(
-                    padding: EdgeInsets.all(16.w),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12.r),
-                      border: Border.all(
-                        color: const Color(0xFFFF383C).withValues(alpha: 0.5),
-                        width: 1.0,
-                      ),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "This item didn't pass authentication",
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: const Color(0xFFFF383C),
-                                ),
+                        SizedBox(height: 28.h),
+
+                        // 2. BUYER DETAILS Section Header & Card
+                        Text(
+                          "BUYER DETAILS",
+                          style: GoogleFonts.dmSans(
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white38,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                        SizedBox(height: 12.h),
+                        CustomPaint(
+                          painter: _GradientBorderPainter(
+                            gradient: const LinearGradient(
+                              begin: Alignment.centerRight,
+                              end: Alignment.centerLeft,
+                              colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+                            ),
+                            strokeWidth: 1.0,
+                            borderRadius: 16.r,
+                          ),
+                          child: Container(
+                            padding: EdgeInsets.all(16.w),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                begin: Alignment.centerRight,
+                                end: Alignment.centerLeft,
+                                colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
                               ),
-                              SizedBox(height: 4.h),
-                              Text.rich(
-                                TextSpan(
-                                  text:
-                                      "Your item is being sent back Estimated delivery: ",
-                                  style: GoogleFonts.dmSans(
-                                    fontSize: 12.sp,
-                                    color: Colors.white54,
-                                  ),
+                              borderRadius: BorderRadius.circular(16.r),
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
                                   children: [
-                                    TextSpan(
-                                      text: "2-3 days",
+                                    CircleAvatar(
+                                      radius: 18.r,
+                                      backgroundColor: const Color(0xFF282A2E),
+                                      backgroundImage: const NetworkImage(
+                                        'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=150',
+                                      ),
+                                    ),
+                                    SizedBox(width: 12.w),
+                                    Text(
+                                      buyerName,
                                       style: GoogleFonts.dmSans(
-                                        color: Colors.white,
+                                        fontSize: 16.sp,
                                         fontWeight: FontWeight.w700,
+                                        color: Colors.white,
                                       ),
                                     ),
                                   ],
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(width: 12.w),
-                        Container(
-                          width: 40.r,
-                          height: 40.r,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFF453A),
-                            borderRadius: BorderRadius.circular(10.r),
-                          ),
-                          child: Center(
-                            child: Icon(
-                              Icons.warning_amber_rounded,
-                              color: Colors.white,
-                              size: 20.sp,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-
-                SizedBox(height: 28.h),
-
-                // BUYER DETAILS Section Header
-                Text(
-                  "BUYER DETAILS",
-                  style: GoogleFonts.dmSans(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white38,
-                    letterSpacing: 1.0,
-                  ),
-                ),
-
-                SizedBox(height: 12.h),
-
-                // Buyer details card capsule
-                CustomPaint(
-                  painter: _GradientBorderPainter(
-                    gradient: const LinearGradient(
-                      begin: Alignment.centerRight,
-                      end: Alignment.centerLeft,
-                      colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-                    ),
-                    strokeWidth: 1.0,
-                    borderRadius: 16.r,
-                  ),
-                  child: Container(
-                    padding: EdgeInsets.all(16.w),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        begin: Alignment.centerRight,
-                        end: Alignment.centerLeft,
-                        colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-                      ),
-                      borderRadius: BorderRadius.circular(16.r),
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 18.r,
-                              backgroundColor: const Color(0xFF282A2E),
-                              backgroundImage: const NetworkImage(
-                                'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=150',
-                              ),
-                            ),
-                            SizedBox(width: 12.w),
-                            Text(
-                              "Aisha Khan",
-                              style: GoogleFonts.dmSans(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 12.h),
-                        const Divider(color: Colors.white10),
-                        SizedBox(height: 12.h),
-                        Row(
-                          children: [
-                            SvgPicture.asset(
-                              'assets/icons/location.svg',
-                              width: 16.sp,
-                              height: 16.sp,
-                              colorFilter: const ColorFilter.mode(
-                                Colors.white38,
-                                BlendMode.srcIn,
-                              ),
-                            ),
-                            SizedBox(width: 8.w),
-                            Expanded(
-                              child: Text(
-                                "Palm Jumeirah, Building 5, Apt 1204",
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 13.sp,
-                                  color: Colors.white70,
+                                SizedBox(height: 12.h),
+                                const Divider(color: Colors.white10),
+                                SizedBox(height: 12.h),
+                                Row(
+                                  children: [
+                                    SvgPicture.asset(
+                                      'assets/icons/location.svg',
+                                      width: 16.sp,
+                                      height: 16.sp,
+                                      colorFilter: const ColorFilter.mode(
+                                        Colors.white38,
+                                        BlendMode.srcIn,
+                                      ),
+                                    ),
+                                    SizedBox(width: 8.w),
+                                    Expanded(
+                                      child: Text(
+                                        buyerAddress,
+                                        style: GoogleFonts.dmSans(
+                                          fontSize: 13.sp,
+                                          color: Colors.white70,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 12.h),
-                        Row(
-                          children: [
-                            SvgPicture.asset(
-                              'assets/icons/phone.svg',
-                              width: 16.sp,
-                              height: 16.sp,
-                              colorFilter: const ColorFilter.mode(
-                                Colors.white38,
-                                BlendMode.srcIn,
-                              ),
-                            ),
-                            SizedBox(width: 8.w),
-                            Text(
-                              "+971 50 123 4567",
-                              style: GoogleFonts.dmSans(
-                                fontSize: 13.sp,
-                                color: Colors.white70,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                SizedBox(height: 28.h),
-
-                // YOUR EARNINGS / REJECTION ACTION Section
-                if (status != "Rejected") ...[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "YOUR EARNINGS",
-                        style: GoogleFonts.dmSans(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white38,
-                          letterSpacing: 1.0,
-                        ),
-                      ),
-                      if (status == "Delivered")
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 8.w,
-                            vertical: 4.h,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF107D2C),
-                            borderRadius: BorderRadius.circular(6.r),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.check_circle_outline_rounded,
-                                color: Colors.white,
-                                size: 12.sp,
-                              ),
-                              SizedBox(width: 6.w),
-                              Text(
-                                "Payout completed",
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 10.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
+                                SizedBox(height: 12.h),
+                                Row(
+                                  children: [
+                                    SvgPicture.asset(
+                                      'assets/icons/phone.svg',
+                                      width: 16.sp,
+                                      height: 16.sp,
+                                      colorFilter: const ColorFilter.mode(
+                                        Colors.white38,
+                                        BlendMode.srcIn,
+                                      ),
+                                    ),
+                                    SizedBox(width: 8.w),
+                                    Text(
+                                      buyerPhone,
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 13.sp,
+                                        color: Colors.white70,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                    ],
-                  ),
 
-                  SizedBox(height: 12.h),
+                        SizedBox(height: 28.h),
 
-                  // Earnings card breakdown
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 16.w,
-                      vertical: 12.h,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        begin: Alignment.centerRight,
-                        end: Alignment.centerLeft,
-                        colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-                      ),
-                      borderRadius: BorderRadius.circular(16.r),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.05),
-                        width: 1.0,
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        _buildEarningsRow("Listing price", "AED 4,000"),
-                        SizedBox(height: 8.h),
-                        _buildEarningsRow("Closeté fee (12%)", "AED 480"),
-                        SizedBox(height: 10.h),
-                        const Divider(color: Colors.white10),
-                        SizedBox(height: 10.h),
+                        // 3. YOUR EARNINGS Section Header & Breakdown
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "You earned",
+                              "YOUR EARNINGS",
                               style: GoogleFonts.dmSans(
-                                fontSize: 14.sp,
-                                color: const Color(0xFFFFAF2C),
+                                fontSize: 12.sp,
                                 fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            Text(
-                              "AED 3,520",
-                              style: GoogleFonts.dmSans(
-                                fontSize: 16.sp,
-                                color: const Color(
-                                  0xFFFFAF2C,
-                                ), // Gold Earn value
-                                fontWeight: FontWeight.w800,
+                                color: Colors.white38,
+                                letterSpacing: 1.0,
                               ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
-                ] else ...[
-                  CustomGoldButton(
-                    text: "Sell Again",
-                    height: 50.h,
-                    width: double.infinity,
-                    suffix: Icon(
-                      Icons.arrow_forward,
-                      color: Colors.black,
-                      size: 18.sp,
-                    ),
-                    onTap: () {
-                      Get.snackbar(
-                        "Listing Created",
-                        "Re-listing item to wardrobe...",
-                        snackPosition: SnackPosition.TOP,
-                        backgroundColor: const Color(0xFF161719),
-                        colorText: Colors.white,
-                        borderRadius: 16,
-                        margin: const EdgeInsets.all(16),
-                      );
-                    },
-                  ),
-                ],
-
-                SizedBox(height: 20.h),
-
-                // bottom dynamic disclaimer
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: Colors.white38,
-                      size: 14.sp,
-                    ),
-                    SizedBox(width: 6.w),
-                    Expanded(
-                      child: Text(
-                        status == "Reserved"
-                            ? "Final verification happens after pickup."
-                            : status == "Delivered"
-                            ? "Funds have been transferred to your account"
-                            : "You're not charged for this listing",
-                        style: GoogleFonts.dmSans(
-                          fontSize: 12.sp,
-                          color: Colors.white38,
-                          fontWeight: FontWeight.w500,
+                        SizedBox(height: 12.h),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 14.h,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              begin: Alignment.centerRight,
+                              end: Alignment.centerLeft,
+                              colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+                            ),
+                            borderRadius: BorderRadius.circular(16.r),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.05),
+                              width: 1.0,
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              _buildEarningsRow(
+                                "Listing price",
+                                "AED ${listingPriceVal.toInt()}",
+                              ),
+                              SizedBox(height: 8.h),
+                              _buildEarningsRow(
+                                "Closeté fee (12%)",
+                                "AED ${platformFeeVal.toInt()}",
+                              ),
+                              SizedBox(height: 10.h),
+                              const Divider(color: Colors.white10),
+                              SizedBox(height: 10.h),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "You'll Earn",
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 14.sp,
+                                      color: const Color(0xFFFFAF2C),
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  Text(
+                                    "AED ${sellerPayoutVal.toInt()}",
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 16.sp,
+                                      color: const Color(0xFFFFAF2C),
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ),
-                  ],
+                      ],
+                    );
+                  },
                 ),
               ],
+
+              SizedBox(height: 16.h),
+
+              // Bottom disclaimer note
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    color: Colors.white38,
+                    size: 14.sp,
+                  ),
+                  SizedBox(width: 6.w),
+                  Expanded(
+                    child: Text(
+                      "Final verification happens after pickup.",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12.sp,
+                        color: Colors.white38,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
               SizedBox(height: 32.h),
 
-              // Bottom Support Help Text
+              // Bottom Support Contact
               GestureDetector(
                 onTap: () => Helpers.openSupportEmail(),
                 child: Center(
@@ -786,6 +650,330 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
     );
   }
 
+  // ---------------------------------------------------------------------------
+  // READONLY DETAILS BUILDER
+  // ---------------------------------------------------------------------------
+  Widget _buildReadonlyDetails(BuildContext context) {
+    final item = controller.item;
+    final formattedPrice =
+        "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
+
+    return Obx(() {
+      String proofText = "N/A";
+      if (controller.rxBillName.value.isNotEmpty) {
+        proofText = controller.rxBillName.value;
+      } else if (controller.rxBillPath.value.isNotEmpty) {
+        proofText = controller.rxBillPath.value.split('/').last.split('\\').last;
+      } else if (item.proofOfPurchase != null &&
+          item.proofOfPurchase!.isNotEmpty) {
+        proofText = item.proofOfPurchase!.split('/').last.split('\\').last;
+      }
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildDetailRow("Title", item.itemName),
+          _buildDetailRow("Brand", item.brand),
+          _buildDescriptionDetailRow(
+            "Description",
+            controller.descriptionController.text.isNotEmpty
+                ? controller.descriptionController.text
+                : "Black caviar leather with gold hardware. Comes with original dust bag and authenticity card.",
+          ),
+          _buildDetailRow("Listing Price", formattedPrice),
+          _buildConditionDetailRow(
+            "Condition",
+            controller.rxSelectedCondition.value,
+          ),
+          _buildDetailRow("Proof of purchase", proofText),
+          _buildOriginalPackagingRow(),
+        ],
+      );
+    });
+  }
+
+  // ---------------------------------------------------------------------------
+  // EDIT FORM BUILDER
+  // ---------------------------------------------------------------------------
+  Widget _buildEditForm(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Title Input
+        _buildEditInputRow("Title", controller.titleController),
+
+        // Brand Input
+        _buildEditInputRow("Brand", controller.brandController),
+
+        // Description Input
+        _buildEditDescriptionRow("Description", controller.descriptionController),
+
+        // Price Input
+        _buildEditInputRow(
+          "Listing Price",
+          controller.priceController,
+          keyboardType: TextInputType.number,
+          prefixText: "AED ",
+        ),
+
+        // Condition Picker Dropdown
+        _buildConditionPickerRow(context),
+
+        // Proof of Purchase & Packaging
+        _buildProofOfPurchaseRow("Proof of purchase (Optional)"),
+        _buildOriginalPackagingRow(),
+
+        SizedBox(height: 20.h),
+
+        // Save Changes Gold Button
+        Obx(
+          () => CustomGoldButton(
+            text: "Save Changes",
+            height: 50.h,
+            width: double.infinity,
+            onTap: controller.rxIsSaving.value
+                ? () {}
+                : () => controller.saveChanges(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Editable single-line text row (Matches Profile Details dark sleek style)
+  Widget _buildEditInputRow(
+    String label,
+    TextEditingController textCtrl, {
+    TextInputType keyboardType = TextInputType.text,
+    String? prefixText,
+  }) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 8.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.centerRight,
+          end: Alignment.centerLeft,
+          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+        ),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.05),
+          width: 1.0,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.dmSans(
+              fontSize: 12.sp,
+              color: Colors.white38,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          SizedBox(height: 4.h),
+          TextField(
+            controller: textCtrl,
+            keyboardType: keyboardType,
+            style: GoogleFonts.dmSans(
+              fontSize: 15.sp,
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+            decoration: InputDecoration(
+              isDense: true,
+              contentPadding: EdgeInsets.zero,
+              border: InputBorder.none,
+              prefixText: prefixText,
+              prefixStyle: GoogleFonts.dmSans(
+                fontSize: 15.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Editable multi-line description row (Matches Profile Details dark sleek style)
+  Widget _buildEditDescriptionRow(
+    String label,
+    TextEditingController textCtrl,
+  ) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 8.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.centerRight,
+          end: Alignment.centerLeft,
+          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+        ),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.05),
+          width: 1.0,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.dmSans(
+              fontSize: 12.sp,
+              color: Colors.white38,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          SizedBox(height: 6.h),
+          TextField(
+            controller: textCtrl,
+            maxLines: 3,
+            style: GoogleFonts.dmSans(
+              fontSize: 14.sp,
+              color: Colors.white,
+              height: 1.4,
+              fontWeight: FontWeight.w500,
+            ),
+            decoration: const InputDecoration(
+              isDense: true,
+              contentPadding: EdgeInsets.zero,
+              border: InputBorder.none,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Condition Dropdown Picker (Matches Profile Details dark sleek style)
+  Widget _buildConditionPickerRow(BuildContext context) {
+    return Obx(() {
+      final selected = controller.rxSelectedCondition.value;
+      return GestureDetector(
+        onTap: () => _showConditionBottomSheet(context),
+        child: Container(
+          margin: EdgeInsets.only(bottom: 8.h),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.centerRight,
+              end: Alignment.centerLeft,
+              colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+            ),
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.05),
+              width: 1.0,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Condition",
+                    style: GoogleFonts.dmSans(
+                      fontSize: 12.sp,
+                      color: Colors.white38,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    selected,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 15.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: Colors.white70,
+                size: 22.sp,
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+  }
+
+  void _showConditionBottomSheet(BuildContext context) {
+    Get.bottomSheet(
+      Container(
+        padding: EdgeInsets.all(20.w),
+        decoration: BoxDecoration(
+          color: const Color(0xFF161719),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40.w,
+              height: 4.h,
+              decoration: BoxDecoration(
+                color: Colors.white24,
+                borderRadius: BorderRadius.circular(2.r),
+              ),
+            ),
+            SizedBox(height: 16.h),
+            Text(
+              "Select Condition",
+              style: GoogleFonts.dmSans(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(height: 12.h),
+            ...controller.conditionOptions.map((cond) {
+              final isSel = controller.rxSelectedCondition.value == cond;
+              return Material(
+                color: Colors.transparent,
+                child: ListTile(
+                  title: Text(
+                    cond,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 15.sp,
+                      fontWeight: isSel ? FontWeight.w700 : FontWeight.w500,
+                      color: isSel ? const Color(0xFFFFAF2C) : Colors.white70,
+                    ),
+                  ),
+                  trailing: isSel
+                      ? Icon(
+                          Icons.check_rounded,
+                          color: const Color(0xFFFFAF2C),
+                          size: 20.sp,
+                        )
+                      : null,
+                  onTap: () {
+                    controller.rxSelectedCondition.value = cond;
+                    Get.back();
+                  },
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // HELPER WIDGETS
+  // ---------------------------------------------------------------------------
   Widget _buildDetailRow(String label, String value) {
     return Container(
       margin: EdgeInsets.only(bottom: 8.h),
@@ -990,7 +1178,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                 ),
               ),
               GestureDetector(
-                onTap: () => controller.rxBillName.value = "Bill.pdf",
+                onTap: controller.pickBillFile,
                 child: Text(
                   "Upload Bill",
                   style: GoogleFonts.dmSans(
@@ -1047,22 +1235,28 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      Icons.picture_as_pdf_outlined,
+                      controller.rxBillName.value.toLowerCase().endsWith('.pdf')
+                          ? Icons.picture_as_pdf_outlined
+                          : Icons.image_outlined,
                       color: Colors.white,
                       size: 14.sp,
                     ),
                     SizedBox(width: 6.w),
-                    Text(
-                      controller.rxBillName.value,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 12.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
+                    ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: 120.w),
+                      child: Text(
+                        controller.rxBillName.value,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 12.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     SizedBox(width: 8.w),
                     GestureDetector(
-                      onTap: () => controller.rxBillName.value = "",
+                      onTap: controller.removeBillFile,
                       child: Icon(
                         Icons.close,
                         color: Colors.white38,

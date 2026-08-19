@@ -11,6 +11,7 @@ class ApiConstants {
   static const String resendOtp = '/auth/resend-otp';
   static const String refreshToken = '/auth/refresh-token';
   static const String profile = '/user/profile';
+  static const String profileStats = '/user/profile/stats';
   static const String products = '/products';
   static const String wishlist = '/wishlist';
   static const String orders = '/orders';
@@ -19,5 +20,9 @@ class ApiConstants {
   static const String connectStatus = '/payment/connect/status';
   static const String connectOnboarding = '/payment/connect/onboarding';
   static const String stripePublishableKey =
-      'pk_test_51RqgJZGXJvAsdd7omGPG7Z1sPRl3dJb9QY9oCfrl8tSn1StxRIAig3I5xK9hKk1gCVKwSQka5lUi683927AaIoPu00TYnG8Xx6';
+      'pk_test_51U62XlAEexz9ehrLFxzAtcLjvCUnGXz3Q45gyBYh4xvkruEzM7hgchNsFEGZqDDOJv0FHt5mNqmgDCbYETkxRSdb00A3pm0L08';
+  // static const String stripePublishableKey =
+  //     'pk_test_51RqgJSGlimJ2gcj4JgiuajuGcFOXAjGwbzSH9FhLZRbBgbhAwJ4NRLGJhNhoj7m7Zi4u0K82q1CST9b1llKm4iHw00KA351vJ3';
+  // static const String stripePublishableKey =
+  //     'pk_test_51RqgJZGXJvAsdd7omGPG7Z1sPRl3dJb9QY9oCfrl8tSn1StxRIAig3I5xK9hKk1gCVKwSQka5lUi683927AaIoPu00TYnG8Xx6';
 }

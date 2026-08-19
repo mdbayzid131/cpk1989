@@ -68,49 +68,55 @@ class SellItemDetailController extends GetxController
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
-            ListTile(
-              leading: const Icon(Icons.image, color: Color(0xFFFFAF2C)),
-              title: const Text(
-                "Pick Image from Gallery",
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: () async {
-                Get.back();
-                final picker = ImagePicker();
-                final picked = await picker.pickImage(
-                  source: ImageSource.gallery,
-                );
-                if (picked != null) {
-                  rxBillPath.value = picked.path;
-                  rxBillName.value = picked.name;
-                }
-              },
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.picture_as_pdf,
-                color: Color(0xFFFFAF2C),
-              ),
-              title: const Text(
-                "Pick Document (PDF)",
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: () async {
-                Get.back();
-                try {
-                  FilePickerResult? result = await FilePicker.platform
-                      .pickFiles(
-                        type: FileType.custom,
-                        allowedExtensions: ['pdf'],
-                      );
-                  if (result != null && result.files.single.path != null) {
-                    rxBillPath.value = result.files.single.path!;
-                    rxBillName.value = result.files.single.name;
+            Material(
+              color: Colors.transparent,
+              child: ListTile(
+                leading: const Icon(Icons.image, color: Color(0xFFFFAF2C)),
+                title: const Text(
+                  "Pick Image from Gallery",
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () async {
+                  Get.back();
+                  final picker = ImagePicker();
+                  final picked = await picker.pickImage(
+                    source: ImageSource.gallery,
+                  );
+                  if (picked != null) {
+                    rxBillPath.value = picked.path;
+                    rxBillName.value = picked.name;
                   }
-                } catch (e) {
-                  Get.snackbar("Error", "Failed to pick file: $e");
-                }
-              },
+                },
+              ),
+            ),
+            Material(
+              color: Colors.transparent,
+              child: ListTile(
+                leading: const Icon(
+                  Icons.picture_as_pdf,
+                  color: Color(0xFFFFAF2C),
+                ),
+                title: const Text(
+                  "Pick Document (PDF)",
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: () async {
+                  Get.back();
+                  try {
+                    FilePickerResult? result = await FilePicker.platform
+                        .pickFiles(
+                          type: FileType.custom,
+                          allowedExtensions: ['pdf'],
+                        );
+                    if (result != null && result.files.single.path != null) {
+                      rxBillPath.value = result.files.single.path!;
+                      rxBillName.value = result.files.single.name;
+                    }
+                  } catch (e) {
+                    Get.snackbar("Error", "Failed to pick file: $e");
+                  }
+                },
+              ),
             ),
           ],
         ),

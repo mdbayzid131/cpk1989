@@ -29,8 +29,18 @@ class ProfileScreen extends GetView<ProfileController> {
           color: const Color(0xFFE2B744),
           backgroundColor: const Color(0xFF1E2022),
           onRefresh: () => controller.fetchProfileApiData(),
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (ScrollNotification scrollInfo) {
+              if (scrollInfo.metrics.pixels >=
+                  scrollInfo.metrics.maxScrollExtent - 200) {
+                if (controller.rxSelectedIndex.value == 1) {
+                  controller.loadMorePurchases();
+                }
+              }
+              return false;
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -104,8 +114,9 @@ class ProfileScreen extends GetView<ProfileController> {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildProfileCard(BuildContext context) {
     return Padding(
@@ -200,14 +211,15 @@ class ProfileScreen extends GetView<ProfileController> {
 
                 // Translucent Stats Container (Dynamic counts from API)
                 Obx(() {
-                  final wardrobeCount = controller.rxWardrobeItems.length;
-                  final purchasesCount = controller.rxPurchaseItems.length;
-                  final closetValue = controller.rxWardrobeItems.fold(
-                    0.0,
-                    (sum, item) => sum + item.price,
-                  );
-                  final closetValueText = closetValue > 0
-                      ? "AED ${closetValue.toStringAsFixed(0)}"
+                  final stats = controller.rxProfileStats.value;
+                  final wardrobeCount = stats.totalProductsListed > 0
+                      ? stats.totalProductsListed
+                      : controller.rxWardrobeItems.length;
+                  final purchasesCount = stats.totalProductsPurchased > 0
+                      ? stats.totalProductsPurchased
+                      : controller.rxPurchaseItems.length;
+                  final earningsText = stats.totalEarnings > 0
+                      ? "${stats.currency} ${stats.formattedEarnings}"
                       : "AED 0";
 
                   return Container(
@@ -239,8 +251,8 @@ class ProfileScreen extends GetView<ProfileController> {
                         _buildStatDivider(),
                         Expanded(
                           child: _buildStatItem(
-                            "Closet Value",
-                            closetValueText,
+                            "Earnings",
+                            earningsText,
                           ),
                         ),
                       ],
@@ -588,14 +600,23 @@ class ProfileScreen extends GetView<ProfileController> {
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         child: Column(
-          children: items.map((item) => _buildPurchaseCard(item)).toList(),
+          children: [
+            ...items.map((item) => _buildPurchaseCard(item)),
+            if (controller.rxIsLoadingMoreOrders.value) ...[
+              SizedBox(height: 16.h),
+              Center(
+                child: CustomGoldLoader(size: 28.r, strokeWidth: 3.r),
+              ),
+              SizedBox(height: 16.h),
+            ],
+          ],
         ),
       );
     });
   }
 
   Widget _buildPurchaseCard(ProfileItem item) {
-    final status = item.status ?? "Delivered";
+    final status = item.displayStatus;
     final isDelivered = status == "Delivered";
     final statusColor = isDelivered
         ? const Color(0xFF30D158)
@@ -833,7 +854,7 @@ class ProfileScreen extends GetView<ProfileController> {
                     borderRadius: BorderRadius.circular(6.r),
                   ),
                   child: Text(
-                    "Sold",
+                    isWardrobe ? "Sold" : item.displayStatus,
                     style: GoogleFonts.dmSans(
                       fontSize: 10.sp,
                       fontWeight: FontWeight.w500,
@@ -1863,9 +1884,9 @@ class ProfileScreen extends GetView<ProfileController> {
                       size: 16.r,
                       color: Colors.black,
                     ),
-                    onTap: () {
+                    onTap: () async {
                       Get.back();
-                      controller.deleteItem(item.id);
+                      await controller.deleteWardrobeItem(item);
                     },
                   ),
                   SizedBox(height: 8.h),

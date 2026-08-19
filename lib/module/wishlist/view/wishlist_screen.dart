@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:cpk1989/module/wishlist/controller/wishlist_controller.dart';
 import 'package:cpk1989/module/home/controller/home_controller.dart';
+import 'package:cpk1989/module/bottom_nav_bar/controller/bottom_nav_bar_controller.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
-
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
+import 'package:cpk1989/core/widgets/custom_gold_button.dart';
 
 class WishlistScreen extends GetView<WishlistController> {
   const WishlistScreen({super.key});
@@ -31,7 +33,10 @@ class WishlistScreen extends GetView<WishlistController> {
 
                 // Title Header (Left-aligned as shown in mockup)
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 8.h,
+                  ),
                   child: Text(
                     "Wishlist",
                     style: GoogleFonts.dmSans(
@@ -46,7 +51,8 @@ class WishlistScreen extends GetView<WishlistController> {
 
                 // Grid Content
                 Obx(() {
-                  if (controller.rxIsLoading.value && controller.rxItems.isEmpty) {
+                  if (controller.rxIsLoading.value &&
+                      controller.rxItems.isEmpty) {
                     return Container(
                       height: 400.h,
                       alignment: Alignment.center,
@@ -56,37 +62,7 @@ class WishlistScreen extends GetView<WishlistController> {
 
                   final items = controller.rxItems;
                   if (items.isEmpty) {
-                    return Container(
-                      height: 400.h,
-                      alignment: Alignment.center,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.favorite_outline,
-                            size: 64.sp,
-                            color: const Color(0xFF8E8E93),
-                          ),
-                          SizedBox(height: 16.h),
-                          Text(
-                            "Your Wishlist is empty",
-                            style: GoogleFonts.dmSans(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                          SizedBox(height: 8.h),
-                          Text(
-                            "Save luxury items here to track them.",
-                            style: GoogleFonts.dmSans(
-                              fontSize: 12.sp,
-                              color: Colors.white38,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
+                    return _buildEmptyWishlistState(context);
                   }
 
                   return GridView.builder(
@@ -285,6 +261,78 @@ class WishlistScreen extends GetView<WishlistController> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyWishlistState(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.62,
+      alignment: Alignment.center,
+      padding: EdgeInsets.symmetric(horizontal: 24.w),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // 1. Wishlist PNG Illustration matching design
+          SvgPicture.asset(
+            'assets/images/wishlist.svg',
+            width: 220.r,
+            height: 220.r,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) {
+              return Icon(
+                Icons.favorite_rounded,
+                size: 80.r,
+                color: const Color(0xFFFF453A),
+              );
+            },
+          ),
+          SizedBox(height: 20.h),
+
+          // 2. Title
+          Text(
+            "Nothing Saved Yet",
+            textAlign: TextAlign.center,
+            style: GoogleFonts.dmSans(
+              fontSize: 20.sp,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+          SizedBox(height: 8.h),
+
+          // 3. Subtitle
+          Text(
+            "Start exploring luxury pieces\nyou love",
+            textAlign: TextAlign.center,
+            style: GoogleFonts.dmSans(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w400,
+              color: Colors.white54,
+              height: 1.4,
+            ),
+          ),
+          SizedBox(height: 28.h),
+
+          // 4. Explore Items Gold Button
+          CustomGoldButton(
+            text: "Explore Items",
+            width: 320.w,
+            height: 50.h,
+            suffix: Icon(
+              Icons.arrow_forward_rounded,
+              color: Colors.black,
+              size: 18.sp,
+            ),
+            onTap: () {
+              if (Get.isRegistered<BottomNavBarController>()) {
+                Get.find<BottomNavBarController>().changeIndex(0);
+              } else {
+                Get.offAllNamed(AppRoutes.bottomNavBar);
+              }
+            },
+          ),
+        ],
       ),
     );
   }

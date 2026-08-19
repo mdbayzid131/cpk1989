@@ -124,8 +124,19 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
                 SizedBox(height: 8.h),
 
                 // Translucent Stats Container (Label on TOP, Value on BOTTOM)
-                Obx(
-                  () => Container(
+                Obx(() {
+                  final stats = controller.rxSellerStats.value;
+                  final listed = stats.totalProductsListed > 0
+                      ? stats.totalProductsListed
+                      : controller.itemsListedCount;
+                  final sold = stats.totalProductsPurchased > 0
+                      ? stats.totalProductsPurchased
+                      : controller.itemsSoldCount;
+                  final closetValueText = stats.totalEarnings > 0
+                      ? "${stats.currency} ${stats.formattedEarnings}"
+                      : controller.closetValueFormatted;
+
+                  return Container(
                     padding: EdgeInsets.symmetric(
                       vertical: 8.h,
                       horizontal: 4.w,
@@ -144,27 +155,27 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
                         Expanded(
                           child: _buildStatItem(
                             "Items Listed",
-                            controller.itemsListedCount.toString(),
+                            "$listed",
                           ),
                         ),
                         _buildStatDivider(),
                         Expanded(
                           child: _buildStatItem(
                             "Items Sold",
-                            controller.itemsSoldCount.toString(),
+                            "$sold",
                           ),
                         ),
                         _buildStatDivider(),
                         Expanded(
                           child: _buildStatItem(
-                            "Closet Value",
-                            controller.closetValueFormatted,
+                            "Earnings",
+                            closetValueText,
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ),
+                  );
+                }),
               ],
             ),
           ),
