@@ -15,6 +15,8 @@ import 'package:cpk1989/core/widgets/custom_add_card_bottom_sheet.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/core/services/auth_service.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
+import 'package:cpk1989/core/widgets/custom_empty_state.dart';
+import 'package:cpk1989/module/bottom_nav_bar/controller/bottom_nav_bar_controller.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
 
 class ProfileScreen extends GetView<ProfileController> {
@@ -546,13 +548,16 @@ class ProfileScreen extends GetView<ProfileController> {
 
       final items = controller.rxWardrobeItems;
       if (items.isEmpty) {
-        return Container(
-          height: 200.h,
-          alignment: Alignment.center,
-          child: Text(
-            "Your wardrobe is empty.",
-            style: GoogleFonts.dmSans(color: Colors.white38, fontSize: 14.sp),
-          ),
+        return CustomEmptyState(
+          imagePath: 'assets/images/my_wardrobe.svg',
+          fallbackIcon: Icons.checkroom_rounded,
+          title: "You Haven't Listed Anything Yet",
+          subtitle: "Turn your wardrobe into cash in\nseconds",
+          buttonText: "Sell Your First Item",
+          height: 380.h,
+          onButtonTap: () {
+            Get.toNamed(AppRoutes.sell);
+          },
         );
       }
 
@@ -587,13 +592,20 @@ class ProfileScreen extends GetView<ProfileController> {
 
       final items = controller.rxPurchaseItems;
       if (items.isEmpty) {
-        return Container(
-          height: 200.h,
-          alignment: Alignment.center,
-          child: Text(
-            "No purchase history found.",
-            style: GoogleFonts.dmSans(color: Colors.white38, fontSize: 14.sp),
-          ),
+        return CustomEmptyState(
+          imagePath: 'assets/images/my_purchases.svg',
+          fallbackIcon: Icons.shopping_bag_outlined,
+          title: "No Orders Yet",
+          subtitle: "Start exploring luxury pieces\nfrom real women",
+          buttonText: "Explore Items",
+          height: 380.h,
+          onButtonTap: () {
+            if (Get.isRegistered<BottomNavBarController>()) {
+              Get.find<BottomNavBarController>().changeIndex(0);
+            } else {
+              Get.offAllNamed(AppRoutes.bottomNavBar);
+            }
+          },
         );
       }
 
