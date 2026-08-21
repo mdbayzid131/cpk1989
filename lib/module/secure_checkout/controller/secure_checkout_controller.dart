@@ -8,6 +8,7 @@ import 'package:cpk1989/module/home/controller/home_controller.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/core/services/payment_service.dart';
+import 'package:cpk1989/core/widgets/payment_error_bottom_sheet.dart';
 
 class SecureCheckoutController extends GetxController {
   late final FeedItem item;
@@ -356,79 +357,13 @@ class SecureCheckoutController extends GetxController {
     }
   }
 
-  void showPaymentErrorDialog(String errorMsg) {
-    Get.dialog(
-      Dialog(
-        backgroundColor: const Color(0xFF1C1D20),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.r),
-          side: BorderSide(
-            color: Colors.redAccent.withValues(alpha: 0.3),
-            width: 1,
-          ),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(20.r),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: EdgeInsets.all(12.r),
-                decoration: const BoxDecoration(
-                  color: Color(0xFF2C1C1D),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.error_outline_rounded,
-                  color: Colors.redAccent,
-                  size: 32.sp,
-                ),
-              ),
-              SizedBox(height: 16.h),
-              Text(
-                "Payment Error",
-                style: GoogleFonts.dmSans(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-              SizedBox(height: 8.h),
-              Text(
-                errorMsg,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.dmSans(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white70,
-                ),
-              ),
-              SizedBox(height: 20.h),
-              SizedBox(
-                width: double.infinity,
-                height: 44.h,
-                child: ElevatedButton(
-                  onPressed: () => Get.back(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFE2B744),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                  ),
-                  child: Text(
-                    "Okay",
-                    style: GoogleFonts.dmSans(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  void showPaymentErrorDialog(String errorMsg, {BuildContext? context}) {
+    final ctx = context ?? Get.context;
+    if (ctx != null) {
+      showPaymentErrorBottomSheet(
+        context: ctx,
+        errorMessage: errorMsg,
+      );
+    }
   }
 }

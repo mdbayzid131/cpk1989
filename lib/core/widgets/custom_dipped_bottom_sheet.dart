@@ -12,12 +12,14 @@ class CustomDippedBottomSheet extends StatelessWidget {
   final Widget? logo;
   final Widget content;
   final double? screenBottomPadding;
+  final bool showFlashlight;
 
   const CustomDippedBottomSheet({
     super.key,
     this.logo,
     required this.content,
     this.screenBottomPadding,
+    this.showFlashlight = true,
   });
 
   @override
@@ -51,26 +53,27 @@ class CustomDippedBottomSheet extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         // 0. Ambient golden flashlight rays, stars, and container background SVG
-        Positioned(
-          top: flashlightTop,
-          left: 0,
-          width: flashlightWidth,
-          height: flashlightHeight,
-          child: ImageFiltered(
-            imageFilter: ImageFilter.blur(sigmaX: 0.5, sigmaY: 0.5),
-            child: SvgPicture.asset(
-              'assets/icons/flash light with container .svg',
-              width: flashlightWidth,
-              height: flashlightHeight,
-              fit: BoxFit.contain,
-              alignment: Alignment.topLeft,
+        if (showFlashlight)
+          Positioned(
+            top: flashlightTop,
+            left: 0,
+            width: flashlightWidth,
+            height: flashlightHeight,
+            child: ImageFiltered(
+              imageFilter: ImageFilter.blur(sigmaX: 0.5, sigmaY: 0.5),
+              child: SvgPicture.asset(
+                'assets/icons/flash light with container .svg',
+                width: flashlightWidth,
+                height: flashlightHeight,
+                fit: BoxFit.contain,
+                alignment: Alignment.topLeft,
+              ),
             ),
           ),
-        ),
 
         // 1. Main card body with content
         CustomPaint(
-          painter: DippedBottomSheetPainter(),
+          painter: DippedBottomSheetPainter(showGlow: showFlashlight),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -106,15 +109,48 @@ class CustomDippedBottomSheet extends StatelessWidget {
 }
 
 class DippedBottomSheetPainter extends CustomPainter {
+  final bool showGlow;
+
+  const DippedBottomSheetPainter({this.showGlow = true});
+
   @override
   void paint(Canvas canvas, Size size) {
     final w = size.width;
     final h = size.height;
 
     final double scale = w / 422.729;
+    final double scaleFlashlight = w / 393.0;
 
     double sx(double x) => x * scale;
     double sy(double y) => (y - 63.0) * scale;
+
+    // 0. Paint the circular logo container background (the black circle behind the dip)
+    final circleCenter = Offset(w / 2, (54.0 * scale) - 12);
+    final circleRadius = 63.0 * scaleFlashlight;
+
+    final containerCirclePaint = Paint()
+      ..color = const Color(0xFF0F1012)
+      ..style = PaintingStyle.fill;
+
+    canvas.drawCircle(circleCenter, circleRadius, containerCirclePaint);
+
+    final containerCircleBorderPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.0
+      ..shader =
+          const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0x33FFFFFF), // rgba(255, 255, 255, 0.2)
+              Color(0x00FFFFFF), // rgba(255, 255, 255, 0)
+            ],
+            stops: [0.0, 0.8673],
+          ).createShader(
+            Rect.fromCircle(center: circleCenter, radius: circleRadius),
+          );
+
+    canvas.drawCircle(circleCenter, circleRadius, containerCircleBorderPaint);
 
     // 1. Paint the main card background
     final cardPaint = Paint()
@@ -222,27 +258,27 @@ class DippedBottomSheetPainter extends CustomPainter {
     canvas.drawPath(borderPath, borderPaint);
 
     // 3. Paint the custom golden blur glow centered on the logo circle pocket
-    final glowPaint = Paint()
-      ..shader =
-          RadialGradient(
-            colors: [
-              const Color(0xFFE2B744).withValues(alpha: 0.4),
-              const Color(0xFFE2B744).withValues(alpha: 0.1),
-              Colors.transparent,
-            ],
-            stops: const [0.0, 0.4, 1.0],
-          ).createShader(
-            Rect.fromCircle(
-              center: Offset(w / 2, sy(117.0)),
-              radius: 80.0 * scale,
-            ),
-          );
+    if (showGlow) {
+      final glowPaint = Paint()
+        ..shader =
+            RadialGradient(
+              colors: [
+                const Color(0xFFE2B744).withValues(alpha: 0.4),
+                const Color(0xFFE2B744).withValues(alpha: 0.1),
+                Colors.transparent,
+              ],
+              stops: const [0.0, 0.4, 1.0],
+            ).createShader(
+              Rect.fromCircle(center: circleCenter, radius: 80.0 * scale),
+            );
 
-    canvas.drawCircle(Offset(w / 2, sy(117.0)), 80.0 * scale, glowPaint);
+      canvas.drawCircle(circleCenter, 80.0 * scale, glowPaint);
+    }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant DippedBottomSheetPainter oldDelegate) =>
+      oldDelegate.showGlow != showGlow;
 }
 
 /// Helper function to show the custom dipped bottom sheet
@@ -253,6 +289,7 @@ Future<T?> showCustomDippedBottomSheet<T>({
   bool isDismissible = true,
   bool enableDrag = true,
   bool canPop = true,
+  bool showFlashlight = true,
 }) {
   final double screenBottomPadding = MediaQuery.of(context).padding.bottom;
   return showModalBottomSheet<T>(
@@ -275,6 +312,7 @@ Future<T?> showCustomDippedBottomSheet<T>({
               logo: logo,
               content: content,
               screenBottomPadding: screenBottomPadding,
+              showFlashlight: showFlashlight,
             ),
           ),
         ),
