@@ -158,8 +158,10 @@ class ProfileController extends GetxController {
                 : '';
             rxUserName.value = fullName;
           }
-          if (user.phone != null && user.phone!.isNotEmpty) {
+          if (user.phone != null && user.phone!.isNotEmpty && user.phone != "50 123 4567") {
             phoneController.text = user.phone!;
+          } else if (phoneController.text == "50 123 4567") {
+            phoneController.text = "";
           }
           if (user.address != null && user.address!.isNotEmpty) {
             addressController.text = user.address!;
@@ -547,8 +549,11 @@ class ProfileController extends GetxController {
     if (savedLastName.isNotEmpty) {
       lastNameController.text = savedLastName;
     }
-    if (savedPhone.isNotEmpty) {
+    if (savedPhone.isNotEmpty && savedPhone != "50 123 4567") {
       phoneController.text = savedPhone;
+    } else if (savedPhone == "50 123 4567") {
+      await StorageService.remove('phone');
+      phoneController.text = "";
     }
 
     final fName = savedFirstName.isNotEmpty ? savedFirstName : "";

@@ -196,7 +196,6 @@ class AuthController extends GetxController {
     await StorageService.setString('first_name', firstName);
     await StorageService.setString('last_name', lastName);
     await StorageService.setString('email', email);
-    await StorageService.setString('phone', "50 123 4567");
 
     // Set in the AuthService reactive state
     Get.find<AuthService>().isLoggedIn.value = true;
