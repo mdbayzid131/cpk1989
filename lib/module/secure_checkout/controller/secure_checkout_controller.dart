@@ -40,6 +40,10 @@ class SecureCheckoutController extends GetxController {
 
   final rxSelectedCardId = "".obs;
 
+  // Inline validation states
+  final rxLocationError = "".obs;
+  final rxPhoneError = "".obs;
+
   // Processing state
   final rxIsProcessing = false.obs;
 
@@ -91,6 +95,25 @@ class SecureCheckoutController extends GetxController {
     addressController = TextEditingController();
     phoneController = TextEditingController();
 
+    locationController.addListener(() {
+      if (rxLocationError.value.isNotEmpty &&
+          locationController.text.trim().isNotEmpty) {
+        rxLocationError.value = "";
+      }
+    });
+    addressController.addListener(() {
+      if (rxLocationError.value.isNotEmpty &&
+          addressController.text.trim().isNotEmpty) {
+        rxLocationError.value = "";
+      }
+    });
+    phoneController.addListener(() {
+      if (rxPhoneError.value.isNotEmpty &&
+          phoneController.text.trim().isNotEmpty) {
+        rxPhoneError.value = "";
+      }
+    });
+
     try {
       if (!Get.isRegistered<ProfileController>()) {
         Get.put(ProfileController(), permanent: true);
@@ -107,6 +130,67 @@ class SecureCheckoutController extends GetxController {
     }
   }
 
+  void setPhoneAndCode(String rawPhone) {
+    if (rawPhone.trim().isEmpty) return;
+
+    final codes = [
+      "+971",
+      "+880",
+      "+966",
+      "+974",
+      "+965",
+      "+968",
+      "+973",
+      "+44",
+      "+1",
+    ];
+
+    String clean = rawPhone.trim();
+    String foundCode = "";
+
+    bool matched = true;
+    while (matched) {
+      matched = false;
+      for (final code in codes) {
+        if (clean.startsWith(code)) {
+          foundCode = code;
+          clean = clean.substring(code.length).trim();
+          matched = true;
+          break;
+        }
+      }
+    }
+
+    if (foundCode.isNotEmpty) {
+      rxPhoneCode.value = foundCode;
+    }
+
+    for (final c in codes) {
+      clean = clean.replaceAll(c, '').trim();
+    }
+    phoneController.text = clean.trim();
+  }
+
+  String get formattedFullPhone {
+    final code = rxPhoneCode.value.trim();
+    String digitsOnly = phoneController.text.trim();
+    final codes = [
+      "+971",
+      "+880",
+      "+966",
+      "+974",
+      "+965",
+      "+968",
+      "+973",
+      "+44",
+      "+1",
+    ];
+    for (final c in codes) {
+      digitsOnly = digitsOnly.replaceAll(c, '').trim();
+    }
+    return code.isNotEmpty ? '$code $digitsOnly' : digitsOnly;
+  }
+
   void syncFromProfile(ProfileController profileCtrl) {
     firstNameController.text = profileCtrl.firstNameController.text;
     lastNameController.text = profileCtrl.lastNameController.text;
@@ -117,12 +201,16 @@ class SecureCheckoutController extends GetxController {
             ? profileCtrl.addressController.text
             : '');
     locationController.text = locVal;
+    addressController.text = locVal;
 
-    addressController.text = profileCtrl.addressController.text.isNotEmpty
-        ? profileCtrl.addressController.text
-        : locVal;
+    if (profileCtrl.rxPhoneCode.value.isNotEmpty) {
+      rxPhoneCode.value = profileCtrl.rxPhoneCode.value;
+    }
 
-    phoneController.text = profileCtrl.phoneController.text;
+    final fullPhone = profileCtrl.fullPhone.trim();
+    if (fullPhone.isNotEmpty) {
+      setPhoneAndCode(fullPhone);
+    }
 
     final countryVal = profileCtrl.countryController.text.isNotEmpty
         ? profileCtrl.countryController.text
@@ -130,10 +218,6 @@ class SecureCheckoutController extends GetxController {
             ? profileCtrl.rxLocation.value
             : "UAE");
     rxLocation.value = countryVal;
-
-    if (profileCtrl.rxPhoneCode.value.isNotEmpty) {
-      rxPhoneCode.value = profileCtrl.rxPhoneCode.value;
-    }
   }
 
   @override
@@ -153,27 +237,26 @@ class SecureCheckoutController extends GetxController {
   }
 
   bool validateDeliveryDetails() {
-    if (addressController.text.trim().isEmpty) {
-      Get.snackbar(
-        "Missing Address",
-        "Please enter your delivery address.",
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF161719),
-        colorText: Colors.white,
-      );
-      return false;
+    rxLocationError.value = "";
+    rxPhoneError.value = "";
+
+    bool isValid = true;
+
+    final locText = locationController.text.trim().isNotEmpty
+        ? locationController.text.trim()
+        : addressController.text.trim();
+
+    if (locText.isEmpty) {
+      rxLocationError.value = "Location / Address is required.";
+      isValid = false;
     }
+
     if (phoneController.text.trim().isEmpty) {
-      Get.snackbar(
-        "Missing Phone",
-        "Please enter your phone number.",
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF161719),
-        colorText: Colors.white,
-      );
-      return false;
+      rxPhoneError.value = "Phone number is required.";
+      isValid = false;
     }
-    return true;
+
+    return isValid;
   }
 
   Future<ProfileItem?> processPurchase() async {
@@ -184,7 +267,22 @@ class SecureCheckoutController extends GetxController {
       return null;
     }
 
-    rxIsProcessing.value = true;
+    final fullPhone = formattedFullPhone;
+    final cityInput = locationController.text.trim();
+    final countrySelected = rxLocation.value;
+    final addressText = cityInput.isNotEmpty ? cityInput : countrySelected;
+
+    // 1. Sync delivery details to user profile backend API & local storage FIRST
+    // Profile's location gets cityInput, Profile's country gets countrySelected
+    try {
+      await profileController.updateDeliveryDetailsFromCheckout(
+        address: addressText,
+        country: countrySelected,
+        phone: fullPhone,
+      );
+    } catch (e) {
+      debugPrint('⚠️ Error syncing profile delivery details: $e');
+    }
 
     double finalPrice = 3200.0;
     try {
@@ -201,9 +299,9 @@ class SecureCheckoutController extends GetxController {
       final paymentResult = await PaymentService.to.processPayment(
         paymentMethod: rxPaymentMethod.value,
         productId: item.id.isNotEmpty ? item.id : 'unknown',
-        address: addressController.text.trim(),
-        location: rxLocation.value,
-        phone: '${rxPhoneCode.value} ${phoneController.text.trim()}',
+        address: addressText,
+        location: countrySelected,
+        phone: fullPhone,
         selectedPaymentMethodId: selectedCardId,
       );
 

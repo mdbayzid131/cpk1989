@@ -91,10 +91,13 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                   SizedBox(height: 16.h),
 
                   // Form inputs (Location, Country, Phone number)
-                  _buildTextInputField(
-                    controller: controller.locationController,
-                    hintText: "Location (e.g. Dhaka)",
-                    svgPath: "assets/icons/location.svg",
+                  Obx(
+                    () => _buildTextInputField(
+                      controller: controller.locationController,
+                      hintText: "Location (e.g. Dhaka)",
+                      svgPath: "assets/icons/location.svg",
+                      errorText: controller.rxLocationError.value,
+                    ),
                   ),
                   SizedBox(height: 12.h),
                   Obx(() {
@@ -122,7 +125,11 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                     );
                   }),
                   SizedBox(height: 12.h),
-                  _buildPhoneInputField(),
+                  Obx(
+                    () => _buildPhoneInputField(
+                      errorText: controller.rxPhoneError.value,
+                    ),
+                  ),
                   SizedBox(height: 28.h),
 
                   // Payment Method Section Header
@@ -308,63 +315,89 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
     String? svgPath,
     TextInputType keyboardType = TextInputType.text,
     List<TextInputFormatter>? inputFormatters,
+    String? errorText,
   }) {
-    return Container(
-      height: 52.h,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-          begin: Alignment.centerRight,
-          end: Alignment.centerLeft,
-        ),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.04),
-          width: 1.0,
-        ),
-      ),
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      alignment: Alignment.centerLeft,
-      child: Row(
-        children: [
-          if (svgPath != null)
-            SvgPicture.asset(
-              svgPath,
-              width: 20.r,
-              height: 20.r,
-              colorFilter: const ColorFilter.mode(
-                Colors.white,
-                BlendMode.srcIn,
-              ),
-            )
-          else if (icon != null)
-            Icon(icon, color: Colors.white, size: 20.sp),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              keyboardType: keyboardType,
-              inputFormatters: inputFormatters,
-              style: GoogleFonts.dmSans(
-                fontSize: 14.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-              ),
-              decoration: InputDecoration(
-                hintText: hintText,
-                hintStyle: GoogleFonts.dmSans(
-                  fontSize: 14.sp,
-                  color: Colors.white38,
-                  fontWeight: FontWeight.w500,
+    final hasError = errorText != null && errorText.isNotEmpty;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          height: 52.h,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+              begin: Alignment.centerRight,
+              end: Alignment.centerLeft,
+            ),
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.04),
+              width: 1.0,
+            ),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          alignment: Alignment.centerLeft,
+          child: Row(
+            children: [
+              if (svgPath != null)
+                SvgPicture.asset(
+                  svgPath,
+                  width: 20.r,
+                  height: 20.r,
+                  colorFilter: const ColorFilter.mode(
+                    Colors.white,
+                    BlendMode.srcIn,
+                  ),
+                )
+              else if (icon != null)
+                Icon(
+                  icon,
+                  color: Colors.white,
+                  size: 20.sp,
                 ),
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: EdgeInsets.zero,
+              SizedBox(width: 12.w),
+              Expanded(
+                child: TextField(
+                  controller: controller,
+                  keyboardType: keyboardType,
+                  inputFormatters: inputFormatters,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: hintText,
+                    hintStyle: GoogleFonts.dmSans(
+                      fontSize: 14.sp,
+                      color: Colors.white38,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (hasError) ...[
+          SizedBox(height: 6.h),
+          Padding(
+            padding: EdgeInsets.only(left: 4.w),
+            child: Text(
+              errorText,
+              style: GoogleFonts.dmSans(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFFFF453A),
               ),
             ),
           ),
         ],
-      ),
+      ],
     );
   }
 
@@ -527,98 +560,119 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
     );
   }
 
-  Widget _buildPhoneInputField() {
-    return Container(
-      height: 52.h,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-          begin: Alignment.centerRight,
-          end: Alignment.centerLeft,
-        ),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.04),
-          width: 1.0,
-        ),
-      ),
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: Row(
-        children: [
-          // Code Dropdown
-          Obx(
-            () => DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                value: controller.rxPhoneCode.value,
-                dropdownColor: const Color(0xFF161719),
-                icon: Padding(
-                  padding: EdgeInsets.only(left: 4.w),
-                  child: Icon(
-                    Icons.keyboard_arrow_down_rounded,
-                    color: Colors.white,
-                    size: 24.sp,
-                  ),
-                ),
-                style: GoogleFonts.dmSans(
-                  fontSize: 14.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                ),
-                items: [
-                  "+971",
-                  "+1",
-                  "+44",
-                  "+880",
-                  "+966",
-                  "+974",
-                  "+965",
-                  "+968",
-                  "+973",
-                ].map((String code) {
-                  return DropdownMenuItem<String>(
-                    value: code,
-                    child: Text(code),
-                  );
-                }).toList(),
-                onChanged: (val) {
-                  if (val != null) controller.rxPhoneCode.value = val;
-                },
-              ),
+  Widget _buildPhoneInputField({String? errorText}) {
+    final hasError = errorText != null && errorText.isNotEmpty;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          height: 52.h,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+              begin: Alignment.centerRight,
+              end: Alignment.centerLeft,
+            ),
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.04),
+              width: 1.0,
             ),
           ),
-          SizedBox(width: 8.w),
-          // Vertical divider line
-          Container(
-            width: 1,
-            height: 20.h,
-            color: Colors.white.withValues(alpha: 0.08),
-          ),
-          SizedBox(width: 12.w),
-          // Number field
-          Expanded(
-            child: TextField(
-              controller: controller.phoneController,
-              keyboardType: TextInputType.phone,
-              style: GoogleFonts.dmSans(
-                fontSize: 14.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-              ),
-              decoration: InputDecoration(
-                hintText: "Phone number",
-                hintStyle: GoogleFonts.dmSans(
-                  fontSize: 14.sp,
-                  color: Colors.white38,
-                  fontWeight: FontWeight.w500,
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: Row(
+            children: [
+              // Code Dropdown
+              Obx(
+                () => DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: controller.rxPhoneCode.value,
+                    dropdownColor: const Color(0xFF161719),
+                    icon: Padding(
+                      padding: EdgeInsets.only(left: 4.w),
+                      child: Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        color: Colors.white,
+                        size: 24.sp,
+                      ),
+                    ),
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    items: [
+                      "+971",
+                      "+1",
+                      "+44",
+                      "+880",
+                      "+966",
+                      "+974",
+                      "+965",
+                      "+968",
+                      "+973",
+                    ].map((String code) {
+                      return DropdownMenuItem<String>(
+                        value: code,
+                        child: Text(code),
+                      );
+                    }).toList(),
+                    onChanged: (val) {
+                      if (val != null) controller.rxPhoneCode.value = val;
+                    },
+                  ),
                 ),
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: EdgeInsets.zero,
+              ),
+              SizedBox(width: 8.w),
+              // Vertical divider line
+              Container(
+                width: 1,
+                height: 20.h,
+                color: Colors.white.withValues(alpha: 0.08),
+              ),
+              SizedBox(width: 12.w),
+              // Number field
+              Expanded(
+                child: TextField(
+                  controller: controller.phoneController,
+                  keyboardType: TextInputType.phone,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: "Phone number",
+                    hintStyle: GoogleFonts.dmSans(
+                      fontSize: 14.sp,
+                      color: Colors.white38,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (hasError) ...[
+          SizedBox(height: 6.h),
+          Padding(
+            padding: EdgeInsets.only(left: 4.w),
+            child: Text(
+              errorText,
+              style: GoogleFonts.dmSans(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFFFF453A),
               ),
             ),
           ),
         ],
-      ),
+      ],
     );
   }
 

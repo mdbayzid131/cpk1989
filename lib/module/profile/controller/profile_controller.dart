@@ -47,7 +47,10 @@ class ProfileItem {
 
   String get displayStatus {
     final st = (status ?? '').toLowerCase();
-    if (st == 'secured' || st == 'reserved' || st == 'pending' || st == 'pending_payment') {
+    if (st == 'secured' ||
+        st == 'reserved' ||
+        st == 'pending' ||
+        st == 'pending_payment') {
       return 'Reserved';
     }
     if (st == 'collected' || st == 'in_transit') {
@@ -91,6 +94,13 @@ class ProfileController extends GetxController {
   late final TextEditingController countryController;
   late final TextEditingController phoneController;
   final rxPhoneCode = "+971".obs;
+
+  String get fullPhone {
+    final phone = phoneController.text.trim();
+    if (phone.isEmpty) return '';
+    if (phone.startsWith('+')) return phone;
+    return '${rxPhoneCode.value} $phone'.trim();
+  }
   final rxLocation = "".obs;
   final rxUserName = "".obs;
   final rxUserId = "".obs;
@@ -158,8 +168,10 @@ class ProfileController extends GetxController {
                 : '';
             rxUserName.value = fullName;
           }
-          if (user.phone != null && user.phone!.isNotEmpty && user.phone != "50 123 4567") {
-            phoneController.text = user.phone!;
+          if (user.phone != null &&
+              user.phone!.isNotEmpty &&
+              user.phone != "50 123 4567") {
+            setPhoneAndCode(user.phone!);
           } else if (phoneController.text == "50 123 4567") {
             phoneController.text = "";
           }
@@ -314,10 +326,7 @@ class ProfileController extends GetxController {
     rxIsLoadingMoreOrders.value = true;
     try {
       final nextPage = rxOrdersPage.value + 1;
-      final response = await _userRepo.getMyOrders(
-        page: nextPage,
-        limit: 10,
-      );
+      final response = await _userRepo.getMyOrders(page: nextPage, limit: 10);
 
       if (response.statusCode == 200) {
         final List list = response.data['data'] ?? [];
@@ -499,8 +508,7 @@ class ProfileController extends GetxController {
   ) async {
     try {
       Helpers.showLoadingDialog(message: "Updating item...");
-      final response =
-          await _productRepo.updateProduct(productId, updatedData);
+      final response = await _productRepo.updateProduct(productId, updatedData);
       Get.back(); // Dismiss loading
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -600,7 +608,7 @@ class ProfileController extends GetxController {
       firstNameController.text.trim(),
     );
     await StorageService.setString('last_name', lastNameController.text.trim());
-    await StorageService.setString('phone', phoneController.text.trim());
+    await StorageService.setString('phone', fullPhone);
     if (fullName.isNotEmpty) {
       rxUserName.value = fullName;
     }
@@ -608,8 +616,7 @@ class ProfileController extends GetxController {
 
     final body = <String, dynamic>{
       if (fullName.isNotEmpty) 'name': fullName,
-      if (phoneController.text.trim().isNotEmpty)
-        'phone': phoneController.text.trim(),
+      if (fullPhone.isNotEmpty) 'phone': fullPhone,
       if (addressController.text.trim().isNotEmpty)
         'address': addressController.text.trim(),
       if (locationController.text.trim().isNotEmpty)
@@ -651,6 +658,100 @@ class ProfileController extends GetxController {
       borderRadius: 16,
       margin: const EdgeInsets.all(16),
     );
+  }
+
+  void setPhoneAndCode(String rawPhone) {
+    if (rawPhone.trim().isEmpty) return;
+
+    final codes = [
+      "+971",
+      "+880",
+      "+966",
+      "+974",
+      "+965",
+      "+968",
+      "+973",
+      "+44",
+      "+1",
+    ];
+
+    String clean = rawPhone.trim();
+    String foundCode = "";
+
+    bool matched = true;
+    while (matched) {
+      matched = false;
+      for (final code in codes) {
+        if (clean.startsWith(code)) {
+          foundCode = code;
+          clean = clean.substring(code.length).trim();
+          matched = true;
+          break;
+        }
+      }
+    }
+
+    if (foundCode.isNotEmpty) {
+      rxPhoneCode.value = foundCode;
+    }
+
+    for (final c in codes) {
+      clean = clean.replaceAll(c, '').trim();
+    }
+    phoneController.text = clean.trim();
+  }
+
+  /// Syncs delivery details entered on checkout screen to user profile backend API & local state
+  Future<void> updateDeliveryDetailsFromCheckout({
+    required String address,
+    required String country,
+    required String phone,
+  }) async {
+    // 1. Update ProfileController local TextControllers and Rx states
+    locationController.text = address;
+    countryController.text = country;
+    addressController.text = address;
+    if (phone.isNotEmpty) {
+      setPhoneAndCode(phone);
+    }
+    if (country.isNotEmpty) {
+      rxLocation.value = country;
+    }
+
+    // 2. Persist to local storage
+    await StorageService.setString('location', address);
+    await StorageService.setString('country', country);
+    await StorageService.setString('address', address);
+    await StorageService.setString('phone', phone);
+
+    final fullName =
+        "${firstNameController.text.trim()} ${lastNameController.text.trim()}".trim();
+    final nameToUse = fullName.isNotEmpty ? fullName : rxUserName.value;
+
+    // 3. Call backend PATCH /user/profile API
+    // Profile's 'location' gets checkout address/city text
+    // Profile's 'country' gets checkout country dropdown
+    final body = <String, dynamic>{
+      if (nameToUse.isNotEmpty) 'name': nameToUse,
+      if (address.isNotEmpty) 'location': address,
+      if (country.isNotEmpty) 'country': country,
+      if (phone.isNotEmpty) 'phone': phone,
+    };
+
+    try {
+      final response = await _userRepo.updateProfile(body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final profileResp = ProfileResponseModel.fromJson(response.data);
+        if (profileResp.data != null) {
+          rxUserProfile.value = profileResp.data!;
+        }
+        debugPrint(
+          '✅ Delivery details successfully updated on Profile API from checkout.',
+        );
+      }
+    } catch (e) {
+      debugPrint('⚠️ Update profile delivery details API error: $e');
+    }
   }
 
   void deleteItem(String id) {
