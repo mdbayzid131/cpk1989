@@ -131,14 +131,18 @@ class SellItemDetailController extends GetxController
     return Get.find<ProfileController>();
   }
 
-  // Payment method variables
+  // Payment method & Stripe Connect variables
   final rxSelectedCardId = "".obs;
+  final rxIsCheckingConnectStatus = false.obs;
+  final rxIsStripeOnboarded = false.obs;
+  final rxStripeStatusData = <String, dynamic>{}.obs;
 
   @override
   void onInit() {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
     pageController = PageController(viewportFraction: 0.88);
+    checkStripeConnectStatus();
 
     if (Get.arguments is ProfileItem) {
       item = Get.arguments as ProfileItem;
@@ -205,18 +209,8 @@ class SellItemDetailController extends GetxController
       }
     });
 
-    // Sync saved cards
+    // Sync user profile
     profileController.fetchUserProfile();
-    profileController.fetchSavedCards();
-
-    ever(profileController.rxSavedCards, (cards) {
-      if (rxSelectedCardId.value.isEmpty && cards.isNotEmpty) {
-        rxSelectedCardId.value = cards.first.id;
-      }
-    });
-    if (profileController.rxSavedCards.isNotEmpty) {
-      rxSelectedCardId.value = profileController.rxSavedCards.first.id;
-    }
 
     // Listen to changes in controllers to keep rx variables in sync
     titleController.addListener(() {
@@ -333,25 +327,16 @@ class SellItemDetailController extends GetxController
     }
     final PaymentRepository paymentRepo = Get.find<PaymentRepository>();
 
+    // Check local Stripe onboarding status first
+    if (!rxIsStripeOnboarded.value) {
+      _showStripeOnboardingDialog();
+      return false;
+    }
+
     rxIsPosting.value = true;
-    Helpers.showLoadingDialog(message: "Checking payout status...");
+    Helpers.showLoadingDialog(message: "Publishing item...");
 
     try {
-      final statusData = await paymentRepo.getConnectStatus();
-      final bool isReady =
-          statusData['connected'] == true &&
-          statusData['detailsSubmitted'] == true &&
-          statusData['payoutsEnabled'] == true;
-
-      if (!isReady) {
-        Helpers.hideLoadingDialog();
-        rxIsPosting.value = false;
-        _showStripeOnboardingDialog();
-        return false;
-      }
-
-      Helpers.showLoadingDialog(message: "Publishing item...");
-
       final name = rxTitle.value.trim();
       final brand = rxBrand.value.trim();
       final price = double.tryParse(rxPrice.value.trim()) ?? 0.0;
@@ -530,6 +515,64 @@ class SellItemDetailController extends GetxController
     );
   }
 
+  Future<void> checkStripeConnectStatus({bool showLoading = false}) async {
+    if (!Get.isRegistered<PaymentRepository>()) {
+      Get.put(PaymentRepository());
+    }
+    final paymentRepo = Get.find<PaymentRepository>();
+
+    rxIsCheckingConnectStatus.value = true;
+    if (showLoading) {
+      Helpers.showLoadingDialog(message: "Checking payout status...");
+    }
+
+    try {
+      final statusData = await paymentRepo.getConnectStatus();
+      rxStripeStatusData.value = statusData;
+      final bool isReady =
+          statusData['connected'] == true &&
+          statusData['detailsSubmitted'] == true &&
+          statusData['payoutsEnabled'] == true;
+
+      rxIsStripeOnboarded.value = isReady;
+
+      if (isReady && Get.isDialogOpen == true) {
+        Get.back(); // Dismiss onboarding popup automatically when seller becomes ready!
+      }
+    } catch (_) {
+      rxIsStripeOnboarded.value = false;
+    } finally {
+      rxIsCheckingConnectStatus.value = false;
+      if (showLoading) {
+        Helpers.hideLoadingDialog();
+      }
+    }
+  }
+
+  Future<void> startStripeOnboarding() async {
+    try {
+      Helpers.showLoadingDialog(message: "Generating setup link...");
+      if (!Get.isRegistered<PaymentRepository>()) {
+        Get.put(PaymentRepository());
+      }
+      final paymentRepo = Get.find<PaymentRepository>();
+      final onboardingUrl = await paymentRepo.createConnectOnboardingUrl();
+      Helpers.hideLoadingDialog();
+
+      if (onboardingUrl != null && onboardingUrl.isNotEmpty) {
+        final uri = Uri.parse(onboardingUrl);
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        Helpers.showError(
+          "Unable to generate payout setup link. Please try again.",
+        );
+      }
+    } catch (e) {
+      Helpers.hideLoadingDialog();
+      Helpers.showError("Error starting onboarding: $e");
+    }
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
@@ -538,21 +581,7 @@ class SellItemDetailController extends GetxController
   }
 
   Future<void> _checkStatusOnResume() async {
-    try {
-      if (!Get.isRegistered<PaymentRepository>()) {
-        Get.put(PaymentRepository());
-      }
-      final paymentRepo = Get.find<PaymentRepository>();
-      final statusData = await paymentRepo.getConnectStatus();
-      final bool isReady =
-          statusData['connected'] == true &&
-          statusData['detailsSubmitted'] == true &&
-          statusData['payoutsEnabled'] == true;
-
-      if (isReady && Get.isDialogOpen == true) {
-        Get.back(); // Dismiss onboarding popup automatically when seller becomes ready!
-      }
-    } catch (_) {}
+    await checkStripeConnectStatus();
   }
 
   @override

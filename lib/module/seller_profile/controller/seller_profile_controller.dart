@@ -100,7 +100,7 @@ class SellerProfileController extends GetxController {
             }
             if (rxAvatarUrl.value.isEmpty &&
                 firstProd.seller?.profileImage != null) {
-              rxAvatarUrl.value = firstProd.seller!.profileImage!;
+              rxAvatarUrl.value = firstProd.seller!.displayProfileImage;
             }
           }
         }

@@ -269,16 +269,13 @@ class WishlistScreen extends GetView<WishlistController> {
     return Container(
       height: MediaQuery.of(context).size.height * 0.62,
       alignment: Alignment.center,
-      padding: EdgeInsets.symmetric(horizontal: 24.w),
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // 1. Wishlist PNG Illustration matching design
           SvgPicture.asset(
-            'assets/images/wishlist.svg',
-            width: 220.r,
-            height: 220.r,
-            fit: BoxFit.contain,
+            'assets/images/wishlist_new.svg',
             errorBuilder: (context, error, stackTrace) {
               return Icon(
                 Icons.favorite_rounded,

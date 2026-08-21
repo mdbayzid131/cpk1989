@@ -1,3 +1,5 @@
+import 'package:cpk1989/config/constants/api_constants.dart';
+
 class ProductModel {
   final String? id;
   final List<String>? images;
@@ -97,6 +99,19 @@ class SellerModel {
     this.country,
   });
 
+  String get displayProfileImage {
+    final raw = profileImage ?? '';
+    if (raw.isEmpty) return '';
+    if (raw.startsWith('http://') || raw.startsWith('https://')) {
+      return raw;
+    }
+    final serverBase = ApiConstants.baseUrl.replaceAll(
+      RegExp(r'/api/v1/?$'),
+      '',
+    );
+    return raw.startsWith('/') ? '$serverBase$raw' : '$serverBase/$raw';
+  }
+
   factory SellerModel.fromJson(dynamic json) {
     if (json is String) {
       return SellerModel(id: json);
@@ -106,7 +121,11 @@ class SellerModel {
       return SellerModel(
         id: map['id'] ?? map['_id'],
         name: map['name'],
-        profileImage: map['profileImage'],
+        profileImage:
+            map['profileImage'] ??
+            map['image'] ??
+            map['avatar'] ??
+            map['profilePicture'],
         contact: map['contact'],
         location: map['location'],
         country: map['country'],

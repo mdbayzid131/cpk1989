@@ -260,7 +260,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "PAYMENT METHOD",
+                    "STRIPE PAYOUT ACCOUNT",
                     style: GoogleFonts.dmSans(
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w700,
@@ -269,18 +269,19 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                     ),
                   ),
                   Obx(() {
-                    if (controller.profileController.rxSavedCards.isNotEmpty) {
+                    if (!controller.rxIsCheckingConnectStatus.value) {
                       return GestureDetector(
-                        onTap: () => _showPaymentMethodsBottomSheet(context),
+                        onTap: () => controller.checkStripeConnectStatus(
+                          showLoading: true,
+                        ),
                         child: Text(
-                          "Change method",
+                          "Refresh status",
                           style: GoogleFonts.dmSans(
-                            fontSize: 14.sp,
+                            fontSize: 12.sp,
                             color: const Color(0xFFFFAF2C),
                             fontWeight: FontWeight.w600,
                             decoration: TextDecoration.underline,
                             decorationColor: const Color(0xFFFFAF2C),
-                            decorationThickness: 1.5,
                           ),
                         ),
                       );
@@ -290,7 +291,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 ],
               ),
               SizedBox(height: 12.h),
-              _buildPaymentMethodCard(),
+              _buildStripeOnboardingCard(),
               SizedBox(height: 24.h),
               _buildPostItemButton(context, item),
               SizedBox(height: 16.h),
@@ -599,6 +600,9 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
           if (success && context.mounted) {
             showCustomDippedBottomSheet(
               context: context,
+              isDismissible: false,
+              enableDrag: false,
+              canPop: false,
               logo: Image.asset(
                 'assets/icons/done Logo.png',
                 width: 80.r,
@@ -1471,6 +1475,211 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
     });
   }
 
+  Widget _buildStripeOnboardingCard() {
+    return Obx(() {
+      if (controller.rxIsCheckingConnectStatus.value) {
+        return Container(
+          padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 16.w),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.r),
+            color: const Color(0xFF1C1D20),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.05),
+              width: 1.0,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 20.w,
+                height: 20.h,
+                child: const CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Color(0xFFFFAF2C),
+                ),
+              ),
+              SizedBox(width: 12.w),
+              Text(
+                "Checking Stripe Connect status...",
+                style: GoogleFonts.dmSans(
+                  fontSize: 14.sp,
+                  color: Colors.white70,
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+
+      final isComplete = controller.rxIsStripeOnboarded.value;
+
+      if (isComplete) {
+        return Container(
+          padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.r),
+            color: const Color(0xFF1C1D20),
+            border: Border.all(
+              color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
+              width: 1.0,
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(10.r),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF4CAF50).withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.check_circle_rounded,
+                  color: const Color(0xFF4CAF50),
+                  size: 26.sp,
+                ),
+              ),
+              SizedBox(width: 14.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          "Stripe Account Connected",
+                          style: GoogleFonts.dmSans(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(width: 6.w),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 6.w,
+                            vertical: 2.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(
+                              0xFF4CAF50,
+                            ).withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(4.r),
+                          ),
+                          child: Text(
+                            "Active",
+                            style: GoogleFonts.dmSans(
+                              fontSize: 10.sp,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF4CAF50),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      "Payouts setup is complete. You will receive payments directly to your connected account.",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12.sp,
+                        color: Colors.white54,
+                        height: 1.3,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      } else {
+        return Container(
+          padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.r),
+            color: const Color(0xFF1C1D20),
+            border: Border.all(
+              color: const Color(0xFFE2B744).withValues(alpha: 0.3),
+              width: 1.0,
+            ),
+          ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(10.r),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF2C281C),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.account_balance_wallet_outlined,
+                      color: const Color(0xFFE2B744),
+                      size: 26.sp,
+                    ),
+                  ),
+                  SizedBox(width: 14.w),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Stripe Onboarding Required",
+                          style: GoogleFonts.dmSans(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(height: 4.h),
+                        Text(
+                          "You must complete your Stripe Connect payout setup to sell products and receive payouts.",
+                          style: GoogleFonts.dmSans(
+                            fontSize: 12.sp,
+                            color: Colors.white54,
+                            height: 1.3,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16.h),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () => controller.startStripeOnboarding(),
+                  icon: Icon(
+                    Icons.open_in_new_rounded,
+                    size: 16.sp,
+                    color: Colors.black,
+                  ),
+                  label: Text(
+                    "Setup Stripe Account",
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFFAF2C),
+                    padding: EdgeInsets.symmetric(vertical: 12.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+    });
+  }
+
   Widget _buildPaymentMethodCard() {
     return Obx(() {
       final savedCards = controller.profileController.rxSavedCards;
@@ -1966,6 +2175,27 @@ class _SuccessBottomSheetContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String brandName = item.brand.trim().isNotEmpty ? item.brand.trim() : '';
+    String itemName =
+        item.itemName.trim().isNotEmpty ? item.itemName.trim() : '';
+    String imagePath = item.imageUrl;
+
+    if (Get.isRegistered<SellItemDetailController>()) {
+      final controller = Get.find<SellItemDetailController>();
+      if (controller.rxBrand.value.trim().isNotEmpty) {
+        brandName = controller.rxBrand.value.trim();
+      }
+      if (controller.rxTitle.value.trim().isNotEmpty) {
+        itemName = controller.rxTitle.value.trim();
+      }
+      if (item.images != null && item.images!.isNotEmpty) {
+        imagePath = item.images!.first;
+      }
+    }
+
+    if (brandName.isEmpty) brandName = 'BRAND';
+    if (itemName.isEmpty) itemName = 'Product Listing';
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -2016,7 +2246,7 @@ class _SuccessBottomSheetContent extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      item.brand.toUpperCase(),
+                      brandName.toUpperCase(),
                       style: GoogleFonts.dmSans(
                         fontSize: 11.sp,
                         fontWeight: FontWeight.w700,
@@ -2026,7 +2256,7 @@ class _SuccessBottomSheetContent extends StatelessWidget {
                     ),
                     SizedBox(height: 4.h),
                     Text(
-                      item.itemName,
+                      itemName,
                       style: GoogleFonts.dmSans(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w700,
@@ -2072,15 +2302,15 @@ class _SuccessBottomSheetContent extends StatelessWidget {
               SizedBox(width: 16.w),
               ClipRRect(
                 borderRadius: BorderRadius.circular(12.r),
-                child: item.imageUrl.startsWith('http')
+                child: imagePath.startsWith('http')
                     ? Image.network(
-                        item.imageUrl,
+                        imagePath,
                         width: 102.r,
                         height: 102.r,
                         fit: BoxFit.cover,
                       )
                     : Image.file(
-                        File(item.imageUrl),
+                        File(imagePath),
                         width: 102.r,
                         height: 102.r,
                         fit: BoxFit.cover,

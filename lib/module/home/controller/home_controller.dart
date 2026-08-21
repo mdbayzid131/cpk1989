@@ -67,7 +67,7 @@ class FeedItem {
       isVerified: true,
       images: product.images,
       originalPackagingAvailable: product.originalPackagingAvailable ?? false,
-      sellerProfileImage: product.seller?.profileImage ?? '',
+      sellerProfileImage: product.seller?.displayProfileImage ?? '',
       proofOfPurchase: product.proofOfPurchase,
     );
   }

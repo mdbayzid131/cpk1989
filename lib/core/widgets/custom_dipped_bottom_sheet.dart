@@ -251,6 +251,8 @@ Future<T?> showCustomDippedBottomSheet<T>({
   Widget? logo,
   required Widget content,
   bool isDismissible = true,
+  bool enableDrag = true,
+  bool canPop = true,
 }) {
   final double screenBottomPadding = MediaQuery.of(context).padding.bottom;
   return showModalBottomSheet<T>(
@@ -258,18 +260,22 @@ Future<T?> showCustomDippedBottomSheet<T>({
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
     isDismissible: isDismissible,
+    enableDrag: enableDrag,
     barrierColor: Colors.black.withValues(alpha: 0.5),
     builder: (sheetContext) {
-      return BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
-        child: Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
-          ),
-          child: CustomDippedBottomSheet(
-            logo: logo,
-            content: content,
-            screenBottomPadding: screenBottomPadding,
+      return PopScope(
+        canPop: canPop,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
+            ),
+            child: CustomDippedBottomSheet(
+              logo: logo,
+              content: content,
+              screenBottomPadding: screenBottomPadding,
+            ),
           ),
         ),
       );
