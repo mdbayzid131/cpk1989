@@ -10,17 +10,19 @@ Future<void> showProcessingOverlay(
 }) async {
   Helpers.showLoadingDialog(message: "Processing..");
 
-  if (asyncTask != null) {
-    final startTime = DateTime.now();
-    await asyncTask();
-    final elapsed = DateTime.now().difference(startTime).inMilliseconds;
-    if (elapsed < 1200) {
-      await Future.delayed(Duration(milliseconds: 1200 - elapsed));
+  try {
+    if (asyncTask != null) {
+      final startTime = DateTime.now();
+      await asyncTask();
+      final elapsed = DateTime.now().difference(startTime).inMilliseconds;
+      if (elapsed < 1200) {
+        await Future.delayed(Duration(milliseconds: 1200 - elapsed));
+      }
+    } else {
+      await Future.delayed(const Duration(milliseconds: 1200));
     }
-  } else {
-    await Future.delayed(const Duration(milliseconds: 1200));
+  } finally {
+    Helpers.hideLoadingDialog();
   }
-
-  Helpers.hideLoadingDialog();
   onComplete();
 }

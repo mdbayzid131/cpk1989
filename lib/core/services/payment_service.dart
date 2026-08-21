@@ -83,6 +83,25 @@ class PaymentService extends GetxService {
         success: false,
         message: 'Invalid response from server',
       );
+    } on DioException catch (e) {
+      debugPrint('❌ Checkout API DioException: ${e.response?.data}');
+      final responseData = e.response?.data;
+      String errorMsg = 'Checkout failed.';
+      if (responseData is Map) {
+        if (responseData['message'] != null &&
+            responseData['message'].toString().isNotEmpty) {
+          errorMsg = responseData['message'].toString();
+        } else if (responseData['errorMessages'] is List &&
+            (responseData['errorMessages'] as List).isNotEmpty) {
+          final first = (responseData['errorMessages'] as List).first;
+          if (first is Map && first['message'] != null) {
+            errorMsg = first['message'].toString();
+          }
+        }
+      } else if (e.message != null && e.message!.isNotEmpty) {
+        errorMsg = e.message!;
+      }
+      return CheckoutResponseModel(success: false, message: errorMsg);
     } catch (e) {
       debugPrint('❌ Checkout API exception: $e');
       return CheckoutResponseModel(success: false, message: e.toString());

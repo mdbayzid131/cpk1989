@@ -1,3 +1,4 @@
+import 'package:cpk1989/core/utils/helpers.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,6 +11,7 @@ import 'package:cpk1989/core/services/payment_service.dart';
 
 class SecureCheckoutController extends GetxController {
   late final FeedItem item;
+  String? lastErrorMessage;
 
   // Gesture Recognizers for checkout footer links
   late final TapGestureRecognizer termsRecognizer;
@@ -195,131 +197,140 @@ class SecureCheckoutController extends GetxController {
               ? profileController.rxSavedCards.first.id
               : null);
 
-    final paymentResult = await PaymentService.to.processPayment(
-      paymentMethod: rxPaymentMethod.value,
-      productId: item.id.isNotEmpty ? item.id : 'unknown',
-      address: addressController.text.trim(),
-      location: rxLocation.value,
-      phone: '${rxPhoneCode.value} ${phoneController.text.trim()}',
-      selectedPaymentMethodId: rxPaymentMethod.value == "card"
-          ? selectedCardId
-          : null,
-    );
-
-    rxIsProcessing.value = false;
-
-    if (!paymentResult.success) {
-      if (!paymentResult.isCancelled) {
-        final errorMsg =
-            paymentResult.errorMessage ??
-            "Payment could not be completed. Please try again.";
-        Get.dialog(
-          Dialog(
-            backgroundColor: const Color(0xFF1C1D20),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16.r),
-              side: BorderSide(
-                color: Colors.redAccent.withValues(alpha: 0.3),
-                width: 1,
-              ),
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(20.r),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(12.r),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF2C1C1D),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.error_outline_rounded,
-                      color: Colors.redAccent,
-                      size: 32.sp,
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
-                  Text(
-                    "Payment Error",
-                    style: GoogleFonts.dmSans(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(height: 8.h),
-                  Text(
-                    errorMsg,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.white70,
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 44.h,
-                    child: ElevatedButton(
-                      onPressed: () => Get.back(),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFE2B744),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.r),
-                        ),
-                      ),
-                      child: Text(
-                        "Okay",
-                        style: GoogleFonts.dmSans(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      }
-      return null;
-    }
-
-    // Create purchased item using real order data from backend API
-    final realOrder = paymentResult.orderData;
-    final realOrderNumber = realOrder?.orderNumber ?? '';
-    final realPrice = realOrder?.price ?? finalPrice;
-
-    final purchasedItem = ProfileItem(
-      id: realOrderNumber.isNotEmpty
-          ? realOrderNumber
-          : (item.id.isNotEmpty
-                ? item.id
-                : DateTime.now().millisecondsSinceEpoch.toString()),
-      imageUrl: item.imagePath,
-      price: realPrice,
-      likes: 1200,
-      isSold: true,
-      brand: item.brand.isNotEmpty ? item.brand : item.itemName,
-      itemName: item.itemName,
-      status: "Reserved",
-      images: item.itemImages,
-    );
-
-    // Add purchased item to profile
     try {
-      if (!Get.isRegistered<ProfileController>()) {
-        Get.put(ProfileController());
-      }
-      final profileController = Get.find<ProfileController>();
-      profileController.rxPurchaseItems.insert(0, purchasedItem);
-    } catch (_) {}
+      final paymentResult = await PaymentService.to.processPayment(
+        paymentMethod: rxPaymentMethod.value,
+        productId: item.id.isNotEmpty ? item.id : 'unknown',
+        address: addressController.text.trim(),
+        location: rxLocation.value,
+        phone: '${rxPhoneCode.value} ${phoneController.text.trim()}',
+        selectedPaymentMethodId: selectedCardId,
+      );
 
-    return purchasedItem;
+      if (!paymentResult.success) {
+        if (!paymentResult.isCancelled) {
+          lastErrorMessage =
+              paymentResult.errorMessage ??
+              "Payment could not be completed. Please try again.";
+        } else {
+          lastErrorMessage = null;
+        }
+        return null;
+      }
+
+      // Create purchased item using real order data from backend API
+      final realOrder = paymentResult.orderData;
+      final realOrderNumber = realOrder?.orderNumber ?? '';
+      final realPrice = realOrder?.price ?? finalPrice;
+
+      final purchasedItem = ProfileItem(
+        id: realOrderNumber.isNotEmpty
+            ? realOrderNumber
+            : (item.id.isNotEmpty
+                  ? item.id
+                  : DateTime.now().millisecondsSinceEpoch.toString()),
+        imageUrl: item.imagePath,
+        price: realPrice,
+        likes: 1200,
+        isSold: true,
+        brand: item.brand.isNotEmpty ? item.brand : item.itemName,
+        itemName: item.itemName,
+        status: "Reserved",
+        images: item.itemImages,
+      );
+
+      // Add purchased item to profile
+      try {
+        if (!Get.isRegistered<ProfileController>()) {
+          Get.put(ProfileController());
+        }
+        final profileController = Get.find<ProfileController>();
+        profileController.rxPurchaseItems.insert(0, purchasedItem);
+      } catch (_) {}
+
+      return purchasedItem;
+    } catch (e) {
+      debugPrint('❌ processPurchase unexpected error: $e');
+      lastErrorMessage = "An unexpected error occurred. Please try again.";
+      return null;
+    } finally {
+      rxIsProcessing.value = false;
+    }
+  }
+
+  void showPaymentErrorDialog(String errorMsg) {
+    Get.dialog(
+      Dialog(
+        backgroundColor: const Color(0xFF1C1D20),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.r),
+          side: BorderSide(
+            color: Colors.redAccent.withValues(alpha: 0.3),
+            width: 1,
+          ),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(20.r),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: EdgeInsets.all(12.r),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF2C1C1D),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.error_outline_rounded,
+                  color: Colors.redAccent,
+                  size: 32.sp,
+                ),
+              ),
+              SizedBox(height: 16.h),
+              Text(
+                "Payment Error",
+                style: GoogleFonts.dmSans(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                errorMsg,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.dmSans(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.white70,
+                ),
+              ),
+              SizedBox(height: 20.h),
+              SizedBox(
+                width: double.infinity,
+                height: 44.h,
+                child: ElevatedButton(
+                  onPressed: () => Get.back(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFE2B744),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                  ),
+                  child: Text(
+                    "Okay",
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

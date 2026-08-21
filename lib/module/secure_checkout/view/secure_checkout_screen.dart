@@ -898,6 +898,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
           return;
         }
 
+        controller.lastErrorMessage = null;
         ProfileItem? purchasedItem;
         await showProcessingOverlay(
           context,
@@ -909,6 +910,9 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
 
         if (purchasedItem != null) {
           Get.offNamed(AppRoutes.purchaseDetail, arguments: purchasedItem);
+        } else if (controller.lastErrorMessage != null &&
+            controller.lastErrorMessage!.isNotEmpty) {
+          controller.showPaymentErrorDialog(controller.lastErrorMessage!);
         }
       },
     );
