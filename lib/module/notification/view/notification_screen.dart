@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -5,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cpk1989/module/notification/controller/notification_controller.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
+import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 
 class NotificationScreen extends GetView<NotificationController> {
   const NotificationScreen({super.key});
@@ -50,35 +52,15 @@ class NotificationScreen extends GetView<NotificationController> {
                             letterSpacing: -0.5,
                           ),
                         ),
-                        // Circular Settings Gear Button
-                        GestureDetector(
-                          onTap: () {
-                            Get.snackbar(
-                              "Notification Settings",
-                              "Manage your notification preferences",
-                              snackPosition: SnackPosition.TOP,
-                              backgroundColor: const Color(0xFF1E1E22),
-                              colorText: Colors.white,
-                              duration: const Duration(seconds: 2),
-                            );
-                          },
-                          child: Container(
-                            width: 44.r,
-                            height: 44.r,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: const Color(0xFF1E1E22),
-                              border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.1),
-                                width: 1.0,
-                              ),
-                            ),
-                            child: Center(
-                              child: Icon(
-                                Icons.settings_outlined,
-                                color: Colors.white,
-                                size: 22.r,
-                              ),
+                        // Circular Settings Gear Glass Button
+                        Builder(
+                          builder: (btnContext) => CustomGlassButton(
+                            size: 44.r,
+                            onTap: () => _showSettingsMenu(btnContext),
+                            child: Icon(
+                              Icons.settings_outlined,
+                              color: Colors.white,
+                              size: 20.r,
                             ),
                           ),
                         ),
@@ -339,6 +321,168 @@ class NotificationScreen extends GetView<NotificationController> {
       text: TextSpan(children: spans),
       maxLines: 3,
       overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  void _showSettingsMenu(BuildContext context) {
+    final RenderBox renderBox = context.findRenderObject() as RenderBox;
+    final Offset offset = renderBox.localToGlobal(Offset.zero);
+    final Size size = renderBox.size;
+
+    final double menuTop = offset.dy + size.height + 8.h;
+    final double menuRight = 16.w;
+
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'DismissMenu',
+      barrierColor: Colors.black.withValues(alpha: 0.15),
+      transitionDuration: const Duration(milliseconds: 180),
+      pageBuilder: (dialogContext, animation, secondaryAnimation) {
+        return Stack(
+          children: [
+            // Tap outside to close
+            Positioned.fill(
+              child: GestureDetector(
+                onTap: () => Navigator.of(dialogContext).pop(),
+                behavior: HitTestBehavior.opaque,
+                child: const SizedBox.expand(),
+              ),
+            ),
+
+            // Frosted Glass Popup Menu Container
+            Positioned(
+              top: menuTop,
+              right: menuRight,
+              width: 200.w,
+              child: FadeTransition(
+                opacity: animation,
+                child: ScaleTransition(
+                  scale: Tween<double>(begin: 0.88, end: 1.0).animate(
+                    CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.easeOutCubic,
+                    ),
+                  ),
+                  alignment: Alignment.topRight,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16.r),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 18.0, sigmaY: 18.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0x14FFFFFF), // #FFFFFF14 fill
+                          borderRadius: BorderRadius.circular(16.r),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.18),
+                            width: 1.0,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.35),
+                              blurRadius: 24,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // 1. Mark as all read
+                              InkWell(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(16.r),
+                                  topRight: Radius.circular(16.r),
+                                ),
+                                onTap: () {
+                                  Navigator.of(dialogContext).pop();
+                                  controller.markAllAsRead();
+                                },
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16.w,
+                                    vertical: 14.h,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.done_all_rounded,
+                                        color: Colors.white,
+                                        size: 20.r,
+                                      ),
+                                      SizedBox(width: 12.w),
+                                      Expanded(
+                                        child: Text(
+                                          "Mark as all read",
+                                          style: GoogleFonts.dmSans(
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+
+                              // Divider line
+                              Container(
+                                height: 1.0,
+                                color: Colors.white.withValues(alpha: 0.1),
+                              ),
+
+                              // 2. Delete all
+                              InkWell(
+                                borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(16.r),
+                                  bottomRight: Radius.circular(16.r),
+                                ),
+                                onTap: () {
+                                  Navigator.of(dialogContext).pop();
+                                  controller.deleteAllNotifications();
+                                },
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16.w,
+                                    vertical: 14.h,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.delete_outline_rounded,
+                                        color: Colors.white,
+                                        size: 20.r,
+                                      ),
+                                      SizedBox(width: 12.w),
+                                      Expanded(
+                                        child: Text(
+                                          "Delete all",
+                                          style: GoogleFonts.dmSans(
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
