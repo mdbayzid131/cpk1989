@@ -1,6 +1,6 @@
 class ApiConstants {
   // Base URLs
-  static const String baseUrl = 'https://comments-cooked-norman-camera.trycloudflare.com/api/v1';
+  static const String baseUrl = 'https://chain-rendering-trek-ericsson.trycloudflare.com/api/v1';
   // static const String baseUrl = 'http://10.10.26.198:5001/api/v1';
   // static const String baseUrl = 'http://10.10.26.198:5000/api/v1';
   // static const String baseUrl = 'https://nayem5001.binarybards.online/api/v1';
@@ -15,6 +15,7 @@ class ApiConstants {
   static const String profileStats = '/user/profile/stats';
   static const String products = '/products';
   static const String wishlist = '/wishlist';
+  static const String notifications = '/notifications';
   static const String orders = '/orders';
   static const String paymentMethods = '/payment-methods';
   static const String setupIntent = '/payment-methods/setup-intent';

@@ -26,12 +26,15 @@ import 'package:cpk1989/module/my_purchase_ditails/binding/my_purchase_ditails_b
 import 'package:cpk1989/module/seller_profile/view/seller_profile_screen.dart';
 import 'package:cpk1989/module/seller_profile/binding/seller_profile_binding.dart';
 import 'package:cpk1989/module/terms_and_policies/view/terms_and_policies_screen.dart';
+import 'package:cpk1989/module/notification/view/notification_screen.dart';
+import 'package:cpk1989/module/notification/binding/notification_binding.dart';
 
 class AppRoutes {
   static const String splash = '/splash';
   static const String onboarding = '/onboarding';
   static const String login = '/login';
   static const String bottomNavBar = '/bottom-nav-bar';
+  static const String notification = '/notification';
   static const String sell = '/sell';
   static const String itemDetail = '/item-detail';
   static const String purchaseDetail = '/purchase-detail';
@@ -135,6 +138,12 @@ final pages = [
     name: AppRoutes.sellerProfile,
     page: () => const SellerProfileScreen(),
     binding: SellerProfileBinding(),
+    transition: transition,
+  ),
+  GetPage(
+    name: AppRoutes.notification,
+    page: () => const NotificationScreen(),
+    binding: NotificationBinding(),
     transition: transition,
   ),
 ];

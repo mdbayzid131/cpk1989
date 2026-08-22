@@ -6,6 +6,7 @@ import 'package:cpk1989/module/bottom_nav_bar/controller/bottom_nav_bar_controll
 import 'package:cpk1989/module/home/view/home_screen.dart';
 import 'package:cpk1989/module/wishlist/view/wishlist_screen.dart';
 import 'package:cpk1989/module/profile/view/profile_screen.dart';
+import 'package:cpk1989/module/notification/view/notification_screen.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
 
 class BottomNavBarScreen extends GetView<BottomNavBarController> {
@@ -16,6 +17,7 @@ class BottomNavBarScreen extends GetView<BottomNavBarController> {
     final List<Widget> tabs = [
       const HomeScreen(),
       const WishlistScreen(),
+      const NotificationScreen(),
       const ProfileScreen(),
     ];
 
@@ -74,7 +76,7 @@ class BottomNavBarScreen extends GetView<BottomNavBarController> {
               ),
             ),
 
-            // Main Navigation Items (Home, Wishlist, Profile) - centered inside the left capsule, adjusted to shift Wishlist & Profile rightwards
+            // Main Navigation Items (Home, Wishlist, Notification, Profile) - centered inside the left capsule
             Positioned(
               left: 0,
               top: 0,
@@ -82,13 +84,14 @@ class BottomNavBarScreen extends GetView<BottomNavBarController> {
               height: barHeight,
               child: Obx(
                 () => Padding(
-                  padding: EdgeInsets.only(left: 10.0 * k, right: 8.0 * k),
+                  padding: EdgeInsets.only(left: 6.0 * k, right: 6.0 * k),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       _buildNavItem(0, 'assets/icons/home.svg', k),
                       _buildNavItem(1, 'assets/icons/wishlist.svg', k),
-                      _buildNavItem(2, 'assets/icons/profile.svg', k),
+                      _buildNavItem(2, 'assets/icons/notifiction.svg', k),
+                      _buildNavItem(3, 'assets/icons/profile.svg', k),
                     ],
                   ),
                 ),
