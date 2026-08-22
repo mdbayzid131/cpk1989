@@ -61,7 +61,7 @@ class NotificationController extends GetxController {
               return NotificationItem(
                 id: json['id'] ?? json['_id'] ?? '',
                 title: json['title'] ?? 'Notification',
-                subtitle: json['subtitle'] ?? '',
+                subtitle: json['subtitle'] ?? json['body'] ?? '',
                 timeAgo: _formatTime(json['createdAt']),
                 dateGroup: _formatDateGroup(json['createdAt']),
                 type: _parseType(json['type']),
@@ -173,7 +173,12 @@ class NotificationController extends GetxController {
     );
   }
 
-  void deleteAllNotifications() {
+  Future<void> deleteAllNotifications() async {
+    try {
+      if (_repository != null) {
+        await _repository.deleteAllNotifications();
+      }
+    } catch (_) {}
     rxNotifications.clear();
     Get.snackbar(
       "Notifications Cleared",

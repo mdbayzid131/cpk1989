@@ -4,6 +4,7 @@ import 'package:cpk1989/config/constants/storage_constants.dart';
 import 'package:cpk1989/core/services/api_client.dart';
 import 'package:cpk1989/core/services/storage_service.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
+import 'package:cpk1989/core/services/push_notification_service.dart';
 import 'package:cpk1989/data/repositories/auth_repository.dart';
 
 class AuthService extends GetxService {
@@ -52,9 +53,8 @@ class AuthService extends GetxService {
   /// ===================== LOGOUT =====================
   Future<void> logout() async {
     try {
-      // final response = await _authRepo.logout(deviceToken);
+      await PushNotificationService().unregisterDeviceToken();
       await _clearLocalAuth();
-      // return response;
     } catch (e) {
       await _clearLocalAuth();
       rethrow;
@@ -104,6 +104,9 @@ class AuthService extends GetxService {
     if (accessToken != null) {
       await StorageService.setString(StorageConstants.bearerToken, accessToken);
       isLoggedIn.value = true;
+
+      // Register FCM device token for newly authenticated user
+      PushNotificationService().registerDeviceToken();
     }
 
     if (refreshToken != null) {

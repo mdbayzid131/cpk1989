@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "471061912823",
+    "project_id": "closete-c624a",
+    "storage_bucket": "closete-c624a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:471061912823:android:54e65c7a1e645afbf447f2",
+        "android_client_info": {
+          "package_name": "com.closete.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAi5Xfjtutk1FAzAPbyTzVvJ3ovARHPMVY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
