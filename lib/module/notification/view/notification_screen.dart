@@ -16,6 +16,39 @@ class NotificationScreen extends GetView<NotificationController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0F1012),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF0F1012),
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        elevation: 0,
+        centerTitle: false,
+        titleSpacing: 16.w,
+        title: Text(
+          "Notifications",
+          style: GoogleFonts.dmSans(
+            fontSize: 28.sp,
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+            letterSpacing: -0.5,
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: 16.w),
+            child: Builder(
+              builder: (btnContext) => CustomGlassButton(
+                size: 44.r,
+                onTap: () => _showSettingsMenu(btnContext),
+                child: Icon(
+                  Icons.settings_outlined,
+                  color: Colors.white,
+                  size: 20.r,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Obx(() {
           if (controller.rxIsLoading.value &&
@@ -36,40 +69,6 @@ class NotificationScreen extends GetView<NotificationController> {
                 parent: BouncingScrollPhysics(),
               ),
               slivers: [
-                // Top Header Section (Notifications Title + Settings Button)
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Notifications",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 28.sp,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
-                            letterSpacing: -0.5,
-                          ),
-                        ),
-                        // Circular Settings Gear Glass Button
-                        Builder(
-                          builder: (btnContext) => CustomGlassButton(
-                            size: 44.r,
-                            onTap: () => _showSettingsMenu(btnContext),
-                            child: Icon(
-                              Icons.settings_outlined,
-                              color: Colors.white,
-                              size: 20.r,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
                 if (grouped.isEmpty)
                   SliverFillRemaining(
                     hasScrollBody: false,

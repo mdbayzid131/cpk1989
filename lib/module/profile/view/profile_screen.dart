@@ -26,6 +26,38 @@ class ProfileScreen extends GetView<ProfileController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0F1012),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF0F1012),
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        elevation: 0,
+        centerTitle: false,
+        titleSpacing: 20.w,
+        title: Text(
+          "My Profile",
+          style: GoogleFonts.dmSans(
+            fontSize: 24.sp,
+            fontWeight: FontWeight.w400,
+            color: Colors.white,
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: 16.w),
+            child: IconButton(
+              onPressed: () => _showLogoutDialog(context),
+              alignment: Alignment.centerRight,
+              icon: const Icon(
+                Icons.logout_rounded,
+                color: Colors.white54,
+                size: 22,
+              ),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+            ),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: RefreshIndicator(
           color: const Color(0xFFE2B744),
@@ -46,43 +78,7 @@ class ProfileScreen extends GetView<ProfileController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 12.h),
-
-                // Screen Header (Left-aligned as shown in mockup)
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: 20.w,
-                    right: 0.w,
-                    top: 8.h,
-                    bottom: 8.h,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "My Profile",
-                        style: GoogleFonts.dmSans(
-                          fontSize: 24.sp,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.white,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () => _showLogoutDialog(context),
-                        alignment: Alignment.centerRight,
-                        icon: const Icon(
-                          Icons.logout_rounded,
-                          color: Colors.white54,
-                          size: 22,
-                        ),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                      ),
-                    ],
-                  ),
-                ),
-
-                SizedBox(height: 12.h),
+                SizedBox(height: 8.h),
 
                 // Profile Card Details (Horizontal layout matching mockup)
                 _buildProfileCard(context),

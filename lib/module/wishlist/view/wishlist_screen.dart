@@ -16,6 +16,23 @@ class WishlistScreen extends GetView<WishlistController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0F1012),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF0F1012),
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        elevation: 0,
+        centerTitle: false,
+        titleSpacing: 16.w,
+        title: Text(
+          "Wishlist",
+          style: GoogleFonts.dmSans(
+            fontSize: 28.sp,
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+            letterSpacing: -0.5,
+          ),
+        ),
+      ),
       body: SafeArea(
         child: RefreshIndicator(
           color: const Color(0xFFE2B744),
@@ -36,22 +53,6 @@ class WishlistScreen extends GetView<WishlistController> {
                 parent: BouncingScrollPhysics(),
               ),
               slivers: [
-                // Title Header (Left-aligned as shown in mockup)
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
-                    child: Text(
-                      "Wishlist",
-                      style: GoogleFonts.dmSans(
-                        fontSize: 28.sp,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                  ),
-                ),
-
                 if (items.isEmpty)
                   SliverFillRemaining(
                     hasScrollBody: false,
