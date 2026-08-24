@@ -36,7 +36,7 @@ class UserRepository {
     );
   }
 
-  /// Get user's listed items (My Wardrobe)
+  /// Get user's listed items (My Wardrobe / Seller products: GET /products?seller=...)
   Future<Response> getMyWardrobe({
     required String sellerId,
     int page = 1,
@@ -45,6 +45,7 @@ class UserRepository {
     return await apiClient.getData(
       ApiConstants.products,
       query: {'seller': sellerId, 'page': page, 'limit': limit},
+      requiresAuth: false,
     );
   }
 

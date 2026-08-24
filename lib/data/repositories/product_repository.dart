@@ -9,7 +9,7 @@ class ProductRepository {
 
   ProductRepository({required this.apiClient});
 
-  /// Get list of products
+  /// Get list of products (Public feed)
   Future<Response> getProducts({
     int page = 1,
     int limit = 10,
@@ -19,12 +19,19 @@ class ProductRepository {
     if (status != null) {
       query['status'] = status;
     }
-    return await apiClient.getData(ApiConstants.products, query: query);
+    return await apiClient.getData(
+      ApiConstants.products,
+      query: query,
+      requiresAuth: false,
+    );
   }
 
-  /// Get details of a single product by ID
+  /// Get details of a single product by ID (Public details)
   Future<Response> getProductById(String id) async {
-    return await apiClient.getData('${ApiConstants.products}/$id');
+    return await apiClient.getData(
+      '${ApiConstants.products}/$id',
+      requiresAuth: false,
+    );
   }
 
   /// Update product details by ID (PATCH /products/:id - JSON only)

@@ -59,11 +59,15 @@ class ApiClient extends GetxService {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
+    final bool requiresAuth = options.extra['requiresAuth'] ?? true;
     _bearerToken = await StorageService.getString(StorageConstants.bearerToken);
 
-    if (_bearerToken.isNotEmpty &&
+    if (requiresAuth &&
+        _bearerToken.isNotEmpty &&
         !options.path.contains(ApiConstants.refreshToken)) {
       options.headers['Authorization'] = 'Bearer $_bearerToken';
+    } else if (!requiresAuth) {
+      options.headers.remove('Authorization');
     }
 
     AppLogger.request(options);
@@ -122,13 +126,17 @@ class ApiClient extends GetxService {
     Map<String, dynamic>? query,
     CancelToken? cancelToken,
     Map<String, dynamic>? extraHeaders,
+    bool requiresAuth = true,
   }) async {
     try {
       return await _dio.get(
         uri,
         queryParameters: query,
         cancelToken: cancelToken,
-        options: extraHeaders != null ? Options(headers: extraHeaders) : null,
+        options: Options(
+          headers: extraHeaders,
+          extra: {'requiresAuth': requiresAuth},
+        ),
       );
     } on DioException catch (e) {
       return _buildErrorResponse(e);
@@ -141,13 +149,17 @@ class ApiClient extends GetxService {
     dynamic body, {
     CancelToken? cancelToken,
     Map<String, dynamic>? extraHeaders,
+    bool requiresAuth = true,
   }) async {
     try {
       return await _dio.post(
         uri,
         data: body,
         cancelToken: cancelToken,
-        options: extraHeaders != null ? Options(headers: extraHeaders) : null,
+        options: Options(
+          headers: extraHeaders,
+          extra: {'requiresAuth': requiresAuth},
+        ),
       );
     } on DioException catch (e) {
       return _buildErrorResponse(e);
@@ -160,13 +172,17 @@ class ApiClient extends GetxService {
     dynamic body, {
     CancelToken? cancelToken,
     Map<String, dynamic>? extraHeaders,
+    bool requiresAuth = true,
   }) async {
     try {
       return await _dio.put(
         uri,
         data: body,
         cancelToken: cancelToken,
-        options: extraHeaders != null ? Options(headers: extraHeaders) : null,
+        options: Options(
+          headers: extraHeaders,
+          extra: {'requiresAuth': requiresAuth},
+        ),
       );
     } on DioException catch (e) {
       return _buildErrorResponse(e);
@@ -179,13 +195,17 @@ class ApiClient extends GetxService {
     dynamic body, {
     CancelToken? cancelToken,
     Map<String, dynamic>? extraHeaders,
+    bool requiresAuth = true,
   }) async {
     try {
       return await _dio.patch(
         uri,
         data: body,
         cancelToken: cancelToken,
-        options: extraHeaders != null ? Options(headers: extraHeaders) : null,
+        options: Options(
+          headers: extraHeaders,
+          extra: {'requiresAuth': requiresAuth},
+        ),
       );
     } on DioException catch (e) {
       return _buildErrorResponse(e);
@@ -198,13 +218,17 @@ class ApiClient extends GetxService {
     dynamic body,
     CancelToken? cancelToken,
     Map<String, dynamic>? extraHeaders,
+    bool requiresAuth = true,
   }) async {
     try {
       return await _dio.delete(
         uri,
         data: body,
         cancelToken: cancelToken,
-        options: extraHeaders != null ? Options(headers: extraHeaders) : null,
+        options: Options(
+          headers: extraHeaders,
+          extra: {'requiresAuth': requiresAuth},
+        ),
       );
     } on DioException catch (e) {
       return _buildErrorResponse(e);
@@ -401,8 +425,14 @@ class ApiClient extends GetxService {
   /// Force logout when refresh fails
   void _forceLogout() {
     StorageService.clearAll();
-    Get.offAllNamed(AppRoutes.splash);
-    Helpers.showError('Session reset.', title: 'Session Expired');
+    if (Get.key.currentContext != null || Get.context != null) {
+      try {
+        Get.offAllNamed(AppRoutes.splash);
+        Helpers.showError('Session reset.', title: 'Session Expired');
+      } catch (e) {
+        Helpers.debug('Force logout navigation error: $e');
+      }
+    }
   }
 }
 

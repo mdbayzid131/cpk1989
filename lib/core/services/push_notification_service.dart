@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
+import 'package:cpk1989/config/constants/storage_constants.dart';
+import 'package:cpk1989/core/services/storage_service.dart';
 import 'package:cpk1989/core/services/api_client.dart';
 import 'package:cpk1989/data/repositories/notification_repository.dart';
 
@@ -147,6 +149,14 @@ class PushNotificationService {
   /// Send FCM token and device info to Backend
   Future<void> _sendTokenToBackend(String fcmToken) async {
     try {
+      final authToken = await StorageService.getString(StorageConstants.bearerToken);
+      if (authToken.isEmpty) {
+        if (kDebugMode) {
+          print('ℹ️ PushNotificationService: User not logged in yet, skipping backend device registration.');
+        }
+        return;
+      }
+
       final prefs = await SharedPreferences.getInstance();
       String? deviceId = prefs.getString('device_installation_id');
       if (deviceId == null || deviceId.isEmpty) {
