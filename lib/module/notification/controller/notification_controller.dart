@@ -56,90 +56,27 @@ class NotificationController extends GetxController {
         final response = await _repository.getNotifications();
         if (response.statusCode == 200 && response.data != null) {
           final List rawData = response.data['data'] ?? [];
-          if (rawData.isNotEmpty) {
-            final fetched = rawData.map((json) {
-              return NotificationItem(
-                id: json['id'] ?? json['_id'] ?? '',
-                title: json['title'] ?? 'Notification',
-                subtitle: json['subtitle'] ?? json['body'] ?? '',
-                timeAgo: _formatTime(json['createdAt']),
-                dateGroup: _formatDateGroup(json['createdAt']),
-                type: _parseType(json['type']),
-                isRead: json['isRead'] ?? false,
-              );
-            }).toList();
-            rxNotifications.assignAll(fetched);
-            rxIsLoading.value = false;
-            return;
-          }
+          final fetched = rawData.map((json) {
+            return NotificationItem(
+              id: json['id'] ?? json['_id'] ?? '',
+              title: json['title'] ?? 'Notification',
+              subtitle: json['subtitle'] ?? json['body'] ?? '',
+              timeAgo: _formatTime(json['createdAt']),
+              dateGroup: _formatDateGroup(json['createdAt']),
+              type: _parseType(json['type']),
+              isRead: json['isRead'] ?? false,
+            );
+          }).toList();
+          rxNotifications.assignAll(fetched);
+          rxIsLoading.value = false;
+          return;
         }
       }
-    } catch (_) {
-      // Fallback to pixel-perfect mock data matching client screenshot
+    } catch (e) {
+      debugPrint('Notification API error: $e');
     }
 
-    // Load exact mock notifications matching design spec
-    _loadDefaultNotifications();
     rxIsLoading.value = false;
-  }
-
-  void _loadDefaultNotifications() {
-    rxNotifications.assignAll([
-      // TODAY section
-      NotificationItem(
-        id: '1',
-        title: 'Order secured',
-        subtitle: 'You’ve secured Chanel Classic Flap Bag for AED 3,200.',
-        timeAgo: 'Just now',
-        dateGroup: 'TODAY',
-        type: NotificationType.orderSecured,
-      ),
-      NotificationItem(
-        id: '2',
-        title: 'Item collected',
-        subtitle:
-            'Your Chanel Classic Flap Bag has been collected from the seller and is now being authenticated.',
-        timeAgo: '2h ago',
-        dateGroup: 'TODAY',
-        type: NotificationType.itemCollected,
-      ),
-      NotificationItem(
-        id: '3',
-        title: 'Item authenticated',
-        subtitle:
-            'Your Chanel Classic Flap Bag has passed verification and is on its way to you.',
-        timeAgo: '5h ago',
-        dateGroup: 'TODAY',
-        type: NotificationType.itemAuthenticated,
-      ),
-
-      // AUG 19 section
-      NotificationItem(
-        id: '4',
-        title: 'Your item was reserved',
-        subtitle: 'Classic Flap Bag has been reserved by a buyer for AED 3,200.',
-        timeAgo: '6:42 PM',
-        dateGroup: 'AUG 19',
-        type: NotificationType.itemReserved,
-      ),
-      NotificationItem(
-        id: '5',
-        title: 'Complete your seller details',
-        subtitle:
-            'Add your payout method to receive payment after successful delivery.',
-        timeAgo: '3:15 PM',
-        dateGroup: 'AUG 19',
-        type: NotificationType.sellerDetails,
-      ),
-      NotificationItem(
-        id: '6',
-        title: 'New item you saved',
-        subtitle: 'Classic Flap Bag · AED 3,200 is still available',
-        timeAgo: '5:54 PM',
-        dateGroup: 'AUG 19',
-        type: NotificationType.itemSaved,
-      ),
-    ]);
   }
 
   Future<void> markAllAsRead() async {

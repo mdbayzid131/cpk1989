@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cpk1989/module/notification/controller/notification_controller.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
+import 'package:cpk1989/core/widgets/custom_empty_state.dart';
 
 class NotificationScreen extends GetView<NotificationController> {
   const NotificationScreen({super.key});
@@ -71,25 +72,14 @@ class NotificationScreen extends GetView<NotificationController> {
 
                 if (grouped.isEmpty)
                   SliverFillRemaining(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.notifications_none_rounded,
-                            size: 54.r,
-                            color: Colors.white24,
-                          ),
-                          SizedBox(height: 12.h),
-                          Text(
-                            "No notifications yet",
-                            style: GoogleFonts.dmSans(
-                              fontSize: 16.sp,
-                              color: Colors.white54,
-                            ),
-                          ),
-                        ],
-                      ),
+                    hasScrollBody: false,
+                    child: CustomEmptyState(
+                      imagePath: 'assets/images/notifecation empty.svg',
+                      imageSize: 150.r,
+                      title: "No New Notifications",
+                      subtitle: "We'll let you know when there's an update on\nyour purchases, listings, or account.",
+                      buttonText: "Refresh",
+                      onButtonTap: () => controller.fetchNotifications(),
                     ),
                   )
                 else

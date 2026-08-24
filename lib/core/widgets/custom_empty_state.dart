@@ -70,26 +70,33 @@ class CustomEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double defaultIconSize = imageSize ?? 80.r;
+    final double defaultIconSize = imageSize ?? 140.r;
 
     return Container(
-      height: height ?? MediaQuery.of(context).size.height * 0.62,
+      height: height,
+      constraints: height == null
+          ? BoxConstraints(minHeight: MediaQuery.of(context).size.height * 0.5)
+          : null,
       alignment: Alignment.center,
-      padding: padding ?? EdgeInsets.symmetric(horizontal: 16.w),
+      padding: padding ??
+          (height != null
+              ? EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h)
+              : EdgeInsets.fromLTRB(24.w, 0, 24.w, 90.h)),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // 1. Image / Illustration / Icon
           _buildIllustration(defaultIconSize),
-          SizedBox(height: 20.h),
+          SizedBox(height: 24.h),
 
           // 2. Title
           Text(
             title,
             textAlign: TextAlign.center,
             style: GoogleFonts.dmSans(
-              fontSize: 20.sp,
-              fontWeight: FontWeight.w600,
+              fontSize: 18.sp,
+              fontWeight: FontWeight.w700,
               color: Colors.white,
             ),
           ),
@@ -101,9 +108,9 @@ class CustomEmptyState extends StatelessWidget {
               subtitle!,
               textAlign: TextAlign.center,
               style: GoogleFonts.dmSans(
-                fontSize: 14.sp,
+                fontSize: 13.sp,
                 fontWeight: FontWeight.w400,
-                color: Colors.white54,
+                color: const Color(0xFF9E9E9E),
                 height: 1.4,
               ),
             ),
@@ -111,16 +118,16 @@ class CustomEmptyState extends StatelessWidget {
 
           // 4. Action Button (if provided)
           if (buttonText != null && buttonText!.isNotEmpty) ...[
-            SizedBox(height: 28.h),
+            SizedBox(height: 32.h),
             CustomGoldButton(
               text: buttonText!,
               width: buttonWidth ?? double.infinity,
-              height: buttonHeight ?? 50.h,
+              height: buttonHeight ?? 46.h,
               suffix: buttonSuffix ??
                   Icon(
                     Icons.arrow_forward_rounded,
                     color: Colors.black,
-                    size: 18.sp,
+                    size: 18.r,
                   ),
               onTap: onButtonTap,
             ),

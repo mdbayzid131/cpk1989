@@ -550,11 +550,12 @@ class ProfileScreen extends GetView<ProfileController> {
       if (items.isEmpty) {
         return CustomEmptyState(
           imagePath: 'assets/images/my_wardrobe.svg',
+          imageSize: 130.r,
           fallbackIcon: Icons.checkroom_rounded,
           title: "You Haven't Listed Anything Yet",
           subtitle: "Turn your wardrobe into cash in\nseconds",
           buttonText: "Sell Your First Item",
-          height: 380.h,
+          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
           onButtonTap: () {
             Get.toNamed(AppRoutes.sell);
           },
@@ -594,11 +595,12 @@ class ProfileScreen extends GetView<ProfileController> {
       if (items.isEmpty) {
         return CustomEmptyState(
           imagePath: 'assets/images/my_purchases.svg',
+          imageSize: 130.r,
           fallbackIcon: Icons.shopping_bag_outlined,
           title: "No Orders Yet",
           subtitle: "Start exploring luxury pieces\nfrom real women",
           buttonText: "Explore Items",
-          height: 380.h,
+          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
           onButtonTap: () {
             if (Get.isRegistered<BottomNavBarController>()) {
               Get.find<BottomNavBarController>().changeIndex(0);

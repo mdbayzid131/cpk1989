@@ -1,0 +1,48 @@
+<svg width="164" height="160" viewBox="118 125 164 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_f_1521_9677)">
+<circle cx="194.039" cy="210.714" r="60.7144" fill="#585858" fill-opacity="0.3"/>
+</g>
+<circle cx="194.039" cy="210.715" r="69.5" fill="#EFF2FF" fill-opacity="0.06"/>
+<circle cx="194.039" cy="210.715" r="68.5" stroke="white" stroke-opacity="0.08" stroke-width="2"/>
+<mask id="mask0_1521_9677" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="128" y="145" width="132" height="132">
+<circle cx="194.038" cy="210.714" r="65.421" fill="white"/>
+</mask>
+<g mask="url(#mask0_1521_9677)">
+<path d="M254.595 255.743L251.526 269.674C246.432 292.798 223.435 307.389 200.163 302.262L166.698 294.89L134.771 245.268L159.384 233.621L216.728 197.863L254.595 255.743Z" fill="url(#paint0_linear_1521_9677)"/>
+<path d="M226.632 255.732L220.416 246.064C218.89 243.689 218.373 240.809 218.979 238.06L222.136 223.727C225.649 207.781 217.062 191.977 202.482 185.801L203.907 179.333C204.722 175.634 202.367 171.968 198.648 171.149C194.93 170.33 191.253 172.666 190.438 176.366L189.013 182.834C173.187 182.312 158.755 193.046 155.243 208.991L152.085 223.324C151.479 226.073 149.8 228.469 147.417 229.983L137.717 236.145C136.21 237.103 135.153 238.616 134.77 240.351C133.974 243.966 136.274 247.549 139.911 248.35L165.185 253.918L163.918 259.668C162.16 267.65 167.239 275.554 175.263 277.321C183.287 279.089 191.217 274.051 192.975 266.068L194.242 260.318L219.516 265.886C223.15 266.687 226.745 264.405 227.542 260.787C227.924 259.049 227.598 257.231 226.632 255.732Z" fill="url(#paint1_linear_1521_9677)"/>
+</g>
+<g filter="url(#filter1_f_1521_9677)">
+<circle cx="248.823" cy="175.132" r="19.6397" fill="#FF7070" fill-opacity="0.7"/>
+</g>
+<circle cx="244.37" cy="170.679" r="19.6397" fill="url(#paint2_linear_1521_9677)"/>
+<g clip-path="url(#clip0_1521_9677)">
+<path d="M239.249 162.772C238.791 162.764 238.321 162.903 237.908 163.214C237.031 163.892 236.902 165.119 237.623 165.944L241.834 170.773L237.623 175.602C236.902 176.428 237.031 177.655 237.908 178.333C238.785 179.01 240.089 178.89 240.81 178.064L244.502 173.831L248.194 178.064C248.914 178.89 250.218 179.01 251.095 178.333C251.973 177.655 252.101 176.428 251.381 175.602L247.169 170.773L251.381 165.944C252.101 165.119 251.973 163.892 251.095 163.214C250.723 162.926 250.254 162.77 249.772 162.773C249.16 162.778 248.582 163.038 248.194 163.483L244.502 167.716L240.81 163.483C240.407 163.035 239.838 162.782 239.249 162.772Z" fill="white"/>
+</g>
+<defs>
+<filter id="filter0_f_1521_9677" x="-16.6758" y="0" width="421.43" height="421.43" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="75" result="effect1_foregroundBlur_1521_9677"/>
+</filter>
+<filter id="filter1_f_1521_9677" x="189.184" y="115.492" width="119.281" height="119.279" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="20" result="effect1_foregroundBlur_1521_9677"/>
+</filter>
+<linearGradient id="paint0_linear_1521_9677" x1="161.883" y1="199.532" x2="226.091" y2="300.733" gradientUnits="userSpaceOnUse">
+<stop stop-opacity="0.35"/>
+<stop offset="1" stop-opacity="0"/>
+</linearGradient>
+<linearGradient id="paint1_linear_1521_9677" x1="194.27" y1="181.454" x2="189.661" y2="276.866" gradientUnits="userSpaceOnUse">
+<stop stop-color="#595959"/>
+<stop offset="1" stop-color="#252525"/>
+</linearGradient>
+<linearGradient id="paint2_linear_1521_9677" x1="244.37" y1="151.039" x2="244.37" y2="190.318" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FF9898"/>
+<stop offset="1" stop-color="#FF4F4F"/>
+</linearGradient>
+<clipPath id="clip0_1521_9677">
+<rect width="17" height="16" fill="white" transform="translate(236 162.771)"/>
+</clipPath>
+</defs>
+</svg>

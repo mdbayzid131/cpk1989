@@ -11,6 +11,7 @@ import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
+import 'package:cpk1989/core/widgets/custom_empty_state.dart';
 
 class HomeScreen extends GetView<HomeController> {
   const HomeScreen({super.key});
@@ -25,41 +26,43 @@ class HomeScreen extends GetView<HomeController> {
         }
 
         if (controller.rxItems.isEmpty) {
-          return RefreshIndicator(
-            color: const Color(0xFFE2B744),
-            backgroundColor: const Color(0xFF1E2022),
-            onRefresh: () => controller.fetchFeedItems(refresh: true),
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Container(
-                height: MediaQuery.of(context).size.height - 100.h,
-                alignment: Alignment.center,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.inventory_2_outlined,
-                      size: 64.sp,
-                      color: Colors.white38,
-                    ),
-                    SizedBox(height: 16.h),
-                    Text(
-                      "No products available right now",
-                      style: GoogleFonts.dmSans(
-                        fontSize: 16.sp,
-                        color: Colors.white70,
-                      ),
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      "Pull down to refresh",
-                      style: GoogleFonts.dmSans(
-                        fontSize: 12.sp,
-                        color: Colors.white38,
-                      ),
-                    ),
-                  ],
+          return SafeArea(
+            child: RefreshIndicator(
+              color: const Color(0xFFE2B744),
+              backgroundColor: const Color(0xFF1E2022),
+              onRefresh: () => controller.fetchFeedItems(refresh: true),
+              child: CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
                 ),
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
+                      child: Text(
+                        'Closeté',
+                        style: TextStyle(
+                          fontFamily: 'Schnyder L',
+                          fontSize: 30.sp,
+                          fontWeight: FontWeight.w300,
+                          color: Colors.white,
+                          height: 1.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: CustomEmptyState(
+                      imagePath: 'assets/images/my_wardrobe.svg',
+                      imageSize: 150.r,
+                      title: "No Products Available",
+                      subtitle: "Check back soon or pull down to refresh\nfor new luxury arrivals.",
+                      buttonText: "Refresh Feed",
+                      onButtonTap: () => controller.fetchFeedItems(refresh: true),
+                    ),
+                  ),
+                ],
               ),
             ),
           );

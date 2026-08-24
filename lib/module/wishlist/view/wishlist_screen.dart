@@ -21,72 +21,67 @@ class WishlistScreen extends GetView<WishlistController> {
           color: const Color(0xFFE2B744),
           backgroundColor: const Color(0xFF1E2022),
           onRefresh: () => controller.fetchWishlist(),
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(
-              parent: BouncingScrollPhysics(),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(height: 12.h),
+          child: Obx(() {
+            if (controller.rxIsLoading.value &&
+                controller.rxItems.isEmpty) {
+              return Center(
+                child: CustomGoldLoader(size: 40.r, strokeWidth: 3.5.r),
+              );
+            }
 
+            final items = controller.rxItems;
+
+            return CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
+              slivers: [
                 // Title Header (Left-aligned as shown in mockup)
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 8.h,
-                  ),
-                  child: Text(
-                    "Wishlist",
-                    style: GoogleFonts.dmSans(
-                      fontSize: 24.sp,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.white,
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
+                    child: Text(
+                      "Wishlist",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 28.sp,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                        letterSpacing: -0.5,
+                      ),
                     ),
                   ),
                 ),
 
-                SizedBox(height: 8.h),
-
-                // Grid Content
-                Obx(() {
-                  if (controller.rxIsLoading.value &&
-                      controller.rxItems.isEmpty) {
-                    return Container(
-                      height: 400.h,
-                      alignment: Alignment.center,
-                      child: CustomGoldLoader(size: 40.r, strokeWidth: 3.5.r),
-                    );
-                  }
-
-                  final items = controller.rxItems;
-                  if (items.isEmpty) {
-                    return _buildEmptyWishlistState(context);
-                  }
-
-                  return GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
+                if (items.isEmpty)
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: _buildEmptyWishlistState(context),
+                  )
+                else ...[
+                  SliverPadding(
                     padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    itemCount: items.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 12.w,
-                      mainAxisSpacing: 12.h,
-                      childAspectRatio: 175 / 204,
+                    sliver: SliverGrid(
+                      gridDelegate:
+                          SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 12.w,
+                        mainAxisSpacing: 12.h,
+                        childAspectRatio: 175 / 204,
+                      ),
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) =>
+                            _buildWishlistCard(items[index]),
+                        childCount: items.length,
+                      ),
                     ),
-                    itemBuilder: (context, index) {
-                      final item = items[index];
-                      return _buildWishlistCard(item);
-                    },
-                  );
-                }),
-
-                // Bottom spacing to avoid overlap with bottom navigation bar
-                SizedBox(height: 120.h),
+                  ),
+                  SliverToBoxAdapter(
+                    child: SizedBox(height: 120.h),
+                  ),
+                ],
               ],
-            ),
-          ),
+            );
+          }),
         ),
       ),
     );
@@ -267,6 +262,7 @@ class WishlistScreen extends GetView<WishlistController> {
   Widget _buildEmptyWishlistState(BuildContext context) {
     return CustomEmptyState(
       imagePath: 'assets/images/wishlist_new.svg',
+      imageSize: 150.r,
       fallbackIcon: Icons.favorite_rounded,
       title: "Nothing Saved Yet",
       subtitle: "Start exploring luxury pieces\nyou love",
