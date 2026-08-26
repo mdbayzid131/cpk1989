@@ -26,8 +26,8 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
 
-    // Initialize Push Notifications & FCM token registration
-    await PushNotificationService().initialize();
+    // Initialize Push Notifications & FCM token registration (non-blocking)
+    PushNotificationService().initialize();
   } catch (e) {
     debugPrint('Firebase initialization error: $e');
   }
