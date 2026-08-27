@@ -65,7 +65,7 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                 children: [
                   // 1. Gold spotlight rays background with luxury shopping bag (full-screen height top container)
                   SizedBox(
-                    height: 190.h,
+                    height: MediaQuery.of(context).padding.top + 155.h,
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
@@ -78,13 +78,13 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                         ),
                         // Centered shopping bag graphic
                         Positioned(
-                          top: MediaQuery.of(context).padding.top + 58.h,
+                          top: MediaQuery.of(context).padding.top + 44.h,
                           child: const ShoppingBagWidget(),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 8.h),
 
                   // Content underneath with standard padding
                   Padding(
@@ -479,8 +479,8 @@ class ShoppingBagWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 110.w,
-      height: 110.h,
+      width: 102.w,
+      height: 102.h,
       child: Image.asset('assets/images/closet_bag.png', fit: BoxFit.contain),
     );
   }
