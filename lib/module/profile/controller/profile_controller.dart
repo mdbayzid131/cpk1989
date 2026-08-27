@@ -47,25 +47,34 @@ class ProfileItem {
 
   String get displayStatus {
     final st = (status ?? '').toLowerCase();
-    if (st == 'secured' ||
+    if (st == 'pending_payment' ||
+        st == 'secured' ||
         st == 'reserved' ||
-        st == 'pending' ||
-        st == 'pending_payment') {
+        st == 'pending') {
       return 'Reserved';
     }
-    if (st == 'collected' || st == 'in_transit') {
+    if (st == 'collection_pending' ||
+        st == 'collected' ||
+        st == 'in_transit') {
       return 'Collected';
     }
-    if (st == 'authenticating') {
+    if (st == 'verification' ||
+        st == 'authenticating' ||
+        st == 'payout_processing') {
       return 'Authenticating';
+    }
+    if (st == 'ready_for_delivery') {
+      return 'Ready for Delivery';
     }
     if (st == 'delivered' || st == 'completed') {
       return 'Delivered';
     }
+    if (st == 'refunded') {
+      return 'Refunded';
+    }
     if (st == 'cancelled') {
       return 'Cancelled';
     }
-    // Unknown status: show capitalised raw value
     return st.isNotEmpty ? (st[0].toUpperCase() + st.substring(1)) : 'Reserved';
   }
 }
@@ -223,7 +232,10 @@ class ProfileController extends GetxController {
 
     rxIsLoadingWardrobe.value = true;
     try {
-      final response = await _userRepo.getMyWardrobe(sellerId: rxUserId.value);
+      final response = await _userRepo.getMyWardrobe(
+        sellerId: rxUserId.value,
+        status: ['available', 'secured', 'paid'],
+      );
       if (response.statusCode == 200) {
         final List list = response.data['data'] ?? [];
         final items = list.map((json) {

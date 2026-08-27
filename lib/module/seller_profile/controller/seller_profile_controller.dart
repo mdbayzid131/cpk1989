@@ -67,7 +67,10 @@ class SellerProfileController extends GetxController {
 
     rxIsLoading.value = true;
     try {
-      final response = await _userRepo.getMyWardrobe(sellerId: rxSellerId.value);
+      final response = await _userRepo.getMyWardrobe(
+        sellerId: rxSellerId.value,
+        status: 'available',
+      );
       if (response.statusCode == 200 && response.data != null) {
         final List list = response.data['data'] ?? [];
         final items = list.map((json) {

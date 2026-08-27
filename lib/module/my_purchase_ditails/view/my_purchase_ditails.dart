@@ -19,34 +19,50 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
     final item = controller.item;
     final order = item.orderModel;
     final displayStatus = item.displayStatus;
-    final isCancelled = displayStatus == 'Cancelled';
+    final rawSt = (item.status ?? order?.status ?? '').toLowerCase();
+    final isCancelled = rawSt == 'cancelled' || rawSt == 'refunded';
 
     final formattedPrice =
         "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
 
-    // Build timeline steps based on displayStatus
-    final String st = displayStatus;
+    // Build timeline steps based on raw backend status
     int currentStepIndex = 0;
-    if (st == 'Reserved') {
+    if (rawSt == 'pending_payment' ||
+        rawSt == 'secured' ||
+        rawSt == 'reserved' ||
+        rawSt == 'pending') {
       currentStepIndex = 0;
-    } else if (st == 'Collected') {
+    } else if (rawSt == 'collection_pending' ||
+        rawSt == 'collected' ||
+        rawSt == 'in_transit') {
       currentStepIndex = 1;
-    } else if (st == 'Authenticating') {
+    } else if (rawSt == 'verification' ||
+        rawSt == 'authenticating' ||
+        rawSt == 'payout_processing') {
       currentStepIndex = 2;
-    } else if (st == 'Delivered') {
+    } else if (rawSt == 'ready_for_delivery') {
       currentStepIndex = 3;
+    } else if (rawSt == 'delivered' || rawSt == 'completed') {
+      currentStepIndex = 4;
     }
 
-    final titles = ["Reserved", "Collected", "Authenticating", "Delivered"];
+    final titles = [
+      "Reserved",
+      "Collected",
+      "Authenticating",
+      "Ready for Delivery",
+      "Delivered",
+    ];
     final subtitles = [
-      "Item reserved for you",
+      "Item reserved & order confirmed",
       "Picked up from seller",
       "Being verified by experts",
-      "On its way to you",
+      "Package out for delivery",
+      "Successfully delivered to you",
     ];
 
     final List<StepperStep> steps = [];
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 5; i++) {
       StepperStepState state;
       if (i < currentStepIndex) {
         state = StepperStepState.completed;
