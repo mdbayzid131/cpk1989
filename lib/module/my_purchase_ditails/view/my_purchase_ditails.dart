@@ -496,30 +496,33 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
           ),
           const Spacer(),
           if (hasProof)
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(8.r),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.picture_as_pdf_outlined,
-                    color: const Color(0xFFFFAF2C),
-                    size: 13.sp,
-                  ),
-                  SizedBox(width: 5.w),
-                  Text(
-                    "View",
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
+            GestureDetector(
+              onTap: () => Helpers.openUrl(proofUrl),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.picture_as_pdf_outlined,
+                      color: const Color(0xFFFFAF2C),
+                      size: 13.sp,
                     ),
-                  ),
-                ],
+                    SizedBox(width: 5.w),
+                    Text(
+                      "View",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             )
           else

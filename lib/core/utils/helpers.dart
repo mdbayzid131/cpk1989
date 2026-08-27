@@ -32,6 +32,27 @@ class Helpers {
     }
   }
 
+  /// Open external URL (e.g. proof of purchase PDF/image)
+  static Future<void> openUrl(String url) async {
+    if (url.trim().isEmpty) return;
+    try {
+      String fullUrl = url;
+      if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://')) {
+        fullUrl = fullUrl.startsWith('/')
+            ? 'https://champagne-plates-sunday-lion.trycloudflare.com$fullUrl'
+            : 'https://champagne-plates-sunday-lion.trycloudflare.com/$fullUrl';
+      }
+      final uri = Uri.parse(fullUrl);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        await launchUrl(uri);
+      }
+    } catch (e) {
+      showError("Could not open file link");
+    }
+  }
+
   // ──────────────────── TIME FORMATTING ────────────────────
 
   /// Format seconds to "mm:ss" (e.g., 125 → "02:05")
