@@ -132,9 +132,7 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
                   final sold = stats.totalProductsPurchased > 0
                       ? stats.totalProductsPurchased
                       : controller.itemsSoldCount;
-                  final closetValueText = stats.totalEarnings > 0
-                      ? "${stats.currency} ${stats.formattedEarnings}"
-                      : controller.closetValueFormatted;
+                  final closetValueText = stats.formattedEarnings;
 
                   return Container(
                     padding: EdgeInsets.symmetric(

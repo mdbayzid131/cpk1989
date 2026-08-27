@@ -136,10 +136,15 @@ class ProfileController extends GetxController {
     await fetchSavedCards();
   }
 
-  /// Fetch profile statistics from GET /user/profile/stats
+  /// Fetch profile statistics from GET /user/profile/stats/:userId
   Future<void> fetchProfileStats() async {
+    if (rxUserId.value.isEmpty) {
+      await fetchUserProfile();
+    }
     try {
-      final response = await _userRepo.getProfileStats();
+      final response = await _userRepo.getProfileStats(
+        userId: rxUserId.value.isNotEmpty ? rxUserId.value : null,
+      );
       if (response.statusCode == 200 && response.data != null) {
         rxProfileStats.value = ProfileStatsModel.fromJson(response.data);
       }
