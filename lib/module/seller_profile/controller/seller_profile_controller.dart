@@ -78,7 +78,7 @@ class SellerProfileController extends GetxController {
                 ? prod.images!.first
                 : '',
             price: prod.price ?? 0.0,
-            likes: 1200,
+            likes: prod.wishlistCount ?? 0,
             isSold: prod.status == 'sold',
             brand: prod.brand ?? 'LUXURY',
             itemName: prod.name ?? 'Item',
