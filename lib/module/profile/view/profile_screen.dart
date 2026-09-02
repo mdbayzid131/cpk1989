@@ -858,9 +858,10 @@ class ProfileScreen extends GetView<ProfileController> {
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
                   decoration: BoxDecoration(
-                    color: const Color(
-                      0xFFFFAF2C,
-                    ), // Solid Gold background matching mockup
+                    color: (item.displayStatus == 'Cancelled' ||
+                            item.displayStatus == 'Refunded')
+                        ? Colors.red.withValues(alpha: 0.85)
+                        : const Color(0xFFFFAF2C),
                     borderRadius: BorderRadius.circular(6.r),
                   ),
                   child: Text(
@@ -868,7 +869,10 @@ class ProfileScreen extends GetView<ProfileController> {
                     style: GoogleFonts.dmSans(
                       fontSize: 10.sp,
                       fontWeight: FontWeight.w500,
-                      color: Colors.black,
+                      color: (item.displayStatus == 'Cancelled' ||
+                              item.displayStatus == 'Refunded')
+                          ? Colors.white
+                          : Colors.black,
                     ),
                   ),
                 ),

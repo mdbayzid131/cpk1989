@@ -67,7 +67,10 @@ class SellerProfileController extends GetxController {
 
     rxIsLoading.value = true;
     try {
-      final response = await _userRepo.getMyWardrobe(sellerId: rxSellerId.value);
+      final response = await _userRepo.getMyWardrobe(
+        sellerId: rxSellerId.value,
+        status: 'available',
+      );
       if (response.statusCode == 200 && response.data != null) {
         final List list = response.data['data'] ?? [];
         final items = list.map((json) {
@@ -78,7 +81,7 @@ class SellerProfileController extends GetxController {
                 ? prod.images!.first
                 : '',
             price: prod.price ?? 0.0,
-            likes: 1200,
+            likes: prod.wishlistCount ?? 0,
             isSold: prod.status == 'sold',
             brand: prod.brand ?? 'LUXURY',
             itemName: prod.name ?? 'Item',

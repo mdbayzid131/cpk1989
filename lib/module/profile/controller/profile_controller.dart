@@ -47,25 +47,34 @@ class ProfileItem {
 
   String get displayStatus {
     final st = (status ?? '').toLowerCase();
-    if (st == 'secured' ||
+    if (st == 'pending_payment' ||
+        st == 'secured' ||
         st == 'reserved' ||
-        st == 'pending' ||
-        st == 'pending_payment') {
+        st == 'pending') {
       return 'Reserved';
     }
-    if (st == 'collected' || st == 'in_transit') {
+    if (st == 'collection_pending' ||
+        st == 'collected' ||
+        st == 'in_transit') {
       return 'Collected';
     }
-    if (st == 'authenticating') {
+    if (st == 'verification' ||
+        st == 'authenticating' ||
+        st == 'payout_processing') {
       return 'Authenticating';
+    }
+    if (st == 'ready_for_delivery') {
+      return 'Ready for Delivery';
     }
     if (st == 'delivered' || st == 'completed') {
       return 'Delivered';
     }
+    if (st == 'refunded') {
+      return 'Refunded';
+    }
     if (st == 'cancelled') {
       return 'Cancelled';
     }
-    // Unknown status: show capitalised raw value
     return st.isNotEmpty ? (st[0].toUpperCase() + st.substring(1)) : 'Reserved';
   }
 }
@@ -136,10 +145,15 @@ class ProfileController extends GetxController {
     await fetchSavedCards();
   }
 
-  /// Fetch profile statistics from GET /user/profile/stats
+  /// Fetch profile statistics from GET /user/profile/stats/:userId
   Future<void> fetchProfileStats() async {
+    if (rxUserId.value.isEmpty) {
+      await fetchUserProfile();
+    }
     try {
-      final response = await _userRepo.getProfileStats();
+      final response = await _userRepo.getProfileStats(
+        userId: rxUserId.value.isNotEmpty ? rxUserId.value : null,
+      );
       if (response.statusCode == 200 && response.data != null) {
         rxProfileStats.value = ProfileStatsModel.fromJson(response.data);
       }
@@ -218,7 +232,10 @@ class ProfileController extends GetxController {
 
     rxIsLoadingWardrobe.value = true;
     try {
-      final response = await _userRepo.getMyWardrobe(sellerId: rxUserId.value);
+      final response = await _userRepo.getMyWardrobe(
+        sellerId: rxUserId.value,
+        status: ['available', 'secured', 'paid'],
+      );
       if (response.statusCode == 200) {
         final List list = response.data['data'] ?? [];
         final items = list.map((json) {
@@ -229,7 +246,7 @@ class ProfileController extends GetxController {
                 ? prod.images!.first
                 : '',
             price: prod.price ?? 0.0,
-            likes: 1200,
+            likes: prod.wishlistCount ?? 0,
             isSold: prod.status == 'sold',
             brand: prod.brand ?? 'LUXURY',
             itemName: prod.name ?? 'Item',
@@ -283,7 +300,7 @@ class ProfileController extends GetxController {
                 id: order.id ?? '',
                 imageUrl: img,
                 price: order.price ?? prod?.price ?? 0.0,
-                likes: 1200,
+                likes: prod?.wishlistCount ?? 0,
                 isSold: true,
                 brand: prod?.brand ?? 'LUXURY',
                 itemName: prod?.name ?? order.orderNumber ?? 'Order',
@@ -349,7 +366,7 @@ class ProfileController extends GetxController {
                 id: order.id ?? '',
                 imageUrl: img,
                 price: order.price ?? prod?.price ?? 0.0,
-                likes: 1200,
+                likes: prod?.wishlistCount ?? 0,
                 isSold: true,
                 brand: prod?.brand ?? 'LUXURY',
                 itemName: prod?.name ?? order.orderNumber ?? 'Order',

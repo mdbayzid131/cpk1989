@@ -1167,6 +1167,9 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 ),
               );
             } else {
+              final isPdf = controller.rxBillName.value
+                  .toLowerCase()
+                  .endsWith('.pdf');
               return Container(
                 padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                 decoration: BoxDecoration(
@@ -1177,22 +1180,31 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      Icons.picture_as_pdf_outlined,
+                      isPdf
+                          ? Icons.picture_as_pdf_outlined
+                          : Icons.image_outlined,
                       color: Colors.white,
                       size: 14.sp,
                     ),
                     SizedBox(width: 6.w),
-                    Text(
-                      controller.rxBillName.value,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 12.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
+                    ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: 120.w),
+                      child: Text(
+                        controller.rxBillName.value,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 12.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     SizedBox(width: 8.w),
                     GestureDetector(
-                      onTap: () => controller.rxBillName.value = "",
+                      onTap: () {
+                        controller.rxBillName.value = "";
+                        controller.rxBillPath.value = "";
+                      },
                       child: Icon(
                         Icons.close,
                         color: Colors.white38,
