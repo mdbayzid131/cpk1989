@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:get/get.dart';
 import 'dart:ui';
 import 'package:flutter/foundation.dart';
@@ -7,6 +8,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:dio/dio.dart';
 
 enum SnackBarType { success, error, info, warning, secondary }
 
@@ -32,25 +36,181 @@ class Helpers {
     }
   }
 
-  /// Open external URL (e.g. proof of purchase PDF/image)
-  static Future<void> openUrl(String url) async {
+  /// Open Proof of Bill / PDF / Image in an in-app modal pop-up
+  static Future<void> openUrl(String url, {String title = "Proof of Bill"}) async {
     if (url.trim().isEmpty) return;
+
     try {
-      String fullUrl = url;
-      if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://')) {
+      String fullUrl = url.trim();
+      final bool isHttp =
+          fullUrl.startsWith('http://') || fullUrl.startsWith('https://');
+      final bool isLocalFile =
+          !isHttp && (fullUrl.startsWith('/') || fullUrl.contains('/'));
+
+      if (!isHttp && !isLocalFile && !fullUrl.startsWith('assets/')) {
         fullUrl = fullUrl.startsWith('/')
             ? 'https://champagne-plates-sunday-lion.trycloudflare.com$fullUrl'
             : 'https://champagne-plates-sunday-lion.trycloudflare.com/$fullUrl';
       }
-      final uri = Uri.parse(fullUrl);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      } else {
-        await launchUrl(uri);
-      }
+
+      final BuildContext? context = Get.context;
+      if (context == null) return;
+
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (ctx) {
+          return Container(
+            height: MediaQuery.of(ctx).size.height * 0.88,
+            decoration: BoxDecoration(
+              color: const Color(0xFF1B1C1E),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(24.r),
+                topRight: Radius.circular(24.r),
+              ),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.1),
+                width: 1.0,
+              ),
+            ),
+            child: Column(
+              children: [
+                // Top drag indicator handle
+                SizedBox(height: 12.h),
+                Container(
+                  width: 40.w,
+                  height: 4.h,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(2.r),
+                  ),
+                ),
+                SizedBox(height: 12.h),
+
+                // Modal Header
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(8.r),
+                        decoration: BoxDecoration(
+                          color:
+                              const Color(0xFFE2B744).withValues(alpha: 0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.receipt_long_rounded,
+                          color: const Color(0xFFE2B744),
+                          size: 20.sp,
+                        ),
+                      ),
+                      SizedBox(width: 12.w),
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: GoogleFonts.dmSans(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        icon: Container(
+                          padding: EdgeInsets.all(6.r),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.close_rounded,
+                            color: Colors.white,
+                            size: 18.sp,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Divider(
+                  color: Colors.white.withValues(alpha: 0.08),
+                  height: 24.h,
+                ),
+
+                // Document Content Area
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.all(16.r),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16.r),
+                      child: Container(
+                        width: double.infinity,
+                        color: const Color(0xFF121315),
+                        child: _buildDocumentContent(fullUrl),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
     } catch (e) {
-      showError("Could not open file link");
+      showError("Could not open document");
     }
+  }
+
+  static Widget _buildDocumentContent(String fullUrl) {
+    final lower = fullUrl.toLowerCase();
+    final bool isPdf = lower.contains('.pdf');
+    final bool isImage = lower.contains('.png') ||
+        lower.contains('.jpg') ||
+        lower.contains('.jpeg') ||
+        lower.contains('.webp');
+
+    if (isPdf) {
+      return InAppPdfViewerWidget(pdfUrl: fullUrl);
+    }
+
+    if (fullUrl.startsWith('/') && File(fullUrl).existsSync()) {
+      return InteractiveViewer(
+        child: Center(
+          child: Image.file(
+            File(fullUrl),
+            fit: BoxFit.contain,
+            errorBuilder: (_, _, _) => InAppPdfViewerWidget(pdfUrl: fullUrl),
+          ),
+        ),
+      );
+    }
+
+    if (isImage ||
+        (!isPdf &&
+            (fullUrl.startsWith('http') || fullUrl.startsWith('assets/')))) {
+      return InteractiveViewer(
+        child: Center(
+          child: fullUrl.startsWith('assets/')
+              ? Image.asset(fullUrl, fit: BoxFit.contain)
+              : Image.network(
+                  fullUrl,
+                  fit: BoxFit.contain,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return const Center(child: CustomGoldLoader(size: 40));
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return InAppPdfViewerWidget(pdfUrl: fullUrl);
+                  },
+                ),
+        ),
+      );
+    }
+
+    return InAppPdfViewerWidget(pdfUrl: fullUrl);
   }
 
   // ──────────────────── TIME FORMATTING ────────────────────
@@ -380,5 +540,218 @@ class Helpers {
       _debounceTimers.remove(tag);
       callback();
     });
+  }
+}
+
+class InAppPdfViewerWidget extends StatefulWidget {
+  final String pdfUrl;
+  const InAppPdfViewerWidget({super.key, required this.pdfUrl});
+
+  @override
+  State<InAppPdfViewerWidget> createState() => _InAppPdfViewerWidgetState();
+}
+
+class _InAppPdfViewerWidgetState extends State<InAppPdfViewerWidget> {
+  String? _localPath;
+  bool _isLoading = true;
+  String? _error;
+  int _totalPages = 0;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPdf();
+  }
+
+  Future<void> _loadPdf() async {
+    try {
+      if (widget.pdfUrl.startsWith('/') && File(widget.pdfUrl).existsSync()) {
+        if (mounted) {
+          setState(() {
+            _localPath = widget.pdfUrl;
+            _isLoading = false;
+          });
+        }
+        return;
+      }
+
+      final dir = await getTemporaryDirectory();
+      final filename = "proof_${widget.pdfUrl.hashCode.abs()}.pdf";
+      final file = File("${dir.path}/$filename");
+
+      if (await file.exists() && (await file.length()) > 0) {
+        if (mounted) {
+          setState(() {
+            _localPath = file.path;
+            _isLoading = false;
+          });
+        }
+        return;
+      }
+
+      final dio = Dio();
+      await dio.download(widget.pdfUrl, file.path);
+
+      if (mounted) {
+        setState(() {
+          _localPath = file.path;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _error = "Could not load PDF document";
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const CustomGoldLoader(size: 44),
+          SizedBox(height: 16.h),
+          Text(
+            "Loading PDF Document...",
+            style: GoogleFonts.dmSans(
+              fontSize: 14.sp,
+              color: Colors.white70,
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (_error != null || _localPath == null) {
+      return Center(
+        child: Padding(
+          padding: EdgeInsets.all(24.r),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.picture_as_pdf_rounded,
+                size: 56.sp,
+                color: const Color(0xFFE2B744),
+              ),
+              SizedBox(height: 16.h),
+              Text(
+                "Proof of Bill Document",
+                style: GoogleFonts.dmSans(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                "Tap below to view full document preview inside app",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.dmSans(
+                  fontSize: 13.sp,
+                  color: Colors.white54,
+                ),
+              ),
+              SizedBox(height: 20.h),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFE2B744),
+                  foregroundColor: Colors.black,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 24.w,
+                    vertical: 12.h,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                ),
+                onPressed: () async {
+                  final uri = Uri.parse(widget.pdfUrl);
+                  if (await canLaunchUrl(uri)) {
+                    await launchUrl(
+                      uri,
+                      mode: LaunchMode.inAppBrowserView,
+                    );
+                  }
+                },
+                icon: const Icon(Icons.open_in_new_rounded, size: 18),
+                label: Text(
+                  "Open Document View",
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Stack(
+      children: [
+        PDFView(
+          filePath: _localPath!,
+          enableSwipe: true,
+          swipeHorizontal: false,
+          autoSpacing: true,
+          pageFling: true,
+          pageSnap: true,
+          backgroundColor: const Color(0xFF121315),
+          onRender: (pages) {
+            if (mounted) {
+              setState(() {
+                _totalPages = pages ?? 0;
+              });
+            }
+          },
+          onPageChanged: (page, total) {
+            if (mounted) {
+              setState(() {
+                _currentPage = page ?? 0;
+                _totalPages = total ?? 0;
+              });
+            }
+          },
+          onError: (error) {
+            if (mounted) {
+              setState(() {
+                _error = error.toString();
+              });
+            }
+          },
+        ),
+        if (_totalPages > 0)
+          Positioned(
+            bottom: 16.h,
+            right: 16.w,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.75),
+                borderRadius: BorderRadius.circular(20.r),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.1),
+                ),
+              ),
+              child: Text(
+                "${_currentPage + 1} / $_totalPages",
+                style: GoogleFonts.dmSans(
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
   }
 }
