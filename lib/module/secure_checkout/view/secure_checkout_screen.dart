@@ -58,11 +58,15 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          SafeArea(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
+      body: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: Stack(
+          children: [
+            SafeArea(
+              child: SingleChildScrollView(
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                physics: const BouncingScrollPhysics(),
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -213,8 +217,9 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
           }),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildProductSummaryCard() {
     final item = controller.item;
@@ -362,6 +367,9 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                 child: TextField(
                   controller: controller,
                   keyboardType: keyboardType,
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) =>
+                      FocusManager.instance.primaryFocus?.unfocus(),
                   inputFormatters: inputFormatters,
                   style: GoogleFonts.dmSans(
                     fontSize: 14.sp,
@@ -638,6 +646,9 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                 child: TextField(
                   controller: controller.phoneController,
                   keyboardType: TextInputType.phone,
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) =>
+                      FocusManager.instance.primaryFocus?.unfocus(),
                   style: GoogleFonts.dmSans(
                     fontSize: 14.sp,
                     color: Colors.white,
