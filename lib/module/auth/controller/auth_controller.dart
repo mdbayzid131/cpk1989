@@ -92,7 +92,6 @@ class AuthController extends GetxController {
     try {
       final response = await authService.resendOtp(email);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        Helpers.showSuccess("OTP has been resent to your email.");
         return true;
       } else {
         final errorMsg = response.statusMessage ?? "Failed to resend OTP";
@@ -140,13 +139,6 @@ class AuthController extends GetxController {
       rxIsLoading.value = false;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        if (rxIsSignUp.value) {
-          Helpers.showSuccess(
-            "Registration initiated. OTP sent to your email.",
-          );
-        } else {
-          Helpers.showSuccess("OTP sent to your email.");
-        }
         return true;
       } else {
         final errorMsg = response.statusMessage ?? "Failed to request OTP";
@@ -178,11 +170,6 @@ class AuthController extends GetxController {
 
     // Persist user details in storage
     await _saveLocalUserData(firstName, lastName, email);
-
-    Helpers.showSuccess(
-      "Logged in successfully as $firstName $lastName".trim(),
-      title: "Welcome to Closeté",
-    );
 
     Get.offAllNamed(AppRoutes.bottomNavBar);
   }
