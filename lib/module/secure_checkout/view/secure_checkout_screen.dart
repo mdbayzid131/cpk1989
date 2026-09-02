@@ -95,7 +95,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                   Obx(
                     () => _buildTextInputField(
                       controller: controller.locationController,
-                      hintText: "Location (e.g. Dhaka)",
+                      hintText: "Location (e.g. Dubai)",
                       svgPath: "assets/icons/location.svg",
                       errorText: controller.rxLocationError.value,
                     ),
