@@ -122,63 +122,89 @@ class OtpInputWidget extends StatelessWidget {
 
   const OtpInputWidget({super.key, required this.controller});
 
+  void _handleOtpInput(String value, int index, AuthController controller) {
+    final cleanDigits = value.replaceAll(RegExp(r'\D'), '');
+
+    if (cleanDigits.length > 1) {
+      final startIdx = cleanDigits.length >= 6 ? 0 : index;
+      for (int i = 0; i < 6; i++) {
+        final digitIdx = i - startIdx;
+        if (digitIdx >= 0 && digitIdx < cleanDigits.length) {
+          controller.otpControllers[i].text = cleanDigits[digitIdx];
+        }
+      }
+      final nextFocus = (startIdx + cleanDigits.length).clamp(0, 5);
+      final targetIdx = startIdx + cleanDigits.length >= 6 ? 5 : nextFocus;
+      controller.otpFocusNodes[targetIdx].requestFocus();
+      return;
+    }
+
+    if (cleanDigits.length == 1) {
+      controller.otpControllers[index].text = cleanDigits;
+      if (index < 5) {
+        controller.otpFocusNodes[index + 1].requestFocus();
+      }
+    } else if (value.isEmpty) {
+      if (index > 0) {
+        controller.otpFocusNodes[index - 1].requestFocus();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: List.generate(6, (index) {
-        return Focus(
-          onFocusChange: (_) {
-            // Trigger rebuild of individual container on focus change
-          },
-          child: Builder(
-            builder: (context) {
-              final hasFocus = Focus.of(context).hasFocus;
-              return Container(
-                width: 48.w,
-                height: 52.h,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1B1C1E),
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(
-                    color: hasFocus
-                        ? const Color(0xFFE2B744)
-                        : Colors.white.withValues(alpha: 0.05),
-                    width: 1.0,
-                  ),
-                ),
-                child: Center(
-                  child: TextField(
-                    controller: controller.otpControllers[index],
-                    focusNode: controller.otpFocusNodes[index],
-                    keyboardType: TextInputType.number,
-                    textAlign: TextAlign.center,
-                    maxLength: 1,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                    decoration: const InputDecoration(
-                      counterText: "",
-                      border: InputBorder.none,
-                      isDense: true,
-                    ),
-                    onChanged: (value) {
-                      if (value.isNotEmpty && index < 5) {
-                        controller.otpFocusNodes[index + 1].requestFocus();
-                      }
-                      if (value.isEmpty && index > 0) {
-                        controller.otpFocusNodes[index - 1].requestFocus();
-                      }
-                    },
-                  ),
-                ),
-              );
+    return AutofillGroup(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: List.generate(6, (index) {
+          return Focus(
+            onFocusChange: (_) {
+              // Trigger rebuild of individual container on focus change
             },
-          ),
-        );
-      }),
+            child: Builder(
+              builder: (context) {
+                final hasFocus = Focus.of(context).hasFocus;
+                return Container(
+                  width: 48.w,
+                  height: 52.h,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1B1C1E),
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(
+                      color: hasFocus
+                          ? const Color(0xFFE2B744)
+                          : Colors.white.withValues(alpha: 0.05),
+                      width: 1.0,
+                    ),
+                  ),
+                  child: Center(
+                    child: TextField(
+                      controller: controller.otpControllers[index],
+                      focusNode: controller.otpFocusNodes[index],
+                      keyboardType: TextInputType.number,
+                      autofillHints: const [AutofillHints.oneTimeCode],
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.dmSans(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                      decoration: const InputDecoration(
+                        counterText: "",
+                        border: InputBorder.none,
+                        isDense: true,
+                      ),
+                      onChanged: (value) {
+                        _handleOtpInput(value, index, controller);
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
+          );
+        }),
+      ),
     );
   }
 }
