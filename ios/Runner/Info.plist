@@ -72,5 +72,9 @@
 	<string>We need microphone access to record sound for your item listing videos.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need gallery access to let you choose item photos from your library.</string>
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
 </dict>
 </plist>

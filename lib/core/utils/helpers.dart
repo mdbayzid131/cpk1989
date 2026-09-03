@@ -96,13 +96,12 @@ class Helpers {
                       Container(
                         padding: EdgeInsets.all(8.r),
                         decoration: BoxDecoration(
-                          color:
-                              const Color(0xFFE2B744).withValues(alpha: 0.15),
+                          color: Colors.white.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           Icons.receipt_long_rounded,
-                          color: const Color(0xFFE2B744),
+                          color: Colors.white,
                           size: 20.sp,
                         ),
                       ),
@@ -115,10 +114,18 @@ class Helpers {
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      // Download button
+                      _DocumentDownloadButton(fileUrl: fullUrl),
+                      SizedBox(width: 8.w),
+                      // Close button
                       IconButton(
                         onPressed: () => Navigator.pop(ctx),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
                         icon: Container(
                           padding: EdgeInsets.all(6.r),
                           decoration: BoxDecoration(
@@ -755,3 +762,129 @@ class _InAppPdfViewerWidgetState extends State<InAppPdfViewerWidget> {
     );
   }
 }
+
+/// A dedicated download button for the in-app document viewer
+class _DocumentDownloadButton extends StatefulWidget {
+  final String fileUrl;
+
+  const _DocumentDownloadButton({required this.fileUrl});
+
+  @override
+  State<_DocumentDownloadButton> createState() =>
+      _DocumentDownloadButtonState();
+}
+
+class _DocumentDownloadButtonState extends State<_DocumentDownloadButton> {
+  bool _isDownloading = false;
+
+  Future<void> _download() async {
+    if (_isDownloading) return;
+    setState(() => _isDownloading = true);
+
+    try {
+      final String url = widget.fileUrl.trim();
+      final bool isHttp =
+          url.startsWith('http://') || url.startsWith('https://');
+
+      String ext = ".pdf";
+      final lower = url.toLowerCase();
+      if (lower.contains('.png')) {
+        ext = '.png';
+      } else if (lower.contains('.jpg') || lower.contains('.jpeg')) {
+        ext = '.jpg';
+      } else if (lower.contains('.webp')) {
+        ext = '.webp';
+      }
+
+      // Check if already cached in temporary directory
+      final tempDir = await getTemporaryDirectory();
+      final cacheFilename = "proof_${url.hashCode.abs()}.pdf";
+      final cachedFile = File("${tempDir.path}/$cacheFilename");
+      final bool isCached =
+          await cachedFile.exists() && (await cachedFile.length()) > 0;
+
+      // Determine destination directory
+      Directory? targetDir;
+      if (Platform.isAndroid) {
+        final downloadDir = Directory('/storage/emulated/0/Download');
+        if (await downloadDir.exists()) {
+          try {
+            final testFile = File(
+                '${downloadDir.path}/.test_${DateTime.now().millisecondsSinceEpoch}');
+            await testFile.writeAsString('test');
+            await testFile.delete();
+            targetDir = downloadDir;
+          } catch (_) {
+            targetDir = null;
+          }
+        }
+        targetDir ??= await getExternalStorageDirectory() ??
+            await getApplicationDocumentsDirectory();
+      } else {
+        targetDir = await getApplicationDocumentsDirectory();
+      }
+
+      final fileName = "CPK_${DateTime.now().millisecondsSinceEpoch}$ext";
+      final savePath = "${targetDir.path}/$fileName";
+
+      if (isCached) {
+        await cachedFile.copy(savePath);
+      } else if (isHttp) {
+        final dio = Dio();
+        await dio.download(url, savePath);
+      } else if (File(url).existsSync()) {
+        await File(url).copy(savePath);
+      } else {
+        throw "Invalid file source";
+      }
+
+      debugPrint("📁 [Download] File saved successfully at: $savePath");
+
+      Helpers.showCustomSnackBar(
+        Platform.isAndroid
+            ? "File saved to Downloads: $fileName"
+            : "File saved to device memory: $fileName",
+        title: "Download Complete",
+        type: SnackBarType.success,
+      );
+    } catch (e) {
+      Helpers.showError("Could not save file: $e");
+    } finally {
+      if (mounted) {
+        setState(() => _isDownloading = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: _isDownloading ? null : _download,
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(),
+      tooltip: "Download Document",
+      icon: Container(
+        padding: EdgeInsets.all(6.r),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.1),
+          shape: BoxShape.circle,
+        ),
+        child: _isDownloading
+            ? SizedBox(
+                width: 18.sp,
+                height: 18.sp,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.r,
+                  color: Colors.white,
+                ),
+              )
+            : Icon(
+                Icons.file_download_outlined,
+                color: Colors.white,
+                size: 18.sp,
+              ),
+      ),
+    );
+  }
+}
+
