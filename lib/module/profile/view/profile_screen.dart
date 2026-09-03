@@ -126,6 +126,7 @@ class ProfileScreen extends GetView<ProfileController> {
           Stack(
             children: [
               Obx(() {
+                final hasCustomPhoto = controller.hasCustomProfilePhoto;
                 final img = controller.rxProfileImage.value;
                 String fullUrl = img;
                 if (fullUrl.isNotEmpty &&
@@ -140,19 +141,48 @@ class ProfileScreen extends GetView<ProfileController> {
                       : '$serverBase/$fullUrl';
                 }
 
-                return CircleAvatar(
-                  radius: 46.r,
-                  backgroundColor: const Color(0xFF282A2E),
-                  backgroundImage: fullUrl.isNotEmpty
-                      ? NetworkImage(fullUrl)
-                      : null,
-                  child: fullUrl.isEmpty
-                      ? Icon(
-                          Icons.person_rounded,
-                          size: 40.r,
-                          color: Colors.white70,
-                        )
-                      : null,
+                if (hasCustomPhoto && fullUrl.isNotEmpty) {
+                  return Container(
+                    width: 92.r,
+                    height: 92.r,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        width: 1.5,
+                      ),
+                      image: DecorationImage(
+                        image: NetworkImage(fullUrl),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  );
+                }
+
+                // Default Initials Avatar: Yellow on Black background
+                final initials = controller.getUserInitials();
+                return Container(
+                  width: 92.r,
+                  height: 92.r,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0F1012),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: const Color(0xFFE2B744).withValues(alpha: 0.35),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      initials,
+                      style: GoogleFonts.dmSans(
+                        fontSize: 26.sp,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFFE2B744),
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ),
                 );
               }),
               Positioned(
@@ -416,6 +446,50 @@ class ProfileScreen extends GetView<ProfileController> {
                 ),
               ],
             ),
+            Obx(() {
+              if (!controller.hasCustomProfilePhoto) {
+                return const SizedBox.shrink();
+              }
+              return Padding(
+                padding: EdgeInsets.only(top: 14.h),
+                child: InkWell(
+                  onTap: () {
+                    Get.back();
+                    controller.deleteProfileImage();
+                  },
+                  borderRadius: BorderRadius.circular(16.r),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 14.h),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEF4444).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(16.r),
+                      border: Border.all(
+                        color: const Color(0xFFEF4444).withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.delete_outline_rounded,
+                          color: const Color(0xFFEF4444),
+                          size: 20.sp,
+                        ),
+                        SizedBox(width: 8.w),
+                        Text(
+                          "Remove Photo",
+                          style: GoogleFonts.dmSans(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFFEF4444),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
             SizedBox(height: 12.h),
           ],
         ),

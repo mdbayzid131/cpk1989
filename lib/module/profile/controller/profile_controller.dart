@@ -841,4 +841,96 @@ class ProfileController extends GetxController {
       Helpers.showError("Something went wrong while updating photo.");
     }
   }
+
+  /// Get user initials for default avatar (e.g., "Costas Kazikkis" -> "CK")
+  String getUserInitials() {
+    String name = (rxUserProfile.value?.name ?? rxUserName.value).trim();
+    if (name.isEmpty) {
+      final first = firstNameController.text.trim();
+      final last = lastNameController.text.trim();
+      name = '$first $last'.trim();
+    }
+    if (name.isEmpty) return 'CK';
+
+    final parts =
+        name.split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
+    if (parts.length >= 2) {
+      final firstInitial = parts[0].isNotEmpty ? parts[0][0] : '';
+      final secondInitial = parts[1].isNotEmpty ? parts[1][0] : '';
+      final result = '$firstInitial$secondInitial'.toUpperCase();
+      if (result.isNotEmpty) return result;
+    } else if (parts.isNotEmpty && parts[0].isNotEmpty) {
+      final single = parts[0];
+      return (single.length >= 2 ? single.substring(0, 2) : single)
+          .toUpperCase();
+    }
+    return 'CK';
+  }
+
+  /// Whether the user has uploaded a custom profile photo (not empty, null, or placeholder)
+  bool get hasCustomProfilePhoto {
+    final img = rxProfileImage.value.trim().toLowerCase();
+    if (img.isEmpty) return false;
+    if (img.contains('default') ||
+        img.contains('placeholder') ||
+        img.contains('avatar-placeholder') ||
+        img.contains('user.png') ||
+        img.contains('dummy') ||
+        img.contains('no-image') ||
+        img == 'null') {
+      return false;
+    }
+    return true;
+  }
+
+  /// Delete / Remove Profile Picture and revert to initials
+  Future<void> deleteProfileImage() async {
+    try {
+      Helpers.showLoadingDialog(message: "Removing profile photo...");
+
+      // Call API to clear image
+      await _userRepo.updateProfile({'image': ''});
+      Helpers.hideLoadingDialog();
+
+      rxProfileImage.value = '';
+      if (rxUserProfile.value != null) {
+        rxUserProfile.value = rxUserProfile.value!.copyWith(
+          image: '',
+          avatar: '',
+        );
+      }
+
+      Get.snackbar(
+        'Removed',
+        'Profile photo removed successfully.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: const Color(0xFF161719),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+        borderRadius: 16,
+        margin: const EdgeInsets.all(16),
+      );
+    } catch (e) {
+      Helpers.hideLoadingDialog();
+      Helpers.debug("Delete profile image error: $e");
+      // Even if API returns an error for empty string, clear locally
+      rxProfileImage.value = '';
+      if (rxUserProfile.value != null) {
+        rxUserProfile.value = rxUserProfile.value!.copyWith(
+          image: '',
+          avatar: '',
+        );
+      }
+      Get.snackbar(
+        'Removed',
+        'Profile photo removed.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: const Color(0xFF161719),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+        borderRadius: 16,
+        margin: const EdgeInsets.all(16),
+      );
+    }
+  }
 }
