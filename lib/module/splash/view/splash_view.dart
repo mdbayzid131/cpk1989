@@ -18,28 +18,26 @@ class SplashView extends GetView<SplashController> {
           // 1. Rotating SVG background from Figma
           const Positioned.fill(child: RotatingBackground()),
 
-          // 2. Radial gradient overlay to fade the rays and add central glow (spotlight effect)
+          // 2. Radial gradient overlay: keeps the center dark/clean for the logo, lets the golden rays fan out in the mid-ring, and darkens the outer edges
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
                 gradient: RadialGradient(
                   center: Alignment.center,
-                  radius: 0.80,
+                  radius: 0.90,
                   colors: [
                     const Color(0xFF0F1012).withValues(
-                      alpha: 0.0,
-                    ), // No darkness in the center (completely clear)
-                    const Color(0xFF0F1012).withValues(
-                      alpha: 0.0,
-                    ), // Keep the logo area completely clear
-                    const Color(0xFF0F1012).withValues(
-                      alpha: 0.75,
-                    ), // Smoothly transitions to darkness
+                      alpha: 0.55,
+                    ), // Soft balanced darkness in center
                     const Color(
                       0xFF0F1012,
-                    ), // Pitch black edges (inverse vignette overlay)
+                    ).withValues(alpha: 0.20), // Smooth transition
+                    Colors.transparent, // Clean space for prominent rays
+                    const Color(
+                      0xFF0F1012,
+                    ).withValues(alpha: 0.85), // Fades to dark at the edges
                   ],
-                  stops: const [0.0, 0.25, 0.7, 1.0],
+                  stops: const [0.0, 0.22, 0.50, 1.0],
                 ),
               ),
             ),
