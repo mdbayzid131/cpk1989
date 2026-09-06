@@ -19,8 +19,8 @@ class AuthController extends GetxController {
   TextEditingController emailController = TextEditingController();
 
   // OTP Fields & State
-  final otpControllers = List.generate(6, (_) => TextEditingController());
-  final otpFocusNodes = List.generate(6, (_) => FocusNode());
+  final otpControllers = List.generate(5, (_) => TextEditingController());
+  final otpFocusNodes = List.generate(5, (_) => FocusNode());
   final rxOtpSecondsRemaining = 45.obs;
   final rxIsOtpLoading = false.obs;
   Timer? _otpTimer;
@@ -58,8 +58,8 @@ class AuthController extends GetxController {
     final email = emailController.text.trim();
     final otpCode = otpControllers.map((c) => c.text).join();
 
-    if (otpCode.length < 6) {
-      Helpers.showError("Please enter all 6 digits of the verification code.");
+    if (otpCode.length < 5) {
+      Helpers.showError("Please enter all 5 digits of the verification code.");
       return false;
     }
 

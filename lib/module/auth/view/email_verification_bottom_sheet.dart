@@ -126,22 +126,22 @@ class OtpInputWidget extends StatelessWidget {
     final cleanDigits = value.replaceAll(RegExp(r'\D'), '');
 
     if (cleanDigits.length > 1) {
-      final startIdx = cleanDigits.length >= 6 ? 0 : index;
-      for (int i = 0; i < 6; i++) {
+      final startIdx = cleanDigits.length >= 5 ? 0 : index;
+      for (int i = 0; i < 5; i++) {
         final digitIdx = i - startIdx;
         if (digitIdx >= 0 && digitIdx < cleanDigits.length) {
           controller.otpControllers[i].text = cleanDigits[digitIdx];
         }
       }
-      final nextFocus = (startIdx + cleanDigits.length).clamp(0, 5);
-      final targetIdx = startIdx + cleanDigits.length >= 6 ? 5 : nextFocus;
+      final nextFocus = (startIdx + cleanDigits.length).clamp(0, 4);
+      final targetIdx = startIdx + cleanDigits.length >= 5 ? 4 : nextFocus;
       controller.otpFocusNodes[targetIdx].requestFocus();
       return;
     }
 
     if (cleanDigits.length == 1) {
       controller.otpControllers[index].text = cleanDigits;
-      if (index < 5) {
+      if (index < 4) {
         controller.otpFocusNodes[index + 1].requestFocus();
       }
     } else if (value.isEmpty) {
@@ -156,7 +156,7 @@ class OtpInputWidget extends StatelessWidget {
     return AutofillGroup(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: List.generate(6, (index) {
+        children: List.generate(5, (index) {
           return Focus(
             onFocusChange: (_) {
               // Trigger rebuild of individual container on focus change
@@ -165,8 +165,8 @@ class OtpInputWidget extends StatelessWidget {
               builder: (context) {
                 final hasFocus = Focus.of(context).hasFocus;
                 return Container(
-                  width: 48.w,
-                  height: 52.h,
+                  width: 56.w,
+                  height: 56.h,
                   decoration: BoxDecoration(
                     color: const Color(0xFF1B1C1E),
                     borderRadius: BorderRadius.circular(12.r),
