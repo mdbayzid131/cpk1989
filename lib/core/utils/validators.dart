@@ -227,8 +227,8 @@ class Validators {
   // OTHER VALIDATORS
   // ===========================================================================
 
-  /// Validates OTP (Usually 4 or 6 digits).
-  static String? otp(String? value, {int length = 6, String? message}) {
+  /// Validates OTP (Usually 4, 5 or 6 digits).
+  static String? otp(String? value, {int length = 5, String? message}) {
     if (value == null || value.trim().isEmpty) {
       return message ?? 'Enter OTP';
     }

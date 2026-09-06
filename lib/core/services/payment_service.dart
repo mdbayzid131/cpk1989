@@ -7,6 +7,7 @@ import 'package:cpk1989/config/constants/api_constants.dart';
 import 'package:cpk1989/core/services/api_client.dart';
 import 'package:cpk1989/data/models/order_model.dart';
 import 'package:cpk1989/data/repositories/payment_repository.dart';
+import 'package:cpk1989/core/utils/helpers.dart';
 
 class PaymentResult {
   final bool success;
@@ -111,6 +112,9 @@ class PaymentService extends GetxService {
   /// Step 2: Present Stripe PaymentSheet with clientSecret (Card / Google Pay / Apple Pay)
   Future<PaymentResult> _presentPaymentSheet(String clientSecret) async {
     try {
+      // Dismiss any active loading dialog so native PaymentSheet / Apple Pay sheet can pop up smoothly
+      Helpers.hideLoadingDialog();
+
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           paymentIntentClientSecret: clientSecret,
@@ -129,6 +133,9 @@ class PaymentService extends GetxService {
       await Stripe.instance.presentPaymentSheet();
       return PaymentResult(success: true);
     } on StripeException catch (e) {
+      debugPrint(
+        '❌ StripeException in _presentPaymentSheet: ${e.error.code} - ${e.error.localizedMessage}',
+      );
       if (e.error.code == FailureCode.Canceled) {
         return PaymentResult(success: false, isCancelled: true);
       }
@@ -137,6 +144,7 @@ class PaymentService extends GetxService {
         errorMessage: e.error.localizedMessage ?? 'Payment failed',
       );
     } catch (e) {
+      debugPrint('❌ Exception in _presentPaymentSheet: $e');
       return PaymentResult(success: false, errorMessage: e.toString());
     }
   }

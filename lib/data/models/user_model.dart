@@ -80,6 +80,51 @@ class UserModel {
     return raw.startsWith('/') ? '$serverBase$raw' : '$serverBase/$raw';
   }
 
+  UserModel copyWith({
+    String? id,
+    String? name,
+    String? role,
+    String? email,
+    String? image,
+    String? avatar,
+    String? provider,
+    String? country,
+    String? location,
+    String? address,
+    String? gender,
+    String? dateOfBirth,
+    String? phone,
+    bool? isOnboardingCompleted,
+    String? status,
+    bool? verified,
+    List<DeviceToken>? deviceTokens,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      role: role ?? this.role,
+      email: email ?? this.email,
+      image: image ?? this.image,
+      avatar: avatar ?? this.avatar,
+      provider: provider ?? this.provider,
+      country: country ?? this.country,
+      location: location ?? this.location,
+      address: address ?? this.address,
+      gender: gender ?? this.gender,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      phone: phone ?? this.phone,
+      isOnboardingCompleted:
+          isOnboardingCompleted ?? this.isOnboardingCompleted,
+      status: status ?? this.status,
+      verified: verified ?? this.verified,
+      deviceTokens: deviceTokens ?? this.deviceTokens,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       id: json['id'] ?? json['_id'],

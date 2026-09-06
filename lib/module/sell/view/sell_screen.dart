@@ -55,6 +55,44 @@ class SellScreen extends GetView<SellController> {
                       ),
                     ),
                   );
+                } else if (controller.isCameraError.value) {
+                  // Camera error or running on simulator without physical camera
+                  return Positioned.fill(
+                    child: Container(
+                      color: const Color(0xFF0F1012),
+                      padding: EdgeInsets.symmetric(horizontal: 32.w),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.videocam_off_outlined,
+                            color: Colors.white38,
+                            size: 56.r,
+                          ),
+                          SizedBox(height: 16.h),
+                          Text(
+                            "Camera Unavailable",
+                            style: GoogleFonts.dmSans(
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(height: 8.h),
+                          Text(
+                            controller.cameraErrorMessage.value.isNotEmpty
+                                ? controller.cameraErrorMessage.value
+                                : "Camera hardware not available on emulator. Please pick photos from gallery.",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.dmSans(
+                              fontSize: 13.sp,
+                              color: Colors.white60,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
                 } else {
                   // Camera is initializing: show dark background with sleek loading indicator
                   return Positioned.fill(

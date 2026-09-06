@@ -19,34 +19,50 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
     final item = controller.item;
     final order = item.orderModel;
     final displayStatus = item.displayStatus;
-    final isCancelled = displayStatus == 'Cancelled';
+    final rawSt = (item.status ?? order?.status ?? '').toLowerCase();
+    final isCancelled = rawSt == 'cancelled' || rawSt == 'refunded';
 
     final formattedPrice =
         "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
 
-    // Build timeline steps based on displayStatus
-    final String st = displayStatus;
+    // Build timeline steps based on raw backend status
     int currentStepIndex = 0;
-    if (st == 'Reserved') {
+    if (rawSt == 'pending_payment' ||
+        rawSt == 'secured' ||
+        rawSt == 'reserved' ||
+        rawSt == 'pending') {
       currentStepIndex = 0;
-    } else if (st == 'Collected') {
+    } else if (rawSt == 'collection_pending' ||
+        rawSt == 'collected' ||
+        rawSt == 'in_transit') {
       currentStepIndex = 1;
-    } else if (st == 'Authenticating') {
+    } else if (rawSt == 'verification' ||
+        rawSt == 'authenticating' ||
+        rawSt == 'payout_processing') {
       currentStepIndex = 2;
-    } else if (st == 'Delivered') {
+    } else if (rawSt == 'ready_for_delivery') {
       currentStepIndex = 3;
+    } else if (rawSt == 'delivered' || rawSt == 'completed') {
+      currentStepIndex = 4;
     }
 
-    final titles = ["Reserved", "Collected", "Authenticating", "Delivered"];
+    final titles = [
+      "Reserved",
+      "Collected",
+      "Authenticating",
+      "Ready for Delivery",
+      "Delivered",
+    ];
     final subtitles = [
-      "Item reserved for you",
+      "Item reserved & order confirmed",
       "Picked up from seller",
       "Being verified by experts",
-      "On its way to you",
+      "Package out for delivery",
+      "Successfully delivered to you",
     ];
 
     final List<StepperStep> steps = [];
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 5; i++) {
       StepperStepState state;
       if (i < currentStepIndex) {
         state = StepperStepState.completed;
@@ -496,30 +512,33 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
           ),
           const Spacer(),
           if (hasProof)
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(8.r),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.picture_as_pdf_outlined,
-                    color: const Color(0xFFFFAF2C),
-                    size: 13.sp,
-                  ),
-                  SizedBox(width: 5.w),
-                  Text(
-                    "View",
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
+            GestureDetector(
+              onTap: () => Helpers.openUrl(proofUrl),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.picture_as_pdf_outlined,
+                      color: const Color(0xFFFFAF2C),
+                      size: 13.sp,
                     ),
-                  ),
-                ],
+                    SizedBox(width: 5.w),
+                    Text(
+                      "View",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             )
           else

@@ -130,6 +130,18 @@ class PushNotificationService {
   /// Register current FCM Token with Backend Server: POST /notifications/devices
   Future<void> registerDeviceToken() async {
     try {
+      if (Platform.isIOS) {
+        final apnsToken = await _fcm.getAPNSToken();
+        if (apnsToken == null) {
+          if (kDebugMode) {
+            print(
+              'APNS token is not set yet (likely running on iOS Simulator). Skipping FCM token registration.',
+            );
+          }
+          return;
+        }
+      }
+
       String? token = await _fcm.getToken();
       if (kDebugMode) {
         print('\n==================== 🔥 FCM TOKEN 🔥 ====================');

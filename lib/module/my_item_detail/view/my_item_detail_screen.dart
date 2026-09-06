@@ -1003,16 +1003,31 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
           const Spacer(),
           Expanded(
             flex: 2,
-            child: Text(
-              value,
-              textAlign: TextAlign.end,
-              style: GoogleFonts.dmSans(
-                fontSize: 14.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
+            child: GestureDetector(
+              onTap: (label.contains("Proof") && value != "N/A")
+                  ? () {
+                      final url = controller.rxBillPath.value.isNotEmpty
+                          ? controller.rxBillPath.value
+                          : (controller.item.proofOfPurchase ?? "");
+                      Helpers.openUrl(url);
+                    }
+                  : null,
+              child: Text(
+                value,
+                textAlign: TextAlign.end,
+                style: GoogleFonts.dmSans(
+                  fontSize: 14.sp,
+                  color: (label.contains("Proof") && value != "N/A")
+                      ? const Color(0xFFFFAF2C)
+                      : Colors.white,
+                  fontWeight: FontWeight.w600,
+                  decoration: (label.contains("Proof") && value != "N/A")
+                      ? TextDecoration.underline
+                      : TextDecoration.none,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

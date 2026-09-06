@@ -13,6 +13,7 @@ class ProductModel {
   final String? status;
   final SellerModel? seller;
   final bool? originalPackagingAvailable;
+  final int? wishlistCount;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -29,6 +30,7 @@ class ProductModel {
     this.status,
     this.seller,
     this.originalPackagingAvailable,
+    this.wishlistCount,
     this.createdAt,
     this.updatedAt,
   });
@@ -53,6 +55,9 @@ class ProductModel {
           ? SellerModel.fromJson(json['seller'])
           : null,
       originalPackagingAvailable: json['originalPackagingAvailable'],
+      wishlistCount: json['wishlistCount'] != null
+          ? int.tryParse(json['wishlistCount'].toString())
+          : null,
       createdAt: json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt'].toString())
           : null,
@@ -76,6 +81,7 @@ class ProductModel {
       'status': status,
       'seller': seller?.toJson(),
       'originalPackagingAvailable': originalPackagingAvailable,
+      'wishlistCount': wishlistCount,
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
     };

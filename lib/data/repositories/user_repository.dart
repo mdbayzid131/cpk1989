@@ -39,12 +39,21 @@ class UserRepository {
   /// Get user's listed items (My Wardrobe / Seller products: GET /products?seller=...)
   Future<Response> getMyWardrobe({
     required String sellerId,
+    dynamic status,
     int page = 1,
     int limit = 20,
   }) async {
+    final Map<String, dynamic> queryParams = {
+      'seller': sellerId,
+      'page': page,
+      'limit': limit,
+    };
+    if (status != null) {
+      queryParams['status'] = status;
+    }
     return await apiClient.getData(
       ApiConstants.products,
-      query: {'seller': sellerId, 'page': page, 'limit': limit},
+      query: queryParams,
       requiresAuth: false,
     );
   }
