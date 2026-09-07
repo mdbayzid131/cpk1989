@@ -56,9 +56,8 @@ class HomeScreen extends GetView<HomeController> {
                       imagePath: 'assets/images/my_wardrobe.svg',
                       imageSize: 150.r,
                       title: "No Products Available",
-                      subtitle: "Check back soon or pull down to refresh\nfor new luxury arrivals.",
-                      buttonText: "Refresh Feed",
-                      onButtonTap: () => controller.fetchFeedItems(refresh: true),
+                      subtitle:
+                          "Check back soon or pull down to refresh\nfor new luxury arrivals.",
                     ),
                   ),
                 ],
@@ -80,271 +79,271 @@ class HomeScreen extends GetView<HomeController> {
             onPageChanged: controller.onPageChanged,
             itemBuilder: (context, index) {
               final item = controller.rxItems[index];
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                // 1. Full-screen background image slider
-                ProductImageSlider(images: item.itemImages),
+              return Stack(
+                fit: StackFit.expand,
+                children: [
+                  // 1. Full-screen background image slider
+                  ProductImageSlider(images: item.itemImages),
 
-                // 2. Dark gradient overlay to ensure text readability
-                Positioned.fill(
-                  child: IgnorePointer(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.black.withValues(alpha: 0.4),
-                            Colors.transparent,
-                            Colors.black.withValues(alpha: 0.15),
-                            Colors.black.withValues(alpha: 0.85),
-                          ],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          stops: const [0.0, 0.3, 0.6, 1.0],
+                  // 2. Dark gradient overlay to ensure text readability
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.black.withValues(alpha: 0.4),
+                              Colors.transparent,
+                              Colors.black.withValues(alpha: 0.15),
+                              Colors.black.withValues(alpha: 0.85),
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            stops: const [0.0, 0.3, 0.6, 1.0],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
 
-                // 3. Top Header Overlay (Closeté logo)
-                Positioned(
-                  top: MediaQuery.of(context).padding.top + 25.h,
-                  left: 20.w,
-                  child: Text(
-                    'Closeté',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Schnyder L',
-                      fontSize: 30.sp,
-                      fontWeight: FontWeight.w300,
-                      color: Colors.white,
-                      height: 1.0,
-                      letterSpacing: 0.0,
+                  // 3. Top Header Overlay (Closeté logo)
+                  Positioned(
+                    top: MediaQuery.of(context).padding.top + 25.h,
+                    left: 20.w,
+                    child: Text(
+                      'Closeté',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Schnyder L',
+                        fontSize: 30.sp,
+                        fontWeight: FontWeight.w300,
+                        color: Colors.white,
+                        height: 1.0,
+                        letterSpacing: 0.0,
+                      ),
                     ),
                   ),
-                ),
 
-                // 4. Bottom Information Overlay
-                Positioned(
-                  bottom:
-                      95.h +
-                      MediaQuery.of(context)
-                          .padding
-                          .bottom, // dynamically clears the bottom navigation bar height on all devices
-                  left: 20.w,
-                  right: 20.w,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // User Info Row (Avatar + Username + Verified badge on left; Price Card right-aligned)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                Get.toNamed(
-                                  AppRoutes.sellerProfile,
-                                  arguments: {
-                                    'sellerId': item.sellerId,
-                                    'userName': item.userName,
-                                    'avatarUrl': item.sellerProfileImage,
-                                    'isVerified': item.isVerified,
-                                  },
-                                );
-                              },
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  CircleAvatar(
-                                    radius: 20.r,
-                                    backgroundColor: Colors.grey.shade900,
-                                    child: ClipOval(
-                                      child: Image.network(
-                                        item.sellerProfileImage.isNotEmpty
-                                            ? item.sellerProfileImage
-                                            : "https://i.ibb.co/z5YHLV9/profile.png",
-                                        width: 40.r,
-                                        height: 40.r,
-                                        fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (context, error, stackTrace) =>
-                                                const Icon(
-                                                  Icons.person,
-                                                  color: Colors.white70,
-                                                ),
+                  // 4. Bottom Information Overlay
+                  Positioned(
+                    bottom:
+                        95.h +
+                        MediaQuery.of(context)
+                            .padding
+                            .bottom, // dynamically clears the bottom navigation bar height on all devices
+                    left: 20.w,
+                    right: 20.w,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // User Info Row (Avatar + Username + Verified badge on left; Price Card right-aligned)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Get.toNamed(
+                                    AppRoutes.sellerProfile,
+                                    arguments: {
+                                      'sellerId': item.sellerId,
+                                      'userName': item.userName,
+                                      'avatarUrl': item.sellerProfileImage,
+                                      'isVerified': item.isVerified,
+                                    },
+                                  );
+                                },
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 20.r,
+                                      backgroundColor: Colors.grey.shade900,
+                                      child: ClipOval(
+                                        child: Image.network(
+                                          item.sellerProfileImage.isNotEmpty
+                                              ? item.sellerProfileImage
+                                              : "https://i.ibb.co/z5YHLV9/profile.png",
+                                          width: 40.r,
+                                          height: 40.r,
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  const Icon(
+                                                    Icons.person,
+                                                    color: Colors.white70,
+                                                  ),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  SizedBox(width: 10.w),
-                                  Flexible(
-                                    child: Text(
-                                      item.userName,
-                                      style: GoogleFonts.dmSans(
-                                        fontSize: 18.sp,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.white,
+                                    SizedBox(width: 10.w),
+                                    Flexible(
+                                      child: Text(
+                                        item.userName,
+                                        style: GoogleFonts.dmSans(
+                                          fontSize: 18.sp,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.white,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                  ),
-                                  if (item.isVerified) ...[
-                                    SizedBox(width: 6.w),
-                                    SvgPicture.asset(
-                                      'assets/icons/blue_verify-badg.svg',
-                                      width: 18.r,
-                                      height: 18.r,
-                                    ),
+                                    if (item.isVerified) ...[
+                                      SizedBox(width: 6.w),
+                                      SvgPicture.asset(
+                                        'assets/icons/blue_verify-badg.svg',
+                                        width: 18.r,
+                                        height: 18.r,
+                                      ),
+                                    ],
                                   ],
-                                ],
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 12.w),
-
-                          // Right Price Badge (Inline with User Name)
-                          Container(
-                            padding: EdgeInsets.all(9.6.r),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                            child: Text(
-                              item.price,
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.dmSans(
-                                fontSize: 13.sp,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.black,
-                                height: 1.0,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      SizedBox(height: 12.h),
-
-                      // Item Details (Condition text + Item Title with View More right-aligned)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            item.condition,
-                            style: GoogleFonts.dmSans(
-                              fontSize: 12.sp,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                          SizedBox(height: 4.h),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  item.itemName,
-                                  style: GoogleFonts.dmSans(
-                                    fontSize: 20.sp,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              SizedBox(width: 12.w),
-                              GestureDetector(
-                                onTap: () {
-                                  controller.viewProductDetails(item);
-                                },
-                                child: Text(
-                                  "View More",
-                                  style: GoogleFonts.dmSans(
-                                    fontSize: 12.sp,
-                                    color: Colors.white,
-                                    decoration: TextDecoration.underline,
-                                    decorationColor: Colors.white,
-                                    decorationThickness: 1.5,
-                                    fontWeight: FontWeight.w600,
+                            ),
+                            SizedBox(width: 12.w),
+
+                            // Right Price Badge (Inline with User Name)
+                            Container(
+                              padding: EdgeInsets.all(9.6.r),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8.r),
+                              ),
+                              child: Text(
+                                item.price,
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.black,
+                                  height: 1.0,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        SizedBox(height: 12.h),
+
+                        // Item Details (Condition text + Item Title with View More right-aligned)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              item.condition,
+                              style: GoogleFonts.dmSans(
+                                fontSize: 12.sp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            SizedBox(height: 4.h),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    item.itemName,
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 20.sp,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
+                                ),
+                                SizedBox(width: 12.w),
+                                GestureDetector(
+                                  onTap: () {
+                                    controller.viewProductDetails(item);
+                                  },
+                                  child: Text(
+                                    "View More",
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 12.sp,
+                                      color: Colors.white,
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: Colors.white,
+                                      decorationThickness: 1.5,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        SizedBox(height: 8.h),
+
+                        // Trust badge (Authenticity guaranteed)
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8.w,
+                            vertical: 4.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(20.r),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SvgPicture.asset(
+                                'assets/icons/Authenticity guarante_ home page logo.svg',
+                                width: 14.r,
+                                height: 14.r,
+                              ),
+                              SizedBox(width: 8.w),
+                              Text(
+                                "Authenticity Verified. Payment Protected.",
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 11.sp,
+                                  color: Colors.white.withValues(alpha: 0.95),
+                                  fontWeight: FontWeight.w400,
                                 ),
                               ),
                             ],
                           ),
-                        ],
-                      ),
-
-                      SizedBox(height: 8.h),
-
-                      // Trust badge (Authenticity guaranteed)
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 8.w,
-                          vertical: 4.h,
                         ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(20.r),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SvgPicture.asset(
-                              'assets/icons/Authenticity guarante_ home page logo.svg',
-                              width: 14.r,
-                              height: 14.r,
-                            ),
-                            SizedBox(width: 8.w),
-                            Text(
-                              "Authenticity Verified. Payment Protected.",
-                              style: GoogleFonts.dmSans(
-                                fontSize: 11.sp,
-                                color: Colors.white.withValues(alpha: 0.95),
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
 
-                      SizedBox(height: 13.h),
+                        SizedBox(height: 13.h),
 
-                      // Secure This Item Button (Gradient)
-                      CustomGoldButton(
-                        text: "Secure This Item",
-                        suffix: const Icon(
-                          Icons.arrow_forward,
-                          color: Colors.black,
-                          size: 18,
+                        // Secure This Item Button (Gradient)
+                        CustomGoldButton(
+                          text: "Secure This Item",
+                          suffix: const Icon(
+                            Icons.arrow_forward,
+                            color: Colors.black,
+                            size: 18,
+                          ),
+                          onTap: () {
+                            showProcessingOverlay(context, () {
+                              // Close bottom sheet first
+                              Get.back();
+                              Get.toNamed(
+                                AppRoutes.secureCheckout,
+                                arguments: item,
+                              );
+                            });
+                          },
                         ),
-                        onTap: () {
-                          showProcessingOverlay(context, () {
-                            // Close bottom sheet first
-                            Get.back();
-                            Get.toNamed(
-                              AppRoutes.secureCheckout,
-                              arguments: item,
-                            );
-                          });
-                        },
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            );
-          },
-        ),
-      );
-    }),
+                ],
+              );
+            },
+          ),
+        );
+      }),
     );
   }
 }
