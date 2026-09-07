@@ -100,14 +100,6 @@ class NotificationController extends GetxController {
     }).toList();
 
     rxNotifications.assignAll(updated);
-    Get.snackbar(
-      "Marked as Read",
-      "All notifications have been marked as read.",
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: const Color(0xFF1E1E22),
-      colorText: const Color(0xFFFFFFFF),
-      duration: const Duration(seconds: 2),
-    );
   }
 
   Future<void> deleteAllNotifications() async {
@@ -117,14 +109,6 @@ class NotificationController extends GetxController {
       }
     } catch (_) {}
     rxNotifications.clear();
-    Get.snackbar(
-      "Notifications Cleared",
-      "All notifications have been deleted.",
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: const Color(0xFF1E1E22),
-      colorText: const Color(0xFFFFFFFF),
-      duration: const Duration(seconds: 2),
-    );
   }
 
   NotificationType _parseType(String? typeStr) {
