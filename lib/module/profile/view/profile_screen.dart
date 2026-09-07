@@ -2019,154 +2019,115 @@ class ProfileScreen extends GetView<ProfileController> {
   }
 
   void _showLogoutDialog(BuildContext context) {
-    Get.dialog(
-      Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: EdgeInsets.symmetric(horizontal: 24.w),
-        child: Container(
-          padding: EdgeInsets.all(24.r),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF28292D), Color(0xFF1C1D20)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-            borderRadius: BorderRadius.circular(20.r),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.08),
-              width: 1.0,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.5),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
+    Get.bottomSheet(
+      Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF111214),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.05),
+            width: 1.0,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Icon Header Badge
-              Container(
-                width: 56.r,
-                height: 56.r,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFF453A).withValues(alpha: 0.12),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: const Color(0xFFFF453A).withValues(alpha: 0.3),
-                    width: 1.5,
-                  ),
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.logout_rounded,
-                    color: const Color(0xFFFF453A),
-                    size: 26.r,
-                  ),
-                ),
-              ),
-              SizedBox(height: 18.h),
-
-              // Title
-              Text(
-                "Log Out",
-                style: GoogleFonts.dmSans(
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-              SizedBox(height: 8.h),
-
-              // Subtitle / Confirmation message
-              Text(
-                "Are you sure you want to log out of your account?",
-                textAlign: TextAlign.center,
-                style: GoogleFonts.dmSans(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.white60,
-                  height: 1.4,
-                ),
-              ),
-              SizedBox(height: 24.h),
-
-              // Action Buttons
-              Row(
+        ),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 8.h),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Cancel Button
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => Get.back(),
-                      child: Container(
-                        height: 48.h,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.06),
-                          borderRadius: BorderRadius.circular(12.r),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.08),
-                            width: 1.0,
-                          ),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          "Cancel",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
+                  // Drag handle
+                  Center(
+                    child: Container(
+                      width: 40.w,
+                      height: 4.h,
+                      decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(2.r),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Title: "Log Out?" (Cormorant Garamond, bold, white, centered)
+                  Center(
+                    child: Text(
+                      "Log Out?",
+                      style: GoogleFonts.cormorantGaramond(
+                        fontSize: 28.sp,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+
+                  // Subtitle (DM Sans)
+                  Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: Text(
+                        "Are you sure you want to log out of your account?",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 13.sp,
+                          color: Colors.white54,
+                          height: 1.4,
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(width: 12.w),
+                  SizedBox(height: 24.h),
 
-                  // Logout Button
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () async {
-                        Get.back();
-                        Helpers.showLoadingDialog(message: "Logging out..");
-                        await Get.find<AuthService>().logout();
-                        Get.back(); // close loading dialog
-                        Get.offAllNamed(AppRoutes.login);
-                      },
-                      child: Container(
-                        height: 48.h,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFFFF453A), Color(0xFFD73A31)],
-                          ),
-                          borderRadius: BorderRadius.circular(12.r),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFFFF453A).withValues(alpha: 0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
+                  // CTA Gold Button
+                  CustomGoldButton(
+                    text: "Log Out",
+                    suffix: Icon(
+                      Icons.arrow_forward,
+                      size: 16.r,
+                      color: Colors.black,
+                    ),
+                    onTap: () async {
+                      Get.back();
+                      Helpers.showLoadingDialog(message: "Logging out..");
+                      await Get.find<AuthService>().logout();
+                      Get.back(); // close loading dialog
+                      Get.offAllNamed(AppRoutes.login);
+                    },
+                  ),
+                  SizedBox(height: 8.h),
+
+                  // Cancel text button
+                  Center(
+                    child: TextButton(
+                      onPressed: () => Get.back(),
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 8.h,
+                          horizontal: 16.w,
                         ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          "Log Out",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
+                      ),
+                      child: Text(
+                        "Cancel",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white60,
                         ),
                       ),
                     ),
                   ),
                 ],
               ),
-            ],
+            ),
           ),
         ),
       ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
     );
   }
 }
