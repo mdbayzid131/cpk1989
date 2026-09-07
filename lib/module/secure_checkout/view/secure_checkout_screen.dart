@@ -132,6 +132,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                   SizedBox(height: 12.h),
                   Obx(
                     () => _buildPhoneInputField(
+                      context: context,
                       errorText: controller.rxPhoneError.value,
                     ),
                   ),
@@ -569,8 +570,26 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
     );
   }
 
-  Widget _buildPhoneInputField({String? errorText}) {
+  Widget _buildPhoneInputField({
+    required BuildContext context,
+    String? errorText,
+  }) {
     final hasError = errorText != null && errorText.isNotEmpty;
+    final phoneCodes = [
+      "+971",
+      "+1",
+      "+44",
+      "+880",
+      "+966",
+      "+974",
+      "+965",
+      "+968",
+      "+973",
+    ];
+    final menuWidth = 140.w;
+    final itemHeight = 36.h;
+    final totalHeight = (phoneCodes.length * itemHeight) + 20.h;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -592,44 +611,109 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: Row(
             children: [
-              // Code Dropdown
-              Obx(
-                () => DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: controller.rxPhoneCode.value,
-                    dropdownColor: const Color(0xFF161719),
-                    icon: Padding(
-                      padding: EdgeInsets.only(left: 4.w),
-                      child: Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                        color: Colors.white,
-                        size: 24.sp,
+              // Code Dropdown (custom PopupMenu matching country dropdown)
+              Theme(
+                data: Theme.of(context).copyWith(
+                  hoverColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                ),
+                child: PopupMenuButton<String>(
+                  offset: Offset(-8.w, 24.h),
+                  padding: EdgeInsets.zero,
+                  color: Colors.transparent,
+                  elevation: 0,
+                  shadowColor: Colors.transparent,
+                  surfaceTintColor: Colors.transparent,
+                  itemBuilder: (BuildContext context) {
+                    return [
+                      PopupMenuItem<String>(
+                        enabled: false,
+                        padding: EdgeInsets.zero,
+                        child: Container(
+                          width: menuWidth,
+                          height: totalHeight,
+                          padding: EdgeInsets.all(10.r),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF2E3036),
+                            borderRadius: BorderRadius.circular(10.r),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.3),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              for (int i = 0; i < phoneCodes.length; i++) ...[
+                                if (i > 0) SizedBox(height: 5.h),
+                                Builder(
+                                  builder: (context) {
+                                    final code = phoneCodes[i];
+                                    final isSelected =
+                                        code == controller.rxPhoneCode.value;
+                                    return GestureDetector(
+                                      onTap: () {
+                                        controller.rxPhoneCode.value = code;
+                                        Navigator.pop(context);
+                                      },
+                                      child: Container(
+                                        height: itemHeight - 5.h,
+                                        alignment: Alignment.centerLeft,
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 5.h,
+                                          horizontal: 12.w,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: isSelected
+                                              ? const Color(0xFF3C3E46)
+                                              : Colors.transparent,
+                                          borderRadius: BorderRadius.circular(
+                                            6.r,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          code,
+                                          style: GoogleFonts.dmSans(
+                                            fontSize: 14.sp,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w400,
+                                            height: 1.0,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
                       ),
+                    ];
+                  },
+                  child: Obx(
+                    () => Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          controller.rxPhoneCode.value,
+                          style: GoogleFonts.dmSans(
+                            fontSize: 14.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        SizedBox(width: 4.w),
+                        Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          color: Colors.white38,
+                          size: 30.sp,
+                        ),
+                      ],
                     ),
-                    style: GoogleFonts.dmSans(
-                      fontSize: 14.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    items: [
-                      "+971",
-                      "+1",
-                      "+44",
-                      "+880",
-                      "+966",
-                      "+974",
-                      "+965",
-                      "+968",
-                      "+973",
-                    ].map((String code) {
-                      return DropdownMenuItem<String>(
-                        value: code,
-                        child: Text(code),
-                      );
-                    }).toList(),
-                    onChanged: (val) {
-                      if (val != null) controller.rxPhoneCode.value = val;
-                    },
                   ),
                 ),
               ),
