@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:cpk1989/config/constants/api_constants.dart';
 import 'package:cpk1989/config/constants/storage_constants.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
+import 'package:cpk1989/core/controllers/internet_controller.dart';
 import 'package:cpk1989/core/services/storage_service.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
 import 'package:cpk1989/core/utils/logger.dart';
@@ -322,6 +323,9 @@ class ApiClient extends GetxService {
         e.error?.toString().contains('SocketException') == true;
 
     if (isConnectionError) {
+      if (Get.isRegistered<InternetController>()) {
+        InternetController.to.setOffline();
+      }
       message =
           'Unable to connect to server. Please check your internet connection.';
     } else {
