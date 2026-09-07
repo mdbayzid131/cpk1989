@@ -60,7 +60,7 @@ class CustomItemStatusCard extends StatelessWidget {
     final titles = const [
       "Reserved",
       "Collected",
-      "Authenticating",
+      "Authenticated",
       "Dispatched",
       "Delivered",
     ];
@@ -68,9 +68,9 @@ class CustomItemStatusCard extends StatelessWidget {
     final subtitles = const [
       "Item reserved for you",
       "Picked up from seller",
-      "Being verified by experts",
+      "Verified by experts",
       "Out for delivery",
-      "Successfully delivered to you",
+      "Successfully delivered",
     ];
 
     final List<StepperStep> steps = List.generate(5, (index) {

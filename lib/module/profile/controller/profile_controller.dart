@@ -68,7 +68,7 @@ class ProfileItem {
         st == 'authenticating' ||
         st == 'authenticated' ||
         st == 'payout_processing') {
-      return 'Authenticating';
+      return 'Authenticated';
     }
     if (st == 'ready_for_delivery' ||
         st == 'dispatched' ||
