@@ -1,8 +1,5 @@
-import 'package:cpk1989/core/utils/helpers.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:cpk1989/module/home/controller/home_controller.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
@@ -16,7 +13,6 @@ class SecureCheckoutController extends GetxController {
 
   // Gesture Recognizers for checkout footer links
   late final TapGestureRecognizer termsRecognizer;
-  late final TapGestureRecognizer purchasePolicyRecognizer;
 
   // Form Field Controllers
   late final TextEditingController firstNameController;
@@ -68,10 +64,6 @@ class SecureCheckoutController extends GetxController {
     termsRecognizer = TapGestureRecognizer()
       ..onTap = () {
         Get.toNamed(AppRoutes.termsAndPolicies);
-      };
-    purchasePolicyRecognizer = TapGestureRecognizer()
-      ..onTap = () {
-        Get.toNamed(AppRoutes.termsAndConditions, arguments: "Purchase Policy");
       };
 
     if (Get.arguments is FeedItem) {
@@ -195,12 +187,12 @@ class SecureCheckoutController extends GetxController {
   void syncFromProfile(ProfileController profileCtrl) {
     firstNameController.text = profileCtrl.firstNameController.text;
     lastNameController.text = profileCtrl.lastNameController.text;
-    
+
     final locVal = profileCtrl.locationController.text.isNotEmpty
         ? profileCtrl.locationController.text
         : (profileCtrl.addressController.text.isNotEmpty
-            ? profileCtrl.addressController.text
-            : '');
+              ? profileCtrl.addressController.text
+              : '');
     locationController.text = locVal;
     addressController.text = locVal;
 
@@ -216,8 +208,8 @@ class SecureCheckoutController extends GetxController {
     final countryVal = profileCtrl.countryController.text.isNotEmpty
         ? profileCtrl.countryController.text
         : (profileCtrl.rxLocation.value.isNotEmpty
-            ? profileCtrl.rxLocation.value
-            : "UAE");
+              ? profileCtrl.rxLocation.value
+              : "UAE");
     rxLocation.value = countryVal;
   }
 
@@ -229,7 +221,6 @@ class SecureCheckoutController extends GetxController {
     addressController.dispose();
     phoneController.dispose();
     termsRecognizer.dispose();
-    purchasePolicyRecognizer.dispose();
     super.onClose();
   }
 
@@ -360,10 +351,7 @@ class SecureCheckoutController extends GetxController {
   void showPaymentErrorDialog(String errorMsg, {BuildContext? context}) {
     final ctx = context ?? Get.context;
     if (ctx != null) {
-      showPaymentErrorBottomSheet(
-        context: ctx,
-        errorMessage: errorMsg,
-      );
+      showPaymentErrorBottomSheet(context: ctx, errorMessage: errorMsg);
     }
   }
 }

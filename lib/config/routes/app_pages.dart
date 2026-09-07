@@ -17,7 +17,6 @@ import 'package:cpk1989/module/sell/view/ai_analysis_screen.dart';
 import 'package:cpk1989/module/sell_item_detail/view/sell_item_detail_screen.dart';
 import 'package:cpk1989/module/sell_item_detail/binding/sell_item_detail_binding.dart';
 import 'package:cpk1989/module/secure_checkout/view/secure_checkout_screen.dart';
-import 'package:cpk1989/module/secure_checkout/view/terms_and_conditions_screen.dart';
 import 'package:cpk1989/module/secure_checkout/binding/secure_checkout_binding.dart';
 import 'package:cpk1989/module/auth/view/login_screen.dart';
 import 'package:cpk1989/module/auth/binding/auth_binding.dart';
@@ -42,7 +41,6 @@ class AppRoutes {
   static const String aiAnalysis = '/ai-analysis';
   static const String sellItemDetail = '/sell-item-detail';
   static const String secureCheckout = '/secure-checkout';
-  static const String termsAndConditions = '/terms-and-conditions';
   static const String termsAndPolicies = '/terms-and-policies';
   static const String myPurchaseDetails = '/my-purchase-details';
   static const String sellerProfile = '/seller-profile';
@@ -116,11 +114,6 @@ final pages = [
     name: AppRoutes.secureCheckout,
     page: () => const SecureCheckoutScreen(),
     binding: SecureCheckoutBinding(),
-    transition: transition,
-  ),
-  GetPage(
-    name: AppRoutes.termsAndConditions,
-    page: () => const TermsAndConditionsScreen(),
     transition: transition,
   ),
   GetPage(
