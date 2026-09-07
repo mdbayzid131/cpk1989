@@ -190,16 +190,24 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                       ],
                                     ),
                                   ),
-                                  Text(
-                                    "Listed price",
-                                    style: GoogleFonts.dmSans(
-                                      fontSize: 14.sp,
-                                      color: Colors.white38,
-                                      fontWeight: FontWeight.w500,
+                                  SizedBox(
+                                    width: 120.w,
+                                    child: Center(
+                                      child: Text(
+                                        "Listed price",
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.dmSans(
+                                          fontSize: 14.sp,
+                                          color: Colors.white38,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
+
+                              SizedBox(height: 12.h),
 
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -506,7 +514,9 @@ class _DetailImageSliderState extends State<DetailImageSlider> {
 
   @override
   Widget build(BuildContext context) {
-    final images = widget.item.itemImages.where((img) => img.isNotEmpty).toList();
+    final images = widget.item.itemImages
+        .where((img) => img.isNotEmpty)
+        .toList();
 
     return Stack(
       children: [
@@ -532,7 +542,8 @@ class _DetailImageSliderState extends State<DetailImageSlider> {
                     setState(() {
                       _currentPage = index;
                     });
-                    Get.find<ItemDetailController>().rxCurrentPage.value = index;
+                    Get.find<ItemDetailController>().rxCurrentPage.value =
+                        index;
                   },
                   itemBuilder: (context, index) {
                     final img = images[index];
