@@ -219,6 +219,30 @@ class NotificationController extends GetxController {
     rxNotifications.assignAll(updated);
   }
 
+  Future<bool> deleteNotification(String id) async {
+    final index = rxNotifications.indexWhere((item) => item.id == id);
+    NotificationItem? removedItem;
+    if (index != -1) {
+      removedItem = rxNotifications.removeAt(index);
+    }
+
+    try {
+      if (_repository != null) {
+        final response = await _repository.deleteNotification(id);
+        if (response.statusCode == 200) {
+          return true;
+        }
+      }
+    } catch (e) {
+      debugPrint('Delete notification error: $e');
+      if (removedItem != null && index != -1 && index <= rxNotifications.length) {
+        rxNotifications.insert(index, removedItem);
+      }
+      return false;
+    }
+    return true;
+  }
+
   Future<void> deleteAllNotifications() async {
     try {
       if (_repository != null) {

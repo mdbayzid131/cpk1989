@@ -118,7 +118,31 @@ class NotificationScreen extends GetView<NotificationController> {
                             final item = items[index];
                             return Padding(
                               padding: EdgeInsets.only(bottom: 10.h),
-                              child: _buildNotificationCard(item),
+                              child: Dismissible(
+                                key: ValueKey('notification_${item.id}'),
+                                direction: DismissDirection.endToStart,
+                                background: Container(
+                                  alignment: Alignment.centerRight,
+                                  padding: EdgeInsets.only(right: 20.w),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFE53935),
+                                    borderRadius: BorderRadius.circular(16.r),
+                                  ),
+                                  child: SvgPicture.asset(
+                                    'assets/notifecation/delete.svg',
+                                    width: 22.r,
+                                    height: 22.r,
+                                    colorFilter: const ColorFilter.mode(
+                                      Colors.white,
+                                      BlendMode.srcIn,
+                                    ),
+                                  ),
+                                ),
+                                onDismissed: (direction) {
+                                  controller.deleteNotification(item.id);
+                                },
+                                child: _buildNotificationCard(item),
+                              ),
                             );
                           }, childCount: items.length),
                         ),
