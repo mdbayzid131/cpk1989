@@ -353,10 +353,8 @@ class SellController extends GetxController {
     }
   }
 
-  // Add scanned item to wardrobe silently and return the profile item (for automatic details route)
+  // Create scanned draft item to pass to SellItemDetailScreen
   ProfileItem addScannedItemToWardrobeSilently() {
-    final profileController = Get.put(ProfileController());
-
     final List<String> finalImages = rxCapturedPaths
         .where((path) => path != null && path.isNotEmpty && !path.startsWith("MOCK_CAPTURE_"))
         .cast<String>()
@@ -377,12 +375,6 @@ class SellController extends GetxController {
           : "Item Details",
       status: null, // Null status means active wardrobe listing
     );
-
-    // Add to profile wardrobe items list
-    profileController.rxWardrobeItems.insert(0, newItem);
-
-    // Select the first tab (Wardrobe) in profile
-    profileController.rxSelectedIndex.value = 0;
 
     return newItem;
   }

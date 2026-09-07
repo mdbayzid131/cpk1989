@@ -598,6 +598,11 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
         onTap: () async {
           final success = await controller.postProductListing();
           if (success && context.mounted) {
+            if (Get.isRegistered<ProfileController>()) {
+              final profileController = Get.find<ProfileController>();
+              profileController.fetchMyWardrobe();
+              profileController.fetchProfileStats();
+            }
             showCustomDippedBottomSheet(
               context: context,
               isDismissible: false,
@@ -612,6 +617,11 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 item: item,
                 formattedPrice: formattedPrice,
                 onDismiss: () {
+                  if (Get.isRegistered<ProfileController>()) {
+                    final profileController = Get.find<ProfileController>();
+                    profileController.fetchMyWardrobe();
+                    profileController.fetchProfileStats();
+                  }
                   Get.back(); // Pop the bottom sheet
                   Get.back(); // Pop SellItemDetailScreen
                   Get.back(); // Pop SellScreen (Camera)
