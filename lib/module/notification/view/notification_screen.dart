@@ -63,8 +63,9 @@ class NotificationScreen extends GetView<NotificationController> {
           return RefreshIndicator(
             color: const Color(0xFFE2B744),
             backgroundColor: const Color(0xFF1E2022),
-            onRefresh: () => controller.fetchNotifications(),
+            onRefresh: () => controller.fetchNotifications(isRefresh: true),
             child: CustomScrollView(
+              controller: controller.scrollController,
               physics: const AlwaysScrollableScrollPhysics(
                 parent: BouncingScrollPhysics(),
               ),
@@ -78,10 +79,10 @@ class NotificationScreen extends GetView<NotificationController> {
                       title: "No New Notifications",
                       subtitle: "We'll let you know when there's an update on\nyour purchases, listings, or account.",
                       buttonText: "Refresh",
-                      onButtonTap: () => controller.fetchNotifications(),
+                      onButtonTap: () => controller.fetchNotifications(isRefresh: true),
                     ),
                   )
-                else
+                else ...[
                   ...grouped.entries.expand((entry) {
                     final dateGroup = entry.key;
                     final items = entry.value;
@@ -121,6 +122,21 @@ class NotificationScreen extends GetView<NotificationController> {
                       ),
                     ];
                   }),
+
+                  // Pagination loader
+                  if (controller.rxIsLoadingMore.value)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16.h),
+                        child: Center(
+                          child: CustomGoldLoader(
+                            size: 28.r,
+                            strokeWidth: 2.5.r,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
 
                 // Bottom Padding to ensure cards aren't obscured by bottom nav bar
                 SliverToBoxAdapter(child: SizedBox(height: 110.h)),

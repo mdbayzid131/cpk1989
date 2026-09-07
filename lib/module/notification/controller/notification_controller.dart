@@ -21,6 +21,7 @@ class NotificationItem {
   final NotificationType type;
   final bool isRead;
   final String? route;
+  final Map<String, dynamic>? data;
 
   NotificationItem({
     required this.id,
@@ -31,6 +32,7 @@ class NotificationItem {
     required this.type,
     this.isRead = false,
     this.route,
+    this.data,
   });
 }
 
@@ -41,42 +43,123 @@ class NotificationController extends GetxController {
       : _repository = repository;
 
   final rxIsLoading = false.obs;
+  final rxIsLoadingMore = false.obs;
+  final rxHasMore = false.obs;
+  final rxCurrentPage = 1.obs;
+  final rxTotalPages = 1.obs;
   final rxNotifications = <NotificationItem>[].obs;
+
+  late final ScrollController scrollController;
 
   @override
   void onInit() {
     super.onInit();
+    scrollController = ScrollController()..addListener(_onScroll);
     fetchNotifications();
   }
 
-  Future<void> fetchNotifications() async {
+  @override
+  void onClose() {
+    scrollController.dispose();
+    super.onClose();
+  }
+
+  void _onScroll() {
+    if (!scrollController.hasClients) return;
+    final maxScroll = scrollController.position.maxScrollExtent;
+    final currentScroll = scrollController.position.pixels;
+    if (currentScroll >= maxScroll - 200) {
+      loadMoreNotifications();
+    }
+  }
+
+  Future<void> fetchNotifications({bool isRefresh = false}) async {
+    if (isRefresh) {
+      rxCurrentPage.value = 1;
+      rxHasMore.value = false;
+    }
+
     rxIsLoading.value = true;
     try {
       if (_repository != null) {
-        final response = await _repository.getNotifications();
+        final response = await _repository.getNotifications(
+          page: 1,
+          limit: 20,
+        );
         if (response.statusCode == 200 && response.data != null) {
           final List rawData = response.data['data'] ?? [];
-          final fetched = rawData.map((json) {
-            return NotificationItem(
-              id: json['id'] ?? json['_id'] ?? '',
-              title: json['title'] ?? 'Notification',
-              subtitle: json['subtitle'] ?? json['body'] ?? '',
-              timeAgo: _formatTime(json['createdAt']),
-              dateGroup: _formatDateGroup(json['createdAt']),
-              type: _parseType(json['type']),
-              isRead: json['isRead'] ?? false,
-            );
-          }).toList();
+          final fetched = rawData.map((json) => _mapJsonToItem(json)).toList();
+
+          final pagination = response.data['pagination'];
+          if (pagination != null) {
+            final totalPage = (pagination['totalPage'] ?? 1) as int;
+            rxTotalPages.value = totalPage;
+            rxCurrentPage.value = 1;
+            rxHasMore.value = 1 < totalPage;
+          } else {
+            rxCurrentPage.value = 1;
+            rxHasMore.value = fetched.length >= 20;
+          }
+
           rxNotifications.assignAll(fetched);
-          rxIsLoading.value = false;
-          return;
         }
       }
     } catch (e) {
       debugPrint('Notification API error: $e');
+    } finally {
+      rxIsLoading.value = false;
     }
+  }
 
-    rxIsLoading.value = false;
+  Future<void> loadMoreNotifications() async {
+    if (rxIsLoading.value || rxIsLoadingMore.value || !rxHasMore.value) return;
+
+    rxIsLoadingMore.value = true;
+    try {
+      if (_repository != null) {
+        final nextPage = rxCurrentPage.value + 1;
+        final response = await _repository.getNotifications(
+          page: nextPage,
+          limit: 20,
+        );
+        if (response.statusCode == 200 && response.data != null) {
+          final List rawData = response.data['data'] ?? [];
+          final fetched = rawData.map((json) => _mapJsonToItem(json)).toList();
+
+          final pagination = response.data['pagination'];
+          if (pagination != null) {
+            final totalPage = (pagination['totalPage'] ?? 1) as int;
+            rxTotalPages.value = totalPage;
+            rxCurrentPage.value = nextPage;
+            rxHasMore.value = nextPage < totalPage;
+          } else {
+            rxCurrentPage.value = nextPage;
+            rxHasMore.value = fetched.isNotEmpty;
+          }
+
+          rxNotifications.addAll(fetched);
+        }
+      }
+    } catch (e) {
+      debugPrint('Load more notifications error: $e');
+    } finally {
+      rxIsLoadingMore.value = false;
+    }
+  }
+
+  NotificationItem _mapJsonToItem(dynamic json) {
+    return NotificationItem(
+      id: json['id'] ?? json['_id'] ?? '',
+      title: json['title'] ?? 'Notification',
+      subtitle: json['subtitle'] ?? json['body'] ?? '',
+      timeAgo: _formatTime(json['createdAt']),
+      dateGroup: _formatDateGroup(json['createdAt']),
+      type: _parseType(json['type']),
+      isRead: json['isRead'] ?? false,
+      data: json['data'] is Map<String, dynamic>
+          ? json['data'] as Map<String, dynamic>
+          : null,
+    );
   }
 
   Future<void> markAllAsRead() async {
@@ -96,6 +179,7 @@ class NotificationController extends GetxController {
         type: item.type,
         isRead: true,
         route: item.route,
+        data: item.data,
       );
     }).toList();
 
@@ -120,6 +204,7 @@ class NotificationController extends GetxController {
       case 'itemcollected':
         return NotificationType.itemCollected;
       case 'item_authenticated':
+      case 'item_verification':
       case 'itemauthenticated':
         return NotificationType.itemAuthenticated;
       case 'item_reserved':

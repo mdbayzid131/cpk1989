@@ -1,325 +1,567 @@
-For the policy updates
- 
-Please update the following sections of terms and conditions on both web and app:
- 
-Section 7 - Payments 
- Section 9 - Rejection at delivery
- 
-—————————————
- 
-UPDATED TEXT BELOW
- 
-Section 7 – Payments
- 
-Payments are securely processed via third-party providers
- 
-Funds are held until:
- 
-* The item has successfully passed authentication
- * The Buyer accepts delivery
- 
-Payment is only released to the seller after successful delivery acceptance
- 
- 
-————————————-
- 
-9. Rejection at Delivery
- 
-At delivery, the Buyer has the right to:
- 
-* Accept the item; or
- * Reject the item.
- 
-If the item is rejected because it is not as described, its condition materially differs from the listing, or due to any issue attributable to Closeté or the Seller:
- 
-* The item will be returned to the Seller.
- * The Buyer will receive a full refund.
- * The Seller will not be paid.
- 
-If the Buyer rejects the item solely due to a change of mind, personal preference, or any reason unrelated to the item’s authenticity, condition, or conformity with its listing:
- 
-* The item will be returned to the Seller.
- * The Buyer will receive a refund less the applicable Closeté Handling Fee, which covers costs already incurred, including payment processing, collection, authentication, handling, logistics, and delivery.
- * The Seller will not be paid.
- 
-Repeated instances of rejecting items due to a change of mind may result in Closeté restricting or suspending the Buyer’s account at its sole discretion.
- 
-This process replaces the need for a traditional returns process.
 
+I/flutter (10709): ┌ ✅✅✅✅ RESPONSE ════════════════════════════════════════════════════════
+I/flutter (10709): │ [ GET 200 ] https://butler-tissue-burns-recovery.trycloudflare.com/api/v1/notifications?page=1&limit=20
+I/flutter (10709): │ Data:
+I/flutter (10709): │ {
+I/flutter (10709): │   "success": true,
+I/flutter (10709): │   "message": "Notifications retrieved successfully",
+I/flutter (10709): │   "pagination": {
+I/flutter (10709): │     "total": 35,
+I/flutter (10709): │     "limit": 20,
+I/flutter (10709): │     "page": 1,
+I/flutter (10709): │     "totalPage": 2
+I/flutter (10709): │   },
+I/flutter (10709): │   "data": [
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a9e6273a2046109ca2b5309",
+I/flutter (10709): │       "type": "wishlist_item_saved",
+I/flutter (10709): │       "title": "Added to Wishlist",
+I/flutter (10709): │       "body": "The terry has been saved to your wishlist.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "product_details",
+I/flutter (10709): │         "productId": "6a9015a06e1e2bcebf56f509"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-09-07T07:06:26.166Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a9e52d0a2046109ca2b51c4",
+I/flutter (10709): │       "type": "order_cancelled",
+I/flutter (10709): │       "title": "Order cancelled",
+I/flutter (10709): │       "body": "Order CLT-59855735512 has been cancelled.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a9e4f3066287296578122da",
+I/flutter (10709): │         "orderNumber": "CLT-59855735512",
+I/flutter (10709): │         "productId": "6a9001586e1e2bcebf56f018"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-09-07T05:59:43.490Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a9e5294a2046109ca2b51ba",
+I/flutter (10709): │       "type": "order_cancelled",
+I/flutter (10709): │       "title": "Order cancelled",
+I/flutter (10709): │       "body": "Order CLT-59804112245 has been cancelled.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a9e4efc66287296578122c6",
+I/flutter (10709): │         "orderNumber": "CLT-59804112245",
+I/flutter (10709): │         "productId": "6a9015a06e1e2bcebf56f509"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-09-07T05:58:43.329Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a91261beb90ebe156b6874c",
+I/flutter (10709): │       "type": "issue_resolved",
+I/flutter (10709): │       "title": "Issue resolved",
+I/flutter (10709): │       "body": "The issue for order CLT-01636307817 has been resolved.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a880f05a60d588707699c06",
+I/flutter (10709): │         "orderNumber": "CLT-01636307817",
+I/flutter (10709): │         "productId": "6a87dc10a60d588707699a98"
+D/BufferQueueProducer(10709): [SurfaceView[com.closete.app/com.closete.app.MainActivity]#1(BLAST Consumer)1](id:29d500000001,api:1,p:10709,c:10709) queueBuffer: slot=3/20384 time=37922195700413 dataSpace=142671872 validHdrMetadataTypes=0x0 crop=[0,0,0,0] transform=0 scale=SCALE_TO_WINDOW
+D/BufferQueueProducer(10709): [SurfaceView[com.closete.app/com.closete.app.MainActivity]#1(BLAST Consumer)1](id:29d500000001,api:1,p:10709,c:10709) addAndGetFrameTimestamps
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-28T06:09:29.753Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a90195aeb90ebe156b5650f",
+I/flutter (10709): │       "type": "order_cancelled",
+I/flutter (10709): │       "title": "Order cancelled",
+I/flutter (10709): │       "body": "Order CLT-27646003257 has been cancelled.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a9015be6e1e2bcebf56f525",
+I/flutter (10709): │         "orderNumber": "CLT-27646003257",
+I/flutter (10709): │         "productId": "6a9001586e1e2bcebf56f018"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-27T11:02:49.624Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a900531eb90ebe156b561b8",
+I/flutter (10709): │       "type": "order_cancelled",
+I/flutter (10709): │       "title": "Order cancelled",
+I/flutter (10709): │       "body": "Order CLT-22479369459 has been cancelled.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a90018f6e1e2bcebf56f03e",
+I/flutter (10709): │         "orderNumber": "CLT-22479369459",
+I/flutter (10709): │         "productId": "6a9001586e1e2bcebf56f018"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-27T09:36:49.009Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a9002d9eb90ebe156b56183",
+I/flutter (10709): │       "type": "order_cancelled",
+I/flutter (10709): │       "title": "Order cancelled",
+I/flutter (10709): │       "body": "Order CLT-21893555376 has been cancelled.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8fff456e1e2bcebf56effb",
+I/flutter (10709): │         "orderNumber": "CLT-21893555376",
+I/flutter (10709): │         "productId": "6a8faaed6e1e2bcebf56e786"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-27T09:26:49.171Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a9002d9eb90ebe156b56181",
+I/flutter (10709): │       "type": "order_cancelled",
+I/flutter (10709): │       "title": "Order cancelled",
+I/flutter (10709): │       "body": "Order CLT-21872794973 has been cancelled.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8fff316e1e2bcebf56efe5",
+I/flutter (10709): │         "orderNumber": "CLT-21872794973",
+I/flutter (10709): │         "productId": "6a8fab716e1e2bcebf56e798"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-27T09:26:48.713Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a90029deb90ebe156b56177",
+I/flutter (10709): │       "type": "order_cancelled",
+I/flutter (10709): │       "title": "Order cancelled",
+I/flutter (10709): │       "body": "Order CLT-21812696551 has been cancelled.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8ffef56e1e2bcebf56efd1",
+I/flutter (10709): │         "orderNumber": "CLT-21812696551",
+I/flutter (10709): │         "productId": "6a8fe0c66e1e2bcebf56ee9e"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-27T09:25:48.954Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8ff810eb90ebe156b5610a",
+I/flutter (10709): │       "type": "order_cancelled",
+I/flutter (10709): │       "title": "Order cancelled",
+I/flutter (10709): │       "body": "Order CLT-19116162945 has been cancelled.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8ff46c6e1e2bcebf56ef1f",
+I/flutter (10709): │         "orderNumber": "CLT-19116162945",
+I/flutter (10709): │         "productId": "6a8fab716e1e2bcebf56e798"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-27T08:40:48.788Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8fb01aeb90ebe156b55e38",
+I/flutter (10709): │       "type": "order_cancelled",
+I/flutter (10709): │       "title": "Order cancelled",
+I/flutter (10709): │       "body": "Order CLT-00708746871 has been cancelled.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8fac856e1e2bcebf56ea0a",
+I/flutter (10709): │         "orderNumber": "CLT-00708746871",
+I/flutter (10709): │         "productId": "6a8bb02f673d5006c0fabeac"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-27T03:33:44.601Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8fb01aeb90ebe156b55e36",
+I/flutter (10709): │       "type": "order_cancelled",
+I/flutter (10709): │       "title": "Order cancelled",
+I/flutter (10709): │       "body": "Order CLT-00691414424 has been cancelled.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8fac736e1e2bcebf56e99b",
+I/flutter (10709): │         "orderNumber": "CLT-00691414424",
+I/flutter (10709): │         "productId": "6a8bb3ff673d5006c0fabf6b"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-27T03:33:44.123Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8fb019eb90ebe156b55e34",
+I/flutter (10709): │       "type": "order_cancelled",
+I/flutter (10709): │       "title": "Order cancelled",
+I/flutter (10709): │       "body": "Order CLT-00675862116 has been cancelled.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8fac646e1e2bcebf56e92e",
+I/flutter (10709): │         "orderNumber": "CLT-00675862116",
+I/flutter (10709): │         "productId": "6a8faa4b6e1e2bcebf56e746"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-27T03:33:43.600Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8fafa1eb90ebe156b55e2c",
+I/flutter (10709): │       "type": "order_cancelled",
+I/flutter (10709): │       "title": "Order cancelled",
+I/flutter (10709): │       "body": "Order CLT-00601088746 has been cancelled.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8fac196e1e2bcebf56e85b",
+I/flutter (10709): │         "orderNumber": "CLT-00601088746",
+I/flutter (10709): │         "productId": "6a8faaed6e1e2bcebf56e786"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-27T03:31:43.653Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8faf66eb90ebe156b55e28",
+I/flutter (10709): │       "type": "order_cancelled",
+I/flutter (10709): │       "title": "Order cancelled",
+I/flutter (10709): │       "body": "Order CLT-00517796711 has been cancelled.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8fabc66e1e2bcebf56e808",
+I/flutter (10709): │         "orderNumber": "CLT-00517796711",
+I/flutter (10709): │         "productId": "6a8fab716e1e2bcebf56e798"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-27T03:30:43.884Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8facf8eb90ebe156b55e1d",
+I/flutter (10709): │       "type": "authentication_passed",
+I/flutter (10709): │       "title": "Authentication complete",
+I/flutter (10709): │       "body": "Your item has been authenticated and is being prepared for delivery.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8bdb7bca9aa26fdabdf21c",
+I/flutter (10709): │         "orderNumber": "CLT-50586900443",
+I/flutter (10709): │         "productId": "6a8bad89673d5006c0fabe96"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-27T03:20:21.897Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8ec71deb90ebe156b54871",
+I/flutter (10709): │       "type": "authentication_passed",
+I/flutter (10709): │       "title": "Authentication complete",
+I/flutter (10709): │       "body": "Your item has been authenticated and is being prepared for delivery.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8bdaacca9aa26fdabdf1cf",
+I/flutter (10709): │         "orderNumber": "CLT-50380097931",
+I/flutter (10709): │         "productId": "6a8bda03ca9aa26fdabdf189"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-26T10:59:39.272Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8ec315eb90ebe156b54842",
+I/flutter (10709): │       "type": "item_verification",
+I/flutter (10709): │       "title": "Item authentication in progress",
+I/flutter (10709): │       "body": "The item for order CLT-01636307817 is being authenticated.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a880f05a60d588707699c06",
+I/flutter (10709): │         "orderNumber": "CLT-01636307817",
+I/flutter (10709): │         "productId": "6a87dc10a60d588707699a98"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-26T10:42:27.435Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8ebf3ceb90ebe156b54825",
+I/flutter (10709): │       "type": "item_verification",
+I/flutter (10709): │       "title": "Item authentication in progress",
+I/flutter (10709): │       "body": "The item for order CLT-50380097931 is being authenticated.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8bdaacca9aa26fdabdf1cf",
+I/flutter (10709): │         "orderNumber": "CLT-50380097931",
+I/flutter (10709): │         "productId": "6a8bda03ca9aa26fdabdf189"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-26T10:26:02.804Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8ebcd6eb90ebe156b5480e",
+I/flutter (10709): │       "type": "issue_resolved",
+I/flutter (10709): │       "title": "Issue resolved",
+I/flutter (10709): │       "body": "The issue for order CLT-39977624351 has been resolved.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8bb20a673d5006c0fabee9",
+I/flutter (10709): │         "orderNumber": "CLT-39977624351",
+I/flutter (10709): │         "productId": "6a8bb02f673d5006c0fabeac"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-26T10:15:48.816Z"
+I/flutter (10709): │     }
+I/flutter (10709): │   ]
+I/flutter (10709): │ }
+I/flutter (10709): └ ✅✅✅✅ RESPONSE ════════════════════════════════════════════════════════
+I/flutter (10709):
+D/BufferQueueProducer(10709): [SurfaceView[com.closete.app/com.closete.app.MainActivity]#1(BLAST Consumer)1](id:29d500000001,api:1,p:10709,c:10709) queueBuffer: slot=4/20385 time=37922292616682 dataSpace=142671872 validHdrMetadataTypes=0x0 crop=[0,0,0,0] transform=0 scale=SCALE_TO_WINDOW
+D/BufferQueueProducer(10709): 
 
-
-
-
-
-
-Closeté Authenticity & Delivery Policy
- 
-1. Overview
- 
-Closeté operates an authentication-before-delivery model.
- 
-Every item is:
- 
-* Collected
- * Authenticated
- * Delivered only after successful authentication
- 
-⸻
- 
-2. No Traditional Returns
- 
-Closeté does not operate a traditional returns policy.
- 
-This is because:
- 
-* Buyers inspect items at the point of delivery.
- * Acceptance takes place before payment is released to the Seller.
- * Once an item has been accepted, the transaction is considered final.
- 
-⸻
- 
-3. Buyer Acceptance at Delivery
- 
-At delivery, the Buyer may:
- 
-Accept the item
- 
-* The transaction is completed.
- * Payment is released to the Seller.
- 
-Reject the item
- 
-If the item is rejected because it is not as described, its condition materially differs from the listing, or due to an issue attributable to Closeté or the Seller:
- 
-* The item is returned to the Seller.
- * The Buyer receives a full refund.
- * The Seller is not paid.
- 
-If the item is rejected solely due to a change of mind, personal preference, or any reason unrelated to the item’s authenticity, condition, or conformity with its listing:
- 
-* The item is returned to the Seller.
- * The Buyer receives a refund less the applicable Closeté Handling Fee.
- * The Seller is not paid.
- 
-Repeated instances of rejecting items due to a change of mind may result in Closeté restricting or suspending the Buyer’s account.
- 
-⸻
- 
-4. Authentication Protection
- 
-If an item:
- 
-* Fails authentication; or
- * Is materially different from its listing,
- 
-Closeté will:
- 
-* Cancel the transaction.
- * Refund the Buyer in full.
- * Return the item to the Seller.
- 
-⸻
- 
-5. Final Sale After Acceptance
- 
-Once the Buyer accepts the item at delivery, the transaction is final.
- 
-Closeté is not responsible for:
- 
-* Change of mind after acceptance.
- * Fit or sizing preferences.
- * Subjective preferences that were apparent at the time of delivery.
- 
-⸻
- 
-6. Fraud Prevention
- 
-Closeté may:
- 
-* Perform additional authentication or verification checks.
- * Delay or cancel transactions where fraudulent or suspicious activity is suspected.
- * Suspend or terminate accounts involved in fraudulent activity.
- 
-⸻
- 
-7. Damaged Items
- 
-If an item is damaged while in Closeté’s possession or control:
- 
-* The matter will be investigated.
- * An appropriate resolution will be determined at Closeté’s discretion.
- 
-———-
-
-
-
-Closeté Privacy Policy
- 
-Last updated: June 2026
- 
-1. Introduction
- 
-Closeté (“we”, “our”, “us”) respects your privacy and is committed to protecting your personal data.
- 
-This Privacy Policy explains how we collect, use, store, disclose, and protect your personal information when you use the Closeté mobile application and related services.
- 
-⸻
- 
-2. Information We Collect
- 
-Account Information
- 
-* Name
- * Email address
- * Phone number
- 
-Transaction & Listing Information
- 
-* Item details (including photos, videos, descriptions, and condition)
- * Pricing and listing information
- * Purchase history
- * Order history
- 
-Collection & Delivery Information
- 
-* Collection address (for Sellers)
- * Delivery address (for Buyers)
- * Collection and delivery status
- 
-Payment Information
- 
-* Payment details processed securely by third-party payment providers
- * We do not store your full payment card details
- 
-Authentication Information
- 
-* Images and information submitted for authentication
- * Authentication results
- * Operational records relating to the authentication process
- 
-Device & Usage Information
- 
-* Device type
- * Operating system
- * App usage information
- * Log data for security, diagnostics, and performance
- 
-⸻
- 
-3. How We Use Your Information
- 
-We use your information to:
- 
-* Facilitate the buying and selling of luxury items.
- * Arrange collection and delivery.
- * Authenticate items and protect against fraud.
- * Process payments and refunds securely.
- * Communicate order updates, notifications, and customer support.
- * Improve the performance, security, and functionality of the Closeté platform.
- * Comply with applicable legal and regulatory obligations.
- 
-⸻
- 
-4. Authentication & Fraud Prevention
- 
-To maintain trust within the Closeté marketplace, we use a combination of:
- 
-* Internal authentication procedures.
- * Third-party authentication providers and tools.
- 
-We may review item information, images, and related data to authenticate items, detect fraudulent activity, investigate disputes, and protect the integrity of the platform.
- 
-⸻
-
- 5. Sharing Your Information
- 
-We only share your information where necessary to operate the Closeté platform.
- 
-Service Providers
- 
-Including:
- 
-* Payment processors
- * Delivery and logistics partners
- * Authentication providers
- * Technology and cloud service providers
- 
-Other Users
- 
-We may share limited information necessary to complete a transaction, including listing information and first names where appropriate.
- 
-Legal Requirements
- 
-We may disclose information where required by law or where reasonably necessary to:
- 
-* Comply with legal obligations.
- * Prevent fraud.
- * Protect the rights, property, safety, or security of Closeté, our users, or third parties.
- 
-⸻
- 
-6. Data Security
- 
-We implement appropriate technical and organisational measures designed to protect your personal information, including:
- 
-* Encrypted data transmission.
- * Secure storage systems.
- * Access controls.
- * Ongoing monitoring and security practices.
- 
-While we take reasonable steps to protect your information, no method of electronic transmission or storage is completely secure.
- 
-⸻
- 
-7. Your Rights
- 
-Subject to applicable law, you may have the right to:
- 
-* Access your personal information.
- * Request correction of inaccurate information.
- * Request deletion of your personal information.
- * Withdraw consent where applicable.
- 
-To exercise your rights, please contact:
- 
-Email: Closeteapp@gmail.com
- 
-⸻
- 
-8. Data Retention
- 
-We retain personal information only for as long as reasonably necessary to:
- 
-* Provide our services.
- * Complete transactions.
- * Meet legal and regulatory obligations.
- * Resolve disputes.
- * Enforce our agreements.
- 
-⸻
- 
-9. International Transfers
- 
-Closeté currently operates in Dubai, United Arab Emirates.
- 
-Your information may be processed or stored by trusted third-party service providers located in other jurisdictions where necessary to provide our services. Where applicable, we take reasonable steps to ensure your information receives an appropriate level of protection.
- 
-⸻
- 
-10. Updates to This Policy
- 
-We may update this Privacy Policy from time to time.
- 
-Any changes will become effective when the updated Privacy Policy is published within the Closeté platform and the “Last updated” date is revised.
- 
-⸻
- 
-11. Contact Us
- 
-For any questions regarding this Privacy Policy or your personal information, please contact:
- 
-Email: Closeteapp@gmail.com
- 
-Company: Closeté
- 
-
+┌ ✅✅✅✅ RESPONSE ════════════════════════════════════════════════════════
+I/flutter (10709): │ [ GET 200 ] https://butler-tissue-burns-recovery.trycloudflare.com/api/v1/notifications?page=2&limit=20
+I/flutter (10709): │ Data:
+I/flutter (10709): │ {
+I/flutter (10709): │   "success": true,
+I/flutter (10709): │   "message": "Notifications retrieved successfully",
+I/flutter (10709): │   "pagination": {
+I/flutter (10709): │     "total": 35,
+I/flutter (10709): │     "limit": 20,
+I/flutter (10709): │     "page": 2,
+I/flutter (10709): │     "totalPage": 2
+I/flutter (10709): │   },
+I/flutter (10709): │   "data": [
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8ebb6feb90ebe156b54805",
+I/flutter (10709): │       "type": "issue_resolved",
+I/flutter (10709): │       "title": "Issue resolved",
+I/flutter (10709): │       "body": "The issue for order CLT-42031299812 has been resolved.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8bba0f673d5006c0fabfe7",
+I/flutter (10709): │         "orderNumber": "CLT-42031299812",
+I/flutter (10709): │         "productId": "6a8bb3ff673d5006c0fabf6b"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-26T10:09:49.844Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8eb8d3eb90ebe156b547f6",
+I/flutter (10709): │       "type": "authentication_failed",
+I/flutter (10709): │       "title": "Authentication unsuccessful",
+I/flutter (10709): │       "body": "Unfortunately this item did not pass our authentication process. A full refund has been issued to your original payment method.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8bba0f673d5006c0fabfe7",
+I/flutter (10709): │         "orderNumber": "CLT-42031299812",
+I/flutter (10709): │         "productId": "6a8bb3ff673d5006c0fabf6b",
+I/flutter (10709): │         "outcome": "authentication_failed"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-26T09:58:41.446Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8eb872eb90ebe156b547f4",
+I/flutter (10709): │       "type": "item_verification",
+I/flutter (10709): │       "title": "Item authentication in progress",
+I/flutter (10709): │       "body": "The item for order CLT-42031299812 is being authenticated.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8bba0f673d5006c0fabfe7",
+I/flutter (10709): │         "orderNumber": "CLT-42031299812",
+I/flutter (10709): │         "productId": "6a8bb3ff673d5006c0fabf6b"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-26T09:57:04.882Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8eb83aeb90ebe156b547f2",
+I/flutter (10709): │       "type": "item_verification",
+I/flutter (10709): │       "title": "Item authentication in progress",
+I/flutter (10709): │       "body": "The item for order CLT-50586900443 is being authenticated.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8bdb7bca9aa26fdabdf21c",
+D/BufferQueueProducer(10709): [SurfaceView[com.closete.app/com.closete.app.MainActivity]#1(BLAST Consumer)1](id:29d500000001,api:1,p:10709,c:10709) queueBuffer: slot=1/20852 time=38086159912180 dataSpace=142671872 validHdrMetadataTypes=0x0 crop=[0,0,0,0] transform=0 scale=SCALE_TO_WINDOW
+D/BufferQueueProducer(10709): [SurfaceView[com.closete.app/com.closete.app.MainActivity]#1(BLAST Consumer)1](id:29d500000001,api:1,p:10709,c:10709) addAndGetFrameTimestamps
+I/flutter (10709): │         "orderNumber": "CLT-50586900443",
+I/flutter (10709): │         "productId": "6a8bad89673d5006c0fabe96"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-26T09:56:08.399Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8eb798eb90ebe156b547ed",
+I/flutter (10709): │       "type": "authentication_failed",
+I/flutter (10709): │       "title": "Authentication unsuccessful",
+I/flutter (10709): │       "body": "Unfortunately this item did not pass our authentication process. A full refund has been issued to your original payment method.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8bb20a673d5006c0fabee9",
+I/flutter (10709): │         "orderNumber": "CLT-39977624351",
+I/flutter (10709): │         "productId": "6a8bb02f673d5006c0fabeac",
+I/flutter (10709): │         "outcome": "authentication_failed"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-26T09:53:26.201Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8eb5d4eb90ebe156b547e1",
+I/flutter (10709): │       "type": "item_collected",
+I/flutter (10709): │       "title": "Item collected",
+I/flutter (10709): │       "body": "The item for order CLT-50380097931 has been collected.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8bdaacca9aa26fdabdf1cf",
+I/flutter (10709): │         "orderNumber": "CLT-50380097931",
+I/flutter (10709): │         "productId": "6a8bda03ca9aa26fdabdf189"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-26T09:45:54.530Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8eb498eb90ebe156b547d3",
+I/flutter (10709): │       "type": "item_collected",
+I/flutter (10709): │       "title": "Item collected",
+I/flutter (10709): │       "body": "The item for order CLT-01636307817 has been collected.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a880f05a60d588707699c06",
+I/flutter (10709): │         "orderNumber": "CLT-01636307817",
+I/flutter (10709): │         "productId": "6a87dc10a60d588707699a98"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-26T09:40:38.365Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8e7d92eb90ebe156b54535",
+I/flutter (10709): │       "type": "item_collected",
+I/flutter (10709): │       "title": "Item collected",
+I/flutter (10709): │       "body": "The item for order CLT-42031299812 has been collected.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8bba0f673d5006c0fabfe7",
+I/flutter (10709): │         "orderNumber": "CLT-42031299812",
+I/flutter (10709): │         "productId": "6a8bb3ff673d5006c0fabf6b"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-26T05:45:53.378Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8e74b2eb90ebe156b544cb",
+I/flutter (10709): │       "type": "item_verification",
+I/flutter (10709): │       "title": "Item authentication in progress",
+I/flutter (10709): │       "body": "The item for order CLT-39977624351 is being authenticated.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8bb20a673d5006c0fabee9",
+I/flutter (10709): │         "orderNumber": "CLT-39977624351",
+I/flutter (10709): │         "productId": "6a8bb02f673d5006c0fabeac"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-26T05:08:01.206Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8e7487eb90ebe156b544c9",
+I/flutter (10709): │       "type": "item_collected",
+I/flutter (10709): │       "title": "Item collected",
+I/flutter (10709): │       "body": "The item for order CLT-39977624351 has been collected.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8bb20a673d5006c0fabee9",
+I/flutter (10709): │         "orderNumber": "CLT-39977624351",
+I/flutter (10709): │         "productId": "6a8bb02f673d5006c0fabeac"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-26T05:07:18.691Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8e7472eb90ebe156b544c7",
+I/flutter (10709): │       "type": "item_collected",
+I/flutter (10709): │       "title": "Item collected",
+I/flutter (10709): │       "body": "The item for order CLT-50586900443 has been collected.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8bdb7bca9aa26fdabdf21c",
+I/flutter (10709): │         "orderNumber": "CLT-50586900443",
+I/flutter (10709): │         "productId": "6a8bad89673d5006c0fabe96"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-26T05:06:57.079Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8bdb7f4c8e7acffdf0448b",
+I/flutter (10709): │       "type": "order_secured",
+I/flutter (10709): │       "title": "Order secured",
+I/flutter (10709): │       "body": "Your order CLT-50586900443 has been secured.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8bdb7bca9aa26fdabdf21c",
+I/flutter (10709): │         "orderNumber": "CLT-50586900443",
+I/flutter (10709): │         "productId": "6a8bad89673d5006c0fabe96"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-24T05:49:50.263Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8bdab14c8e7acffdf04483",
+I/flutter (10709): │       "type": "order_secured",
+I/flutter (10709): │       "title": "Order secured",
+I/flutter (10709): │       "body": "Your order CLT-50380097931 has been secured.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8bdaacca9aa26fdabdf1cf",
+I/flutter (10709): │         "orderNumber": "CLT-50380097931",
+I/flutter (10709): │         "productId": "6a8bda03ca9aa26fdabdf189"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-24T05:46:24.555Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8bba144c8e7acffdf0406e",
+I/flutter (10709): │       "type": "order_secured",
+I/flutter (10709): │       "title": "Order secured",
+I/flutter (10709): │       "body": "Your order CLT-42031299812 has been secured.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8bba0f673d5006c0fabfe7",
+I/flutter (10709): │         "orderNumber": "CLT-42031299812",
+I/flutter (10709): │         "productId": "6a8bb3ff673d5006c0fabf6b"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-24T03:27:15.669Z"
+I/flutter (10709): │     },
+I/flutter (10709): │     {
+I/flutter (10709): │       "id": "6a8bb20e4c8e7acffdf03fb2",
+I/flutter (10709): │       "type": "order_secured",
+I/flutter (10709): │       "title": "Order secured",
+I/flutter (10709): │       "body": "Your order CLT-39977624351 has been secured.",
+I/flutter (10709): │       "data": {
+I/flutter (10709): │         "screen": "order_details",
+I/flutter (10709): │         "orderId": "6a8bb20a673d5006c0fabee9",
+I/flutter (10709): │         "orderNumber": "CLT-39977624351",
+I/flutter (10709): │         "productId": "6a8bb02f673d5006c0fabeac"
+I/flutter (10709): │       },
+I/flutter (10709): │       "isRead": false,
+I/flutter (10709): │       "readAt": null,
+I/flutter (10709): │       "createdAt": "2026-08-24T02:53:02.173Z"
+I/flutter (10709): │     }
+I/flutter (10709): │   ]
+I/flutter (10709): │ }
+I/flutter (10709): └ ✅✅✅✅ RESPONSE ════════════════════════════════════════════════════════
+I/flutter (10709): 
