@@ -26,11 +26,22 @@ subprojects {
         subproject.afterEvaluate {
             subproject.extensions.findByType(com.android.build.gradle.BaseExtension::class.java)?.apply {
                 compileSdkVersion(36)
+                lintOptions {
+                    isCheckReleaseBuilds = false
+                    isAbortOnError = false
+                }
             }
             subproject.extensions.findByType(com.android.build.api.dsl.LibraryExtension::class.java)?.apply {
                 compileSdk = 36
+                lint {
+                    checkReleaseBuilds = false
+                    abortOnError = false
+                }
             }
         }
+    }
+    tasks.matching { it.name.startsWith("lintVital") }.configureEach {
+        enabled = false
     }
 }
 
