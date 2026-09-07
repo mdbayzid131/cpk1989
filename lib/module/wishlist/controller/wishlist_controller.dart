@@ -8,6 +8,7 @@ import 'package:cpk1989/core/utils/helpers.dart';
 class WishlistItem {
   final String id;
   final String imageUrl;
+  final List<String> images;
   final double price;
   final String brand;
   final String itemName;
@@ -18,6 +19,7 @@ class WishlistItem {
   WishlistItem({
     required this.id,
     required this.imageUrl,
+    this.images = const [],
     required this.price,
     required this.brand,
     required this.itemName,
@@ -27,11 +29,11 @@ class WishlistItem {
   });
 
   factory WishlistItem.fromProductModel(ProductModel product) {
+    final imgs = product.images ?? [];
     return WishlistItem(
       id: product.id ?? '',
-      imageUrl: (product.images != null && product.images!.isNotEmpty)
-          ? product.images!.first
-          : '',
+      imageUrl: (imgs.isNotEmpty) ? imgs.first : '',
+      images: imgs,
       price: product.price ?? 0.0,
       brand: product.brand ?? 'BRAND',
       itemName: product.name ?? 'Item Name',

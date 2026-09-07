@@ -35,7 +35,7 @@ class CustomPageIndicator extends StatelessWidget {
     final bgColor = backgroundColor ?? const Color(0xFF0F1012);
 
     final container = Container(
-      width: width,
+      padding: EdgeInsets.symmetric(horizontal: isSmall ? 6.w : 10.w),
       height: height,
       decoration: BoxDecoration(
         color: bgColor,
@@ -45,6 +45,7 @@ class CustomPageIndicator extends StatelessWidget {
             : null,
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: List.generate(count, (index) {

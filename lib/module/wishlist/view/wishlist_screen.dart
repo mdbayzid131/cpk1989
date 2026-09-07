@@ -8,6 +8,7 @@ import 'package:cpk1989/module/bottom_nav_bar/controller/bottom_nav_bar_controll
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/core/widgets/custom_empty_state.dart';
+import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 
 class WishlistScreen extends GetView<WishlistController> {
   const WishlistScreen({super.key});
@@ -130,30 +131,14 @@ class WishlistScreen extends GetView<WishlistController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // 1. Top Image
+            // 1. Top Image with multi-image thumbnail indicator
             Expanded(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8.r),
-                child: Image.network(
-                  item.imageUrl,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Container(
-                      color: const Color(0xFF1E2022),
-                      child: Center(
-                        child: CustomGoldLoader(size: 24.r, strokeWidth: 2.5.r),
-                      ),
-                    );
-                  },
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      color: const Color(0xFF1E2022),
-                      child: const Center(
-                        child: Icon(Icons.broken_image, color: Colors.white38),
-                      ),
-                    );
-                  },
+                child: _WishlistCardImageCarousel(
+                  images: item.images.isNotEmpty
+                      ? item.images
+                      : (item.imageUrl.isNotEmpty ? [item.imageUrl] : []),
                 ),
               ),
             ),
@@ -275,6 +260,105 @@ class WishlistScreen extends GetView<WishlistController> {
           Get.offAllNamed(AppRoutes.bottomNavBar);
         }
       },
+    );
+  }
+}
+
+class _WishlistCardImageCarousel extends StatefulWidget {
+  final List<String> images;
+  const _WishlistCardImageCarousel({required this.images});
+
+  @override
+  State<_WishlistCardImageCarousel> createState() =>
+      _WishlistCardImageCarouselState();
+}
+
+class _WishlistCardImageCarouselState
+    extends State<_WishlistCardImageCarousel> {
+  late final PageController _pageController;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final validImages =
+        widget.images.where((img) => img.trim().isNotEmpty).toList();
+
+    if (validImages.isEmpty) {
+      return Container(
+        color: const Color(0xFF1E2022),
+        child: const Center(
+          child: Icon(Icons.broken_image, color: Colors.white38),
+        ),
+      );
+    }
+
+    return Stack(
+      children: [
+        PageView.builder(
+          controller: _pageController,
+          itemCount: validImages.length,
+          onPageChanged: (index) {
+            setState(() {
+              _currentPage = index;
+            });
+          },
+          itemBuilder: (context, index) {
+            final img = validImages[index];
+            return Image.network(
+              img,
+              fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Container(
+                  color: const Color(0xFF1E2022),
+                  child: Center(
+                    child: CustomGoldLoader(
+                      size: 24.r,
+                      strokeWidth: 2.5.r,
+                    ),
+                  ),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  color: const Color(0xFF1E2022),
+                  child: const Center(
+                    child: Icon(Icons.broken_image, color: Colors.white38),
+                  ),
+                );
+              },
+            );
+          },
+        ),
+        if (validImages.length > 1)
+          Positioned(
+            bottom: 6.h,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: CustomPageIndicator(
+                count: validImages.length,
+                currentPage: _currentPage,
+                isSmall: true,
+                backgroundColor:
+                    const Color(0xFF0F1012).withValues(alpha: 0.75),
+                showBorder: false,
+              ),
+            ),
+          ),
+      ],
     );
   }
 }
