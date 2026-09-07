@@ -65,47 +65,53 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
           children: [
             SafeArea(
               child: SingleChildScrollView(
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                 physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Product Card
-                  _buildProductSummaryCard(),
-                  SizedBox(height: 24.h),
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Product Card
+                    _buildProductSummaryCard(),
+                    SizedBox(height: 24.h),
 
-                  // Delivery details Section Header
-                  Text(
-                    "Delivery details",
-                    style: GoogleFonts.dmSans(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w700,
-                      color: AppTheme.gray,
+                    // Delivery details Section Header
+                    Text(
+                      "Delivery details",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.gray,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 4.h),
-                  Text(
-                    "Please confirm your shipping information for\nthis order.",
-                    style: GoogleFonts.dmSans(
-                      fontSize: 13.sp,
-                      color: AppTheme.gray,
-                      fontWeight: FontWeight.w400,
+                    SizedBox(height: 4.h),
+                    Text(
+                      "Please confirm your shipping information for\nthis order.",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 13.sp,
+                        color: AppTheme.gray,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 16.h),
+                    SizedBox(height: 16.h),
 
-                  // Form inputs (Location, Country, Phone number)
-                  Obx(
-                    () => _buildTextInputField(
-                      controller: controller.locationController,
-                      hintText: "Location (e.g. Dubai)",
-                      svgPath: "assets/icons/location.svg",
-                      errorText: controller.rxLocationError.value,
+                    // Form inputs (Location, Country, Phone number)
+                    Obx(
+                      () => _buildTextInputField(
+                        controller: controller.locationController,
+                        hintText: "Location (e.g. Dubai)",
+                        svgPath: "assets/icons/location.svg",
+                        errorText: controller.rxLocationError.value,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 12.h),
-                  Obx(() {
+                    SizedBox(height: 12.h),
+                    // Country Field (Fixed to UAE; multi-country dropdown commented out for future implementation)
+                    Obx(() {
+                      /*
+                    // -------------------------------------------------------------
+                    // FUTURE INTERNATIONAL SUPPORT: Uncomment below to re-enable
+                    // -------------------------------------------------------------
                     final currentCountry = controller.rxLocation.value;
                     final countries = [
                       "UAE",
@@ -128,99 +134,108 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                       svgPath: "assets/icons/country.svg",
                       items: countries,
                     );
-                  }),
-                  SizedBox(height: 12.h),
-                  Obx(
-                    () => _buildPhoneInputField(
-                      context: context,
-                      errorText: controller.rxPhoneError.value,
+                    */
+                      return _buildFixedCountryField(
+                        svgPath: "assets/icons/country.svg",
+                        countryName: controller.rxLocation.value.isNotEmpty
+                            ? controller.rxLocation.value
+                            : "UAE",
+                      );
+                    }),
+                    SizedBox(height: 12.h),
+                    Obx(
+                      () => _buildPhoneInputField(
+                        context: context,
+                        errorText: controller.rxPhoneError.value,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 28.h),
+                    SizedBox(height: 28.h),
 
-                  // Payment Method Section Header
-                  Text(
-                    "Payment Method",
-                    style: GoogleFonts.dmSans(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                    // Payment Method Section Header
+                    Text(
+                      "Payment Method",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 16.h),
+                    SizedBox(height: 16.h),
 
-                  // Payment options
-                  Obx(
-                    () => Column(
-                      children: [
-                        _buildPaymentOptionTile(
-                          context: context,
-                          id: "apple_pay",
-                          label: "Apple Pay",
-                          logoWidget: _buildSvgLogo(
-                            "assets/icons/apple pay.svg",
-                            bgColor: Colors.white,
+                    // Payment options
+                    Obx(
+                      () => Column(
+                        children: [
+                          _buildPaymentOptionTile(
+                            context: context,
+                            id: "apple_pay",
+                            label: "Apple Pay",
+                            logoWidget: _buildSvgLogo(
+                              "assets/icons/apple pay.svg",
+                              bgColor: Colors.white,
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 12.h),
-                        _buildPaymentOptionTile(
-                          context: context,
-                          id: "google_pay",
-                          label: "Google Pay",
-                          logoWidget: _buildSvgLogo(
-                            "assets/icons/google pay.svg",
-                            bgColor: const Color(0xFFFFC226),
+                          SizedBox(height: 12.h),
+                          _buildPaymentOptionTile(
+                            context: context,
+                            id: "google_pay",
+                            label: "Google Pay",
+                            logoWidget: _buildSvgLogo(
+                              "assets/icons/google pay.svg",
+                              bgColor: const Color(0xFFFFC226),
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 12.h),
-                        _buildPaymentOptionTile(
-                          context: context,
-                          id: "card",
-                          label: "Card",
-                          logoWidget: _buildSvgLogo(
-                            "assets/icons/master card.svg",
-                            bgColor: const Color(0xFFDA3D28),
+                          SizedBox(height: 12.h),
+                          _buildPaymentOptionTile(
+                            context: context,
+                            id: "card",
+                            label: "Card",
+                            logoWidget: _buildSvgLogo(
+                              "assets/icons/master card.svg",
+                              bgColor: const Color(0xFFDA3D28),
+                            ),
+                            isCard: true,
                           ),
-                          isCard: true,
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 34.h),
+                    SizedBox(height: 34.h),
 
-                  // Security pill
-                  Center(child: _buildSecurityPill()),
-                  SizedBox(height: 20.h),
+                    // Security pill
+                    Center(child: _buildSecurityPill()),
+                    SizedBox(height: 20.h),
 
-                  // Secure This Item CTA Button
-                  _buildSecureCTAButton(context),
-                  SizedBox(height: 16.h),
+                    // Secure This Item CTA Button
+                    _buildSecureCTAButton(context),
+                    SizedBox(height: 16.h),
 
-                  // Agreement text footer
-                  Center(child: _buildAgreementFooter()),
-                  SizedBox(height: 20.h),
-                ],
+                    // Agreement text footer
+                    Center(child: _buildAgreementFooter()),
+                    SizedBox(height: 20.h),
+                  ],
+                ),
               ),
             ),
-          ),
 
-          // Blur and dim overlay when "Add card" bottom sheet is open
-          Obx(() {
-            if (controller.rxIsCardSheetOpen.value) {
-              return Positioned.fill(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                  child: Container(color: Colors.black.withValues(alpha: 0.45)),
-                ),
-              );
-            }
-            return const SizedBox.shrink();
-          }),
-        ],
+            // Blur and dim overlay when "Add card" bottom sheet is open
+            Obx(() {
+              if (controller.rxIsCardSheetOpen.value) {
+                return Positioned.fill(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                    child: Container(
+                      color: Colors.black.withValues(alpha: 0.45),
+                    ),
+                  ),
+                );
+              }
+              return const SizedBox.shrink();
+            }),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildProductSummaryCard() {
     final item = controller.item;
@@ -358,11 +373,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                   ),
                 )
               else if (icon != null)
-                Icon(
-                  icon,
-                  color: Colors.white,
-                  size: 20.sp,
-                ),
+                Icon(icon, color: Colors.white, size: 20.sp),
               SizedBox(width: 12.w),
               Expanded(
                 child: TextField(
@@ -570,11 +581,63 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
     );
   }
 
+  Widget _buildFixedCountryField({
+    String? svgPath,
+    String countryName = "UAE",
+  }) {
+    return Container(
+      height: 52.h,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+          begin: Alignment.centerRight,
+          end: Alignment.centerLeft,
+        ),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.04),
+          width: 1.0,
+        ),
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      child: Row(
+        children: [
+          if (svgPath != null)
+            SvgPicture.asset(
+              svgPath,
+              width: 20.r,
+              height: 20.r,
+              colorFilter: const ColorFilter.mode(
+                Colors.white,
+                BlendMode.srcIn,
+              ),
+            ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Text(
+              countryName,
+              style: GoogleFonts.dmSans(
+                fontSize: 14.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildPhoneInputField({
     required BuildContext context,
     String? errorText,
   }) {
     final hasError = errorText != null && errorText.isNotEmpty;
+
+    /*
+    // -----------------------------------------------------------------
+    // FUTURE INTERNATIONAL SUPPORT: Uncomment below for phone code menu
+    // -----------------------------------------------------------------
     final phoneCodes = [
       "+971",
       "+1",
@@ -589,6 +652,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
     final menuWidth = 140.w;
     final itemHeight = 36.h;
     final totalHeight = (phoneCodes.length * itemHeight) + 20.h;
+    */
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -611,113 +675,18 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: Row(
             children: [
-              // Code Dropdown (custom PopupMenu matching country dropdown)
-              Theme(
-                data: Theme.of(context).copyWith(
-                  hoverColor: Colors.transparent,
-                  splashColor: Colors.transparent,
-                ),
-                child: PopupMenuButton<String>(
-                  offset: Offset(-8.w, 24.h),
-                  padding: EdgeInsets.zero,
-                  color: Colors.transparent,
-                  elevation: 0,
-                  shadowColor: Colors.transparent,
-                  surfaceTintColor: Colors.transparent,
-                  itemBuilder: (BuildContext context) {
-                    return [
-                      PopupMenuItem<String>(
-                        enabled: false,
-                        padding: EdgeInsets.zero,
-                        child: Container(
-                          width: menuWidth,
-                          height: totalHeight,
-                          padding: EdgeInsets.all(10.r),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF2E3036),
-                            borderRadius: BorderRadius.circular(10.r),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.3),
-                                blurRadius: 10,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              for (int i = 0; i < phoneCodes.length; i++) ...[
-                                if (i > 0) SizedBox(height: 5.h),
-                                Builder(
-                                  builder: (context) {
-                                    final code = phoneCodes[i];
-                                    final isSelected =
-                                        code == controller.rxPhoneCode.value;
-                                    return GestureDetector(
-                                      onTap: () {
-                                        controller.rxPhoneCode.value = code;
-                                        Navigator.pop(context);
-                                      },
-                                      child: Container(
-                                        height: itemHeight - 5.h,
-                                        alignment: Alignment.centerLeft,
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: 5.h,
-                                          horizontal: 12.w,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: isSelected
-                                              ? const Color(0xFF3C3E46)
-                                              : Colors.transparent,
-                                          borderRadius: BorderRadius.circular(
-                                            6.r,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          code,
-                                          style: GoogleFonts.dmSans(
-                                            fontSize: 14.sp,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w400,
-                                            height: 1.0,
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ),
-                    ];
-                  },
-                  child: Obx(
-                    () => Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          controller.rxPhoneCode.value,
-                          style: GoogleFonts.dmSans(
-                            fontSize: 14.sp,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        SizedBox(width: 4.w),
-                        Icon(
-                          Icons.keyboard_arrow_down_rounded,
-                          color: Colors.white38,
-                          size: 30.sp,
-                        ),
-                      ],
-                    ),
+              // Fixed UAE Phone Code (+971)
+              Obx(
+                () => Text(
+                  controller.rxPhoneCode.value,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
-              SizedBox(width: 8.w),
+              SizedBox(width: 12.w),
               // Vertical divider line
               Container(
                 width: 1,

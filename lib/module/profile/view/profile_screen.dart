@@ -1122,13 +1122,13 @@ class ProfileScreen extends GetView<ProfileController> {
             ),
             SizedBox(height: 12.h),
 
-            // Country
+            // Country (Fixed to UAE, read-only so nobody can type or edit)
             _buildInputField(
               controller: controller.countryController,
               prefixIcon: 'assets/icons/location.svg',
-              hintText: "Enter country here",
-              readOnly: !isEditing,
-              isEditing: isEditing,
+              hintText: "UAE",
+              readOnly: true,
+              isEditing: false,
             ),
             SizedBox(height: 12.h),
 
@@ -1629,7 +1629,10 @@ class ProfileScreen extends GetView<ProfileController> {
           ),
           SizedBox(width: 12.w),
 
-          // Custom Styled Country Code Selector Popup (Matches Condition Dropdown Design)
+          /*
+          // -----------------------------------------------------------------
+          // FUTURE INTERNATIONAL SUPPORT: Uncomment below for phone code menu
+          // -----------------------------------------------------------------
           PopupMenuButton<String>(
             color: const Color(0xFF2E3036),
             shape: RoundedRectangleBorder(
@@ -1713,6 +1716,19 @@ class ProfileScreen extends GetView<ProfileController> {
                   color: isEditing ? Colors.white54 : Colors.white24,
                 ),
               ],
+            ),
+          ),
+          */
+
+          // Fixed UAE Phone Code (+971)
+          Obx(
+            () => Text(
+              this.controller.rxPhoneCode.value,
+              style: GoogleFonts.dmSans(
+                fontSize: 14.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
           SizedBox(width: 12.w),

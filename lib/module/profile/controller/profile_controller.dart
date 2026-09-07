@@ -138,7 +138,7 @@ class ProfileController extends GetxController {
     lastNameController = TextEditingController(text: "");
     addressController = TextEditingController(text: "");
     locationController = TextEditingController(text: "");
-    countryController = TextEditingController(text: "");
+    countryController = TextEditingController(text: "UAE");
     phoneController = TextEditingController(text: "");
 
     _loadUserData();
