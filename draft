@@ -1,478 +1,325 @@
-flutter:
-flutter: ┌ ➡️➡️➡️➡️ REQUEST ════════════════════════════════════════════════════════
-flutter: │ GET https://champagne-plates-sunday-lion.trycloudflare.com/api/v1/orders?page=2&limit=10
-flutter: │ Headers: {Content-Type: application/json, Authorization: ***}
-flutter: │ Query: {page: 2, limit: 10}
-flutter: └ ➡️➡️➡️➡️ REQUEST ════════════════════════════════════════════════════════
-flutter:
-flutter:
-flutter: ┌ ✅✅✅✅ RESPONSE ════════════════════════════════════════════════════════
-flutter: │ [ GET 200 ] https://champagne-plates-sunday-lion.trycloudflare.com/api/v1/orders?page=2&limit=10
-flutter: │ Data:
-flutter: │ {
-flutter: │   "success": true,
-flutter: │   "message": "Orders retrieved successfully",
-flutter: │   "pagination": {
-flutter: │     "total": 15,
-flutter: │     "limit": 10,
-flutter: │     "page": 2,
-flutter: │     "totalPage": 2
-flutter: │   },
-flutter: │   "data": [
-flutter: │     {
-flutter: │       "deliveryDetails": {
-flutter: │         "address": "mohakhali,Dhaka",
-flutter: │         "location": "Saudi Arabia",
-flutter: │         "phone": "+1 164318646494"
-flutter: │       },
-flutter: │       "payment": {
-flutter: │         "provider": "stripe",
-flutter: │         "paymentIntentId": "pi_3U7qlUAEexz9ehrL05bZAhoD",
-flutter: │         "status": "paid"
-flutter: │       },
-flutter: │       "_id": "6a8bdb7bca9aa26fdabdf21c",
-flutter: │       "orderNumber": "CLT-50586900443",
-flutter: │       "product": {
-flutter: │         "reservationExpiresAt": null,
-flutter: │         "_id": "6a8bad89673d5006c0fabe96",
-flutter: │         "name": "Test  product",
-flutter: │         "images": [
-flutter: │           "https://d2ds9t2yc2lazi.cloudfront.net/product-images/1787538824451-product_image_0.jpg",
-flutter: │           "https://d2ds9t2yc2lazi.cloudfront.net/product-images/1787538824963-product_image_1.jpg",
-flutter: │           "https://d2ds9t2yc2lazi.cloudfront.net/product-images/1787538825148-product_image_2.jpg"
-flutter: │         ],
-flutter: │         "brand": "Demo",
-flutter: │         "description": "This is the description",
-flutter: │         "features": [],
-flutter: │         "price": 200,
-flutter: │         "condition": "Excellent",
-flutter: │         "originalPackagingAvailable": false,
-flutter: │         "proofOfPurchase": null,
-flutter: │         "status": "secured",
-flutter: │         "seller": "6a6f13c7ab4c6714a24f19c8",
-flutter: │         "orderId": 1004,
-flutter: │         "createdAt": "2026-08-24T02:33:45.261Z",
-flutter: │         "updatedAt": "2026-08-24T05:49:50.212Z",
-flutter: │         "__v": 0,
-flutter: │         "wishlistCount": 0,
-flutter: │         "buyer": "6a6f1e95ab4c6714a24f1a0c",
-flutter: │         "id": "6a8bad89673d5006c0fabe96"
-flutter: │       },
-flutter: │       "buyer": {
-flutter: │         "_id": "6a6f1e95ab4c6714a24f1a0c",
-flutter: │         "name": "Pronoy dev",
-flutter: │         "email": "mdbayazid131.dev@gmail.com"
-flutter: │       },
-flutter: │       "seller": {
-flutter: │         "_id": "6a6f13c7ab4c6714a24f19c8",
-flutter: │         "name": "Md Bayzid Hosen",
-flutter: │         "email": "mdbayazid131@gmail.com"
-flutter: │       },
-flutter: │       "price": 200,
-flutter: │       "platformFee": 24,
-flutter: │       "sellerPayout": 176,
-flutter: │       "payoutStatus": "pending",
-flutter: │       "status": "payout_processing",
-flutter: │       "statusHistory": [
-flutter: │         {
-flutter: │           "status": "pending_payment",
-flutter: │           "changedAt": "2026-08-24T05:49:47.367Z",
-flutter: │           "_id": "6a8bdb7bca9aa26fdabdf21d"
-flutter: │         },
-flutter: │         {
-flutter: │           "status": "secured",
-flutter: │           "changedAt": "2026-08-24T05:49:50.162Z",
-flutter: │           "_id": "6a8bdb7eca9aa26fdabdf221"
-flutter: │         },
-flutter: │         {
-flutter: │           "status": "collected",
-flutter: │           "changedAt": "2026-08-26T05:06:57.019Z",
-flutter: │           "changedBy": "6a5bf68d37fbab9137b4a276",
-flutter: │           "_id": "6a8e7471f46be5c9d2db4676"
-flutter: │         },
-flutter: │         {
-flutter: │           "status": "verification",
-flutter: │           "changedAt": "2026-08-26T09:56:08.323Z",
-flutter: │           "changedBy": "6a5bf68d37fbab9137b4a276",
-flutter: │           "_id": "6a8eb8385c897f618164ce7b"
-flutter: │         },
-flutter: │         {
-flutter: │           "status": "payout_processing",
-flutter: │           "changedAt": "2026-08-27T03:20:21.822Z",
-flutter: │           "changedBy": "6a5bf68d37fbab9137b4a276",
-flutter: │           "_id": "6a8facf56e1e2bcebf56eac6"
-flutter: │         }
-flutter: │       ],
-flutter: │       "createdAt": "2026-08-24T05:49:47.369Z",
-flutter: │       "updatedAt": "2026-08-27T03:20:21.826Z",
-flutter: │       "__v": 3,
-flutter: │       "missedCollectionAttempts": 0
-flutter: │     },
-flutter: │     {
-flutter: │       "deliveryDetails": {
-flutter: │         "address": "mohakhali,Dhaka",
-flutter: │         "location": "Saudi Arabia",
-flutter: │         "phone": "+1 164318646494"
-flutter: │       },
-flutter: │       "payment": {
-flutter: │         "provider": "stripe",
-flutter: │         "paymentIntentId": "pi_3U7qi9AEexz9ehrL06f7HAJc",
-flutter: │         "status": "paid"
-flutter: │       },
-flutter: │       "_id": "6a8bdaacca9aa26fdabdf1cf",
-flutter: │       "orderNumber": "CLT-50380097931",
-flutter: │       "product": {
-flutter: │         "reservationExpiresAt": null,
-flutter: │         "_id": "6a8bda03ca9aa26fdabdf189",
-flutter: │         "name": "final  test",
-flutter: │         "images": [
-flutter: │           "https://d2ds9t2yc2lazi.cloudfront.net/product-images/1787550211205-product_image_0.jpg",
-flutter: │           "https://d2ds9t2yc2lazi.cloudfront.net/product-images/1787550211652-product_image_1.jpg",
-flutter: │           "https://d2ds9t2yc2lazi.cloudfront.net/product-images/1787550211810-product_image_2.jpg"
-flutter: │         ],
-flutter: │         "brand": "lala",
-flutter: │         "description": "description",
-flutter: │         "features": [],
-flutter: │         "price": 500,
-flutter: │         "condition": "Excellent",
-flutter: │         "originalPackagingAvailable": false,
-flutter: │         "proofOfPurchase": null,
-flutter: │         "status": "secured",
-flutter: │         "wishlistCount": 0,
-flutter: │         "seller": "6a6f13c7ab4c6714a24f19c8",
-flutter: │         "orderId": 1007,
-flutter: │         "createdAt": "2026-08-24T05:43:31.916Z",
-flutter: │         "updatedAt": "2026-08-24T05:46:24.507Z",
-flutter: │         "__v": 0,
-flutter: │         "buyer": "6a6f1e95ab4c6714a24f1a0c",
-flutter: │         "id": "6a8bda03ca9aa26fdabdf189"
-flutter: │       },
-flutter: │       "buyer": {
-flutter: │         "_id": "6a6f1e95ab4c6714a24f1a0c",
-flutter: │         "name": "Pronoy dev",
-flutter: │         "email": "mdbayazid131.dev@gmail.com"
-flutter: │       },
-flutter: │       "seller": {
-flutter: │         "_id": "6a6f13c7ab4c6714a24f19c8",
-flutter: │         "name": "Md Bayzid Hosen",
-flutter: │         "email": "mdbayazid131@gmail.com"
-flutter: │       },
-flutter: │       "price": 500,
-flutter: │       "platformFee": 60,
-flutter: │       "sellerPayout": 440,
-flutter: │       "payoutStatus": "pending",
-flutter: │       "status": "payout_processing",
-flutter: │       "statusHistory": [
-flutter: │         {
-flutter: │           "status": "pending_payment",
-flutter: │           "changedAt": "2026-08-24T05:46:20.821Z",
-flutter: │           "_id": "6a8bdaacca9aa26fdabdf1d0"
-flutter: │         },
-flutter: │         {
-flutter: │           "status": "secured",
-flutter: │           "changedAt": "2026-08-24T05:46:24.457Z",
-flutter: │           "_id": "6a8bdab0ca9aa26fdabdf1d4"
-flutter: │         },
-flutter: │         {
-flutter: │           "status": "collected",
-flutter: │           "changedAt": "2026-08-26T09:45:54.465Z",
-flutter: │           "changedBy": "6a5bf68d37fbab9137b4a276",
-flutter: │           "_id": "6a8eb5d23be27cabaa77647c"
-flutter: │         },
-flutter: │         {
-flutter: │           "status": "verification",
-flutter: │           "changedAt": "2026-08-26T10:26:02.712Z",
-flutter: │           "changedBy": "6a5bf68d37fbab9137b4a276",
-flutter: │           "_id": "6a8ebf3a5c897f618164d102"
-flutter: │         },
-flutter: │         {
-flutter: │           "status": "payout_processing",
-flutter: │           "changedAt": "2026-08-26T10:59:39.218Z",
-flutter: │           "changedBy": "6a5bf68d37fbab9137b4a276",
-flutter: │           "_id": "6a8ec71b5c897f618164d3b2"
-flutter: │         }
-flutter: │       ],
-flutter: │       "createdAt": "2026-08-24T05:46:20.824Z",
-flutter: │       "updatedAt": "2026-08-26T10:59:39.221Z",
-flutter: │       "__v": 3,
-flutter: │       "missedCollectionAttempts": 0
-flutter: │     },
-flutter: │     {
-flutter: │       "deliveryDetails": {
-flutter: │         "address": "mohakhali,Dhaka",
-flutter: │         "location": "Saudi Arabia",
-flutter: │         "phone": "+1 164318646494"
-flutter: │       },
-flutter: │       "payment": {
-flutter: │         "provider": "stripe",
-flutter: │         "paymentIntentId": "pi_3U7oXUAEexz9ehrL0jRNcPdN",
-flutter: │         "status": "refunded"
-flutter: │       },
-flutter: │       "_id": "6a8bba0f673d5006c0fabfe7",
-flutter: │       "orderNumber": "CLT-42031299812",
-flutter: │       "product": {
-flutter: │         "reservationExpiresAt": null,
-flutter: │         "_id": "6a8bb3ff673d5006c0fabf6b",
-flutter: │         "name": "qwe",
-flutter: │         "images": [
-flutter: │           "https://d2ds9t2yc2lazi.cloudfront.net/product-images/1787540478296-product_image_0.jpg",
-flutter: │           "https://d2ds9t2yc2lazi.cloudfront.net/product-images/1787540478797-product_image_1.jpg",
-flutter: │           "https://d2ds9t2yc2lazi.cloudfront.net/product-images/1787540478983-product_image_2.jpg"
-flutter: │         ],
-flutter: │         "brand": "rqwer",
-flutter: │         "description": "qwer",
-flutter: │         "features": [],
-flutter: │         "price": 300,
-flutter: │         "condition": "Good",
-flutter: │         "originalPackagingAvailable": false,
-flutter: │         "proofOfPurchase": null,
-flutter: │         "status": "available",
-flutter: │         "seller": "6a6f13c7ab4c6714a24f19c8",
-flutter: │         "orderId": 1006,
-flutter: │         "createdAt": "2026-08-24T03:01:19.102Z",
-flutter: │         "updatedAt": "2026-08-27T03:33:44.071Z",
-flutter: │         "__v": 0,
-flutter: │         "wishlistCount": 0,
-flutter: │         "id": "6a8bb3ff673d5006c0fabf6b"
-flutter: │       },
-flutter: │       "buyer": {
-flutter: │         "_id": "6a6f1e95ab4c6714a24f1a0c",
-flutter: │         "name": "Pronoy dev",
-flutter: │         "email": "mdbayazid131.dev@gmail.com"
-flutter: │       },
-flutter: │       "seller": {
-flutter: │         "_id": "6a6f13c7ab4c6714a24f19c8",
-flutter: │         "name": "Md Bayzid Hosen",
-flutter: │         "email": "mdbayazid131@gmail.com"
-flutter: │       },
-flutter: │       "price": 300,
-flutter: │       "platformFee": 36,
-flutter: │       "sellerPayout": 264,
-flutter: │       "payoutStatus": "pending",
-flutter: │       "status": "refunded",
-flutter: │       "statusHistory": [
-flutter: │         {
-flutter: │           "status": "pending_payment",
-flutter: │           "changedAt": "2026-08-24T03:27:11.762Z",
-flutter: │           "_id": "6a8bba0f673d5006c0fabfe8"
-flutter: │         },
-flutter: │         {
-flutter: │           "status": "secured",
-flutter: │           "changedAt": "2026-08-24T03:27:15.583Z",
-flutter: │           "_id": "6a8bba13673d5006c0fabfec"
-flutter: │         },
-flutter: │         {
-flutter: │           "status": "collected",
-flutter: │           "changedAt": "2026-08-26T05:45:53.317Z",
-flutter: │           "changedBy": "6a5bf68d37fbab9137b4a276",
-flutter: │           "_id": "6a8e7d91f46be5c9d2db4947"
-flutter: │         },
-flutter: │         {
-flutter: │           "status": "verification",
-flutter: │           "changedAt": "2026-08-26T09:57:04.831Z",
-flutter: │           "changedBy": "6a5bf68d37fbab9137b4a276",
-flutter: │           "_id": "6a8eb8705c897f618164cecb"
-flutter: │         },
-flutter: │         {
-flutter: │           "status": "refunded",
-flutter: │           "note": "Authentication mismatch detected",
-flutter: │           "changedAt": "2026-08-26T09:58:41.350Z",
-flutter: │           "changedBy": "6a5bf68d37fbab9137b4a276",
-flutter: │           "_id": "6a8eb8d15c897f618164cf29"
-flutter: │         }
-flutter: │       ],
-flutter: │       "createdAt": "2026-08-24T03:27:11.764Z",
-flutter: │       "updatedAt": "2026-08-26T09:58:41.351Z",
-flutter: │       "__v": 3,
-flutter: │       "missedCollectionAttempts": 0,
-flutter: │       "handlingFeeCharged": 0,
-flutter: │       "outcome": "authentication_failed",
-flutter: │       "refundAmount": 300,
-flutter: │       "returnShippingPayer": "seller"
-flutter: │     },
-flutter: │     {
-flutter: │       "deliveryDetails": {
-flutter: │         "address": "mohakhali,Dhaka",
-flutter: │         "location": "Saudi Arabia",
-flutter: │         "phone": "+1 164318646494"
-flutter: │       },
-flutter: │       "payment": {
-flutter: │         "provider": "stripe",
-flutter: │         "paymentIntentId": "pi_3U7o0MAEexz9ehrL1CqQMX7N",
-flutter: │         "status": "refunded"
-flutter: │       },
-flutter: │       "_id": "6a8bb20a673d5006c0fabee9",
-flutter: │       "orderNumber": "CLT-39977624351",
-flutter: │       "product": {
-flutter: │         "reservationExpiresAt": null,
-flutter: │         "_id": "6a8bb02f673d5006c0fabeac",
-flutter: │         "name": "Test  product 2",
-flutter: │         "images": [
-flutter: │           "https://d2ds9t2yc2lazi.cloudfront.net/product-images/1787539502554-product_image_0.jpg",
-flutter: │           "https://d2ds9t2yc2lazi.cloudfront.net/product-images/1787539503060-product_image_1.jpg",
-flutter: │           "https://d2ds9t2yc2lazi.cloudfront.net/product-images/1787539503247-product_image_2.jpg"
-flutter: │         ],
-flutter: │         "brand": "demo",
-flutter: │         "description": "thsi is the description",
-flutter: │         "features": [],
-flutter: │         "price": 500,
-flutter: │         "condition": "Like New",
-flutter: │         "originalPackagingAvailable": false,
-flutter: │         "proofOfPurchase": null,
-flutter: │         "status": "available",
-flutter: │         "seller": "6a6f13c7ab4c6714a24f19c8",
-flutter: │         "orderId": 1005,
-flutter: │         "createdAt": "2026-08-24T02:45:03.363Z",
-flutter: │         "updatedAt": "2026-08-27T03:33:44.544Z",
-flutter: │         "__v": 0,
-flutter: │         "wishlistCount": 0,
-flutter: │         "id": "6a8bb02f673d5006c0fabeac"
-flutter: │       },
-flutter: │       "buyer": {
-flutter: │         "_id": "6a6f1e95ab4c6714a24f1a0c",
-flutter: │         "name": "Pronoy dev",
-flutter: │         "email": "mdbayazid131.dev@gmail.com"
-flutter: │       },
-flutter: │       "seller": {
-flutter: │         "_id": "6a6f13c7ab4c6714a24f19c8",
-flutter: │         "name": "Md Bayzid Hosen",
-flutter: │         "email": "mdbayazid131@gmail.com"
-flutter: │       },
-flutter: │       "price": 500,
-flutter: │       "platformFee": 60,
-flutter: │       "sellerPayout": 440,
-flutter: │       "payoutStatus": "pending",
-flutter: │       "status": "refunded",
-flutter: │       "statusHistory": [
-flutter: │         {
-flutter: │           "status": "pending_payment",
-flutter: │           "changedAt": "2026-08-24T02:52:58.084Z",
-flutter: │           "_id": "6a8bb20a673d5006c0fabeea"
-flutter: │         },
-flutter: │         {
-flutter: │           "status": "secured",
-flutter: │           "changedAt": "2026-08-24T02:53:02.079Z",
-flutter: │           "_id": "6a8bb20e673d5006c0fabeee"
-flutter: │         },
-flutter: │         {
-flutter: │           "status": "collected",
-flutter: │           "changedAt": "2026-08-26T05:07:18.645Z",
-flutter: │           "changedBy": "6a5bf68d37fbab9137b4a276",
-flutter: │           "_id": "6a8e7486f46be5c9d2db46e5"
-flutter: │         },
-flutter: │         {
-flutter: │           "status": "verification",
-flutter: │           "changedAt": "2026-08-26T05:08:01.140Z",
-flutter: │           "changedBy": "6a5bf68d37fbab9137b4a276",
-flutter: │           "_id": "6a8e74b1f46be5c9d2db4763"
-flutter: │         },
-flutter: │         {
-flutter: │           "status": "refunded",
-flutter: │           "note": "Authentication mismatch detected",
-flutter: │           "changedAt": "2026-08-26T09:53:26.092Z",
-flutter: │           "changedBy": "6a5bf68d37fbab9137b4a276",
-flutter: │           "_id": "6a8eb7965c897f618164cdd3"
-flutter: │         }
-flutter: │       ],
-flutter: │       "createdAt": "2026-08-24T02:52:58.087Z",
-flutter: │       "updatedAt": "2026-08-26T09:53:26.099Z",
-flutter: │       "__v": 3,
-flutter: │       "missedCollectionAttempts": 0,
-flutter: │       "handlingFeeCharged": 0,
-flutter: │       "outcome": "authentication_failed",
-flutter: │       "refundAmount": 500,
-flutter: │       "returnShippingPayer": "seller"
-flutter: │     },
-flutter: │     {
-flutter: │       "deliveryDetails": {
-flutter: │         "address": "Dhaka",
-flutter: │         "location": "Dhaka",
-flutter: │         "phone": "+880 164318646494"
-flutter: │       },
-flutter: │       "payment": {
-flutter: │         "provider": "stripe",
-flutter: │         "paymentIntentId": "pi_3U6o08AEexz9ehrL1zkfeE3a",
-flutter: │         "status": "paid"
-flutter: │       },
-flutter: │       "_id": "6a880f05a60d588707699c06",
-flutter: │       "orderNumber": "CLT-01636307817",
-flutter: │       "product": {
-flutter: │         "reservationExpiresAt": null,
-flutter: │         "_id": "6a87dc10a60d588707699a98",
-flutter: │         "name": "Demo Product",
-flutter: │         "images": [
-flutter: │           "https://d2ds9t2yc2lazi.cloudfront.net/product-images/1787288591682-product_image_0.jpg",
-flutter: │           "https://d2ds9t2yc2lazi.cloudfront.net/product-images/1787288592191-product_image_1.jpg",
-flutter: │           "https://d2ds9t2yc2lazi.cloudfront.net/product-images/1787288592473-product_image_2.jpg"
-flutter: │         ],
-flutter: │         "brand": "Adsidas",
-flutter: │         "description": "Ripti dress museum New exclushive collection high qualities Deshi Tat Cotton three piece",
-flutter: │         "features": [],
-flutter: │         "price": 500,
-flutter: │         "condition": "Good",
-flutter: │         "originalPackagingAvailable": false,
-flutter: │         "proofOfPurchase": null,
-flutter: │         "status": "secured",
-flutter: │         "seller": "6a6f13c7ab4c6714a24f19c8",
-flutter: │         "orderId": 1002,
-flutter: │         "createdAt": "2026-08-21T05:03:12.586Z",
-flutter: │         "updatedAt": "2026-08-24T05:05:02.797Z",
-flutter: │         "__v": 0,
-flutter: │         "buyer": "6a6f1e95ab4c6714a24f1a0c",
-flutter: │         "wishlistCount": 0,
-flutter: │         "id": "6a87dc10a60d588707699a98"
-flutter: │       },
-flutter: │       "buyer": {
-flutter: │         "_id": "6a6f1e95ab4c6714a24f1a0c",
-flutter: │         "name": "Pronoy dev",
-flutter: │         "email": "mdbayazid131.dev@gmail.com"
-flutter: │       },
-flutter: │       "seller": {
-flutter: │         "_id": "6a6f13c7ab4c6714a24f19c8",
-flutter: │         "name": "Md Bayzid Hosen",
-flutter: │         "email": "mdbayazid131@gmail.com"
-flutter: │       },
-flutter: │       "price": 500,
-flutter: │       "platformFee": 60,
-flutter: │       "sellerPayout": 440,
-flutter: │       "payoutStatus": "pending",
-flutter: │       "status": "verification",
-flutter: │       "statusHistory": [
-flutter: │         {
-flutter: │           "status": "pending_payment",
-flutter: │           "changedAt": "2026-08-21T08:40:37.006Z",
-flutter: │           "_id": "6a880f05a60d588707699c07"
-flutter: │         },
-flutter: │         {
-flutter: │           "status": "secured",
-flutter: │           "changedAt": "2026-08-21T08:40:38.903Z",
-flutter: │           "_id": "6a880f06a60d588707699c0b"
-flutter: │         },
-flutter: │         {
-flutter: │           "status": "collected",
-flutter: │           "changedAt": "2026-08-26T09:40:38.299Z",
-flutter: │           "changedBy": "6a5bf68d37fbab9137b4a276",
-flutter: │           "_id": "6a8eb4963be27cabaa7763d8"
-flutter: │         },
-flutter: │         {
-flutter: │           "status": "verification",
-flutter: │           "changedAt": "2026-08-26T10:42:27.373Z",
-flutter: │           "changedBy": "6a5bf68d37fbab9137b4a276",
-flutter: │           "_id": "6a8ec3135c897f618164d25b"
-flutter: │         }
-flutter: │       ],
-flutter: │       "createdAt": "2026-08-21T08:40:37.007Z",
-flutter: │       "updatedAt": "2026-08-26T10:42:27.373Z",
-flutter: │       "__v": 2,
-flutter: │       "missedCollectionAttempts": 0
-flutter: │     }
-flutter: │   ]
-flutter: │ }
-flutter: └ ✅✅✅✅ RESPONSE ════════════════════════════════════════════════════════
-flutter:
-[GETX] GOING TO ROUTE /my-purchase-details
-[GETX] Instance "MyPurchaseDitailsController" has been created
-[GETX] Instance "MyPurchaseDitailsController" has been initialized
-[GETX] CLOSE TO ROUTE /my-purchase-details
-[GETX] "MyPurchaseDitailsController" onDelete() called
-[GETX] "MyPurchaseDitailsController" deleted from memory
+For the policy updates
+ 
+Please update the following sections of terms and conditions on both web and app:
+ 
+Section 7 - Payments 
+ Section 9 - Rejection at delivery
+ 
+—————————————
+ 
+UPDATED TEXT BELOW
+ 
+Section 7 – Payments
+ 
+Payments are securely processed via third-party providers
+ 
+Funds are held until:
+ 
+* The item has successfully passed authentication
+ * The Buyer accepts delivery
+ 
+Payment is only released to the seller after successful delivery acceptance
+ 
+ 
+————————————-
+ 
+9. Rejection at Delivery
+ 
+At delivery, the Buyer has the right to:
+ 
+* Accept the item; or
+ * Reject the item.
+ 
+If the item is rejected because it is not as described, its condition materially differs from the listing, or due to any issue attributable to Closeté or the Seller:
+ 
+* The item will be returned to the Seller.
+ * The Buyer will receive a full refund.
+ * The Seller will not be paid.
+ 
+If the Buyer rejects the item solely due to a change of mind, personal preference, or any reason unrelated to the item’s authenticity, condition, or conformity with its listing:
+ 
+* The item will be returned to the Seller.
+ * The Buyer will receive a refund less the applicable Closeté Handling Fee, which covers costs already incurred, including payment processing, collection, authentication, handling, logistics, and delivery.
+ * The Seller will not be paid.
+ 
+Repeated instances of rejecting items due to a change of mind may result in Closeté restricting or suspending the Buyer’s account at its sole discretion.
+ 
+This process replaces the need for a traditional returns process.
+
+
+
+
+
+
+
+Closeté Authenticity & Delivery Policy
+ 
+1. Overview
+ 
+Closeté operates an authentication-before-delivery model.
+ 
+Every item is:
+ 
+* Collected
+ * Authenticated
+ * Delivered only after successful authentication
+ 
+⸻
+ 
+2. No Traditional Returns
+ 
+Closeté does not operate a traditional returns policy.
+ 
+This is because:
+ 
+* Buyers inspect items at the point of delivery.
+ * Acceptance takes place before payment is released to the Seller.
+ * Once an item has been accepted, the transaction is considered final.
+ 
+⸻
+ 
+3. Buyer Acceptance at Delivery
+ 
+At delivery, the Buyer may:
+ 
+Accept the item
+ 
+* The transaction is completed.
+ * Payment is released to the Seller.
+ 
+Reject the item
+ 
+If the item is rejected because it is not as described, its condition materially differs from the listing, or due to an issue attributable to Closeté or the Seller:
+ 
+* The item is returned to the Seller.
+ * The Buyer receives a full refund.
+ * The Seller is not paid.
+ 
+If the item is rejected solely due to a change of mind, personal preference, or any reason unrelated to the item’s authenticity, condition, or conformity with its listing:
+ 
+* The item is returned to the Seller.
+ * The Buyer receives a refund less the applicable Closeté Handling Fee.
+ * The Seller is not paid.
+ 
+Repeated instances of rejecting items due to a change of mind may result in Closeté restricting or suspending the Buyer’s account.
+ 
+⸻
+ 
+4. Authentication Protection
+ 
+If an item:
+ 
+* Fails authentication; or
+ * Is materially different from its listing,
+ 
+Closeté will:
+ 
+* Cancel the transaction.
+ * Refund the Buyer in full.
+ * Return the item to the Seller.
+ 
+⸻
+ 
+5. Final Sale After Acceptance
+ 
+Once the Buyer accepts the item at delivery, the transaction is final.
+ 
+Closeté is not responsible for:
+ 
+* Change of mind after acceptance.
+ * Fit or sizing preferences.
+ * Subjective preferences that were apparent at the time of delivery.
+ 
+⸻
+ 
+6. Fraud Prevention
+ 
+Closeté may:
+ 
+* Perform additional authentication or verification checks.
+ * Delay or cancel transactions where fraudulent or suspicious activity is suspected.
+ * Suspend or terminate accounts involved in fraudulent activity.
+ 
+⸻
+ 
+7. Damaged Items
+ 
+If an item is damaged while in Closeté’s possession or control:
+ 
+* The matter will be investigated.
+ * An appropriate resolution will be determined at Closeté’s discretion.
+ 
+———-
+
+
+
+Closeté Privacy Policy
+ 
+Last updated: June 2026
+ 
+1. Introduction
+ 
+Closeté (“we”, “our”, “us”) respects your privacy and is committed to protecting your personal data.
+ 
+This Privacy Policy explains how we collect, use, store, disclose, and protect your personal information when you use the Closeté mobile application and related services.
+ 
+⸻
+ 
+2. Information We Collect
+ 
+Account Information
+ 
+* Name
+ * Email address
+ * Phone number
+ 
+Transaction & Listing Information
+ 
+* Item details (including photos, videos, descriptions, and condition)
+ * Pricing and listing information
+ * Purchase history
+ * Order history
+ 
+Collection & Delivery Information
+ 
+* Collection address (for Sellers)
+ * Delivery address (for Buyers)
+ * Collection and delivery status
+ 
+Payment Information
+ 
+* Payment details processed securely by third-party payment providers
+ * We do not store your full payment card details
+ 
+Authentication Information
+ 
+* Images and information submitted for authentication
+ * Authentication results
+ * Operational records relating to the authentication process
+ 
+Device & Usage Information
+ 
+* Device type
+ * Operating system
+ * App usage information
+ * Log data for security, diagnostics, and performance
+ 
+⸻
+ 
+3. How We Use Your Information
+ 
+We use your information to:
+ 
+* Facilitate the buying and selling of luxury items.
+ * Arrange collection and delivery.
+ * Authenticate items and protect against fraud.
+ * Process payments and refunds securely.
+ * Communicate order updates, notifications, and customer support.
+ * Improve the performance, security, and functionality of the Closeté platform.
+ * Comply with applicable legal and regulatory obligations.
+ 
+⸻
+ 
+4. Authentication & Fraud Prevention
+ 
+To maintain trust within the Closeté marketplace, we use a combination of:
+ 
+* Internal authentication procedures.
+ * Third-party authentication providers and tools.
+ 
+We may review item information, images, and related data to authenticate items, detect fraudulent activity, investigate disputes, and protect the integrity of the platform.
+ 
+⸻
+
+ 5. Sharing Your Information
+ 
+We only share your information where necessary to operate the Closeté platform.
+ 
+Service Providers
+ 
+Including:
+ 
+* Payment processors
+ * Delivery and logistics partners
+ * Authentication providers
+ * Technology and cloud service providers
+ 
+Other Users
+ 
+We may share limited information necessary to complete a transaction, including listing information and first names where appropriate.
+ 
+Legal Requirements
+ 
+We may disclose information where required by law or where reasonably necessary to:
+ 
+* Comply with legal obligations.
+ * Prevent fraud.
+ * Protect the rights, property, safety, or security of Closeté, our users, or third parties.
+ 
+⸻
+ 
+6. Data Security
+ 
+We implement appropriate technical and organisational measures designed to protect your personal information, including:
+ 
+* Encrypted data transmission.
+ * Secure storage systems.
+ * Access controls.
+ * Ongoing monitoring and security practices.
+ 
+While we take reasonable steps to protect your information, no method of electronic transmission or storage is completely secure.
+ 
+⸻
+ 
+7. Your Rights
+ 
+Subject to applicable law, you may have the right to:
+ 
+* Access your personal information.
+ * Request correction of inaccurate information.
+ * Request deletion of your personal information.
+ * Withdraw consent where applicable.
+ 
+To exercise your rights, please contact:
+ 
+Email: Closeteapp@gmail.com
+ 
+⸻
+ 
+8. Data Retention
+ 
+We retain personal information only for as long as reasonably necessary to:
+ 
+* Provide our services.
+ * Complete transactions.
+ * Meet legal and regulatory obligations.
+ * Resolve disputes.
+ * Enforce our agreements.
+ 
+⸻
+ 
+9. International Transfers
+ 
+Closeté currently operates in Dubai, United Arab Emirates.
+ 
+Your information may be processed or stored by trusted third-party service providers located in other jurisdictions where necessary to provide our services. Where applicable, we take reasonable steps to ensure your information receives an appropriate level of protection.
+ 
+⸻
+ 
+10. Updates to This Policy
+ 
+We may update this Privacy Policy from time to time.
+ 
+Any changes will become effective when the updated Privacy Policy is published within the Closeté platform and the “Last updated” date is revised.
+ 
+⸻
+ 
+11. Contact Us
+ 
+For any questions regarding this Privacy Policy or your personal information, please contact:
+ 
+Email: Closeteapp@gmail.com
+ 
+Company: Closeté
+ 
+

@@ -19,11 +19,11 @@ enum SnackBarType { success, error, info, warning, secondary }
 class Helpers {
   Helpers._();
 
-  /// Open default email client with support@closete.app
+  /// Open default email client with Closeteapp@gmail.com
   static Future<void> openSupportEmail() async {
     final Uri emailLaunchUri = Uri(
       scheme: 'mailto',
-      path: 'support@closete.app',
+      path: 'closeteapp@gmail.com',
     );
     try {
       if (await canLaunchUrl(emailLaunchUri)) {
@@ -32,12 +32,15 @@ class Helpers {
         await launchUrl(emailLaunchUri);
       }
     } catch (e) {
-      showError("Could not launch email app for support@closete.app");
+      showError("Could not launch email app for closeteapp@gmail.com");
     }
   }
 
   /// Open Proof of Bill / PDF / Image in an in-app modal pop-up
-  static Future<void> openUrl(String url, {String title = "Proof of Bill"}) async {
+  static Future<void> openUrl(
+    String url, {
+    String title = "Proof of Bill",
+  }) async {
     if (url.trim().isEmpty) return;
 
     try {
@@ -174,7 +177,8 @@ class Helpers {
   static Widget _buildDocumentContent(String fullUrl) {
     final lower = fullUrl.toLowerCase();
     final bool isPdf = lower.contains('.pdf');
-    final bool isImage = lower.contains('.png') ||
+    final bool isImage =
+        lower.contains('.png') ||
         lower.contains('.jpg') ||
         lower.contains('.jpeg') ||
         lower.contains('.webp');
@@ -626,10 +630,7 @@ class _InAppPdfViewerWidgetState extends State<InAppPdfViewerWidget> {
           SizedBox(height: 16.h),
           Text(
             "Loading PDF Document...",
-            style: GoogleFonts.dmSans(
-              fontSize: 14.sp,
-              color: Colors.white70,
-            ),
+            style: GoogleFonts.dmSans(fontSize: 14.sp, color: Colors.white70),
           ),
         ],
       );
@@ -681,10 +682,7 @@ class _InAppPdfViewerWidgetState extends State<InAppPdfViewerWidget> {
                 onPressed: () async {
                   final uri = Uri.parse(widget.pdfUrl);
                   if (await canLaunchUrl(uri)) {
-                    await launchUrl(
-                      uri,
-                      mode: LaunchMode.inAppBrowserView,
-                    );
+                    await launchUrl(uri, mode: LaunchMode.inAppBrowserView);
                   }
                 },
                 icon: const Icon(Icons.open_in_new_rounded, size: 18),
@@ -744,9 +742,7 @@ class _InAppPdfViewerWidgetState extends State<InAppPdfViewerWidget> {
               decoration: BoxDecoration(
                 color: Colors.black.withValues(alpha: 0.75),
                 borderRadius: BorderRadius.circular(20.r),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.1),
-                ),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
               ),
               child: Text(
                 "${_currentPage + 1} / $_totalPages",
@@ -810,7 +806,8 @@ class _DocumentDownloadButtonState extends State<_DocumentDownloadButton> {
         if (await downloadDir.exists()) {
           try {
             final testFile = File(
-                '${downloadDir.path}/.test_${DateTime.now().millisecondsSinceEpoch}');
+              '${downloadDir.path}/.test_${DateTime.now().millisecondsSinceEpoch}',
+            );
             await testFile.writeAsString('test');
             await testFile.delete();
             targetDir = downloadDir;
@@ -818,7 +815,8 @@ class _DocumentDownloadButtonState extends State<_DocumentDownloadButton> {
             targetDir = null;
           }
         }
-        targetDir ??= await getExternalStorageDirectory() ??
+        targetDir ??=
+            await getExternalStorageDirectory() ??
             await getApplicationDocumentsDirectory();
       } else {
         targetDir = await getApplicationDocumentsDirectory();
@@ -887,4 +885,3 @@ class _DocumentDownloadButtonState extends State<_DocumentDownloadButton> {
     );
   }
 }
-
