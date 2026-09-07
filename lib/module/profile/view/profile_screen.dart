@@ -298,200 +298,230 @@ class ProfileScreen extends GetView<ProfileController> {
   void _showImageSourceBottomSheet(BuildContext context) {
     Get.bottomSheet(
       Container(
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
         decoration: BoxDecoration(
-          color: const Color(0xFF1E2022),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24.r),
-            topRight: Radius.circular(24.r),
-          ),
+          color: const Color(0xFF111214),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
           border: Border.all(
-            color: Colors.white.withValues(alpha: 0.1),
+            color: Colors.white.withValues(alpha: 0.05),
             width: 1.0,
           ),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(
-              child: Container(
-                width: 36.w,
-                height: 4.h,
-                decoration: BoxDecoration(
-                  color: Colors.white24,
-                  borderRadius: BorderRadius.circular(2.r),
-                ),
-              ),
-            ),
-            SizedBox(height: 16.h),
-            Text(
-              "Update Profile Photo",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.dmSans(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
-            ),
-            SizedBox(height: 6.h),
-            Text(
-              "Choose photo source",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.dmSans(
-                fontSize: 13.sp,
-                fontWeight: FontWeight.w400,
-                color: Colors.white54,
-              ),
-            ),
-            SizedBox(height: 20.h),
-            Row(
-              children: [
-                // Camera Button
-                Expanded(
-                  child: InkWell(
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 8.h),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Drag handle
+                  Center(
+                    child: Container(
+                      width: 40.w,
+                      height: 4.h,
+                      decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(2.r),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Title: Cormorant Garamond matching Logout dialog
+                  Center(
+                    child: Text(
+                      "Profile Photo",
+                      style: GoogleFonts.cormorantGaramond(
+                        fontSize: 28.sp,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+
+                  // Subtitle: DM Sans
+                  Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: Text(
+                        "Choose an option to update or remove your profile picture",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 13.sp,
+                          color: Colors.white54,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 24.h),
+
+                  // 1. Take Photo tile
+                  _buildPhotoListTile(
+                    icon: Icons.camera_alt_outlined,
+                    iconColor: const Color(0xFFFFAF2C),
+                    title: "Take Photo",
+                    subtitle: "Capture a new picture using camera",
                     onTap: () {
                       Get.back();
                       controller.updateProfileImage(ImageSource.camera);
                     },
-                    borderRadius: BorderRadius.circular(16.r),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 18.h),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF282A2E),
-                        borderRadius: BorderRadius.circular(16.r),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.08),
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(12.r),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFE2B744).withValues(
-                                alpha: 0.15,
-                              ),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.camera_alt_rounded,
-                              color: const Color(0xFFE2B744),
-                              size: 24.r,
-                            ),
-                          ),
-                          SizedBox(height: 10.h),
-                          Text(
-                            "Camera",
-                            style: GoogleFonts.dmSans(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   ),
-                ),
-                SizedBox(width: 14.w),
-                // Gallery Button
-                Expanded(
-                  child: InkWell(
+                  SizedBox(height: 12.h),
+
+                  // 2. Choose from Gallery tile
+                  _buildPhotoListTile(
+                    icon: Icons.photo_library_outlined,
+                    iconColor: const Color(0xFFFFAF2C),
+                    title: "Choose from Gallery",
+                    subtitle: "Select an image from your photo library",
                     onTap: () {
                       Get.back();
                       controller.updateProfileImage(ImageSource.gallery);
                     },
-                    borderRadius: BorderRadius.circular(16.r),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 18.h),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF282A2E),
-                        borderRadius: BorderRadius.circular(16.r),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.08),
+                  ),
+
+                  // 3. Remove Photo tile (shown only when custom photo exists)
+                  Obx(() {
+                    if (!controller.hasCustomProfilePhoto) {
+                      return const SizedBox.shrink();
+                    }
+                    return Padding(
+                      padding: EdgeInsets.only(top: 12.h),
+                      child: _buildPhotoListTile(
+                        icon: Icons.delete_outline_rounded,
+                        iconColor: const Color(0xFFFF5252),
+                        title: "Remove Photo",
+                        subtitle: "Delete current photo & revert to avatar",
+                        titleColor: const Color(0xFFFF5252),
+                        isDestructive: true,
+                        onTap: () {
+                          Get.back();
+                          controller.deleteProfileImage();
+                        },
+                      ),
+                    );
+                  }),
+                  SizedBox(height: 16.h),
+
+                  // Cancel text button
+                  Center(
+                    child: TextButton(
+                      onPressed: () => Get.back(),
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 8.h,
+                          horizontal: 24.w,
                         ),
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(12.r),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFE2B744).withValues(
-                                alpha: 0.15,
-                              ),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.photo_library_rounded,
-                              color: const Color(0xFFE2B744),
-                              size: 24.r,
-                            ),
-                          ),
-                          SizedBox(height: 10.h),
-                          Text(
-                            "Gallery",
-                            style: GoogleFonts.dmSans(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
+                      child: Text(
+                        "Cancel",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white60,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                  SizedBox(height: 4.h),
+                ],
+              ),
             ),
-            Obx(() {
-              if (!controller.hasCustomProfilePhoto) {
-                return const SizedBox.shrink();
-              }
-              return Padding(
-                padding: EdgeInsets.only(top: 14.h),
-                child: InkWell(
-                  onTap: () {
-                    Get.back();
-                    controller.deleteProfileImage();
-                  },
-                  borderRadius: BorderRadius.circular(16.r),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 14.h),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFEF4444).withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(16.r),
-                      border: Border.all(
-                        color: const Color(0xFFEF4444).withValues(alpha: 0.3),
+          ),
+        ),
+      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
+  Widget _buildPhotoListTile({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String subtitle,
+    Color? titleColor,
+    bool isDestructive = false,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16.r),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+          decoration: BoxDecoration(
+            color: isDestructive
+                ? const Color(0xFFFF5252).withValues(alpha: 0.08)
+                : const Color(0xFF181A1E),
+            borderRadius: BorderRadius.circular(16.r),
+            border: Border.all(
+              color: isDestructive
+                  ? const Color(0xFFFF5252).withValues(alpha: 0.25)
+                  : Colors.white.withValues(alpha: 0.06),
+              width: 1.0,
+            ),
+          ),
+          child: Row(
+            children: [
+              // Icon container
+              Container(
+                width: 42.r,
+                height: 42.r,
+                decoration: BoxDecoration(
+                  color: iconColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: Center(
+                  child: Icon(icon, color: iconColor, size: 20.r),
+                ),
+              ),
+              SizedBox(width: 14.w),
+
+              // Title & subtitle
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.dmSans(
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.w600,
+                        color: titleColor ?? Colors.white,
                       ),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.delete_outline_rounded,
-                          color: const Color(0xFFEF4444),
-                          size: 20.sp,
-                        ),
-                        SizedBox(width: 8.w),
-                        Text(
-                          "Remove Photo",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFFEF4444),
-                          ),
-                        ),
-                      ],
+                    SizedBox(height: 2.h),
+                    Text(
+                      subtitle,
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w400,
+                        color: isDestructive
+                            ? const Color(0xFFFF5252).withValues(alpha: 0.7)
+                            : Colors.white38,
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              );
-            }),
-            SizedBox(height: 12.h),
-          ],
+              ),
+
+              // Trailing arrow icon
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: isDestructive
+                    ? const Color(0xFFFF5252).withValues(alpha: 0.5)
+                    : Colors.white24,
+                size: 14.r,
+              ),
+            ],
+          ),
         ),
       ),
     );

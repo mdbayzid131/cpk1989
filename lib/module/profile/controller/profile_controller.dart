@@ -902,49 +902,37 @@ class ProfileController extends GetxController {
     try {
       Helpers.showLoadingDialog(message: "Removing profile photo...");
 
-      // Call API to clear image
-      await _userRepo.updateProfile({'image': ''});
+      // Call DELETE /user/profile/photo API
+      final response = await _userRepo.deleteProfilePhoto();
       Helpers.hideLoadingDialog();
 
-      rxProfileImage.value = '';
-      if (rxUserProfile.value != null) {
-        rxUserProfile.value = rxUserProfile.value!.copyWith(
-          image: '',
-          avatar: '',
-        );
-      }
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        rxProfileImage.value = '';
+        if (rxUserProfile.value != null) {
+          rxUserProfile.value = rxUserProfile.value!.copyWith(
+            image: '',
+            avatar: '',
+          );
+        }
 
-      Get.snackbar(
-        'Removed',
-        'Profile photo removed successfully.',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF161719),
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-        borderRadius: 16,
-        margin: const EdgeInsets.all(16),
-      );
+        Get.snackbar(
+          'Removed',
+          'Profile photo removed successfully.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: const Color(0xFF161719),
+          colorText: Colors.white,
+          duration: const Duration(seconds: 2),
+          borderRadius: 16,
+          margin: const EdgeInsets.all(16),
+        );
+      } else {
+        final msg = response.data?['message'] ?? 'Failed to remove photo';
+        Helpers.showError(msg);
+      }
     } catch (e) {
       Helpers.hideLoadingDialog();
       Helpers.debug("Delete profile image error: $e");
-      // Even if API returns an error for empty string, clear locally
-      rxProfileImage.value = '';
-      if (rxUserProfile.value != null) {
-        rxUserProfile.value = rxUserProfile.value!.copyWith(
-          image: '',
-          avatar: '',
-        );
-      }
-      Get.snackbar(
-        'Removed',
-        'Profile photo removed.',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF161719),
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-        borderRadius: 16,
-        margin: const EdgeInsets.all(16),
-      );
+      Helpers.showError("Something went wrong while removing photo.");
     }
   }
 }

@@ -73,7 +73,13 @@ class NotificationController extends GetxController {
   final NotificationRepository? _repository;
 
   NotificationController({NotificationRepository? repository})
-      : _repository = repository;
+    : _repository = repository;
+
+  NotificationRepository? get _repo =>
+      _repository ??
+      (Get.isRegistered<NotificationRepository>()
+          ? Get.find<NotificationRepository>()
+          : null);
 
   final rxIsLoading = false.obs;
   final rxIsLoadingMore = false.obs;
@@ -114,11 +120,9 @@ class NotificationController extends GetxController {
 
     rxIsLoading.value = true;
     try {
-      if (_repository != null) {
-        final response = await _repository.getNotifications(
-          page: 1,
-          limit: 20,
-        );
+      final repo = _repo;
+      if (repo != null) {
+        final response = await repo.getNotifications(page: 1, limit: 20);
         if (response.statusCode == 200 && response.data != null) {
           final List rawData = response.data['data'] ?? [];
           final fetched = rawData.map((json) => _mapJsonToItem(json)).toList();
@@ -149,12 +153,10 @@ class NotificationController extends GetxController {
 
     rxIsLoadingMore.value = true;
     try {
-      if (_repository != null) {
+      final repo = _repo;
+      if (repo != null) {
         final nextPage = rxCurrentPage.value + 1;
-        final response = await _repository.getNotifications(
-          page: nextPage,
-          limit: 20,
-        );
+        final response = await repo.getNotifications(page: nextPage, limit: 20);
         if (response.statusCode == 200 && response.data != null) {
           final List rawData = response.data['data'] ?? [];
           final fetched = rawData.map((json) => _mapJsonToItem(json)).toList();
@@ -197,8 +199,9 @@ class NotificationController extends GetxController {
 
   Future<void> markAllAsRead() async {
     try {
-      if (_repository != null) {
-        await _repository.markAllAsRead();
+      final repo = _repo;
+      if (repo != null) {
+        await repo.markAllAsRead();
       }
     } catch (_) {}
 
@@ -227,15 +230,18 @@ class NotificationController extends GetxController {
     }
 
     try {
-      if (_repository != null) {
-        final response = await _repository.deleteNotification(id);
+      final repo = _repo;
+      if (repo != null) {
+        final response = await repo.deleteNotification(id);
         if (response.statusCode == 200) {
           return true;
         }
       }
     } catch (e) {
       debugPrint('Delete notification error: $e');
-      if (removedItem != null && index != -1 && index <= rxNotifications.length) {
+      if (removedItem != null &&
+          index != -1 &&
+          index <= rxNotifications.length) {
         rxNotifications.insert(index, removedItem);
       }
       return false;
@@ -245,8 +251,9 @@ class NotificationController extends GetxController {
 
   Future<void> deleteAllNotifications() async {
     try {
-      if (_repository != null) {
-        await _repository.deleteAllNotifications();
+      final repo = _repo;
+      if (repo != null) {
+        await repo.deleteAllNotifications();
       }
     } catch (_) {}
     rxNotifications.clear();
@@ -366,7 +373,7 @@ class NotificationController extends GetxController {
         'SEP',
         'OCT',
         'NOV',
-        'DEC'
+        'DEC',
       ];
       return '${months[dateTime.month - 1]} ${dateTime.day}';
     } catch (_) {

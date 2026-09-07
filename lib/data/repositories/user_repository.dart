@@ -28,6 +28,11 @@ class UserRepository {
     return await apiClient.patchData(ApiConstants.profile, body);
   }
 
+  /// Delete profile photo: DELETE /user/profile/photo
+  Future<Response> deleteProfilePhoto() async {
+    return await apiClient.deleteData(ApiConstants.profilePhoto);
+  }
+
   /// Get user's purchased items / orders history with pagination
   Future<Response> getMyOrders({int page = 1, int limit = 10}) async {
     return await apiClient.getData(
