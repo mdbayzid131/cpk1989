@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -77,9 +78,11 @@ class NotificationScreen extends GetView<NotificationController> {
                       imagePath: 'assets/images/notifecation empty.svg',
                       imageSize: 150.r,
                       title: "No New Notifications",
-                      subtitle: "We'll let you know when there's an update on\nyour purchases, listings, or account.",
+                      subtitle:
+                          "We'll let you know when there's an update on\nyour purchases, listings, or account.",
                       buttonText: "Refresh",
-                      onButtonTap: () => controller.fetchNotifications(isRefresh: true),
+                      onButtonTap: () =>
+                          controller.fetchNotifications(isRefresh: true),
                     ),
                   )
                 else ...[
@@ -149,114 +152,201 @@ class NotificationScreen extends GetView<NotificationController> {
   }
 
   Widget _buildNotificationCard(NotificationItem item) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.centerRight,
-          end: Alignment.centerLeft,
-          colors: [Color(0xFF292A2D), Color(0xFF1C1D21)],
-          stops: [0.2161, 0.5276],
-        ),
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
-          width: 1.0,
-        ),
-      ),
-      padding: EdgeInsets.fromLTRB(14.w, 14.h, 14.w, 14.h),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 1. Leading SVG Icon Squircle Container
-          Container(
-            width: 44.r,
-            height: 44.r,
-            decoration: BoxDecoration(
-              color: const Color(0xFF323236),
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-            child: Center(child: _buildNotificationSvgIcon(item.type)),
+    return GestureDetector(
+      onTap: () {
+        final data = item.data;
+        if (data != null) {
+          final orderId = data['orderId']?.toString();
+          final productId = data['productId']?.toString();
+          if (orderId != null && orderId.isNotEmpty) {
+            Get.toNamed(
+              AppRoutes.myPurchaseDetails,
+              arguments: {'orderId': orderId},
+            );
+          } else if (productId != null && productId.isNotEmpty) {
+            Get.toNamed(
+              AppRoutes.itemDetail,
+              arguments: {'productId': productId},
+            );
+          }
+        }
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.centerRight,
+            end: Alignment.centerLeft,
+            colors: [Color(0xFF292A2D), Color(0xFF1C1D21)],
+            stops: [0.2161, 0.5276],
           ),
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.05),
+            width: 1.0,
+          ),
+        ),
+        padding: EdgeInsets.fromLTRB(14.w, 14.h, 14.w, 14.h),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 1. Leading SVG Icon Squircle Container
+            Container(
+              width: 44.r,
+              height: 44.r,
+              decoration: BoxDecoration(
+                color: const Color(0xFF323236),
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: Center(child: _buildNotificationSvgIcon(item.type)),
+            ),
 
-          SizedBox(width: 12.w),
+            SizedBox(width: 12.w),
 
-          // 2. Main Content (Title, Timestamp, Subtitle Body)
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Title and Time Row
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        item.title,
-                        style: GoogleFonts.dmSans(
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
-                          height: 1.2,
+            // 2. Main Content (Title, Timestamp, Subtitle Body)
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title and Time Row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          item.title,
+                          style: GoogleFonts.dmSans(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white,
+                            height: 1.2,
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(width: 8.w),
-                    Text(
-                      item.timeAgo,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w400,
-                        color: const Color(0xFF8E8E93),
+                      SizedBox(width: 8.w),
+                      Text(
+                        item.timeAgo,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xFF8E8E93),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
 
-                SizedBox(height: 5.h),
+                  SizedBox(height: 5.h),
 
-                // Subtitle Body with bold text for key prices/details matching screenshot
-                _buildSubtitleText(item.subtitle),
-              ],
+                  // Subtitle Body with bold text for key prices/details matching screenshot
+                  _buildSubtitleText(item.subtitle),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildNotificationSvgIcon(NotificationType type) {
-    String assetPath;
     switch (type) {
-      case NotificationType.orderSecured:
-        assetPath = 'assets/notifecation/order_secure.svg';
-        break;
-      case NotificationType.itemCollected:
-        assetPath = 'assets/notifecation/Item collected.svg';
-        break;
-      case NotificationType.itemAuthenticated:
-        assetPath = 'assets/notifecation/Item authenticated.svg';
-        break;
-      case NotificationType.itemReserved:
-        assetPath = 'assets/notifecation/item_reserved.svg';
-        break;
-      case NotificationType.sellerDetails:
-        assetPath = 'assets/notifecation/Complete your seller details.svg';
-        break;
-      case NotificationType.itemSaved:
-        assetPath = 'assets/notifecation/New item you saved.svg';
-        break;
-      case NotificationType.generic:
-        assetPath = 'assets/icons/notifiction.svg';
-        break;
-    }
+      // 1. Complete your seller details SVG
+      case NotificationType.sellerOnboardingRequired:
+        return SvgPicture.asset(
+          'assets/notifecation/Complete your seller details.svg',
+          width: 22.r,
+          height: 22.r,
+          fit: BoxFit.contain,
+        );
 
-    return SvgPicture.asset(
-      assetPath,
-      width: 22.r,
-      height: 22.r,
-      fit: BoxFit.contain,
-    );
+      // 2. Order Secured SVG
+      case NotificationType.orderSecured:
+      case NotificationType.orderCompleted:
+      case NotificationType.readyForDelivery:
+      case NotificationType.itemDelivered:
+      case NotificationType.payoutProcessing:
+      case NotificationType.payoutPaid:
+      case NotificationType.paymentRefunded:
+        return SvgPicture.asset(
+          'assets/notifecation/order_secure.svg',
+          width: 22.r,
+          height: 22.r,
+          fit: BoxFit.contain,
+        );
+
+      // 3. Item Reserved SVG
+      case NotificationType.itemReserved:
+      case NotificationType.itemListed:
+      case NotificationType.orderScheduleUpdated:
+        return SvgPicture.asset(
+          'assets/notifecation/item_reserved.svg',
+          width: 22.r,
+          height: 22.r,
+          fit: BoxFit.contain,
+        );
+
+      // 4. Item Collected SVG
+      case NotificationType.itemCollected:
+      case NotificationType.collectionPending:
+      case NotificationType.collectionMissed:
+        return SvgPicture.asset(
+          'assets/notifecation/Item collected.svg',
+          width: 22.r,
+          height: 22.r,
+          fit: BoxFit.contain,
+        );
+
+      // 5. Item Authenticated SVG
+      case NotificationType.itemVerification:
+      case NotificationType.authenticationPassed:
+      case NotificationType.issueResolved:
+        return SvgPicture.asset(
+          'assets/notifecation/Item authenticated.svg',
+          width: 22.r,
+          height: 22.r,
+          fit: BoxFit.contain,
+        );
+
+      // 6. New Item You Saved SVG (Wishlist)
+      case NotificationType.wishlistItemSaved:
+      case NotificationType.wishlistItemUpdated:
+      case NotificationType.wishlistItemAvailable:
+      case NotificationType.wishlistItemUnavailable:
+        return SvgPicture.asset(
+          'assets/notifecation/New item you saved.svg',
+          width: 22.r,
+          height: 22.r,
+          fit: BoxFit.contain,
+        );
+
+      // Errors & Cancellations
+      case NotificationType.authenticationFailed:
+      case NotificationType.orderCancelled:
+      case NotificationType.deliveryCancelled:
+      case NotificationType.paymentFailed:
+        return Icon(
+          Icons.cancel_outlined,
+          color: const Color(0xFFFF5252),
+          size: 22.r,
+        );
+
+      case NotificationType.issueCreated:
+        return Icon(
+          Icons.report_problem_outlined,
+          color: const Color(0xFFFFAF2C),
+          size: 22.r,
+        );
+
+      // Fallback
+      case NotificationType.generic:
+        return SvgPicture.asset(
+          'assets/icons/notifiction.svg',
+          width: 22.r,
+          height: 22.r,
+          fit: BoxFit.contain,
+        );
+    }
   }
 
   Widget _buildSubtitleText(String subtitle) {

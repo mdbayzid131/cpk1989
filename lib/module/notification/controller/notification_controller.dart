@@ -3,12 +3,45 @@ import 'package:get/get.dart';
 import 'package:cpk1989/data/repositories/notification_repository.dart';
 
 enum NotificationType {
+  // 1. Product & Seller
+  itemListed,
+  sellerOnboardingRequired,
+
+  // 2. Order & Delivery Lifecycle
   orderSecured,
-  itemCollected,
-  itemAuthenticated,
   itemReserved,
-  sellerDetails,
-  itemSaved,
+  collectionPending,
+  itemCollected,
+  collectionMissed,
+  readyForDelivery,
+  itemDelivered,
+  orderCompleted,
+  orderCancelled,
+  deliveryCancelled,
+  orderScheduleUpdated,
+
+  // 3. Authentication & Verification
+  itemVerification,
+  authenticationPassed,
+  authenticationFailed,
+
+  // 4. Payment & Payout
+  paymentFailed,
+  paymentRefunded,
+  payoutProcessing,
+  payoutPaid,
+
+  // 5. Wishlist
+  wishlistItemSaved,
+  wishlistItemUpdated,
+  wishlistItemAvailable,
+  wishlistItemUnavailable,
+
+  // 6. Issues & Support
+  issueCreated,
+  issueResolved,
+
+  // Fallback
   generic,
 }
 
@@ -196,26 +229,75 @@ class NotificationController extends GetxController {
   }
 
   NotificationType _parseType(String? typeStr) {
-    switch (typeStr?.toLowerCase()) {
-      case 'order_secured':
+    final cleaned = typeStr?.toLowerCase().replaceAll('_', '') ?? '';
+    switch (cleaned) {
+      // 1. Product & Seller
+      case 'itemlisted':
+        return NotificationType.itemListed;
+      case 'selleronboardingrequired':
+      case 'sellerdetails':
+        return NotificationType.sellerOnboardingRequired;
+
+      // 2. Order & Delivery Lifecycle
       case 'ordersecured':
         return NotificationType.orderSecured;
-      case 'item_collected':
-      case 'itemcollected':
-        return NotificationType.itemCollected;
-      case 'item_authenticated':
-      case 'item_verification':
-      case 'itemauthenticated':
-        return NotificationType.itemAuthenticated;
-      case 'item_reserved':
       case 'itemreserved':
         return NotificationType.itemReserved;
-      case 'seller_details':
-      case 'sellerdetails':
-        return NotificationType.sellerDetails;
-      case 'item_saved':
+      case 'collectionpending':
+        return NotificationType.collectionPending;
+      case 'itemcollected':
+        return NotificationType.itemCollected;
+      case 'collectionmissed':
+        return NotificationType.collectionMissed;
+      case 'readyfordelivery':
+        return NotificationType.readyForDelivery;
+      case 'itemdelivered':
+        return NotificationType.itemDelivered;
+      case 'ordercompleted':
+        return NotificationType.orderCompleted;
+      case 'ordercancelled':
+        return NotificationType.orderCancelled;
+      case 'deliverycancelled':
+        return NotificationType.deliveryCancelled;
+      case 'orderscheduleupdated':
+        return NotificationType.orderScheduleUpdated;
+
+      // 3. Authentication & Verification
+      case 'itemverification':
+        return NotificationType.itemVerification;
+      case 'authenticationpassed':
+      case 'itemauthenticated':
+        return NotificationType.authenticationPassed;
+      case 'authenticationfailed':
+        return NotificationType.authenticationFailed;
+
+      // 4. Payment & Payout
+      case 'paymentfailed':
+        return NotificationType.paymentFailed;
+      case 'paymentrefunded':
+        return NotificationType.paymentRefunded;
+      case 'payoutprocessing':
+        return NotificationType.payoutProcessing;
+      case 'payoutpaid':
+        return NotificationType.payoutPaid;
+
+      // 5. Wishlist
+      case 'wishlistitemsaved':
       case 'itemsaved':
-        return NotificationType.itemSaved;
+        return NotificationType.wishlistItemSaved;
+      case 'wishlistitemupdated':
+        return NotificationType.wishlistItemUpdated;
+      case 'wishlistitemavailable':
+        return NotificationType.wishlistItemAvailable;
+      case 'wishlistitemunavailable':
+        return NotificationType.wishlistItemUnavailable;
+
+      // 6. Issues & Support
+      case 'issuecreated':
+        return NotificationType.issueCreated;
+      case 'issueresolved':
+        return NotificationType.issueResolved;
+
       default:
         return NotificationType.generic;
     }

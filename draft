@@ -565,3 +565,106 @@ I/flutter (10709): │   ]
 I/flutter (10709): │ }
 I/flutter (10709): └ ✅✅✅✅ RESPONSE ════════════════════════════════════════════════════════
 I/flutter (10709): 
+
+
+
+/* eslint-disable no-unused-vars */
+export enum NOTIFICATION_TYPE {
+  ITEM_LISTED = 'item_listed',
+  ORDER_SECURED = 'order_secured',
+  ITEM_RESERVED = 'item_reserved',
+  COLLECTION_PENDING = 'collection_pending',
+  ITEM_COLLECTED = 'item_collected',
+  ITEM_VERIFICATION = 'item_verification',
+  PAYOUT_PROCESSING = 'payout_processing',
+  PAYOUT_PAID = 'payout_paid',
+  READY_FOR_DELIVERY = 'ready_for_delivery',
+  ITEM_DELIVERED = 'item_delivered',
+  ORDER_COMPLETED = 'order_completed',
+  ORDER_CANCELLED = 'order_cancelled',
+  PAYMENT_FAILED = 'payment_failed',
+  PAYMENT_REFUNDED = 'payment_refunded',
+  ORDER_SCHEDULE_UPDATED = 'order_schedule_updated',
+  ISSUE_CREATED = 'issue_created',
+  ISSUE_RESOLVED = 'issue_resolved',
+  WISHLIST_ITEM_SAVED = 'wishlist_item_saved',
+  WISHLIST_ITEM_UPDATED = 'wishlist_item_updated',
+  WISHLIST_ITEM_UNAVAILABLE = 'wishlist_item_unavailable',
+  WISHLIST_ITEM_AVAILABLE = 'wishlist_item_available',
+  SELLER_ONBOARDING_REQUIRED = 'seller_onboarding_required',
+  AUTHENTICATION_PASSED = 'authentication_passed',
+  AUTHENTICATION_FAILED = 'authentication_failed',
+  COLLECTION_MISSED = 'collection_missed',
+  DELIVERY_CANCELLED = 'delivery_cancelled',
+}
+
+export enum DEVICE_PLATFORM {
+  ANDROID = 'android',
+  IOS = 'ios',
+  WEB = 'web',
+}
+
+
+Searched for "Notification"
+Viewed notification.ts:1-36
+Viewed notification.interface.ts:1-38
+Viewed notification.event.ts:1-504
+Searched for "NOTIFICATION_TYPE"
+
+এই প্রজেক্টে নোটিফিকেশনের জন্য সর্বমোট **২৬ ধরনের (26 Types)** নোটিফিকেশন টাইপ ব্যবহার করা হয়েছে। এগুলো [`src/enums/notification.ts`](file:///c:/Users/mdbay/StudioProjects/Smart-Shopping-Mall/src/enums/notification.ts) ফাইলে `NOTIFICATION_TYPE` এনামে (Enum) সংজ্ঞায়িত আছে।
+
+ক্যাটাগরি অনুযায়ী টাইপগুলোর তালিকা নিচে দেওয়া হলো:
+
+---
+
+### ১. প্রোডাক্ট ও সেলার অনবোর্ডিং (Product & Seller)
+1. `item_listed` (`ITEM_LISTED`) — প্রোডাক্ট সফলভাবে লিস্টিং হলে।
+2. `seller_onboarding_required` (`SELLER_ONBOARDING_REQUIRED`) — লিস্টিং করার আগে সেলার পে-আউট অনবোর্ডিং সম্পন্ন করার নোটিফিকেশন।
+
+---
+
+### ২. অর্ডার ও ডেলিভারি লাইফসাইকেল (Order & Delivery Lifecycle)
+3. `order_secured` (`ORDER_SECURED`) — বায়ারের অর্ডার কনফার্ম হলে।
+4. `item_reserved` (`ITEM_RESERVED`) — সেলারের আইটেম বিক্রির জন্য রিজার্ভ হলে।
+5. `collection_pending` (`COLLECTION_PENDING`) — আইটেম সংগ্রহের প্রস্তুতি চললে।
+6. `item_collected` (`ITEM_COLLECTED`) — সেলার থেকে আইটেম সংগ্রহ করা হলে।
+7. `collection_missed` (`COLLECTION_MISSED`) — আইটেম পিকআপ বা সংগ্রহ মিস হলে।
+8. `ready_for_delivery` (`READY_FOR_DELIVERY`) — আইটেম ডেলিভারির জন্য প্রস্তুত হলে।
+9. `item_delivered` (`ITEM_DELIVERED`) — বায়ারের কাছে আইটেম ডেলিভারি হলে।
+10. `order_completed` (`ORDER_COMPLETED`) — পুরো অর্ডার সম্পন্ন হলে।
+11. `order_cancelled` (`ORDER_CANCELLED`) — অর্ডার বাতিল হলে।
+12. `delivery_cancelled` (`DELIVERY_CANCELLED`) — ডেলিভারির সময় বায়ার আইটেম রিজেক্ট/ক্যানসেল করলে।
+13. `order_schedule_updated` (`ORDER_SCHEDULE_UPDATED`) — পিকআপ বা ডেলিভারি শিডিউল আপডেট হলে।
+
+---
+
+### ৩. আইটেম যাচাইকরণ / অথেনটিকেশন (Authentication & Verification)
+14. `item_verification` (`ITEM_VERIFICATION`) — আইটেম ভেরিফিকেশন/অথেনটিকেশন প্রক্রিয়াধীন থাকলে।
+15. `authentication_passed` (`AUTHENTICATION_PASSED`) — আইটেম সফলভাবে অথেনটিকেট হলে।
+16. `authentication_failed` (`AUTHENTICATION_FAILED`) — আইটেম অথেনটিকেশনে ফেইল করলে।
+
+---
+
+### ৪. পেমেন্ট ও পে-আউট (Payment & Payout)
+17. `payment_failed` (`PAYMENT_FAILED`) — অর্ডারের পেমেন্ট ব্যর্থ হলে।
+18. `payment_refunded` (`PAYMENT_REFUNDED`) — পেমেন্ট রিফান্ড করা হলে।
+19. `payout_processing` (`PAYOUT_PROCESSING`) — সেলারের পে-আউট প্রসেসিংয়ে থাকলে।
+20. `payout_paid` (`PAYOUT_PAID`) — সেলারের ব্যাংক অ্যাকাউন্টে পে-আউট পাঠানো হলে।
+
+---
+
+### ৫. উইশলিস্ট নোটিফিকেশন (Wishlist)
+21. `wishlist_item_saved` (`WISHLIST_ITEM_SAVED`) — উইশলিস্টে আইটেম যুক্ত হলে।
+22. `wishlist_item_updated` (`WISHLIST_ITEM_UPDATED`) — সংরক্ষিত আইটেমের তথ্য আপডেট হলে।
+23. `wishlist_item_available` (`WISHLIST_ITEM_AVAILABLE`) — স্টক/আইটেম পুনরায় অ্যাভেইলেবল হলে।
+24. `wishlist_item_unavailable` (`WISHLIST_ITEM_UNAVAILABLE`) — সংরক্ষিত আইটেম আনঅ্যাভেইলেবল হয়ে গেলে।
+
+---
+
+### ৬. ইস্যু ও সাপোর্ট (Issues & Support)
+25. `issue_created` (`ISSUE_CREATED`) — অর্ডারে কোনো সমস্যা বা রিপোর্ট তৈরি হলে।
+26. `issue_resolved` (`ISSUE_RESOLVED`) — রিপোর্ট করা সমস্যার সমাধান হলে।
+
+---
+
+> **নোট:** পুশ নোটিফিকেশনের জন্য ৩ ধরনের প্ল্যাটফর্ম সাপোর্ট রাখা হয়েছে (`android`, `ios`, `web`) যা [`DEVICE_PLATFORM`](file:///c:/Users/mdbay/StudioProjects/Smart-Shopping-Mall/src/enums/notification.ts#L31-L35) এনামে রয়েছে।
