@@ -86,7 +86,8 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
             () => CircleAvatar(
               radius: 46.r,
               backgroundColor: const Color(0xFF282A2E),
-              backgroundImage: (controller.rxAvatarUrl.value.isNotEmpty &&
+              backgroundImage:
+                  (controller.rxAvatarUrl.value.isNotEmpty &&
                       controller.rxAvatarUrl.value.startsWith('http'))
                   ? NetworkImage(controller.rxAvatarUrl.value)
                   : const NetworkImage("https://i.ibb.co/z5YHLV9/profile.png"),
@@ -151,22 +152,14 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Expanded(
-                          child: _buildStatItem(
-                            "Items Listed",
-                            "$listed",
-                          ),
+                          child: _buildStatItem("Items Listed", "$listed"),
                         ),
+                        _buildStatDivider(),
+                        Expanded(child: _buildStatItem("Items Sold", "$sold")),
                         _buildStatDivider(),
                         Expanded(
                           child: _buildStatItem(
-                            "Items Sold",
-                            "$sold",
-                          ),
-                        ),
-                        _buildStatDivider(),
-                        Expanded(
-                          child: _buildStatItem(
-                            "Earnings",
+                            "Closet Value",
                             closetValueText,
                           ),
                         ),
@@ -278,8 +271,7 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
           price: formattedPrice,
           size: "Medium",
           wornCount: "Worn Twice",
-          description:
-              "${item.brand} ${item.itemName} in pristine condition.",
+          description: "${item.brand} ${item.itemName} in pristine condition.",
           isVerified: controller.rxIsVerified.value,
           images: item.itemImages,
           sellerProfileImage: controller.rxAvatarUrl.value,

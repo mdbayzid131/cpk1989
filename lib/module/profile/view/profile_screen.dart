@@ -279,7 +279,7 @@ class ProfileScreen extends GetView<ProfileController> {
                         _buildStatDivider(),
                         Expanded(
                           child: _buildStatItem(
-                            "Earnings",
+                            "Closet Value",
                             earningsText,
                           ),
                         ),
