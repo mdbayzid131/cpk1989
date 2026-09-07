@@ -582,21 +582,21 @@ class ProfileScreen extends GetView<ProfileController> {
               maxLines: 1,
               softWrap: false,
               style: GoogleFonts.dmSans(
-                fontSize: 11.sp,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                fontSize: 14.sp,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                 color: isSelected
                     ? const Color(0xFFFFAF2C)
                     : const Color(0xFF8E8E93),
-                letterSpacing: 0.5,
+                letterSpacing: 0,
               ),
             ),
             SizedBox(height: 6.h),
             AnimatedContainer(
               duration: const Duration(milliseconds: 250),
               height: 2.h,
-              width: isSelected ? 45.w : 0.w,
+              width: isSelected ? 60.w : 0.w,
               decoration: BoxDecoration(
-                color: const Color(0xFFE2B744), // Gold indicator
+                color: const Color(0xFFFFAF2C),
                 borderRadius: BorderRadius.circular(2.r),
               ),
             ),
