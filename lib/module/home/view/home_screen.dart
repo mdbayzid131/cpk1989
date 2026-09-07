@@ -8,7 +8,6 @@ import 'package:cpk1989/core/widgets/custom_gold_button.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/core/widgets/processing_overlay.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
-import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/core/widgets/custom_empty_state.dart';
@@ -351,7 +350,7 @@ class HomeScreen extends GetView<HomeController> {
 }
 
 /// ===================== PRODUCT IMAGE SLIDER =====================
-/// Stateful widget that handles horizontal auto-sliding images, page indicator dots, and Next arrow.
+/// Stateful widget that handles horizontal sliding images and page indicator dots.
 class ProductImageSlider extends StatefulWidget {
   final List<String> images;
   const ProductImageSlider({super.key, required this.images});
@@ -419,32 +418,7 @@ class _ProductImageSliderState extends State<ProductImageSlider> {
           },
         ),
 
-        // 2. Next arrow floating button (glassmorphic circle overlay on the right)
-        Positioned(
-          right: 16.w,
-          top: MediaQuery.of(context).size.height * 0.45,
-          child: CustomGlassButton(
-            size: 44.r,
-            padding: EdgeInsets.all(10.r),
-            onTap: () {
-              if (_pageController.hasClients) {
-                final nextPage = (_currentPage + 1) % widget.images.length;
-                _pageController.animateToPage(
-                  nextPage,
-                  duration: const Duration(milliseconds: 400),
-                  curve: Curves.easeInOut,
-                );
-              }
-            },
-            child: const Icon(
-              Icons.arrow_forward_rounded,
-              color: Colors.white,
-              size: 20,
-            ),
-          ),
-        ),
-
-        // 3. Page Indicator Dots (Pill overlay centered above bottom info bar)
+        // 2. Page Indicator Dots (Pill overlay centered above bottom info bar)
         Positioned(
           bottom: 95.h + MediaQuery.of(context).padding.bottom + 190.h,
           left: 0,
