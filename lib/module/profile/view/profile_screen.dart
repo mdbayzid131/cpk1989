@@ -1454,6 +1454,7 @@ class ProfileScreen extends GetView<ProfileController> {
   }
 
   void _showAddCardBottomSheet(BuildContext context) {
+    FocusScope.of(context).unfocus();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1466,6 +1467,8 @@ class ProfileScreen extends GetView<ProfileController> {
               required String expiry,
               required String cvv,
             }) async {
+              FocusScope.of(sheetContext).unfocus();
+              FocusManager.instance.primaryFocus?.unfocus();
               Helpers.showLoadingDialog();
 
               final result = await PaymentService.to.addCardWithDetails(
@@ -1483,6 +1486,8 @@ class ProfileScreen extends GetView<ProfileController> {
                 if (sheetContext.mounted && Navigator.canPop(sheetContext)) {
                   Navigator.pop(sheetContext);
                 }
+                FocusScope.of(context).unfocus();
+                FocusManager.instance.primaryFocus?.unfocus();
                 Get.snackbar(
                   'Success',
                   'Card saved successfully!',
@@ -1503,7 +1508,10 @@ class ProfileScreen extends GetView<ProfileController> {
               }
             },
       ),
-    );
+    ).then((_) {
+      FocusScope.of(context).unfocus();
+      FocusManager.instance.primaryFocus?.unfocus();
+    });
   }
 
   Widget _buildFieldContainer({

@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cpk1989/config/themes/app_theme.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
-import 'package:cpk1989/core/widgets/vertical_stepper.dart';
+import 'package:cpk1989/core/widgets/custom_item_status_card.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
 import 'package:cpk1989/module/my_purchase_ditails/controller/my_purchase_ditails_controller.dart';
@@ -24,57 +24,6 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
 
     final formattedPrice =
         "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
-
-    // Build timeline steps based on raw backend status
-    int currentStepIndex = 0;
-    if (rawSt == 'pending_payment' ||
-        rawSt == 'secured' ||
-        rawSt == 'reserved' ||
-        rawSt == 'pending') {
-      currentStepIndex = 0;
-    } else if (rawSt == 'collection_pending' ||
-        rawSt == 'collected' ||
-        rawSt == 'in_transit') {
-      currentStepIndex = 1;
-    } else if (rawSt == 'verification' ||
-        rawSt == 'authenticating' ||
-        rawSt == 'payout_processing') {
-      currentStepIndex = 2;
-    } else if (rawSt == 'ready_for_delivery') {
-      currentStepIndex = 3;
-    } else if (rawSt == 'delivered' || rawSt == 'completed') {
-      currentStepIndex = 4;
-    }
-
-    final titles = [
-      "Reserved",
-      "Collected",
-      "Authenticating",
-      "Ready for Delivery",
-      "Delivered",
-    ];
-    final subtitles = [
-      "Item reserved & order confirmed",
-      "Picked up from seller",
-      "Being verified by experts",
-      "Package out for delivery",
-      "Successfully delivered to you",
-    ];
-
-    final List<StepperStep> steps = [];
-    for (int i = 0; i < 5; i++) {
-      StepperStepState state;
-      if (i < currentStepIndex) {
-        state = StepperStepState.completed;
-      } else if (i == currentStepIndex) {
-        state = i == 0 ? StepperStepState.completed : StepperStepState.active;
-      } else {
-        state = StepperStepState.inactive;
-      }
-      steps.add(
-        StepperStep(title: titles[i], subtitle: subtitles[i], state: state),
-      );
-    }
 
     // Seller info from order
     final sellerName = order?.sellerModel?.name ?? '';
@@ -306,49 +255,14 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
 
               // ── ACTIVE ORDER: timeline + seller ───────────────────────
               if (!isCancelled) ...[
-                // ITEM CURRENT STATUS header
-                Text(
-                  "ITEM CURRENT STATUS",
-                  style: GoogleFonts.dmSans(
+                CustomItemStatusCard(
+                  status: item.status ?? order?.status,
+                  headerTitle: "ITEM CURRENT STATUS",
+                  headerStyle: GoogleFonts.dmSans(
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w700,
                     color: Colors.white38,
                     letterSpacing: 1.0,
-                  ),
-                ),
-                SizedBox(height: 16.h),
-
-                // Stepper Timeline
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 16.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF161719),
-                    borderRadius: BorderRadius.circular(16.r),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.08),
-                      width: 1.0,
-                    ),
-                  ),
-                  child: VerticalStepper(
-                    steps: steps,
-                    nodeSize: 26.r,
-                    activeDashedSize: 26.r,
-                    lineWidth: 2.w,
-                    stepHeight: 52.h,
-                    titleStyle: GoogleFonts.dmSans(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                      height: 1.1,
-                    ),
-                    subtitleStyle: GoogleFonts.dmSans(
-                      fontSize: 12.sp,
-                      color: Colors.white54,
-                      height: 1.1,
-                    ),
                   ),
                 ),
 

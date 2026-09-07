@@ -46,25 +46,35 @@ class ProfileItem {
   List<String> get itemImages => images ?? [imageUrl, imageUrl, imageUrl];
 
   String get displayStatus {
-    final st = (status ?? '').toLowerCase();
+    final st = (status ?? '')
+        .trim()
+        .toLowerCase()
+        .replaceAll(' ', '_')
+        .replaceAll('-', '_');
     if (st == 'pending_payment' ||
         st == 'secured' ||
         st == 'reserved' ||
-        st == 'pending') {
+        st == 'pending' ||
+        st.isEmpty) {
       return 'Reserved';
     }
     if (st == 'collection_pending' ||
+        st == 'awaiting_collection' ||
         st == 'collected' ||
         st == 'in_transit') {
       return 'Collected';
     }
     if (st == 'verification' ||
         st == 'authenticating' ||
+        st == 'authenticated' ||
         st == 'payout_processing') {
       return 'Authenticating';
     }
-    if (st == 'ready_for_delivery') {
-      return 'Ready for Delivery';
+    if (st == 'ready_for_delivery' ||
+        st == 'dispatched' ||
+        st == 'dispatch' ||
+        st == 'out_for_delivery') {
+      return 'Dispatched';
     }
     if (st == 'delivered' || st == 'completed') {
       return 'Delivered';
@@ -110,6 +120,7 @@ class ProfileController extends GetxController {
     if (phone.startsWith('+')) return phone;
     return '${rxPhoneCode.value} $phone'.trim();
   }
+
   final rxLocation = "".obs;
   final rxUserName = "".obs;
   final rxUserId = "".obs;
@@ -742,7 +753,8 @@ class ProfileController extends GetxController {
     await StorageService.setString('phone', phone);
 
     final fullName =
-        "${firstNameController.text.trim()} ${lastNameController.text.trim()}".trim();
+        "${firstNameController.text.trim()} ${lastNameController.text.trim()}"
+            .trim();
     final nameToUse = fullName.isNotEmpty ? fullName : rxUserName.value;
 
     // 3. Call backend PATCH /user/profile API
@@ -852,8 +864,10 @@ class ProfileController extends GetxController {
     }
     if (name.isEmpty) return 'CK';
 
-    final parts =
-        name.split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
+    final parts = name
+        .split(RegExp(r'\s+'))
+        .where((p) => p.isNotEmpty)
+        .toList();
     if (parts.length >= 2) {
       final firstInitial = parts[0].isNotEmpty ? parts[0][0] : '';
       final secondInitial = parts[1].isNotEmpty ? parts[1][0] : '';

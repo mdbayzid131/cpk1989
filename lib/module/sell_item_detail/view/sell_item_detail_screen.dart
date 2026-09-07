@@ -2117,6 +2117,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
   }
 
   void _showAddCardBottomSheet(BuildContext context) {
+    FocusScope.of(context).unfocus();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -2129,6 +2130,8 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
               required String expiry,
               required String cvv,
             }) async {
+              FocusScope.of(sheetContext).unfocus();
+              FocusManager.instance.primaryFocus?.unfocus();
               Helpers.showLoadingDialog();
 
               final result = await PaymentService.to.addCardWithDetails(
@@ -2146,6 +2149,8 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 if (sheetContext.mounted && Navigator.canPop(sheetContext)) {
                   Navigator.pop(sheetContext);
                 }
+                FocusScope.of(context).unfocus();
+                FocusManager.instance.primaryFocus?.unfocus();
                 Get.snackbar(
                   'Success',
                   'Card saved successfully!',
@@ -2170,7 +2175,10 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
               }
             },
       ),
-    );
+    ).then((_) {
+      FocusScope.of(context).unfocus();
+      FocusManager.instance.primaryFocus?.unfocus();
+    });
   }
 }
 

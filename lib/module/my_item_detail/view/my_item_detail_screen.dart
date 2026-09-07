@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
-import 'package:cpk1989/core/widgets/vertical_stepper.dart';
+import 'package:cpk1989/core/widgets/custom_item_status_card.dart';
 import 'package:cpk1989/core/widgets/custom_gold_button.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
@@ -21,63 +21,6 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
     final item = controller.item;
     final isReserved = controller.isReserved;
     final rawStatus = item.status ?? (isReserved ? "Reserved" : null);
-
-    final String currentStatus = (item.status ?? '').toLowerCase();
-
-    // Determine states for exact 4 UI steps: Reserved -> Collected -> Authenticating -> Delivered
-    // Uses same mapping as ProfileItem.displayStatus
-    StepperStepState step1State = StepperStepState.completed;
-    StepperStepState step2State = StepperStepState.inactive;
-    StepperStepState step3State = StepperStepState.inactive;
-    StepperStepState step4State = StepperStepState.inactive;
-
-    if (currentStatus == 'collected' || currentStatus == 'in_transit') {
-      // Collected: step 1 done, step 2 done, step 3 active
-      step1State = StepperStepState.completed;
-      step2State = StepperStepState.completed;
-      step3State = StepperStepState.active;
-    } else if (currentStatus == 'authenticating') {
-      // Authenticating: steps 1-3 done, step 4 active
-      step1State = StepperStepState.completed;
-      step2State = StepperStepState.completed;
-      step3State = StepperStepState.completed;
-      step4State = StepperStepState.active;
-    } else if (currentStatus == 'delivered' || currentStatus == 'completed') {
-      // Delivered: all done
-      step1State = StepperStepState.completed;
-      step2State = StepperStepState.completed;
-      step3State = StepperStepState.completed;
-      step4State = StepperStepState.completed;
-    } else {
-      // Reserved / Secured / Pending / Unknown: step 1 done, step 2 active
-      step1State = StepperStepState.completed;
-      step2State = StepperStepState.active;
-      step3State = StepperStepState.inactive;
-      step4State = StepperStepState.inactive;
-    }
-
-    final List<StepperStep> steps = [
-      StepperStep(
-        title: "Reserved",
-        subtitle: "Item reserved for you",
-        state: step1State,
-      ),
-      StepperStep(
-        title: "Collected",
-        subtitle: "Picked up from seller",
-        state: step2State,
-      ),
-      StepperStep(
-        title: "Authenticating",
-        subtitle: "Being verified by experts",
-        state: step3State,
-      ),
-      StepperStep(
-        title: "Delivered",
-        subtitle: "On its way to you",
-        state: step4State,
-      ),
-    ];
 
     return Scaffold(
       backgroundColor: const Color(0xFF0F1012),
@@ -359,46 +302,14 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                         SizedBox(height: 28.h),
 
                         // 1. ITEM CURRENT STATUS Section Header & Timeline
-                        Text(
-                          "ITEM CURRENT STATUS",
-                          style: GoogleFonts.dmSans(
+                        CustomItemStatusCard(
+                          status: rawStatus,
+                          headerTitle: "ITEM CURRENT STATUS",
+                          headerStyle: GoogleFonts.dmSans(
                             fontSize: 12.sp,
                             fontWeight: FontWeight.w700,
                             color: Colors.white38,
                             letterSpacing: 1.0,
-                          ),
-                        ),
-                        SizedBox(height: 16.h),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16.w,
-                            vertical: 16.h,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF161719),
-                            borderRadius: BorderRadius.circular(16.r),
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.08),
-                              width: 1.0,
-                            ),
-                          ),
-                          child: VerticalStepper(
-                            steps: steps,
-                            nodeSize: 26.r,
-                            activeDashedSize: 26.r,
-                            lineWidth: 2.w,
-                            stepHeight: 52.h,
-                            titleStyle: GoogleFonts.dmSans(
-                              fontSize: 15.sp,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                              height: 1.1,
-                            ),
-                            subtitleStyle: GoogleFonts.dmSans(
-                              fontSize: 12.sp,
-                              color: Colors.white54,
-                              height: 1.1,
-                            ),
                           ),
                         ),
 

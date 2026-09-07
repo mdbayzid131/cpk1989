@@ -44,6 +44,7 @@ class _CustomAddCardBottomSheetState extends State<CustomAddCardBottomSheet> {
 
   @override
   void dispose() {
+    FocusManager.instance.primaryFocus?.unfocus();
     nameController.dispose();
     numberController.dispose();
     expiryController.dispose();
@@ -85,7 +86,10 @@ class _CustomAddCardBottomSheetState extends State<CustomAddCardBottomSheet> {
                 ),
               ),
               GestureDetector(
-                onTap: () => Navigator.pop(context),
+                onTap: () {
+                  FocusScope.of(context).unfocus();
+                  Navigator.pop(context);
+                },
                 child: Container(
                   padding: EdgeInsets.all(4.r),
                   decoration: BoxDecoration(
@@ -184,6 +188,7 @@ class _CustomAddCardBottomSheetState extends State<CustomAddCardBottomSheet> {
               size: 18.sp,
             ),
             onTap: () {
+              FocusScope.of(context).unfocus();
               final name = nameController.text.trim();
               final rawNumber = numberController.text.trim();
               final cleanNumber = rawNumber

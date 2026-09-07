@@ -989,6 +989,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
 
   void _showAddCardBottomSheet(BuildContext context) {
     controller.rxIsCardSheetOpen.value = true;
+    FocusScope.of(context).unfocus();
 
     showModalBottomSheet(
       context: context,
@@ -1008,6 +1009,8 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                   required String expiry,
                   required String cvv,
                 }) async {
+                  FocusScope.of(sheetContext).unfocus();
+                  FocusManager.instance.primaryFocus?.unfocus();
                   Helpers.showLoadingDialog();
 
                   final result = await PaymentService.to.addCardWithDetails(
@@ -1026,6 +1029,8 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                         Navigator.canPop(sheetContext)) {
                       Navigator.pop(sheetContext);
                     }
+                    FocusScope.of(context).unfocus();
+                    FocusManager.instance.primaryFocus?.unfocus();
                     Get.snackbar(
                       'Success',
                       'Card saved successfully!',
@@ -1059,6 +1064,8 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
         );
       },
     ).then((_) {
+      FocusScope.of(context).unfocus();
+      FocusManager.instance.primaryFocus?.unfocus();
       controller.rxIsCardSheetOpen.value = false;
     });
   }

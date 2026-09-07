@@ -7,7 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/core/widgets/custom_gold_button.dart';
-import 'package:cpk1989/core/widgets/vertical_stepper.dart';
+import 'package:cpk1989/core/widgets/custom_item_status_card.dart';
 import 'package:cpk1989/module/purchase_detail/controller/purchase_detail_controller.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
@@ -32,25 +32,6 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
     final formattedPrice = item.price > 0
         ? "AED ${item.price % 1 == 0 ? item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},') : item.price.toStringAsFixed(2)}"
         : "AED 3,200";
-
-    // Stepper steps configuration matching the mockup
-    final List<Map<String, String>> steps = [
-      {"title": "Reserved", "subtitle": "Item reserved for you"},
-      {"title": "Collected", "subtitle": "Picked up from seller"},
-      {"title": "Authenticating", "subtitle": "Being verified by experts"},
-      {"title": "Delivered", "subtitle": "On its way to you"},
-    ];
-
-    int activeIndex = 0;
-    if (status == "Reserved") {
-      activeIndex = 1;
-    } else if (status == "Collected") {
-      activeIndex = 2;
-    } else if (status == "Authenticating") {
-      activeIndex = 3;
-    } else if (status == "Delivered") {
-      activeIndex = 4;
-    }
 
     return Scaffold(
       backgroundColor: const Color(0xFF0F1012),
@@ -123,63 +104,9 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                         SizedBox(height: 24.h),
 
                         // 4. Delivery Status Timeline Section
-                        Text(
-                          "Delivery Status",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w700,
-                            color: AppTheme.gray,
-                          ),
-                        ),
-                        SizedBox(height: 16.h),
-
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16.w,
-                            vertical: 16.h,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF161719),
-                            borderRadius: BorderRadius.circular(16.r),
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.08),
-                              width: 1.0,
-                            ),
-                          ),
-                          child: VerticalStepper(
-                            steps: List.generate(steps.length, (index) {
-                              final step = steps[index];
-                              StepperStepState state;
-                              if (index < activeIndex) {
-                                state = StepperStepState.completed;
-                              } else if (index == activeIndex) {
-                                state = StepperStepState.inactive;
-                              } else {
-                                state = StepperStepState.inactive;
-                              }
-
-                              return StepperStep(
-                                title: step["title"]!,
-                                subtitle: step["subtitle"]!,
-                                state: state,
-                              );
-                            }),
-                            nodeSize: 26.r,
-                            activeDashedSize: 26.r,
-                            lineWidth: 2.w,
-                            stepHeight: 52.h,
-                            titleStyle: GoogleFonts.dmSans(
-                              fontSize: 15.sp,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                              height: 1.1,
-                            ),
-                            subtitleStyle: GoogleFonts.dmSans(
-                              fontSize: 12.sp,
-                              color: Colors.white54,
-                              height: 1.1,
-                            ),
-                          ),
+                        CustomItemStatusCard(
+                          status: item.status,
+                          headerTitle: "Delivery Status",
                         ),
                         SizedBox(height: 20.h),
 
