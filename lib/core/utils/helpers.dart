@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cpk1989/config/constants/api_constants.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 
 import 'package:url_launcher/url_launcher.dart';
@@ -51,9 +52,13 @@ class Helpers {
           !isHttp && (fullUrl.startsWith('/') || fullUrl.contains('/'));
 
       if (!isHttp && !isLocalFile && !fullUrl.startsWith('assets/')) {
+        final serverBase = ApiConstants.baseUrl.replaceAll(
+          RegExp(r'/api/v1/?$'),
+          '',
+        );
         fullUrl = fullUrl.startsWith('/')
-            ? 'https://champagne-plates-sunday-lion.trycloudflare.com$fullUrl'
-            : 'https://champagne-plates-sunday-lion.trycloudflare.com/$fullUrl';
+            ? '$serverBase$fullUrl'
+            : '$serverBase/$fullUrl';
       }
 
       final BuildContext? context = Get.context;
