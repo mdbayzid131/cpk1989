@@ -75,13 +75,17 @@ class LoginScreen extends GetView<AuthController> {
 
                           // Card Titles
                           Center(
-                            child: Text(
-                              "Login or create your account",
-                              style: TextStyle(
-                                fontFamily: 'Schnyder L',
-                                fontSize: 30.sp,
-                                fontWeight: FontWeight.w300,
-                                color: AppTheme.primaryText,
+                            child: Obx(
+                              () => Text(
+                                controller.rxIsSignUp.value
+                                    ? "Create your account"
+                                    : "Login to your account",
+                                style: TextStyle(
+                                  fontFamily: 'Schnyder L',
+                                  fontSize: 30.sp,
+                                  fontWeight: FontWeight.w300,
+                                  color: AppTheme.primaryText,
+                                ),
                               ),
                             ),
                           ),

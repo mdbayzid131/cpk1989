@@ -175,8 +175,8 @@ class InternetController extends GetxController with WidgetsBindingObserver {
       );
     } else {
       Get.snackbar(
-        'No Connection',
-        'Still offline. Please check your internet settings.',
+        'No connection',
+        "You're still offline, please check your internet connection.",
         snackPosition: SnackPosition.TOP,
         backgroundColor: const Color(0xFF161719),
         colorText: const Color(0xFFFF5252),
