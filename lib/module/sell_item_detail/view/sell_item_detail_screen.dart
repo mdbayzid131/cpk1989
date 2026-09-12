@@ -60,15 +60,18 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
             ),
           ),
         ),
-        body: SingleChildScrollView(
-          controller: scrollController,
-          physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.symmetric(horizontal: 16.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(
-                height: 300.h,
+        body: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: SingleChildScrollView(
+            controller: scrollController,
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: EdgeInsets.symmetric(horizontal: 16.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(
+                  height: 300.h,
                 child: OverflowBox(
                   minWidth: MediaQuery.of(context).size.width,
                   maxWidth: MediaQuery.of(context).size.width,
@@ -330,7 +333,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
             ],
           ),
         ),
-      );
+      ));
     });
   }
 
@@ -374,6 +377,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                   child: TextField(
                     controller: controller.titleController,
                     textAlign: TextAlign.end,
+                    textInputAction: TextInputAction.next,
                     style: GoogleFonts.dmSans(
                       fontSize: 14.sp,
                       color: Colors.white,
@@ -435,6 +439,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
           children: [
             GestureDetector(
               onTap: () {
+                FocusManager.instance.primaryFocus?.unfocus();
                 controller.rxOriginalPackaging.value = !isChecked;
               },
               child: Container(
@@ -674,6 +679,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                   child: TextField(
                     controller: controller.brandController,
                     textAlign: TextAlign.end,
+                    textInputAction: TextInputAction.next,
                     enableSuggestions: false,
                     autocorrect: false,
                     autofillHints: const [],
@@ -754,6 +760,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 TextField(
                   controller: controller.descriptionController,
                   maxLines: null,
+                  textInputAction: TextInputAction.newline,
                   style: GoogleFonts.dmSans(
                     fontSize: 14.sp,
                     color: Colors.white,
@@ -856,6 +863,9 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                           controller: controller.priceController,
                           textAlign: TextAlign.end,
                           keyboardType: TextInputType.number,
+                          textInputAction: TextInputAction.done,
+                          onSubmitted: (_) =>
+                              FocusManager.instance.primaryFocus?.unfocus(),
                           style: GoogleFonts.dmSans(
                             fontSize: 14.sp,
                             color: Colors.white,
@@ -955,6 +965,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                       splashColor: Colors.transparent,
                     ),
                     child: PopupMenuButton<String>(
+                      onOpened: () => FocusScope.of(context).unfocus(),
                       offset: Offset(16.w, 20.h),
                       padding: EdgeInsets.zero,
                       color: Colors.transparent,
@@ -997,6 +1008,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                                             cond == currentCondition;
                                         return GestureDetector(
                                           onTap: () {
+                                            FocusScope.of(context).unfocus();
                                             controller
                                                     .conditionController
                                                     .text =
@@ -1163,7 +1175,10 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
           Obx(() {
             if (controller.rxBillName.value.isEmpty) {
               return GestureDetector(
-                onTap: () => controller.pickBillFile(),
+                onTap: () {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  controller.pickBillFile();
+                },
                 child: Text(
                   "Upload Bill",
                   style: GoogleFonts.dmSans(
@@ -1463,6 +1478,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                   child: TextField(
                     controller: textController,
                     textAlign: TextAlign.end,
+                    textInputAction: TextInputAction.next,
                     enableSuggestions: false,
                     autocorrect: false,
                     style: GoogleFonts.dmSans(

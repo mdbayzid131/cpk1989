@@ -63,8 +63,9 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                   size: 40.r,
                   onTap: () {
                     if (Get.isRegistered<ProfileController>()) {
-                      Get.find<ProfileController>()
-                          .deleteWardrobeItem(controller.item);
+                      Get.find<ProfileController>().deleteWardrobeItem(
+                        controller.item,
+                      );
                     } else {
                       Get.snackbar(
                         "Delete Item",
@@ -90,254 +91,382 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Product Image Carousel
-              SizedBox(
-                height: 300.h,
-                child: OverflowBox(
-                  minWidth: MediaQuery.of(context).size.width,
-                  maxWidth: MediaQuery.of(context).size.width,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    alignment: Alignment.bottomCenter,
-                    children: [
-                      Positioned.fill(
-                        child: PageView.builder(
-                          controller: controller.pageController,
-                          onPageChanged: (index) {
-                            controller.rxCurrentPage.value = index;
-                          },
-                          itemCount: item.itemImages.length,
-                          itemBuilder: (context, index) {
-                            final imgUrl = item.itemImages[index];
-                            return Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.w),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(20.r),
-                                child: Container(
-                                  color: const Color(0xFF1C1D20),
-                                  child: imgUrl.startsWith('http')
-                                      ? Image.network(
-                                          imgUrl,
-                                          fit: BoxFit.cover,
-                                          loadingBuilder:
-                                              (context, child, loadingProgress) {
-                                            if (loadingProgress == null) return child;
-                                            return Center(
-                                              child: CustomGoldLoader(
-                                                size: 24.r,
-                                                strokeWidth: 2.5.r,
-                                              ),
-                                            );
-                                          },
-                                          errorBuilder:
-                                              (context, error, stackTrace) =>
-                                                  const Center(
-                                                    child: Icon(
-                                                      Icons.broken_image,
-                                                      color: Colors.white30,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            physics: const BouncingScrollPhysics(),
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Product Image Carousel
+                SizedBox(
+                  height: 300.h,
+                  child: OverflowBox(
+                    minWidth: MediaQuery.of(context).size.width,
+                    maxWidth: MediaQuery.of(context).size.width,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      alignment: Alignment.bottomCenter,
+                      children: [
+                        Positioned.fill(
+                          child: PageView.builder(
+                            controller: controller.pageController,
+                            onPageChanged: (index) {
+                              controller.rxCurrentPage.value = index;
+                            },
+                            itemCount: item.itemImages.length,
+                            itemBuilder: (context, index) {
+                              final imgUrl = item.itemImages[index];
+                              return Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8.w),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20.r),
+                                  child: Container(
+                                    color: const Color(0xFF1C1D20),
+                                    child: imgUrl.startsWith('http')
+                                        ? Image.network(
+                                            imgUrl,
+                                            fit: BoxFit.cover,
+                                            loadingBuilder:
+                                                (
+                                                  context,
+                                                  child,
+                                                  loadingProgress,
+                                                ) {
+                                                  if (loadingProgress == null)
+                                                    return child;
+                                                  return Center(
+                                                    child: CustomGoldLoader(
+                                                      size: 24.r,
+                                                      strokeWidth: 2.5.r,
                                                     ),
-                                                  ),
-                                        )
-                                      : Image.file(
-                                          File(imgUrl),
-                                          fit: BoxFit.cover,
-                                          errorBuilder:
-                                              (context, error, stackTrace) =>
-                                                  const Center(
-                                                    child: Icon(
-                                                      Icons.broken_image,
-                                                      color: Colors.white30,
+                                                  );
+                                                },
+                                            errorBuilder:
+                                                (context, error, stackTrace) =>
+                                                    const Center(
+                                                      child: Icon(
+                                                        Icons.broken_image,
+                                                        color: Colors.white30,
+                                                      ),
                                                     ),
-                                                  ),
-                                        ),
+                                          )
+                                        : Image.file(
+                                            File(imgUrl),
+                                            fit: BoxFit.cover,
+                                            errorBuilder:
+                                                (context, error, stackTrace) =>
+                                                    const Center(
+                                                      child: Icon(
+                                                        Icons.broken_image,
+                                                        color: Colors.white30,
+                                                      ),
+                                                    ),
+                                          ),
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      Positioned(
-                        bottom: -9.h,
-                        child: Obx(
-                          () => CustomPageIndicator(
-                            count: item.itemImages.length,
-                            currentPage: controller.rxCurrentPage.value,
-                            isSmall: false,
-                            showBorder: false,
-                            backgroundColor: const Color(0xFF0F1012),
-                            activeColor: const Color(0xFFFFAF2C),
-                            inactiveColor: const Color(0xFF7E7E7E),
+                              );
+                            },
                           ),
                         ),
-                      ),
-                    ],
+                        Positioned(
+                          bottom: -9.h,
+                          child: Obx(
+                            () => CustomPageIndicator(
+                              count: item.itemImages.length,
+                              currentPage: controller.rxCurrentPage.value,
+                              isSmall: false,
+                              showBorder: false,
+                              backgroundColor: const Color(0xFF0F1012),
+                              activeColor: const Color(0xFFFFAF2C),
+                              inactiveColor: const Color(0xFF7E7E7E),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
 
-              SizedBox(height: 24.h),
+                SizedBox(height: 24.h),
 
-              // ITEM DETAILS Header Row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "ITEM DETAILS",
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white38,
-                      letterSpacing: 1.0,
+                // ITEM DETAILS Header Row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "ITEM DETAILS",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white38,
+                        letterSpacing: 1.0,
+                      ),
                     ),
-                  ),
-                  // If item is NOT reserved: show Gold Edit Pencil icon
-                  if (!isReserved)
-                    Obx(
-                      () => GestureDetector(
-                        onTap: controller.toggleEdit,
-                        child: Container(
-                          padding: EdgeInsets.all(6.r),
-                          decoration: BoxDecoration(
-                            color: controller.rxIsEditing.value
-                                ? const Color(0xFFFFAF2C).withValues(alpha: 0.2)
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(8.r),
-                          ),
-                          child: SvgPicture.asset(
-                            'assets/icons/edit pen .svg',
-                            width: 18.sp,
-                            height: 18.sp,
-                            colorFilter: const ColorFilter.mode(
-                              Color(0xFFFFAF2C),
-                              BlendMode.srcIn,
+                    // If item is NOT reserved: show Gold Edit Pencil icon
+                    if (!isReserved)
+                      Obx(
+                        () => GestureDetector(
+                          onTap: controller.toggleEdit,
+                          child: Container(
+                            padding: EdgeInsets.all(6.r),
+                            decoration: BoxDecoration(
+                              color: controller.rxIsEditing.value
+                                  ? const Color(
+                                      0xFFFFAF2C,
+                                    ).withValues(alpha: 0.2)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                            child: SvgPicture.asset(
+                              'assets/icons/edit pen .svg',
+                              width: 18.sp,
+                              height: 18.sp,
+                              colorFilter: const ColorFilter.mode(
+                                Color(0xFFFFAF2C),
+                                BlendMode.srcIn,
+                              ),
                             ),
                           ),
                         ),
+                      )
+                    else
+                      // If item IS reserved: show Status Pill Badge (● Reserved)
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12.w,
+                          vertical: 6.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFAF2C),
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 6.r,
+                              height: 6.r,
+                              decoration: const BoxDecoration(
+                                color: Colors.black,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            SizedBox(width: 6.w),
+                            Text(
+                              rawStatus ?? "Reserved",
+                              style: GoogleFonts.dmSans(
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    )
-                  else
-                    // If item IS reserved: show Status Pill Badge (● Reserved)
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12.w,
-                        vertical: 6.h,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFAF2C),
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
+                  ],
+                ),
+
+                SizedBox(height: 12.h),
+
+                // ITEM DETAILS Fields (View vs Edit mode)
+                Obx(() {
+                  final isEditing = controller.rxIsEditing.value;
+                  if (isEditing) {
+                    return _buildEditForm(context);
+                  } else {
+                    return _buildReadonlyDetails(context);
+                  }
+                }),
+
+                // -------------------------------------------------------------
+                // EXTRA SECTIONS: ONLY SHOWN WHEN ITEM IS RESERVED (isReserved == true)
+                // -------------------------------------------------------------
+                if (isReserved) ...[
+                  Builder(
+                    builder: (context) {
+                      final order = item.orderModel;
+                      final buyerName =
+                          order?.buyerModel?.name ??
+                          order?.buyerName ??
+                          "Aisha Khan";
+                      final delivery = order?.deliveryDetails;
+                      final buyerAddress =
+                          (delivery?.address != null &&
+                              delivery!.address!.isNotEmpty)
+                          ? "${delivery.address}${delivery.location != null ? ', ${delivery.location}' : ''}"
+                          : "Palm Jumeirah, Building 5, Apt 1204";
+                      final buyerPhone =
+                          (delivery?.phone != null &&
+                              delivery!.phone!.isNotEmpty)
+                          ? delivery.phone!
+                          : "+971 50 123 4567";
+
+                      final listingPriceVal = (order?.price ?? item.price) > 0
+                          ? (order?.price ?? item.price)
+                          : 4000.0;
+                      final platformFeeVal =
+                          order?.platformFee ?? (listingPriceVal * 0.12);
+                      final sellerPayoutVal =
+                          order?.sellerPayout ??
+                          (listingPriceVal - platformFeeVal);
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Container(
-                            width: 6.r,
-                            height: 6.r,
-                            decoration: const BoxDecoration(
-                              color: Colors.black,
-                              shape: BoxShape.circle,
+                          SizedBox(height: 28.h),
+
+                          // 1. ITEM CURRENT STATUS Section Header & Timeline
+                          CustomItemStatusCard(
+                            status: rawStatus,
+                            headerTitle: "ITEM CURRENT STATUS",
+                            headerStyle: GoogleFonts.dmSans(
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white38,
+                              letterSpacing: 1.0,
                             ),
                           ),
-                          SizedBox(width: 6.w),
+
+                          SizedBox(height: 28.h),
+
+                          // 2. BUYER DETAILS Section Header & Card
                           Text(
-                            rawStatus ?? "Reserved",
+                            "BUYER DETAILS",
                             style: GoogleFonts.dmSans(
                               fontSize: 12.sp,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white38,
+                              letterSpacing: 1.0,
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                ],
-              ),
-
-              SizedBox(height: 12.h),
-
-              // ITEM DETAILS Fields (View vs Edit mode)
-              Obx(() {
-                final isEditing = controller.rxIsEditing.value;
-                if (isEditing) {
-                  return _buildEditForm(context);
-                } else {
-                  return _buildReadonlyDetails(context);
-                }
-              }),
-
-              // -------------------------------------------------------------
-              // EXTRA SECTIONS: ONLY SHOWN WHEN ITEM IS RESERVED (isReserved == true)
-              // -------------------------------------------------------------
-              if (isReserved) ...[
-                Builder(
-                  builder: (context) {
-                    final order = item.orderModel;
-                    final buyerName = order?.buyerModel?.name ?? order?.buyerName ?? "Aisha Khan";
-                    final delivery = order?.deliveryDetails;
-                    final buyerAddress =
-                        (delivery?.address != null && delivery!.address!.isNotEmpty)
-                            ? "${delivery.address}${delivery.location != null ? ', ${delivery.location}' : ''}"
-                            : "Palm Jumeirah, Building 5, Apt 1204";
-                    final buyerPhone =
-                        (delivery?.phone != null && delivery!.phone!.isNotEmpty)
-                            ? delivery.phone!
-                            : "+971 50 123 4567";
-
-                    final listingPriceVal = (order?.price ?? item.price) > 0
-                        ? (order?.price ?? item.price)
-                        : 4000.0;
-                    final platformFeeVal =
-                        order?.platformFee ?? (listingPriceVal * 0.12);
-                    final sellerPayoutVal =
-                        order?.sellerPayout ?? (listingPriceVal - platformFeeVal);
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        SizedBox(height: 28.h),
-
-                        // 1. ITEM CURRENT STATUS Section Header & Timeline
-                        CustomItemStatusCard(
-                          status: rawStatus,
-                          headerTitle: "ITEM CURRENT STATUS",
-                          headerStyle: GoogleFonts.dmSans(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white38,
-                            letterSpacing: 1.0,
-                          ),
-                        ),
-
-                        SizedBox(height: 28.h),
-
-                        // 2. BUYER DETAILS Section Header & Card
-                        Text(
-                          "BUYER DETAILS",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white38,
-                            letterSpacing: 1.0,
-                          ),
-                        ),
-                        SizedBox(height: 12.h),
-                        CustomPaint(
-                          painter: _GradientBorderPainter(
-                            gradient: const LinearGradient(
-                              begin: Alignment.centerRight,
-                              end: Alignment.centerLeft,
-                              colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+                          SizedBox(height: 12.h),
+                          CustomPaint(
+                            painter: _GradientBorderPainter(
+                              gradient: const LinearGradient(
+                                begin: Alignment.centerRight,
+                                end: Alignment.centerLeft,
+                                colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+                              ),
+                              strokeWidth: 1.0,
+                              borderRadius: 16.r,
                             ),
-                            strokeWidth: 1.0,
-                            borderRadius: 16.r,
+                            child: Container(
+                              padding: EdgeInsets.all(16.w),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  begin: Alignment.centerRight,
+                                  end: Alignment.centerLeft,
+                                  colors: [
+                                    Color(0xFF2B2D32),
+                                    Color(0xFF1C1D20),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(16.r),
+                              ),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 18.r,
+                                        backgroundColor: const Color(
+                                          0xFF282A2E,
+                                        ),
+                                        backgroundImage: const NetworkImage(
+                                          'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=150',
+                                        ),
+                                      ),
+                                      SizedBox(width: 12.w),
+                                      Text(
+                                        buyerName,
+                                        style: GoogleFonts.dmSans(
+                                          fontSize: 16.sp,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 12.h),
+                                  const Divider(color: Colors.white10),
+                                  SizedBox(height: 12.h),
+                                  Row(
+                                    children: [
+                                      SvgPicture.asset(
+                                        'assets/icons/location.svg',
+                                        width: 16.sp,
+                                        height: 16.sp,
+                                        colorFilter: const ColorFilter.mode(
+                                          Colors.white38,
+                                          BlendMode.srcIn,
+                                        ),
+                                      ),
+                                      SizedBox(width: 8.w),
+                                      Expanded(
+                                        child: Text(
+                                          buyerAddress,
+                                          style: GoogleFonts.dmSans(
+                                            fontSize: 13.sp,
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 12.h),
+                                  Row(
+                                    children: [
+                                      SvgPicture.asset(
+                                        'assets/icons/phone.svg',
+                                        width: 16.sp,
+                                        height: 16.sp,
+                                        colorFilter: const ColorFilter.mode(
+                                          Colors.white38,
+                                          BlendMode.srcIn,
+                                        ),
+                                      ),
+                                      SizedBox(width: 8.w),
+                                      Text(
+                                        buyerPhone,
+                                        style: GoogleFonts.dmSans(
+                                          fontSize: 13.sp,
+                                          color: Colors.white70,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                          child: Container(
-                            padding: EdgeInsets.all(16.w),
+
+                          SizedBox(height: 28.h),
+
+                          // 3. YOUR EARNINGS Section Header & Breakdown
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "YOUR EARNINGS",
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white38,
+                                  letterSpacing: 1.0,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 12.h),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16.w,
+                              vertical: 14.h,
+                            ),
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
                                 begin: Alignment.centerRight,
@@ -345,73 +474,43 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                                 colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
                               ),
                               borderRadius: BorderRadius.circular(16.r),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.05),
+                                width: 1.0,
+                              ),
                             ),
                             child: Column(
                               children: [
+                                _buildEarningsRow(
+                                  "Listing price",
+                                  "AED ${listingPriceVal.toInt()}",
+                                ),
+                                SizedBox(height: 8.h),
+                                _buildEarningsRow(
+                                  "Closeté fee (12%)",
+                                  "AED ${platformFeeVal.toInt()}",
+                                ),
+                                SizedBox(height: 10.h),
+                                const Divider(color: Colors.white10),
+                                SizedBox(height: 10.h),
                                 Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    CircleAvatar(
-                                      radius: 18.r,
-                                      backgroundColor: const Color(0xFF282A2E),
-                                      backgroundImage: const NetworkImage(
-                                        'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=150',
+                                    Text(
+                                      "You'll Earn",
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 14.sp,
+                                        color: const Color(0xFFFFAF2C),
+                                        fontWeight: FontWeight.w700,
                                       ),
                                     ),
-                                    SizedBox(width: 12.w),
                                     Text(
-                                      buyerName,
+                                      "AED ${sellerPayoutVal.toInt()}",
                                       style: GoogleFonts.dmSans(
                                         fontSize: 16.sp,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 12.h),
-                                const Divider(color: Colors.white10),
-                                SizedBox(height: 12.h),
-                                Row(
-                                  children: [
-                                    SvgPicture.asset(
-                                      'assets/icons/location.svg',
-                                      width: 16.sp,
-                                      height: 16.sp,
-                                      colorFilter: const ColorFilter.mode(
-                                        Colors.white38,
-                                        BlendMode.srcIn,
-                                      ),
-                                    ),
-                                    SizedBox(width: 8.w),
-                                    Expanded(
-                                      child: Text(
-                                        buyerAddress,
-                                        style: GoogleFonts.dmSans(
-                                          fontSize: 13.sp,
-                                          color: Colors.white70,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 12.h),
-                                Row(
-                                  children: [
-                                    SvgPicture.asset(
-                                      'assets/icons/phone.svg',
-                                      width: 16.sp,
-                                      height: 16.sp,
-                                      colorFilter: const ColorFilter.mode(
-                                        Colors.white38,
-                                        BlendMode.srcIn,
-                                      ),
-                                    ),
-                                    SizedBox(width: 8.w),
-                                    Text(
-                                      buyerPhone,
-                                      style: GoogleFonts.dmSans(
-                                        fontSize: 13.sp,
-                                        color: Colors.white70,
+                                        color: const Color(0xFFFFAF2C),
+                                        fontWeight: FontWeight.w800,
                                       ),
                                     ),
                                   ],
@@ -419,142 +518,68 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                               ],
                             ),
                           ),
-                        ),
-
-                        SizedBox(height: 28.h),
-
-                        // 3. YOUR EARNINGS Section Header & Breakdown
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "YOUR EARNINGS",
-                              style: GoogleFonts.dmSans(
-                                fontSize: 12.sp,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white38,
-                                letterSpacing: 1.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 12.h),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16.w,
-                            vertical: 14.h,
-                          ),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              begin: Alignment.centerRight,
-                              end: Alignment.centerLeft,
-                              colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-                            ),
-                            borderRadius: BorderRadius.circular(16.r),
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.05),
-                              width: 1.0,
-                            ),
-                          ),
-                          child: Column(
-                            children: [
-                              _buildEarningsRow(
-                                "Listing price",
-                                "AED ${listingPriceVal.toInt()}",
-                              ),
-                              SizedBox(height: 8.h),
-                              _buildEarningsRow(
-                                "Closeté fee (12%)",
-                                "AED ${platformFeeVal.toInt()}",
-                              ),
-                              SizedBox(height: 10.h),
-                              const Divider(color: Colors.white10),
-                              SizedBox(height: 10.h),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "You'll Earn",
-                                    style: GoogleFonts.dmSans(
-                                      fontSize: 14.sp,
-                                      color: const Color(0xFFFFAF2C),
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  Text(
-                                    "AED ${sellerPayoutVal.toInt()}",
-                                    style: GoogleFonts.dmSans(
-                                      fontSize: 16.sp,
-                                      color: const Color(0xFFFFAF2C),
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ],
-
-              SizedBox(height: 16.h),
-
-              // Bottom disclaimer note
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.info_outline,
-                    color: Colors.white38,
-                    size: 14.sp,
-                  ),
-                  SizedBox(width: 6.w),
-                  Expanded(
-                    child: Text(
-                      "Final verification happens after pickup.",
-                      style: GoogleFonts.dmSans(
-                        fontSize: 12.sp,
-                        color: Colors.white38,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                        ],
+                      );
+                    },
                   ),
                 ],
-              ),
 
-              SizedBox(height: 32.h),
+                SizedBox(height: 16.h),
 
-              // Bottom Support Contact
-              GestureDetector(
-                onTap: () => Helpers.openSupportEmail(),
-                child: Center(
-                  child: Text.rich(
-                    TextSpan(
-                      text: "Need help? ",
-                      style: GoogleFonts.dmSans(
-                        fontSize: 13.sp,
-                        color: Colors.white54,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: "Contact support",
-                          style: GoogleFonts.dmSans(
-                            color: Colors.white,
-                            decoration: TextDecoration.underline,
-                            fontWeight: FontWeight.w600,
-                          ),
+                // Bottom disclaimer note
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      color: Colors.white38,
+                      size: 14.sp,
+                    ),
+                    SizedBox(width: 6.w),
+                    Expanded(
+                      child: Text(
+                        "Final verification happens after pickup.",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 12.sp,
+                          color: Colors.white38,
+                          fontWeight: FontWeight.w500,
                         ),
-                      ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 32.h),
+
+                // Bottom Support Contact
+                GestureDetector(
+                  onTap: () => Helpers.openSupportEmail(),
+                  child: Center(
+                    child: Text.rich(
+                      TextSpan(
+                        text: "Need help? ",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 13.sp,
+                          color: Colors.white54,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: "Contact support",
+                            style: GoogleFonts.dmSans(
+                              color: Colors.white,
+                              decoration: TextDecoration.underline,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
 
-              SizedBox(height: 16.h),
-            ],
+                SizedBox(height: 16.h),
+              ],
+            ),
           ),
         ),
       ),
@@ -574,7 +599,11 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
       if (controller.rxBillName.value.isNotEmpty) {
         proofText = controller.rxBillName.value;
       } else if (controller.rxBillPath.value.isNotEmpty) {
-        proofText = controller.rxBillPath.value.split('/').last.split('\\').last;
+        proofText = controller.rxBillPath.value
+            .split('/')
+            .last
+            .split('\\')
+            .last;
       } else if (item.proofOfPurchase != null &&
           item.proofOfPurchase!.isNotEmpty) {
         proofText = item.proofOfPurchase!.split('/').last.split('\\').last;
@@ -617,7 +646,10 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
         _buildEditInputRow("Brand", controller.brandController),
 
         // Description Input
-        _buildEditDescriptionRow("Description", controller.descriptionController),
+        _buildEditDescriptionRow(
+          "Description",
+          controller.descriptionController,
+        ),
 
         // Price Input
         _buildEditInputRow(
