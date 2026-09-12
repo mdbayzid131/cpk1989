@@ -84,36 +84,11 @@ class Helpers {
             ),
             child: Column(
               children: [
-                // Top drag indicator handle
-                SizedBox(height: 12.h),
-                Container(
-                  width: 40.w,
-                  height: 4.h,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(2.r),
-                  ),
-                ),
-                SizedBox(height: 12.h),
-
                 // Modal Header
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  padding: EdgeInsets.fromLTRB(20.w, 16.h, 16.w, 14.h),
                   child: Row(
                     children: [
-                      Container(
-                        padding: EdgeInsets.all(8.r),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.receipt_long_rounded,
-                          color: Colors.white,
-                          size: 20.sp,
-                        ),
-                      ),
-                      SizedBox(width: 12.w),
                       Expanded(
                         child: Text(
                           title,
@@ -150,22 +125,27 @@ class Helpers {
                     ],
                   ),
                 ),
-                Divider(
+                Container(
+                  height: 1,
                   color: Colors.white.withValues(alpha: 0.08),
-                  height: 24.h,
                 ),
 
                 // Document Content Area
                 Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.r),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16.r),
-                      child: Container(
-                        width: double.infinity,
-                        color: const Color(0xFF121315),
-                        child: _buildDocumentContent(fullUrl),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(24.r),
+                        bottomRight: Radius.circular(24.r),
                       ),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(24.r),
+                        bottomRight: Radius.circular(24.r),
+                      ),
+                      child: _buildDocumentContent(fullUrl),
                     ),
                   ),
                 ),
@@ -194,10 +174,14 @@ class Helpers {
 
     if (fullUrl.startsWith('/') && File(fullUrl).existsSync()) {
       return InteractiveViewer(
-        child: Center(
+        minScale: 0.5,
+        maxScale: 4.0,
+        child: Align(
+          alignment: Alignment.topCenter,
           child: Image.file(
             File(fullUrl),
-            fit: BoxFit.contain,
+            fit: BoxFit.fitWidth,
+            width: double.infinity,
             errorBuilder: (_, _, _) => InAppPdfViewerWidget(pdfUrl: fullUrl),
           ),
         ),
@@ -208,12 +192,20 @@ class Helpers {
         (!isPdf &&
             (fullUrl.startsWith('http') || fullUrl.startsWith('assets/')))) {
       return InteractiveViewer(
-        child: Center(
+        minScale: 0.5,
+        maxScale: 4.0,
+        child: Align(
+          alignment: Alignment.topCenter,
           child: fullUrl.startsWith('assets/')
-              ? Image.asset(fullUrl, fit: BoxFit.contain)
+              ? Image.asset(
+                  fullUrl,
+                  fit: BoxFit.fitWidth,
+                  width: double.infinity,
+                )
               : Image.network(
                   fullUrl,
-                  fit: BoxFit.contain,
+                  fit: BoxFit.fitWidth,
+                  width: double.infinity,
                   loadingBuilder: (context, child, loadingProgress) {
                     if (loadingProgress == null) return child;
                     return const Center(child: CustomGoldLoader(size: 40));
@@ -711,10 +703,12 @@ class _InAppPdfViewerWidgetState extends State<InAppPdfViewerWidget> {
           filePath: _localPath!,
           enableSwipe: true,
           swipeHorizontal: false,
-          autoSpacing: true,
-          pageFling: true,
-          pageSnap: true,
-          backgroundColor: const Color(0xFF121315),
+          autoSpacing: false,
+          pageFling: false,
+          pageSnap: false,
+          fitPolicy: FitPolicy.WIDTH,
+          fitEachPage: false,
+          backgroundColor: Colors.white,
           onRender: (pages) {
             if (mounted) {
               setState(() {

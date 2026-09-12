@@ -118,30 +118,39 @@ class NotificationScreen extends GetView<NotificationController> {
                             final item = items[index];
                             return Padding(
                               padding: EdgeInsets.only(bottom: 10.h),
-                              child: Dismissible(
-                                key: ValueKey('notification_${item.id}'),
-                                direction: DismissDirection.endToStart,
-                                background: Container(
-                                  alignment: Alignment.centerRight,
-                                  padding: EdgeInsets.only(right: 20.w),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFE53935),
-                                    borderRadius: BorderRadius.circular(16.r),
-                                  ),
-                                  child: SvgPicture.asset(
-                                    'assets/notifecation/delete.svg',
-                                    width: 22.r,
-                                    height: 22.r,
-                                    colorFilter: const ColorFilter.mode(
-                                      Colors.white,
-                                      BlendMode.srcIn,
-                                    ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16.r),
+                                  border: Border.all(
+                                    color: Colors.white.withValues(alpha: 0.05),
+                                    width: 1.0,
                                   ),
                                 ),
-                                onDismissed: (direction) {
-                                  controller.deleteNotification(item.id);
-                                },
-                                child: _buildNotificationCard(item),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(15.r),
+                                  child: Dismissible(
+                                    key: ValueKey('notification_${item.id}'),
+                                    direction: DismissDirection.endToStart,
+                                    background: Container(
+                                      color: const Color(0xFFE53935),
+                                      alignment: Alignment.centerRight,
+                                      padding: EdgeInsets.only(right: 20.w),
+                                      child: SvgPicture.asset(
+                                        'assets/notifecation/delete.svg',
+                                        width: 22.r,
+                                        height: 22.r,
+                                        colorFilter: const ColorFilter.mode(
+                                          Colors.white,
+                                          BlendMode.srcIn,
+                                        ),
+                                      ),
+                                    ),
+                                    onDismissed: (direction) {
+                                      controller.deleteNotification(item.id);
+                                    },
+                                    child: _buildNotificationCard(item),
+                                  ),
+                                ),
                               ),
                             );
                           }, childCount: items.length),
@@ -197,17 +206,12 @@ class NotificationScreen extends GetView<NotificationController> {
       },
       behavior: HitTestBehavior.opaque,
       child: Container(
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
             begin: Alignment.centerRight,
             end: Alignment.centerLeft,
             colors: [Color(0xFF292A2D), Color(0xFF1C1D21)],
             stops: [0.2161, 0.5276],
-          ),
-          borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.05),
-            width: 1.0,
           ),
         ),
         padding: EdgeInsets.fromLTRB(14.w, 14.h, 14.w, 14.h),
