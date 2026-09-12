@@ -85,117 +85,204 @@ class MyItemDetailController extends GetxController {
   void pickBillFile() {
     Get.bottomSheet(
       Container(
-        padding: EdgeInsets.all(20.w),
         decoration: BoxDecoration(
-          color: const Color(0xFF161719),
+          color: const Color(0xFF111214),
           borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
           border: Border.all(
-            color: Colors.white.withValues(alpha: 0.08),
+            color: Colors.white.withValues(alpha: 0.05),
             width: 1.0,
           ),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40.w,
-              height: 4.h,
-              decoration: BoxDecoration(
-                color: Colors.white24,
-                borderRadius: BorderRadius.circular(2.r),
-              ),
-            ),
-            SizedBox(height: 16.h),
-            Text(
-              "Upload Proof of Purchase",
-              style: GoogleFonts.dmSans(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
-            ),
-            SizedBox(height: 16.h),
-            Material(
-              color: Colors.transparent,
-              child: ListTile(
-                leading: Icon(
-                  Icons.image_outlined,
-                  color: const Color(0xFFFFAF2C),
-                  size: 22.sp,
-                ),
-                title: Text(
-                  "Pick Image from Gallery",
-                  style: GoogleFonts.dmSans(
-                    color: Colors.white,
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w500,
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 8.h),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Drag handle
+                  Center(
+                    child: Container(
+                      width: 40.w,
+                      height: 4.h,
+                      decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(2.r),
+                      ),
+                    ),
                   ),
-                ),
-                onTap: () async {
-                  Get.back();
-                  try {
-                    final picker = ImagePicker();
-                    final picked = await picker.pickImage(
-                      source: ImageSource.gallery,
-                    );
-                    if (picked != null) {
-                      rxBillPath.value = picked.path;
-                      rxBillName.value = picked.name;
-                    }
-                  } catch (e) {
-                    Get.snackbar(
-                      "Error",
-                      "Failed to pick image: $e",
-                      snackPosition: SnackPosition.TOP,
-                      backgroundColor: const Color(0xFF161719),
-                      colorText: const Color(0xFFFF453A),
-                    );
-                  }
-                },
-              ),
-            ),
-            Material(
-              color: Colors.transparent,
-              child: ListTile(
-                leading: Icon(
-                  Icons.picture_as_pdf_outlined,
-                  color: const Color(0xFFFFAF2C),
-                  size: 22.sp,
-                ),
-                title: Text(
-                  "Pick Document (PDF)",
-                  style: GoogleFonts.dmSans(
-                    color: Colors.white,
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w500,
+                  SizedBox(height: 16.h),
+
+                  // Title: Cormorant Garamond matching other modals
+                  Center(
+                    child: Text(
+                      "Upload Proof of Purchase",
+                      style: GoogleFonts.cormorantGaramond(
+                        fontSize: 26.sp,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                ),
-                onTap: () async {
-                  Get.back();
-                  try {
-                    FilePickerResult? result =
-                        await FilePicker.platform.pickFiles(
-                          type: FileType.custom,
-                          allowedExtensions: ['pdf'],
+                  SizedBox(height: 20.h),
+
+                  // 1. Pick Image from Gallery
+                  _buildUploadOptionTile(
+                    icon: Icons.photo_library_outlined,
+                    iconColor: const Color(0xFFFFAF2C),
+                    title: "Pick Image from Gallery",
+                    subtitle: "Select an image from your photo library",
+                    onTap: () async {
+                      Get.back();
+                      try {
+                        final picker = ImagePicker();
+                        final picked = await picker.pickImage(
+                          source: ImageSource.gallery,
                         );
-                    if (result != null && result.files.single.path != null) {
-                      rxBillPath.value = result.files.single.path!;
-                      rxBillName.value = result.files.single.name;
-                    }
-                  } catch (e) {
-                    Get.snackbar(
-                      "Error",
-                      "Failed to pick document: $e",
-                      snackPosition: SnackPosition.TOP,
-                      backgroundColor: const Color(0xFF161719),
-                      colorText: const Color(0xFFFF453A),
-                    );
-                  }
-                },
+                        if (picked != null) {
+                          rxBillPath.value = picked.path;
+                          rxBillName.value = picked.name;
+                        }
+                      } catch (e) {
+                        Helpers.showError("Failed to pick image: $e");
+                      }
+                    },
+                  ),
+                  SizedBox(height: 12.h),
+
+                  // 2. Pick Document (PDF)
+                  _buildUploadOptionTile(
+                    icon: Icons.picture_as_pdf_outlined,
+                    iconColor: const Color(0xFFFFAF2C),
+                    title: "Pick Document (PDF)",
+                    subtitle: "Select a PDF document from your files",
+                    onTap: () async {
+                      Get.back();
+                      try {
+                        FilePickerResult? result =
+                            await FilePicker.platform.pickFiles(
+                              type: FileType.custom,
+                              allowedExtensions: ['pdf'],
+                            );
+                        if (result != null && result.files.single.path != null) {
+                          rxBillPath.value = result.files.single.path!;
+                          rxBillName.value = result.files.single.name;
+                        }
+                      } catch (e) {
+                        Helpers.showError("Failed to pick document: $e");
+                      }
+                    },
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Cancel text button
+                  Center(
+                    child: TextButton(
+                      onPressed: () => Get.back(),
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 8.h,
+                          horizontal: 24.w,
+                        ),
+                      ),
+                      child: Text(
+                        "Cancel",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white60,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                ],
               ),
             ),
-            SizedBox(height: 12.h),
-          ],
+          ),
+        ),
+      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
+  Widget _buildUploadOptionTile({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16.r),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+          decoration: BoxDecoration(
+            color: const Color(0xFF181A1E),
+            borderRadius: BorderRadius.circular(16.r),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.06),
+              width: 1.0,
+            ),
+          ),
+          child: Row(
+            children: [
+              // Icon container
+              Container(
+                width: 42.r,
+                height: 42.r,
+                decoration: BoxDecoration(
+                  color: iconColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: Center(
+                  child: Icon(icon, color: iconColor, size: 20.r),
+                ),
+              ),
+              SizedBox(width: 14.w),
+
+              // Title & subtitle
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.dmSans(
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 2.h),
+                    Text(
+                      subtitle,
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.white38,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Trailing arrow icon
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: Colors.white24,
+                size: 14.r,
+              ),
+            ],
+          ),
         ),
       ),
     );
