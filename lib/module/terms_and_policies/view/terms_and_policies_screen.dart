@@ -116,7 +116,7 @@ class TermsAndPoliciesScreen extends StatelessWidget {
                     ),
                     _buildSubSection(
                       "15. CONTACT",
-                      "Email: Closeteapp@gmail.com",
+                      "Email: support@closete.app",
                     ),
 
                     SizedBox(height: 24.h),
@@ -162,7 +162,7 @@ class TermsAndPoliciesScreen extends StatelessWidget {
                     ),
                     _buildSubSection(
                       "9. CONTACT",
-                      "Email: Closeteapp@gmail.com",
+                      "Email: support@closete.app",
                     ),
 
                     SizedBox(height: 24.h),
@@ -200,7 +200,7 @@ class TermsAndPoliciesScreen extends StatelessWidget {
                     ),
                     _buildSubSection(
                       "7. YOUR RIGHTS",
-                      "Subject to applicable law, you may have the right to:\n• Access your personal information\n• Request correction of inaccurate information\n• Request deletion of your personal information\n• Withdraw consent where applicable\n\nTo exercise your rights, please contact:\nEmail: Closeteapp@gmail.com",
+                      "Subject to applicable law, you may have the right to:\n• Access your personal information\n• Request correction of inaccurate information\n• Request deletion of your personal information\n• Withdraw consent where applicable\n\nTo exercise your rights, please contact:\nEmail: support@closete.app",
                     ),
                     _buildSubSection(
                       "8. DATA RETENTION",
@@ -216,7 +216,7 @@ class TermsAndPoliciesScreen extends StatelessWidget {
                     ),
                     _buildSubSection(
                       "11. CONTACT US",
-                      "For any questions regarding this Privacy Policy or your personal information, please contact:\n\nEmail: Closeteapp@gmail.com\n\nCompany: Closeté",
+                      "For any questions regarding this Privacy Policy or your personal information, please contact:\n\nEmail: support@closete.app\n\nCompany: Closeté",
                     ),
 
                     SizedBox(height: 24.h),

@@ -20,11 +20,11 @@ enum SnackBarType { success, error, info, warning, secondary }
 class Helpers {
   Helpers._();
 
-  /// Open default email client with Closeteapp@gmail.com
+  /// Open default email client with support@closete.app
   static Future<void> openSupportEmail() async {
     final Uri emailLaunchUri = Uri(
       scheme: 'mailto',
-      path: 'closeteapp@gmail.com',
+      path: 'support@closete.app',
     );
     try {
       if (await canLaunchUrl(emailLaunchUri)) {
@@ -33,7 +33,7 @@ class Helpers {
         await launchUrl(emailLaunchUri);
       }
     } catch (e) {
-      showError("Could not launch email app for closeteapp@gmail.com");
+      showError("Could not launch email app for support@closete.app");
     }
   }
 
