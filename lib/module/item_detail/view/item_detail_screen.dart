@@ -556,34 +556,6 @@ class _DetailImageSliderState extends State<DetailImageSlider> {
                   },
                 ),
         ),
-
-        // 2. Next arrow floating button (glassmorphic circle overlay on the right)
-        Positioned(
-          right: 16.w,
-          top: MediaQuery.of(context).padding.top,
-          bottom: 0,
-          child: Center(
-            child: CustomGlassButton(
-              size: 44.r,
-              padding: EdgeInsets.all(10.r),
-              onTap: () {
-                if (_pageController.hasClients) {
-                  final nextPage = (_currentPage + 1) % images.length;
-                  _pageController.animateToPage(
-                    nextPage,
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeInOut,
-                  );
-                }
-              },
-              child: const Icon(
-                Icons.arrow_forward_rounded,
-                color: Colors.white,
-                size: 20,
-              ),
-            ),
-          ),
-        ),
       ],
     );
   }
