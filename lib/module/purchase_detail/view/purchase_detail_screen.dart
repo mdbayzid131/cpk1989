@@ -292,32 +292,87 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
             ),
           ),
           SizedBox(width: 16.w),
-          // Right Image Stack (with small indicator overlay sitting on the bottom border)
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8.r),
-                child: _buildPurchaseImage(item.imageUrl),
-              ),
-              Positioned(
-                bottom: -7.h, // half of the 14.h height of the small variant
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: CustomPageIndicator(
-                    count: 4,
-                    currentPage: 0,
-                    isSmall: true,
-                    backgroundColor: const Color(0xFF2B2C30),
-                    showBorder: false,
-                  ),
-                ),
-              ),
-            ],
-          ),
+          // Right Image Carousel with page indicator
+          PurchaseImageCarousel(item: item),
         ],
       ),
+    );
+  }
+}
+
+class PurchaseImageCarousel extends StatefulWidget {
+  final ProfileItem item;
+  const PurchaseImageCarousel({super.key, required this.item});
+
+  @override
+  State<PurchaseImageCarousel> createState() => _PurchaseImageCarouselState();
+}
+
+class _PurchaseImageCarouselState extends State<PurchaseImageCarousel> {
+  late final PageController _pageController;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final images = widget.item.itemImages
+        .where((img) => img.trim().isNotEmpty)
+        .toList();
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8.r),
+          child: SizedBox(
+            width: 102.r,
+            height: 102.r,
+            child: images.isEmpty
+                ? _buildImagePlaceholder()
+                : PageView.builder(
+                    controller: _pageController,
+                    itemCount: images.length,
+                    onPageChanged: (index) {
+                      setState(() {
+                        _currentPage = index;
+                      });
+                    },
+                    itemBuilder: (context, index) {
+                      final img = images[index];
+                      return _buildPurchaseImage(img);
+                    },
+                  ),
+          ),
+        ),
+        if (images.length > 1)
+          Positioned(
+            bottom: -7.h, // half of the 14.h height of the small variant
+            left: 0,
+            right: 0,
+            child: Center(
+              child: CustomPageIndicator(
+                count: images.length,
+                currentPage: _currentPage,
+                isSmall: true,
+                backgroundColor: const Color(0xFF2B2C30),
+                showBorder: false,
+                activeColor: const Color(0xFFFFAF2C),
+                inactiveColor: const Color(0xFF7E7E7E),
+              ),
+            ),
+          ),
+      ],
     );
   }
 
