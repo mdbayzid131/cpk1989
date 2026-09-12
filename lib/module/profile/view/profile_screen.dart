@@ -340,24 +340,7 @@ class ProfileScreen extends GetView<ProfileController> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 8.h),
-
-                  // Subtitle: DM Sans
-                  Center(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: Text(
-                        "Choose an option to update or remove your profile picture",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.dmSans(
-                          fontSize: 13.sp,
-                          color: Colors.white54,
-                          height: 1.4,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 24.h),
+                  SizedBox(height: 20.h),
 
                   // 1. Take Photo tile
                   _buildPhotoListTile(
