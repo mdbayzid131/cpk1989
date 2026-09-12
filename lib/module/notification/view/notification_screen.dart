@@ -496,93 +496,39 @@ class NotificationScreen extends GetView<NotificationController> {
                           ),
                           child: Material(
                             color: Colors.transparent,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                // 1. Mark as all read
-                                InkWell(
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(16.r),
-                                    topRight: Radius.circular(16.r),
-                                  ),
-                                  onTap: () {
-                                    Navigator.of(dialogContext).pop();
-                                    controller.markAllAsRead();
-                                  },
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 16.w,
-                                      vertical: 14.h,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        SvgPicture.asset(
-                                          'assets/notifecation/mark.svg',
-                                          width: 18.r,
-                                          height: 18.r,
-                                          fit: BoxFit.contain,
-                                        ),
-                                        SizedBox(width: 12.w),
-                                        Expanded(
-                                          child: Text(
-                                            "Mark as all read",
-                                            style: GoogleFonts.dmSans(
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.w400,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(16.r),
+                              onTap: () {
+                                Navigator.of(dialogContext).pop();
+                                controller.deleteAllNotifications();
+                              },
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 16.w,
+                                  vertical: 14.h,
                                 ),
-
-                                // Divider line
-                                Container(
-                                  height: 1.0,
-                                  color: Colors.white.withValues(alpha: 0.1),
-                                ),
-
-                                // 2. Delete all
-                                InkWell(
-                                  borderRadius: BorderRadius.only(
-                                    bottomLeft: Radius.circular(16.r),
-                                    bottomRight: Radius.circular(16.r),
-                                  ),
-                                  onTap: () {
-                                    Navigator.of(dialogContext).pop();
-                                    controller.deleteAllNotifications();
-                                  },
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 16.w,
-                                      vertical: 14.h,
+                                child: Row(
+                                  children: [
+                                    SvgPicture.asset(
+                                      'assets/notifecation/delete.svg',
+                                      width: 18.r,
+                                      height: 18.r,
+                                      fit: BoxFit.contain,
                                     ),
-                                    child: Row(
-                                      children: [
-                                        SvgPicture.asset(
-                                          'assets/notifecation/delete.svg',
-                                          width: 18.r,
-                                          height: 18.r,
-                                          fit: BoxFit.contain,
+                                    SizedBox(width: 12.w),
+                                    Expanded(
+                                      child: Text(
+                                        "Delete all",
+                                        style: GoogleFonts.dmSans(
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.white,
                                         ),
-                                        SizedBox(width: 12.w),
-                                        Expanded(
-                                          child: Text(
-                                            "Delete all",
-                                            style: GoogleFonts.dmSans(
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.w400,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
                           ),
                         ),
