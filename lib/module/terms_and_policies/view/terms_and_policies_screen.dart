@@ -55,6 +55,8 @@ class TermsAndPoliciesScreen extends StatelessWidget {
                   children: [
                     /// ==================== TERMS & CONDITIONS ====================
                     _buildSectionHeader("Terms & Conditions"),
+                    SizedBox(height: 6.h),
+                    _buildLastUpdatedText("Last updated: October 2026"),
                     SizedBox(height: 16.h),
                     _buildSubSection(
                       "1. INTRODUCTION",
@@ -66,27 +68,27 @@ class TermsAndPoliciesScreen extends StatelessWidget {
                     ),
                     _buildSubSection(
                       "3. USER ACCOUNTS",
-                      "Users agree to:\n• Provide accurate information\n• Maintain account security\n• Accept responsibility for account activity\n\nCloseté may suspend or terminate accounts for misuse.",
+                      "Users agree to:\n• Provide accurate information\n• Maintain account security\n• Accept responsibility for all account activity\n\nCloseté may suspend or terminate accounts for misuse.",
                     ),
                     _buildSubSection(
                       "4. SELLING ON CLOSETÉ",
-                      "Sellers represent and warrant that:\n• Items are authentic and legally owned\n• Listings are accurate (description, condition, images)\n\nCloseté reserves the right to:\n• Reject items during verification\n• Remove listings\n• Suspend sellers providing counterfeit or misleading items.",
+                      "Sellers represent and warrant that:\n• Items are authentic and legally owned\n• Listings are accurate, including descriptions, condition, and images\n\nCloseté reserves the right to:\n• Reject items during authentication\n• Remove listings\n• Suspend sellers who provide counterfeit or misleading items.",
                     ),
                     _buildSubSection(
                       "5. BUYING ON CLOSETÉ",
-                      "Buyers agree to:\n• Review listings before purchase\n• Provide accurate delivery details\n\nAll purchases are subject to:\n• Authentication\n• Successful verification.",
+                      "Buyers agree to:\n• Review listings before purchase\n• Provide accurate delivery details\n\nAll purchases are subject to:\n• Successful authentication\n• Successful delivery",
                     ),
                     _buildSubSection(
                       "6. AUTHENTICATION PROCESS",
-                      "All items undergo a verification process using:\n• Internal expertise\n• Third-party authentication tools\n\nCloseté performs authentication using best efforts and available technology.\n\nAuthentication outcomes are:\n• Final and binding\n• Based on inspection at the time of verification\n\nCloseté does not guarantee absolute authenticity beyond this process.",
+                      "All items undergo an authentication process using:\n• Internal expertise\n• Third-party authentication tools\n\nCloseté performs authentication using best efforts and available technology.\n\nAuthentication outcomes are:\n• Final and binding\n• Based on inspection at the time of authentication\n\nCloseté does not guarantee absolute authenticity beyond this process.",
                     ),
                     _buildSubSection(
                       "7. PAYMENTS",
-                      "Payments are securely processed via third-party providers.\n\nFunds are held until:\n• The item has successfully passed authentication\n• The Buyer accepts delivery\n\nPayment is only released to the seller after successful delivery acceptance.",
+                      "Payments are securely processed via third-party providers.\n\nFunds are held until:\n• The item has successfully passed authentication.\n• The Buyer accepts delivery.\n\nPayment is only released to the Seller after successful delivery acceptance.",
                     ),
                     _buildSubSection(
                       "8. COLLECTION & DELIVERY",
-                      "Closeté manages:\n• Seller collection\n• Buyer delivery\n\nUsers must:\n• Be available at scheduled times\n• Provide accurate address details\n\nCloseté is not liable for:\n• Delays caused by logistics partners\n• Failed deliveries due to incorrect information.",
+                      "Closeté manages:\n• Seller collection\n• Buyer delivery\n\nUsers must:\n• Be available at scheduled collection or delivery times.\n• Provide accurate address details.\n\nCloseté is not liable for:\n• Delays caused by logistics partners.\n• Failed deliveries resulting from incorrect information provided by users.",
                     ),
                     _buildSubSection(
                       "9. REJECTION AT DELIVERY",
@@ -94,23 +96,27 @@ class TermsAndPoliciesScreen extends StatelessWidget {
                     ),
                     _buildSubSection(
                       "10. DISPUTE RESOLUTION",
-                      "Closeté's decisions regarding:\n• Authentication\n• Item condition\n• Listing accuracy\nare final and binding. Users agree to accept Closeté's determination in resolving disputes.",
+                      "Closeté’s decisions regarding:\n• Authentication\n• Item condition\n• Listing accuracy\nare final and binding.\n\nUsers agree to accept Closeté’s determination in resolving disputes.",
                     ),
                     _buildSubSection(
                       "11. CHARGEBACKS & FRAUD",
-                      "Closeté reserves the right to:\n• Contest chargebacks with evidence\n• Suspend accounts involved in disputes\n• Take action against fraudulent activity.",
+                      "Closeté reserves the right to:\n• Contest chargebacks using available evidence.\n• Suspend accounts involved in payment disputes.\n• Take appropriate action against fraudulent activity.",
                     ),
                     _buildSubSection(
                       "12. LIMITATION OF LIABILITY",
-                      "To the fullest extent permitted by law:\n\nCloseté shall not be liable for:\n• Indirect or consequential losses\n• Loss of profits or opportunity\n• Disputes between users\n\nTotal liability is limited to: the value of the transaction in question.",
+                      "To the fullest extent permitted by law, Closeté shall not be liable for:\n• Indirect or consequential losses\n• Loss of profits or opportunity\n• Disputes between users\n\nCloseté’s total liability is limited to the value of the transaction in question.",
                     ),
                     _buildSubSection(
                       "13. PLATFORM USE",
-                      "Closeté may:\n• Remove listings\n• Suspend accounts\n• Refuse service\n\nIf users:\n• Attempt fraud\n• Misuse the platform\n• Circumvent processes.",
+                      "Closeté may:\n• Remove listings\n• Suspend accounts\n• Refuse service\n\nwhere users:\n• Attempt fraud\n• Misuse the platform\n• Circumvent Closeté’s processes",
                     ),
                     _buildSubSection(
                       "14. CHANGES TO TERMS",
-                      "Closeté may update these Terms at any time. Continued use of the app constitutes acceptance.",
+                      "Closeté may update these Terms & Conditions at any time.\n\nContinued use of the app constitutes acceptance of the updated Terms.",
+                    ),
+                    _buildSubSection(
+                      "15. CONTACT",
+                      "Email: Closeteapp@gmail.com",
                     ),
 
                     SizedBox(height: 24.h),
@@ -119,6 +125,8 @@ class TermsAndPoliciesScreen extends StatelessWidget {
 
                     /// ==================== AUTHENTICITY & DELIVERY POLICY ====================
                     _buildSectionHeader("Authenticity & Delivery Policy"),
+                    SizedBox(height: 6.h),
+                    _buildLastUpdatedText("Last updated: October 2026"),
                     SizedBox(height: 16.h),
                     _buildSubSection(
                       "1. OVERVIEW",
@@ -148,6 +156,14 @@ class TermsAndPoliciesScreen extends StatelessWidget {
                       "7. DAMAGED ITEMS",
                       "If an item is damaged while in Closeté’s possession or control:\n• The matter will be investigated.\n• An appropriate resolution will be determined at Closeté’s discretion.",
                     ),
+                    _buildSubSection(
+                      "8. REFUNDS",
+                      "Where applicable, refunds will:\n• Be issued to the original payment method.\n• Be processed within a reasonable timeframe.\n• Be subject to any applicable Closeté Handling Fee where a Buyer rejects an item at delivery solely due to a change of mind.",
+                    ),
+                    _buildSubSection(
+                      "9. CONTACT",
+                      "Email: Closeteapp@gmail.com",
+                    ),
 
                     SizedBox(height: 24.h),
                     const Divider(color: Colors.white10),
@@ -155,23 +171,16 @@ class TermsAndPoliciesScreen extends StatelessWidget {
 
                     /// ==================== PRIVACY POLICY ====================
                     _buildSectionHeader("Privacy Policy"),
-                    SizedBox(height: 8.h),
-                    Text(
-                      "Last updated: June 2026",
-                      style: GoogleFonts.dmSans(
-                        fontSize: 12.sp,
-                        color: Colors.white38,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
+                    SizedBox(height: 6.h),
+                    _buildLastUpdatedText("Last updated: October 2026"),
                     SizedBox(height: 16.h),
                     _buildSubSection(
                       "1. INTRODUCTION",
-                      "Closeté (\"we\", \"our\", \"us\") respects your privacy and is committed to protecting your personal data.\n\nThis Privacy Policy explains how we collect, use, store, disclose, and protect your personal information when you use the Closeté mobile application and related services.",
+                      "Closeté (“we”, “our”, “us”) respects your privacy and is committed to protecting your personal data.\n\nThis Privacy Policy explains how we collect, use, store, disclose, and protect your personal information when you use the Closeté mobile application and related services.",
                     ),
                     _buildSubSection(
                       "2. INFORMATION WE COLLECT",
-                      "Account Information:\n• Name\n• Email address\n• Phone number\n\nTransaction & Listing Information:\n• Item details (photos, videos, descriptions, and condition)\n• Pricing and listing information\n• Purchase history\n• Order history\n\nCollection & Delivery Information:\n• Collection address (for Sellers)\n• Delivery address (for Buyers)\n• Collection and delivery status\n\nPayment Information:\n• Payment details processed securely by third-party payment providers\n• We do not store your full payment card details\n\nAuthentication Information:\n• Images and information submitted for authentication\n• Authentication results\n• Operational records relating to the authentication process\n\nDevice & Usage Information:\n• Device type\n• Operating system\n• App usage information\n• Log data for security, diagnostics, and performance",
+                      "Account Information:\n• Name\n• Email address\n• Phone number\n\nTransaction & Listing Information:\n• Item details (including photos, videos, descriptions, and condition)\n• Pricing and listing information\n• Purchase history\n• Order history\n\nCollection & Delivery Information:\n• Collection address (for Sellers)\n• Delivery address (for Buyers)\n• Collection and delivery status\n\nPayment Information:\n• Payment details processed securely by third-party payment providers\n• We do not store your full payment card details\n\nAuthentication Information:\n• Images and information submitted for authentication\n• Authentication results\n• Operational records relating to the authentication process\n\nDevice & Usage Information:\n• Device type\n• Operating system\n• App usage information\n• Log data for security, diagnostics, and performance",
                     ),
                     _buildSubSection(
                       "3. HOW WE USE YOUR INFORMATION",
@@ -183,19 +192,19 @@ class TermsAndPoliciesScreen extends StatelessWidget {
                     ),
                     _buildSubSection(
                       "5. SHARING YOUR INFORMATION",
-                      "We only share your information where necessary to operate the Closeté platform.\n\nService Providers:\nIncluding payment processors, delivery and logistics partners, authentication providers, technology and cloud service providers.\n\nOther Users:\nWe may share limited information necessary to complete a transaction, including listing information and first names where appropriate.\n\nLegal Requirements:\nWe may disclose information where required by law or where reasonably necessary to comply with legal obligations, prevent fraud, or protect the rights, property, safety, or security of Closeté, our users, or third parties.",
+                      "We only share your information where necessary to operate the Closeté platform.\n\nService Providers:\nIncluding:\n• Payment processors\n• Delivery and logistics partners\n• Authentication providers\n• Technology and cloud service providers\n\nOther Users:\nWe may share limited information necessary to complete a transaction, including listing information and first names where appropriate.\n\nLegal Requirements:\nWe may disclose information where required by law or where reasonably necessary to:\n• Comply with legal obligations.\n• Prevent fraud.\n• Protect the rights, property, safety, or security of Closeté, our users, or third parties.",
                     ),
                     _buildSubSection(
                       "6. DATA SECURITY",
-                      "We implement appropriate technical and organisational measures designed to protect your personal information, including:\n• Encrypted data transmission.\n• Secure storage systems.\n• Access controls.\n• Ongoing monitoring and security practices.\n\nWhile we take reasonable steps to protect your information, no method of electronic transmission or storage is completely secure.",
+                      "We implement appropriate technical and organisational measures designed to protect your personal information, including:\n• Encrypted data transmission\n• Secure storage systems\n• Access controls\n• Ongoing monitoring and security practices\n\nWhile we take reasonable steps to protect your information, no method of electronic transmission or storage is completely secure.",
                     ),
                     _buildSubSection(
                       "7. YOUR RIGHTS",
-                      "Subject to applicable law, you may have the right to:\n• Access your personal information.\n• Request correction of inaccurate information.\n• Request deletion of your personal information.\n• Withdraw consent where applicable.\n\nTo exercise your rights, please contact: Closeteapp@gmail.com",
+                      "Subject to applicable law, you may have the right to:\n• Access your personal information\n• Request correction of inaccurate information\n• Request deletion of your personal information\n• Withdraw consent where applicable\n\nTo exercise your rights, please contact:\nEmail: Closeteapp@gmail.com",
                     ),
                     _buildSubSection(
                       "8. DATA RETENTION",
-                      "We retain personal information only for as long as reasonably necessary to:\n• Provide our services.\n• Complete transactions.\n• Meet legal and regulatory obligations.\n• Resolve disputes.\n• Enforce our agreements.",
+                      "We retain personal information only for as long as reasonably necessary to:\n• Provide our services\n• Complete transactions\n• Meet legal and regulatory obligations\n• Resolve disputes\n• Enforce our agreements",
                     ),
                     _buildSubSection(
                       "9. INTERNATIONAL TRANSFERS",
@@ -207,7 +216,7 @@ class TermsAndPoliciesScreen extends StatelessWidget {
                     ),
                     _buildSubSection(
                       "11. CONTACT US",
-                      "For any questions regarding this Privacy Policy or your personal information, please contact:\n\nEmail: closeteapp@gmail.com\nCompany: Closeté",
+                      "For any questions regarding this Privacy Policy or your personal information, please contact:\n\nEmail: Closeteapp@gmail.com\n\nCompany: Closeté",
                     ),
 
                     SizedBox(height: 24.h),
@@ -229,6 +238,17 @@ class TermsAndPoliciesScreen extends StatelessWidget {
         fontSize: 18.sp,
         fontWeight: FontWeight.w700,
         color: Colors.white,
+      ),
+    );
+  }
+
+  Widget _buildLastUpdatedText(String text) {
+    return Text(
+      text,
+      style: GoogleFonts.dmSans(
+        fontSize: 12.sp,
+        color: Colors.white38,
+        fontStyle: FontStyle.italic,
       ),
     );
   }
