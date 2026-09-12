@@ -239,81 +239,55 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                   ),
 
                                   SizedBox(height: 12.h),
-                                  // Bullet 1
+                                  // Condition
                                   Builder(
                                     builder: (context) {
                                       final desc = _getConditionDescription(
                                         item.condition,
                                       );
-                                      return Row(
+                                      return Column(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            "✦ ",
+                                            "Condition: ${item.condition}",
                                             style: GoogleFonts.dmSans(
                                               fontSize: 12.sp,
-                                              color: Colors.white60,
+                                              color: const Color(
+                                                0xFFA2A2A2,
+                                              ),
+                                              fontWeight: FontWeight.w400,
                                             ),
                                           ),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  "Condition: ${item.condition}",
-                                                  style: GoogleFonts.dmSans(
-                                                    fontSize: 12.sp,
-                                                    color: const Color(
-                                                      0xFFA2A2A2,
-                                                    ),
-                                                    fontWeight: FontWeight.w400,
-                                                  ),
+                                          if (desc.isNotEmpty) ...[
+                                            SizedBox(height: 2.h),
+                                            Text(
+                                              desc,
+                                              style: GoogleFonts.dmSans(
+                                                fontSize: 12.sp,
+                                                color: const Color(
+                                                  0xFFA2A2A2,
                                                 ),
-                                                if (desc.isNotEmpty) ...[
-                                                  SizedBox(height: 2.h),
-                                                  Text(
-                                                    desc,
-                                                    style: GoogleFonts.dmSans(
-                                                      fontSize: 12.sp,
-                                                      color: const Color(
-                                                        0xFFA2A2A2,
-                                                      ),
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ],
+                                                fontWeight:
+                                                    FontWeight.w400,
+                                              ),
                                             ),
-                                          ),
+                                          ],
                                         ],
                                       );
                                     },
                                   ),
                                   SizedBox(height: 6.h),
-                                  // Bullet 2
-                                  Row(
-                                    children: [
-                                      Text(
-                                        "✦ ",
-                                        style: GoogleFonts.dmSans(
-                                          fontSize: 12.sp,
-                                          color: Colors.white60,
-                                        ),
-                                      ),
-                                      Text(
-                                        item.originalPackagingAvailable
-                                            ? "Original packaging available"
-                                            : "Original packaging unavailable",
-                                        style: GoogleFonts.dmSans(
-                                          fontSize: 12.sp,
-                                          color: const Color(0xFFA2A2A2),
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                    ],
+                                  // Packaging
+                                  Text(
+                                    item.originalPackagingAvailable
+                                        ? "Original packaging available"
+                                        : "Original packaging unavailable",
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 12.sp,
+                                      color: const Color(0xFFA2A2A2),
+                                      fontWeight: FontWeight.w400,
+                                    ),
                                   ),
                                   SizedBox(height: 6.h),
                                 ],
