@@ -41,22 +41,6 @@ class ProfileScreen extends GetView<ProfileController> {
             color: Colors.white,
           ),
         ),
-        actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 16.w),
-            child: IconButton(
-              onPressed: () => _showLogoutDialog(context),
-              alignment: Alignment.centerRight,
-              icon: const Icon(
-                Icons.logout_rounded,
-                color: Colors.white54,
-                size: 22,
-              ),
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-            ),
-          ),
-        ],
       ),
       body: SafeArea(
         child: RefreshIndicator(
@@ -159,7 +143,7 @@ class ProfileScreen extends GetView<ProfileController> {
                   );
                 }
 
-                // Default Initials Avatar: Yellow on Black background
+                // Default Initials Avatar: Gold/Yellow on Black background matching tab indicators
                 final initials = controller.getUserInitials();
                 return Container(
                   width: 92.r,
@@ -168,7 +152,7 @@ class ProfileScreen extends GetView<ProfileController> {
                     color: const Color(0xFF0F1012),
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: const Color(0xFFE2B744).withValues(alpha: 0.35),
+                      color: const Color(0xFFFFAF2C),
                       width: 1.5,
                     ),
                   ),
@@ -178,7 +162,7 @@ class ProfileScreen extends GetView<ProfileController> {
                       style: GoogleFonts.dmSans(
                         fontSize: 26.sp,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFFE2B744),
+                        color: const Color(0xFFFFAF2C),
                         letterSpacing: 1.2,
                       ),
                     ),
@@ -1170,6 +1154,18 @@ class ProfileScreen extends GetView<ProfileController> {
             ],
 
             _buildSavedCardsSection(context),
+            SizedBox(height: 32.h),
+
+            // Logout Button at the bottom of Personal Details (matching app consistency)
+            CustomGoldButton(
+              text: "Logout",
+              suffix: Icon(
+                Icons.arrow_forward,
+                size: 16.r,
+                color: Colors.black,
+              ),
+              onTap: () => _showLogoutDialog(context),
+            ),
           ],
         ),
       );
