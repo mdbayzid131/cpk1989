@@ -23,7 +23,7 @@ class ApiConstants {
   static const String connectStatus = '/payment/connect/status';
   static const String connectOnboarding = '/payment/connect/onboarding';
   static const String stripePublishableKey =
-      'pk_test_51U62XlAEexz9ehrLFxzAtcLjvCUnGXz3Q45gyBYh4xvkruEzM7hgchNsFEGZqDDOJv0FHt5mNqmgDCbYETkxRSdb00A3pm0L08';
+      'pk_test_51SqdqHDpab3KPsw4BQiAn9rUzt1abdcURDqGwvnss6DsYH7B4DmMKdKsMjoqjRFTfu6kYOlpTRQ4xkO3fGNev1wC00K3XpnV97';
   // static const String stripePublishableKey =
   //     'pk_test_51RqgJSGlimJ2gcj4JgiuajuGcFOXAjGwbzSH9FhLZRbBgbhAwJ4NRLGJhNhoj7m7Zi4u0K82q1CST9b1llKm4iHw00KA351vJ3';
   // static const String stripePublishableKey =
