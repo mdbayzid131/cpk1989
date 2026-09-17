@@ -1,7 +1,7 @@
 class ApiConstants {
-  static const String baseUrl =
-      'https://celebrity-males-bookmark-planned.trycloudflare.com/api/v1';
-  // static const String baseUrl = 'http://10.10.26.198:5001/api/v1';
+  // static const String baseUrl =
+  //     'https://celebrity-males-bookmark-planned.trycloudflare.com/api/v1';
+  static const String baseUrl = 'http://10.10.7.99:5000/api/v1';
   // static const String baseUrl = 'http://10.10.26.198:5000/api/v1';
   // static const String baseUrl = 'https://nayem5001.binarybards.online/api/v1';
   // static const String apiVersion = '';
