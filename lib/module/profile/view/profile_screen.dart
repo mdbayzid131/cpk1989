@@ -650,130 +650,6 @@ class ProfileScreen extends GetView<ProfileController> {
     });
   }
 
-  void _showPayoutSetupModal(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (ctx) {
-        return Container(
-          padding: EdgeInsets.fromLTRB(20.w, 14.h, 20.w, 24.h),
-          decoration: BoxDecoration(
-            color: const Color(0xFF1B1C22),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(22.r)),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.1),
-              width: 1,
-            ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 36.w,
-                  height: 4.h,
-                  margin: EdgeInsets.only(bottom: 18.h),
-                  decoration: BoxDecoration(
-                    color: Colors.white24,
-                    borderRadius: BorderRadius.circular(2.r),
-                  ),
-                ),
-              ),
-              Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(10.r),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFAF2C).withValues(alpha: 0.15),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.account_balance_wallet_outlined,
-                      color: const Color(0xFFFFAF2C),
-                      size: 22.sp,
-                    ),
-                  ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Payout Account Setup",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                        SizedBox(height: 2.h),
-                        Text(
-                          "Required to receive seller payouts",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 12.sp,
-                            color: const Color(0xFFFFAF2C),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 14.h),
-              Container(
-                padding: EdgeInsets.all(12.r),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.04),
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.06),
-                  ),
-                ),
-                child: Text(
-                  "Connect your bank account via Stripe Connect to receive your earnings automatically when your listed items are sold and delivered.",
-                  style: GoogleFonts.dmSans(
-                    fontSize: 13.sp,
-                    color: Colors.white70,
-                    height: 1.45,
-                  ),
-                ),
-              ),
-              SizedBox(height: 20.h),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(ctx);
-                    controller.startStripeConnectOnboarding();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFAF2C),
-                    foregroundColor: Colors.black,
-                    padding: EdgeInsets.symmetric(vertical: 13.h),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: Text(
-                    "Setup Payout Account",
-                    style: GoogleFonts.dmSans(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildPurchasesGrid() {
     return Obx(() {
       if (controller.rxIsLoadingOrders.value) {
@@ -1275,6 +1151,111 @@ class ProfileScreen extends GetView<ProfileController> {
         Obx(() {
           final isConnected = controller.rxIsPayoutConnected.value;
 
+          if (isConnected) {
+            return Container(
+              padding: EdgeInsets.all(18.r),
+              decoration: BoxDecoration(
+                color: const Color(0xFF131416),
+                borderRadius: BorderRadius.circular(16.r),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.08),
+                  width: 1.0,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Stripe Logo
+                      Padding(
+                        padding: EdgeInsets.only(top: 2.h),
+                        child: Text(
+                          "stripe",
+                          style: GoogleFonts.poppins(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF635BFF),
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 18.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Stripe",
+                              style: GoogleFonts.dmSans(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(height: 2.h),
+                            Text(
+                              "Connected account",
+                              style: GoogleFonts.dmSans(
+                                fontSize: 13.sp,
+                                color: const Color(0xFF8E9096),
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            SizedBox(height: 2.h),
+                            Text(
+                              controller.rxUserName.value.isNotEmpty
+                                  ? controller.rxUserName.value
+                                  : "Connected Account",
+                              style: GoogleFonts.dmSans(
+                                fontSize: 14.5.sp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 18.h),
+                  // Payout Details Verified Pill Badge
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10.w,
+                      vertical: 5.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF28A745).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(100.r),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.check_circle_outline_rounded,
+                          color: const Color(0xFF28A745),
+                          size: 15.sp,
+                        ),
+                        SizedBox(width: 5.w),
+                        Text(
+                          "Payout Details Verified",
+                          style: GoogleFonts.dmSans(
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF28A745),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
           return Container(
             padding: EdgeInsets.fromLTRB(16.w, 24.h, 16.w, 16.h),
             decoration: BoxDecoration(
@@ -1318,9 +1299,7 @@ class ProfileScreen extends GetView<ProfileController> {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8.w),
                   child: Text(
-                    isConnected
-                        ? "Your payout account is connected and ready to receive payments once items are sold and delivered."
-                        : "Complete your one-time payout setup to receive payments once your items have been sold and delivered.",
+                    "Complete your one-time payout setup to receive payments once your items have been sold and delivered.",
                     textAlign: TextAlign.center,
                     style: GoogleFonts.dmSans(
                       fontSize: 13.5.sp,
@@ -1332,11 +1311,9 @@ class ProfileScreen extends GetView<ProfileController> {
                 ),
                 SizedBox(height: 16.h),
                 GestureDetector(
-                  onTap: () => _showPayoutSetupModal(context),
+                  onTap: () => controller.startStripeConnectOnboarding(),
                   child: Text(
-                    isConnected
-                        ? "Manage payout account"
-                        : "+ Complete payout setup",
+                    "+ Complete payout setup",
                     style: GoogleFonts.dmSans(
                       fontSize: 14.5.sp,
                       color: const Color(0xFFFFAF2C),
@@ -1347,42 +1324,40 @@ class ProfileScreen extends GetView<ProfileController> {
                     ),
                   ),
                 ),
-                if (!isConnected) ...[
-                  SizedBox(height: 20.h),
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 14.w,
-                      vertical: 12.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2D3037).withValues(alpha: 0.6),
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.warning_amber_rounded,
-                          color: const Color(0xFF9EA0A5),
-                          size: 20.sp,
-                        ),
-                        SizedBox(width: 10.w),
-                        Expanded(
-                          child: Text(
-                            "We cannot collect your item or arrange delivery until this step has been completed.",
-                            style: GoogleFonts.dmSans(
-                              fontSize: 12.sp,
-                              color: const Color(0xFF9EA0A5),
-                              fontWeight: FontWeight.w400,
-                              height: 1.35,
-                            ),
+                SizedBox(height: 20.h),
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 14.w,
+                    vertical: 12.h,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2D3037).withValues(alpha: 0.6),
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.warning_amber_rounded,
+                        color: const Color(0xFF9EA0A5),
+                        size: 20.sp,
+                      ),
+                      SizedBox(width: 10.w),
+                      Expanded(
+                        child: Text(
+                          "We cannot collect your item or arrange delivery until this step has been completed.",
+                          style: GoogleFonts.dmSans(
+                            fontSize: 12.sp,
+                            color: const Color(0xFF9EA0A5),
+                            fontWeight: FontWeight.w400,
+                            height: 1.35,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ],
             ),
           );
@@ -1413,7 +1388,7 @@ class ProfileScreen extends GetView<ProfileController> {
                 GestureDetector(
                   onTap: () => _showAddCardBottomSheet(context),
                   child: Text(
-                    "Add a new card",
+                    "+ Add a new card",
                     style: GoogleFonts.dmSans(
                       fontSize: 13.sp,
                       color: const Color(0xFFFFAF2C),
@@ -1506,30 +1481,34 @@ class ProfileScreen extends GetView<ProfileController> {
               mainAxisSize: MainAxisSize.min,
               children: List.generate(cards.length, (index) {
                 final card = cards[index];
-                final type = card.brand.toUpperCase();
-                final logo = card.brand.toLowerCase();
-                final cardNumber = card.maskedNumber;
-                final expiry = card.expiry;
-                final isVerified = true;
+                final brandLower = card.brand.toLowerCase();
+                final brandName = card.brand.isNotEmpty
+                    ? (card.brand[0].toUpperCase() +
+                        card.brand.substring(1).toLowerCase())
+                    : "Card";
+                final digitsOnly =
+                    card.maskedNumber.replaceAll(RegExp(r'[^0-9]'), '');
+                final last4 = card.last4.isNotEmpty
+                    ? card.last4
+                    : (digitsOnly.length >= 4
+                        ? digitsOnly.substring(digitsOnly.length - 4)
+                        : (digitsOnly.isNotEmpty ? digitsOnly : '4242'));
+                final formattedCardNumber = "**** **** **** $last4";
+
+                String expiryDisplay = card.expiry;
+                if (expiryDisplay.isNotEmpty &&
+                    !expiryDisplay.toLowerCase().startsWith('exp')) {
+                  expiryDisplay = "Exp $expiryDisplay";
+                }
 
                 return Container(
                   margin: EdgeInsets.only(bottom: 12.h),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 16.h,
-                  ),
+                  padding: EdgeInsets.all(18.r),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.centerRight,
-                      end: Alignment.centerLeft,
-                      colors: [
-                        Color(0xFF2B2D32),
-                        Color(0xFF1C1D20),
-                      ],
-                    ),
+                    color: const Color(0xFF131416),
                     borderRadius: BorderRadius.circular(16.r),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.05),
+                      color: Colors.white.withValues(alpha: 0.08),
                       width: 1.0,
                     ),
                   ),
@@ -1539,99 +1518,77 @@ class ProfileScreen extends GetView<ProfileController> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildProfileCardLogo(logo),
-                          SizedBox(width: 16.w),
+                          _buildProfileCardLogo(brandLower),
+                          SizedBox(width: 14.w),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  type,
+                                  brandName,
                                   style: GoogleFonts.dmSans(
                                     fontSize: 16.sp,
                                     color: Colors.white,
-                                    fontWeight: FontWeight.w700,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                                 SizedBox(height: 4.h),
                                 Text(
-                                  cardNumber,
+                                  formattedCardNumber,
                                   style: GoogleFonts.dmSans(
                                     fontSize: 14.sp,
-                                    color: Colors.white38,
+                                    color: const Color(0xFF8E9096),
                                     fontWeight: FontWeight.w400,
-                                    letterSpacing: 0.5,
+                                    letterSpacing: 0.8,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          SizedBox(width: 8.w),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                expiry,
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 13.sp,
-                                  color: Colors.white38,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                          if (expiryDisplay.isNotEmpty) ...[
+                            SizedBox(width: 8.w),
+                            Text(
+                              expiryDisplay,
+                              style: GoogleFonts.dmSans(
+                                fontSize: 13.sp,
+                                color: const Color(0xFF8E9096),
+                                fontWeight: FontWeight.w400,
                               ),
-                              SizedBox(height: 8.h),
-                              GestureDetector(
-                                onTap: () =>
-                                    controller.deleteSavedCard(card.id),
-                                child: Icon(
-                                  Icons.delete_outline_rounded,
-                                  color: Colors.white38,
-                                  size: 18.sp,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ],
                       ),
-                      if (isVerified) ...[
-                        SizedBox(height: 12.h),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 10.w,
-                            vertical: 5.h,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(
-                              0xFF34C759,
-                            ).withValues(alpha: 0.08),
-                            borderRadius: BorderRadius.circular(100.r),
-                            border: Border.all(
-                              color: const Color(
-                                0xFF34C759,
-                              ).withValues(alpha: 0.15),
-                              width: 1.0,
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.check_circle_outline_rounded,
-                                color: const Color(0xFF34C759),
-                                size: 14.sp,
-                              ),
-                              SizedBox(width: 6.w),
-                              Text(
-                                "Verified for payments",
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 11.sp,
-                                  color: const Color(0xFF34C759),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
+                      SizedBox(height: 16.h),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 10.w,
+                          vertical: 5.h,
                         ),
-                      ],
+                        decoration: BoxDecoration(
+                          color:
+                              const Color(0xFF28A745).withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(100.r),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.check_circle_outline_rounded,
+                              color: const Color(0xFF28A745),
+                              size: 15.sp,
+                            ),
+                            SizedBox(width: 5.w),
+                            Text(
+                              "Verified for payments",
+                              style: GoogleFonts.dmSans(
+                                fontSize: 12.sp,
+                                color: const Color(0xFF28A745),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 );
@@ -1646,55 +1603,53 @@ class ProfileScreen extends GetView<ProfileController> {
   Widget _buildProfileCardLogo(String logo) {
     if (logo == 'visa') {
       return Container(
-        width: 44.r,
-        height: 44.r,
+        width: 46.w,
+        height: 32.h,
         decoration: BoxDecoration(
-          color: const Color(0xFF161719), // Branded dark background
-          borderRadius: BorderRadius.circular(12.r),
+          color: const Color(0xFF0057B8),
+          borderRadius: BorderRadius.circular(6.r),
         ),
         alignment: Alignment.center,
         child: Text(
           "VISA",
           style: GoogleFonts.dmSans(
-            color: const Color(0xFF2566AF), // Branded Visa blue
+            color: Colors.white,
             fontWeight: FontWeight.w900,
             fontStyle: FontStyle.italic,
-            fontSize: 14.sp,
+            fontSize: 13.sp,
             letterSpacing: 0.5,
           ),
         ),
       );
-    } else if (logo == 'mastercard') {
-      return Container(
-        width: 44.r,
-        height: 44.r,
-        decoration: BoxDecoration(
-          color: const Color(
-            0xFF161719,
-          ), // Mastercard dark container background
-          borderRadius: BorderRadius.circular(12.r),
-        ),
-        alignment: Alignment.center,
-        padding: EdgeInsets.all(8.r),
-        child: SvgPicture.asset(
-          'assets/icons/master_card_colored.svg',
-          fit: BoxFit.contain,
-        ),
-      );
     } else {
-      // General red card logo box
+      // Mastercard / generic card overlapping circles
       return Container(
-        width: 44.r,
-        height: 44.r,
-        decoration: BoxDecoration(
-          color: const Color(0xFFDA3D28), // Mastercard red background
-          borderRadius: BorderRadius.circular(12.r),
-        ),
+        width: 46.w,
+        height: 32.h,
         alignment: Alignment.center,
-        padding: EdgeInsets.all(8.r),
-        child: SvgPicture.asset(
-          'assets/icons/master card.svg',
-          fit: BoxFit.contain,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 18.r,
+              height: 18.r,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+            ),
+            Transform.translate(
+              offset: Offset(-7.w, 0),
+              child: Container(
+                width: 18.r,
+                height: 18.r,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.55),
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          ],
         ),
       );
     }
