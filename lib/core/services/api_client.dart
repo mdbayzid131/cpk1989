@@ -426,8 +426,13 @@ class ApiClient extends GetxService {
     return await _dio.fetch(requestOptions);
   }
 
-  /// Force logout when refresh fails
+  static bool _isLoggingOut = false;
+
+  /// Force logout when refresh fails with single-flight guard
   void _forceLogout() {
+    if (_isLoggingOut) return;
+    _isLoggingOut = true;
+
     StorageService.clearAll();
     if (Get.key.currentContext != null || Get.context != null) {
       try {
@@ -437,6 +442,10 @@ class ApiClient extends GetxService {
         Helpers.debug('Force logout navigation error: $e');
       }
     }
+
+    Future.delayed(const Duration(seconds: 3), () {
+      _isLoggingOut = false;
+    });
   }
 }
 
