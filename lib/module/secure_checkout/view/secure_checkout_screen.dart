@@ -1048,73 +1048,61 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       useRootNavigator: true,
-      builder: (sheetContext) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
-          ),
-          child: CustomAddCardBottomSheet(
-            onAdd:
-                ({
-                  required String name,
-                  required String cardNumber,
-                  required String expiry,
-                  required String cvv,
-                }) async {
-                  FocusScope.of(sheetContext).unfocus();
-                  FocusManager.instance.primaryFocus?.unfocus();
-                  Helpers.showLoadingDialog();
+      builder: (sheetContext) => CustomAddCardBottomSheet(
+        onAdd:
+            ({
+              required String name,
+              required String cardNumber,
+              required String expiry,
+              required String cvv,
+            }) async {
+              FocusScope.of(sheetContext).unfocus();
+              FocusManager.instance.primaryFocus?.unfocus();
+              Helpers.showLoadingDialog();
 
-                  final result = await PaymentService.to.addCardWithDetails(
-                    name: name,
-                    cardNumber: cardNumber,
-                    expiry: expiry,
-                    cvv: cvv,
-                  );
+              final result = await PaymentService.to.addCardWithDetails(
+                name: name,
+                cardNumber: cardNumber,
+                expiry: expiry,
+                cvv: cvv,
+              );
 
-                  if (Get.isDialogOpen ?? false) {
-                    Get.back();
+              if (Get.isDialogOpen ?? false) {
+                Get.back();
+              }
+
+              if (result.success) {
+                if (sheetContext.mounted && Navigator.canPop(sheetContext)) {
+                  Navigator.pop(sheetContext);
+                }
+                FocusScope.of(context).unfocus();
+                FocusManager.instance.primaryFocus?.unfocus();
+                Get.snackbar(
+                  'Success',
+                  'Card saved successfully!',
+                  snackPosition: SnackPosition.TOP,
+                  backgroundColor: const Color(0xFF161719),
+                  colorText: Colors.white,
+                  duration: const Duration(seconds: 2),
+                );
+                try {
+                  await controller.profileController.fetchSavedCards();
+                  if (controller.profileController.rxSavedCards.isNotEmpty) {
+                    controller.rxSelectedCardId.value =
+                        controller.profileController.rxSavedCards.last.id;
                   }
-
-                  if (result.success) {
-                    if (sheetContext.mounted &&
-                        Navigator.canPop(sheetContext)) {
-                      Navigator.pop(sheetContext);
-                    }
-                    FocusScope.of(context).unfocus();
-                    FocusManager.instance.primaryFocus?.unfocus();
-                    Get.snackbar(
-                      'Success',
-                      'Card saved successfully!',
-                      snackPosition: SnackPosition.TOP,
-                      backgroundColor: const Color(0xFF161719),
-                      colorText: Colors.white,
-                      duration: const Duration(seconds: 2),
-                    );
-                    try {
-                      await controller.profileController.fetchSavedCards();
-                      if (controller
-                          .profileController
-                          .rxSavedCards
-                          .isNotEmpty) {
-                        controller.rxSelectedCardId.value =
-                            controller.profileController.rxSavedCards.last.id;
-                      }
-                    } catch (_) {}
-                  } else if (!result.isCancelled &&
-                      result.errorMessage != null) {
-                    Get.snackbar(
-                      'Card Error',
-                      result.errorMessage!,
-                      snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor: Colors.redAccent,
-                      colorText: Colors.white,
-                    );
-                  }
-                },
-          ),
-        );
-      },
+                } catch (_) {}
+              } else if (!result.isCancelled && result.errorMessage != null) {
+                Get.snackbar(
+                  'Card Error',
+                  result.errorMessage!,
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.redAccent,
+                  colorText: Colors.white,
+                );
+              }
+            },
+      ),
     ).then((_) {
       FocusScope.of(context).unfocus();
       FocusManager.instance.primaryFocus?.unfocus();
