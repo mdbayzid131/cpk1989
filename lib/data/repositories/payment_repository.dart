@@ -20,8 +20,15 @@ class PaymentRepository {
       query: queryParams,
     );
 
-    final dataMap = Map<String, dynamic>.from(response.data['data'] as Map);
-    return PaymentMethodsPageModel.fromJson(dataMap);
+    if (response.data != null && response.data['data'] != null) {
+      final dataMap = Map<String, dynamic>.from(response.data['data'] as Map);
+      return PaymentMethodsPageModel.fromJson(dataMap);
+    }
+    return PaymentMethodsPageModel(
+      paymentMethods: [],
+      hasMore: false,
+      nextCursor: null,
+    );
   }
 
   /// POST /payment-methods/setup-intent
@@ -32,7 +39,14 @@ class PaymentRepository {
       extraHeaders: {'Idempotency-Key': idempotencyKey},
     );
 
-    return response.data['data']['clientSecret'] as String;
+    if (response.data != null &&
+        response.data['data'] != null &&
+        response.data['data']['clientSecret'] != null) {
+      return response.data['data']['clientSecret'] as String;
+    }
+    throw Exception(
+      response.data?['message'] ?? 'Failed to create payment setup intent',
+    );
   }
 
   /// DELETE /payment-methods/:id

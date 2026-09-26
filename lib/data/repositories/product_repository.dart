@@ -22,7 +22,7 @@ class ProductRepository {
     return await apiClient.getData(
       ApiConstants.products,
       query: query,
-      requiresAuth: false,
+      requiresAuth: true,
     );
   }
 
@@ -30,15 +30,40 @@ class ProductRepository {
   Future<Response> getProductById(String id) async {
     return await apiClient.getData(
       '${ApiConstants.products}/$id',
-      requiresAuth: false,
+      requiresAuth: true,
     );
   }
 
-  /// Update product details by ID (PATCH /products/:id - JSON only)
+  /// Update product details by ID (PATCH /products/:id - JSON or Multipart if proof document is attached)
   Future<Response> updateProduct(
     String id,
-    Map<String, dynamic> data,
-  ) async {
+    Map<String, dynamic> data, {
+    String? proofOfPurchasePath,
+  }) async {
+    if (proofOfPurchasePath != null &&
+        proofOfPurchasePath.isNotEmpty &&
+        !proofOfPurchasePath.startsWith('http') &&
+        !proofOfPurchasePath.startsWith('MOCK_')) {
+      final file = File(proofOfPurchasePath);
+      if (await file.exists()) {
+        final formData = FormData();
+        formData.fields.add(MapEntry('data', jsonEncode(data)));
+        final fileName = proofOfPurchasePath.split(RegExp(r'[/\\]')).last;
+        formData.files.add(
+          MapEntry(
+            'doc',
+            await MultipartFile.fromFile(
+              proofOfPurchasePath,
+              filename: fileName,
+            ),
+          ),
+        );
+        return await apiClient.patchData(
+          '${ApiConstants.products}/$id',
+          formData,
+        );
+      }
+    }
     return await apiClient.patchData('${ApiConstants.products}/$id', data);
   }
 
@@ -99,12 +124,14 @@ class ProductRepository {
           !proofOfPurchasePath.startsWith('MOCK_')) {
         final file = File(proofOfPurchasePath);
         if (await file.exists()) {
+          final fileName =
+              proofOfPurchasePath.split(RegExp(r'[/\\]')).last;
           formData.files.add(
             MapEntry(
               'doc',
               await MultipartFile.fromFile(
                 proofOfPurchasePath,
-                filename: proofOfPurchasePath.split('/').last,
+                filename: fileName,
               ),
             ),
           );

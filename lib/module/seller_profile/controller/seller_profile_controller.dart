@@ -67,9 +67,9 @@ class SellerProfileController extends GetxController {
 
     rxIsLoading.value = true;
     try {
-      final response = await _userRepo.getMyWardrobe(
+      final response = await _userRepo.getSellerProducts(
         sellerId: rxSellerId.value,
-        status: 'available',
+        status: 'live',
       );
       if (response.statusCode == 200 && response.data != null) {
         final List list = response.data['data'] ?? [];
@@ -78,15 +78,28 @@ class SellerProfileController extends GetxController {
           return ProfileItem(
             id: prod.id ?? '',
             imageUrl: (prod.images != null && prod.images!.isNotEmpty)
-                ? prod.images!.first
+                ? (prod.images!.first.startsWith('http')
+                    ? prod.images!.first
+                    : prod.displayFirstImage)
                 : '',
             price: prod.price ?? 0.0,
             likes: prod.wishlistCount ?? 0,
-            isSold: prod.status == 'sold',
+            isSold: prod.status == 'sold' ||
+                prod.status == 'delivered' ||
+                prod.status == 'completed' ||
+                prod.orderStatus == 'delivered' ||
+                prod.orderStatus == 'completed' ||
+                prod.orderStatus == 'sold',
             brand: prod.brand ?? 'LUXURY',
             itemName: prod.name ?? 'Item',
+            description: prod.description,
+            condition: prod.condition,
+            packaging: prod.packaging,
+            collectionAddress: prod.collectionAddress,
+            sellerPhone: prod.sellerPhone,
             status: prod.status,
             images: prod.images,
+            productModel: prod,
           );
         }).toList();
 

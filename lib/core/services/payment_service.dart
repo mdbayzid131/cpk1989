@@ -149,6 +149,21 @@ class PaymentService extends GetxService {
     }
   }
 
+  /// Confirm payment with backend to ensure order status updates to 'secured'
+  Future<void> _confirmPaymentWithBackend(String? orderId) async {
+    if (orderId == null || orderId.isEmpty) return;
+    try {
+      final apiClient = Get.find<ApiClient>();
+      await apiClient.postData(
+        '${ApiConstants.orders}/$orderId/confirm-payment',
+        {},
+      );
+      debugPrint('✅ Order $orderId payment confirmed with backend.');
+    } catch (e) {
+      debugPrint('⚠️ Order $orderId backend confirmation warning: $e');
+    }
+  }
+
   /// Main entry: Get clientSecret from backend → Present Stripe PaymentSheet
   Future<PaymentResult> processPayment({
     required String paymentMethod, // 'apple_pay', 'google_pay', or 'card'
@@ -212,6 +227,9 @@ class PaymentService extends GetxService {
               ),
             ),
           );
+          if (checkoutData?.order?.id != null) {
+            await _confirmPaymentWithBackend(checkoutData!.order!.id);
+          }
           return PaymentResult(success: true, orderData: checkoutData?.order);
         } on StripeException catch (e) {
           debugPrint(
@@ -233,6 +251,9 @@ class PaymentService extends GetxService {
 
       final sheetResult = await _presentPaymentSheet(clientSecret);
       if (sheetResult.success) {
+        if (checkoutData?.order?.id != null) {
+          await _confirmPaymentWithBackend(checkoutData!.order!.id);
+        }
         return PaymentResult(success: true, orderData: checkoutData?.order);
       }
       return sheetResult;
@@ -391,7 +412,10 @@ class PaymentService extends GetxService {
           ),
         ),
       );
-      return PaymentResult(success: true);
+      if (checkoutResponse.data?.order?.id != null) {
+        await _confirmPaymentWithBackend(checkoutResponse.data!.order!.id);
+      }
+      return PaymentResult(success: true, orderData: checkoutResponse.data?.order);
     } on StripeException catch (e) {
       if (e.error.code == FailureCode.Canceled) {
         return PaymentResult(success: false, isCancelled: true);

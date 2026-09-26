@@ -9,10 +9,13 @@ import 'package:cpk1989/data/models/product_model.dart';
 import 'package:cpk1989/data/models/order_model.dart';
 import 'package:cpk1989/data/models/saved_card_model.dart';
 import 'package:cpk1989/data/models/profile_stats_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:cpk1989/data/repositories/user_repository.dart';
 import 'package:cpk1989/data/repositories/payment_repository.dart';
 import 'package:cpk1989/data/repositories/product_repository.dart';
 import 'package:cpk1989/core/services/payment_service.dart';
+
+import 'package:cpk1989/core/utils/status_helper.dart';
 
 class ProfileItem {
   final String id;
@@ -22,11 +25,20 @@ class ProfileItem {
   final bool isSold;
   final String brand;
   final String itemName;
+  final String? description;
+  final String? condition;
+  final String? packaging;
+  final String? collectionAddress;
+  final String? sellerPhone;
   final String? status;
+  final String? rejectionReason;
+  final double? commissionAmount;
+  final double? sellerEarnings;
   final List<String>? images;
   final String? proofOfPurchase;
   final bool? originalPackagingAvailable;
   final OrderModel? orderModel;
+  final ProductModel? productModel;
 
   ProfileItem({
     required this.id,
@@ -36,56 +48,78 @@ class ProfileItem {
     required this.isSold,
     required this.brand,
     required this.itemName,
+    this.description,
+    this.condition,
+    this.packaging,
+    this.collectionAddress,
+    this.sellerPhone,
     this.status,
+    this.rejectionReason,
+    this.commissionAmount,
+    this.sellerEarnings,
     this.images,
     this.proofOfPurchase,
     this.originalPackagingAvailable,
     this.orderModel,
+    this.productModel,
   });
 
-  List<String> get itemImages => images ?? [imageUrl, imageUrl, imageUrl];
+  List<String> get itemImages =>
+      (images != null && images!.isNotEmpty)
+          ? images!
+          : (imageUrl.isNotEmpty ? [imageUrl] : []);
 
-  String get displayStatus {
-    final st = (status ?? '')
-        .trim()
-        .toLowerCase()
-        .replaceAll(' ', '_')
-        .replaceAll('-', '_');
-    if (st == 'pending_payment' ||
-        st == 'secured' ||
-        st == 'reserved' ||
-        st == 'pending' ||
-        st.isEmpty) {
-      return 'Reserved';
+  String get displayStatus => StatusHelper.getDisplayStatus(status);
+
+  /// Only active orders in progress (reserved, collected, authenticating, dispatched) cannot be deleted.
+  /// Items with pending_review, rejected, delivered/completed, or unsold/available items can be deleted.
+  bool get canDelete {
+    final rawSt = (status ?? '').toLowerCase();
+    final dispSt = displayStatus.toLowerCase();
+
+    if (rawSt == 'reserved' ||
+        rawSt == 'secured' ||
+        rawSt == 'collected' ||
+        rawSt == 'authenticating' ||
+        rawSt == 'dispatched' ||
+        dispSt == 'reserved' ||
+        dispSt == 'collected' ||
+        dispSt == 'authenticating' ||
+        dispSt == 'dispatched') {
+      return false;
     }
-    if (st == 'collection_pending' ||
-        st == 'awaiting_collection' ||
-        st == 'collected' ||
-        st == 'in_transit') {
-      return 'Collected';
+
+    if (isSold &&
+        rawSt != 'delivered' &&
+        rawSt != 'completed' &&
+        rawSt != 'refunded' &&
+        rawSt != 'cancelled' &&
+        dispSt != 'delivered' &&
+        dispSt != 'refunded' &&
+        dispSt != 'cancelled') {
+      return false;
     }
-    if (st == 'verification' ||
-        st == 'authenticating' ||
-        st == 'authenticated' ||
-        st == 'payout_processing') {
-      return 'Authenticated';
+
+    if (rawSt == 'pending_review' ||
+        rawSt == 'pending' ||
+        rawSt == 'rejected' ||
+        rawSt == 'delivered' ||
+        rawSt == 'completed' ||
+        rawSt == 'refunded' ||
+        rawSt == 'cancelled' ||
+        rawSt == 'live' ||
+        rawSt == 'available' ||
+        rawSt.isEmpty ||
+        dispSt == 'pending review' ||
+        dispSt == 'rejected' ||
+        dispSt == 'delivered' ||
+        dispSt == 'refunded' ||
+        dispSt == 'cancelled' ||
+        dispSt == 'live' ||
+        dispSt == 'available') {
+      return true;
     }
-    if (st == 'ready_for_delivery' ||
-        st == 'dispatched' ||
-        st == 'dispatch' ||
-        st == 'out_for_delivery') {
-      return 'Dispatched';
-    }
-    if (st == 'delivered' || st == 'completed') {
-      return 'Delivered';
-    }
-    if (st == 'refunded') {
-      return 'Refunded';
-    }
-    if (st == 'cancelled') {
-      return 'Cancelled';
-    }
-    return st.isNotEmpty ? (st[0].toUpperCase() + st.substring(1)) : 'Reserved';
+    return false;
   }
 }
 
@@ -127,6 +161,7 @@ class ProfileController extends GetxController {
   final rxProfileImage = "".obs;
   final rxUserProfile = Rxn<UserModel>();
   final rxProfileStats = ProfileStatsModel().obs;
+  final rxIsPayoutConnected = false.obs;
 
   UserRepository get _userRepo => Get.find<UserRepository>();
   ProductRepository get _productRepo => Get.find<ProductRepository>();
@@ -148,12 +183,67 @@ class ProfileController extends GetxController {
   /// Main API loader for Profile, Stats, Wardrobe & Purchases
   Future<void> fetchProfileApiData() async {
     await fetchUserProfile();
+    await checkStripeConnectStatus();
     await fetchProfileStats();
     if (rxUserId.value.isNotEmpty) {
       await fetchMyWardrobe();
     }
     await fetchMyPurchases();
     await fetchSavedCards();
+  }
+
+  /// Check Stripe Connect Payout account status
+  Future<void> checkStripeConnectStatus() async {
+    if (!Get.isRegistered<PaymentRepository>()) {
+      Get.put(PaymentRepository());
+    }
+    try {
+      final paymentRepo = Get.find<PaymentRepository>();
+      final statusData = await paymentRepo.getConnectStatus();
+      final bool isReady =
+          statusData['connected'] == true &&
+          statusData['detailsSubmitted'] == true &&
+          statusData['payoutsEnabled'] == true;
+      rxIsPayoutConnected.value = isReady;
+    } catch (_) {
+      rxIsPayoutConnected.value = false;
+    }
+  }
+
+  /// Start in-app Stripe Connect Onboarding
+  Future<void> startStripeConnectOnboarding() async {
+    Helpers.showLoadingDialog(message: "Opening payout setup...");
+    try {
+      if (!Get.isRegistered<PaymentRepository>()) {
+        Get.put(PaymentRepository());
+      }
+      final paymentRepo = Get.find<PaymentRepository>();
+      final onboardingUrl = await paymentRepo.createConnectOnboardingUrl();
+      Helpers.hideLoadingDialog();
+
+      if (onboardingUrl != null && onboardingUrl.isNotEmpty) {
+        final uri = Uri.parse(onboardingUrl);
+        // Launch in-app browser view so user stays inside the app
+        await launchUrl(uri, mode: LaunchMode.inAppBrowserView);
+        // Refresh status when returning
+        await checkStripeConnectStatus();
+        await fetchMyWardrobe();
+        await fetchProfileStats();
+      } else {
+        Helpers.showCustomSnackBar(
+          "Unable to generate payout setup link. Please try again.",
+          title: "Payout Setup",
+          type: SnackBarType.error,
+        );
+      }
+    } catch (e) {
+      Helpers.hideLoadingDialog();
+      Helpers.showCustomSnackBar(
+        "Payout setup error: $e",
+        title: "Payout Setup",
+        type: SnackBarType.error,
+      );
+    }
   }
 
   /// Fetch profile statistics from GET /user/profile/stats/:userId
@@ -245,7 +335,7 @@ class ProfileController extends GetxController {
     try {
       final response = await _userRepo.getMyWardrobe(
         sellerId: rxUserId.value,
-        status: ['available', 'secured', 'paid'],
+        status: ['live', 'secured', 'paid'],
       );
       if (response.statusCode == 200) {
         final List list = response.data['data'] ?? [];
@@ -254,17 +344,34 @@ class ProfileController extends GetxController {
           return ProfileItem(
             id: prod.id ?? '',
             imageUrl: (prod.images != null && prod.images!.isNotEmpty)
-                ? prod.images!.first
+                ? (prod.images!.first.startsWith('http')
+                    ? prod.images!.first
+                    : prod.displayFirstImage)
                 : '',
             price: prod.price ?? 0.0,
             likes: prod.wishlistCount ?? 0,
-            isSold: prod.status == 'sold',
+            isSold: prod.status == 'sold' ||
+                prod.status == 'delivered' ||
+                prod.status == 'completed' ||
+                prod.orderStatus == 'delivered' ||
+                prod.orderStatus == 'completed' ||
+                prod.orderStatus == 'sold',
             brand: prod.brand ?? 'LUXURY',
             itemName: prod.name ?? 'Item',
-            status: prod.status,
+            description: prod.description,
+            condition: prod.condition,
+            packaging: prod.packaging,
+            collectionAddress: prod.collectionAddress,
+            sellerPhone: prod.sellerPhone,
+            status: prod.orderStatus ?? prod.status,
+            rejectionReason: prod.rejectionReason,
+            commissionAmount: prod.commissionAmount,
+            sellerEarnings: prod.sellerEarnings,
             images: prod.images,
             proofOfPurchase: prod.proofOfPurchase,
             originalPackagingAvailable: prod.originalPackagingAvailable,
+            orderModel: prod.order,
+            productModel: prod,
           );
         }).toList();
 
@@ -299,9 +406,12 @@ class ProfileController extends GetxController {
             final map = Map<String, dynamic>.from(json);
             final order = OrderModel.fromJson(map);
             final prod = order.productModel;
-            final img = (prod?.images != null && prod!.images!.isNotEmpty)
-                ? prod.images!.first
-                : '';
+            final imagesList = (prod?.displayImages.isNotEmpty == true)
+                ? prod!.displayImages
+                : (prod?.images ?? []);
+            final img = imagesList.isNotEmpty
+                ? imagesList.first
+                : (prod?.displayFirstImage ?? '');
             final rootStatus =
                 (map['status'] ?? order.status ?? prod?.status ?? 'secured')
                     .toString();
@@ -315,11 +425,15 @@ class ProfileController extends GetxController {
                 isSold: true,
                 brand: prod?.brand ?? 'LUXURY',
                 itemName: prod?.name ?? order.orderNumber ?? 'Order',
+                description: prod?.description,
+                condition: prod?.condition,
+                packaging: prod?.packaging,
                 status: rootStatus,
-                images: prod?.images,
+                images: imagesList,
                 proofOfPurchase: prod?.proofOfPurchase,
                 originalPackagingAvailable: prod?.originalPackagingAvailable,
                 orderModel: order,
+                productModel: prod,
               ),
             );
           } catch (itemErr) {
@@ -381,11 +495,15 @@ class ProfileController extends GetxController {
                 isSold: true,
                 brand: prod?.brand ?? 'LUXURY',
                 itemName: prod?.name ?? order.orderNumber ?? 'Order',
+                description: prod?.description,
+                condition: prod?.condition,
+                packaging: prod?.packaging,
                 status: rootStatus,
                 images: prod?.images,
                 proofOfPurchase: prod?.proofOfPurchase,
                 originalPackagingAvailable: prod?.originalPackagingAvailable,
                 orderModel: order,
+                productModel: prod,
               ),
             );
           } catch (itemErr) {
@@ -471,12 +589,10 @@ class ProfileController extends GetxController {
 
   /// Delete a product listing from My Wardrobe (DELETE /products/:id)
   Future<bool> deleteWardrobeItem(ProfileItem item) async {
-    // Check if item is reserved or sold
-    final status = (item.status ?? '').toLowerCase();
-    if (status == 'secured' || status == 'sold') {
+    if (!item.canDelete) {
       Get.snackbar(
         'Action Blocked',
-        'Reserved or sold items cannot be deleted.',
+        'Items in active order progression cannot be deleted.',
         snackPosition: SnackPosition.TOP,
         backgroundColor: const Color(0xFF161719),
         colorText: const Color(0xFFFF453A),

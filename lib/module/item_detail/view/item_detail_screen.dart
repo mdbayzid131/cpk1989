@@ -10,6 +10,7 @@ import 'package:cpk1989/module/item_detail/controller/item_detail_controller.dar
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/core/widgets/processing_overlay.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
+import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/module/home/controller/home_controller.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
 
@@ -18,16 +19,25 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
 
   @override
   Widget build(BuildContext context) {
-    final item = controller.item;
-
     return Scaffold(
       backgroundColor: const Color(0xFF0F1012),
-      body: SafeArea(
-        top: false,
-        child: Stack(
-          children: [
-            // 1. Scrollable Content + Bottom Action Bar
-            Column(
+      body: Obx(() {
+        final item = controller.item;
+        final isLoading = controller.rxIsLoading.value;
+        if (isLoading && controller.rxProductModel.value == null) {
+          return Center(
+            child: CustomGoldLoader(
+              size: 44.r,
+              strokeWidth: 3.5.r,
+            ),
+          );
+        }
+        return SafeArea(
+          top: false,
+          child: Stack(
+            children: [
+              // 1. Scrollable Content + Bottom Action Bar
+              Column(
               children: [
                 Expanded(
                   child: SingleChildScrollView(
@@ -427,11 +437,26 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                 ],
               ),
             ),
+
+            // 3. Luxurious golden loading overlay when fetching live data
+            if (isLoading)
+              Positioned.fill(
+                child: Container(
+                  color: const Color(0xFF0F1012).withValues(alpha: 0.75),
+                  child: Center(
+                    child: CustomGoldLoader(
+                      size: 40.r,
+                      strokeWidth: 3.5.r,
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
-      ),
-    );
-  }
+      );
+    }),
+  );
+}
 
   Widget _buildSecurityBadge({required String svgPath, required String label}) {
     return Column(

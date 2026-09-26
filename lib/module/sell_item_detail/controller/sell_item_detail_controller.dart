@@ -263,7 +263,6 @@ class SellItemDetailController extends GetxController
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
     pageController = PageController(viewportFraction: 0.88);
-    checkStripeConnectStatus();
 
     if (Get.arguments is ProfileItem) {
       item = Get.arguments as ProfileItem;
@@ -443,19 +442,9 @@ class SellItemDetailController extends GetxController
     }
 
     final ProductRepository productRepo = Get.find<ProductRepository>();
-    if (!Get.isRegistered<PaymentRepository>()) {
-      Get.put(PaymentRepository());
-    }
-    final PaymentRepository paymentRepo = Get.find<PaymentRepository>();
-
-    // Check local Stripe onboarding status first
-    if (!rxIsStripeOnboarded.value) {
-      _showStripeOnboardingDialog();
-      return false;
-    }
 
     rxIsPosting.value = true;
-    Helpers.showLoadingDialog(message: "Publishing item...");
+    Helpers.showLoadingDialog(message: "Submitting item for review...");
 
     try {
       final name = rxTitle.value.trim();

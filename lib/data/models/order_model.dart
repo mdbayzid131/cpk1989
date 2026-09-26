@@ -60,6 +60,9 @@ class OrderModel {
   final PaymentDetailsModel? payment;
   final String? payoutStatus;
   final String? status;
+  final String? outcome;
+  final String? note;
+  final String? cancellationReason;
   final List<StatusHistoryModel>? statusHistory;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -78,6 +81,9 @@ class OrderModel {
     this.payment,
     this.payoutStatus,
     this.status,
+    this.outcome,
+    this.note,
+    this.cancellationReason,
     this.statusHistory,
     this.createdAt,
     this.updatedAt,
@@ -148,6 +154,9 @@ class OrderModel {
           : null,
       payoutStatus: json['payoutStatus'],
       status: json['status'],
+      outcome: json['outcome'],
+      note: json['note'],
+      cancellationReason: json['cancellationReason'] ?? json['note'],
       statusHistory:
           json['statusHistory'] != null && json['statusHistory'] is List
           ? (json['statusHistory'] as List)
@@ -191,19 +200,47 @@ class OrderBuyerModel {
   final String? id;
   final String? name;
   final String? email;
+  final String? profileImage;
+  final String? phone;
+  final String? location;
+  final String? country;
+  final String? address;
 
-  OrderBuyerModel({this.id, this.name, this.email});
+  OrderBuyerModel({
+    this.id,
+    this.name,
+    this.email,
+    this.profileImage,
+    this.phone,
+    this.location,
+    this.country,
+    this.address,
+  });
 
   factory OrderBuyerModel.fromJson(Map<String, dynamic> json) {
     return OrderBuyerModel(
       id: json['_id'] ?? json['id'],
       name: json['name'],
       email: json['email'],
+      profileImage: json['profileImage'] ?? json['avatar'] ?? json['image'],
+      phone: json['phone'] ?? json['contact'],
+      location: json['location'],
+      country: json['country'],
+      address: json['address'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'name': name, 'email': email};
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'profileImage': profileImage,
+      'phone': phone,
+      'location': location,
+      'country': country,
+      'address': address,
+    };
   }
 }
 
@@ -212,20 +249,38 @@ class OrderSellerModel {
   final String? name;
   final String? email;
   final String? contact;
+  final String? profileImage;
+  final bool? isVerified;
 
-  OrderSellerModel({this.id, this.name, this.email, this.contact});
+  OrderSellerModel({
+    this.id,
+    this.name,
+    this.email,
+    this.contact,
+    this.profileImage,
+    this.isVerified,
+  });
 
   factory OrderSellerModel.fromJson(Map<String, dynamic> json) {
     return OrderSellerModel(
       id: json['_id'] ?? json['id'],
       name: json['name'],
       email: json['email'],
-      contact: json['contact'],
+      contact: json['contact'] ?? json['phone'],
+      profileImage: json['profileImage'] ?? json['avatar'] ?? json['image'],
+      isVerified: json['isVerified'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'name': name, 'email': email, 'contact': contact};
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'contact': contact,
+      'profileImage': profileImage,
+      'isVerified': isVerified,
+    };
   }
 }
 

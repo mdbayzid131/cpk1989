@@ -1,10 +1,7 @@
+import 'package:cpk1989/config/env_config.dart';
+
 class ApiConstants {
-  // static const String baseUrl =
-  //     'https://celebrity-males-bookmark-planned.trycloudflare.com/api/v1';
-  static const String baseUrl = 'http://10.10.7.99:5000/api/v1';
-  // static const String baseUrl = 'http://10.10.26.198:5000/api/v1';
-  // static const String baseUrl = 'https://nayem5001.binarybards.online/api/v1';
-  // static const String apiVersion = '';
+  static String get baseUrl => EnvConfig.apiBaseUrl;
 
   //Auth
   static const String login = '/auth/login';
@@ -15,6 +12,7 @@ class ApiConstants {
   static const String profilePhoto = '/user/profile/photo';
   static const String profileStats = '/user/profile/stats';
   static const String products = '/products';
+  static const String myProducts = '/products/my-products';
   static const String wishlist = '/wishlist';
   static const String notifications = '/notifications';
   static const String orders = '/orders';
@@ -22,8 +20,10 @@ class ApiConstants {
   static const String setupIntent = '/payment-methods/setup-intent';
   static const String connectStatus = '/payment/connect/status';
   static const String connectOnboarding = '/payment/connect/onboarding';
-  static const String stripePublishableKey =
-      'pk_test_51SqdqHDpab3KPsw4BQiAn9rUzt1abdcURDqGwvnss6DsYH7B4DmMKdKsMjoqjRFTfu6kYOlpTRQ4xkO3fGNev1wC00K3XpnV97';
+
+  static String get stripePublishableKey => EnvConfig.stripePublishableKey;
+  // static const String stripePublishableKey =
+  //     'pk_test_51U5jOdDjRWLHvFckcLsPQfuOI06rVpsf41eJcId1bbuy71KBEHWadS7bXPmpAvGkWQ5rWsCNWicfhRYhsBBBSu4100PGFYAGMa';
   // static const String stripePublishableKey =
   //     'pk_test_51RqgJSGlimJ2gcj4JgiuajuGcFOXAjGwbzSH9FhLZRbBgbhAwJ4NRLGJhNhoj7m7Zi4u0K82q1CST9b1llKm4iHw00KA351vJ3';
   // static const String stripePublishableKey =

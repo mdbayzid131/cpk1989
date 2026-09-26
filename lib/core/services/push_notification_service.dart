@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -11,6 +12,8 @@ import 'package:cpk1989/config/constants/storage_constants.dart';
 import 'package:cpk1989/core/services/storage_service.dart';
 import 'package:cpk1989/core/services/api_client.dart';
 import 'package:cpk1989/data/repositories/notification_repository.dart';
+import 'package:cpk1989/module/profile/controller/profile_controller.dart';
+import 'package:cpk1989/module/home/controller/home_controller.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -107,7 +110,16 @@ class PushNotificationService {
       initSettings,
       onDidReceiveNotificationResponse: (details) {
         if (details.payload != null && details.payload!.isNotEmpty) {
-          // Payload parsing if needed
+          try {
+            final dynamic decoded = jsonDecode(details.payload!);
+            if (decoded is Map<String, dynamic>) {
+              _handleNotificationClick(decoded);
+            }
+          } catch (e) {
+            if (kDebugMode) {
+              print('Error decoding local notification payload: $e');
+            }
+          }
         }
       },
     );
@@ -256,40 +268,66 @@ class PushNotificationService {
             presentSound: true,
           ),
         ),
+        payload: jsonEncode(message.data),
       );
     }
   }
 
-  /// Handle Notification Click Navigation based on `data.screen`
+  /// Handle Notification Click Navigation based on `data`
   void _handleNotificationClick(Map<String, dynamic> data) {
     if (data.isEmpty) return;
 
-    final String? screen = data['screen'];
-    final String? orderId = data['orderId'];
-    final String? productId = data['productId'];
+    final String? screen = data['screen']?.toString();
+    final String? role = data['role']?.toString();
+    final String? orderId = data['orderId']?.toString();
+    final String? productId = data['productId']?.toString();
+    final String? sellerId = data['sellerId']?.toString();
 
-    switch (screen) {
-      case 'order_details':
-        if (orderId != null && orderId.isNotEmpty) {
-          Get.toNamed(AppRoutes.myPurchaseDetails, arguments: {'orderId': orderId});
-        } else {
-          Get.toNamed(AppRoutes.bottomNavBar);
-        }
-        break;
-      case 'product_details':
-        if (productId != null && productId.isNotEmpty) {
-          Get.toNamed(AppRoutes.itemDetail, arguments: productId);
-        }
-        break;
-      case 'wishlist':
+    // 1. Seller Item Detail / My Listings (Seller notifications)
+    if (screen == 'seller_item_detail' || screen == 'my_listings' || role == 'seller') {
+      if (productId != null && productId.isNotEmpty) {
+        Get.toNamed(AppRoutes.myItemDetail, arguments: productId);
+        return;
+      }
+    }
+
+    // 2. Buyer Order Details / Purchases (Buyer notifications)
+    if (screen == 'order_details' || screen == 'my_purchase_details' || role == 'buyer') {
+      if (orderId != null && orderId.isNotEmpty) {
+        Get.toNamed(AppRoutes.myPurchaseDetails, arguments: {'orderId': orderId});
+      } else {
         Get.toNamed(AppRoutes.bottomNavBar);
-        break;
-      case 'seller_onboarding':
+      }
+      return;
+    }
+
+    // 3. Public Product Details (e.g. wishlist, feed)
+    if (screen == 'product_details' || screen == 'item_detail') {
+      if (productId != null && productId.isNotEmpty) {
+        Get.toNamed(AppRoutes.itemDetail, arguments: productId);
+      } else {
+        Get.toNamed(AppRoutes.bottomNavBar);
+      }
+      return;
+    }
+
+    // 4. Seller Profile
+    if (screen == 'seller_profile' || screen == 'seller_onboarding') {
+      if (sellerId != null && sellerId.isNotEmpty) {
+        Get.toNamed(AppRoutes.sellerProfile, arguments: {'sellerId': sellerId});
+      } else {
         Get.toNamed(AppRoutes.sellerProfile);
-        break;
-      default:
-        Get.toNamed(AppRoutes.notification);
-        break;
+      }
+      return;
+    }
+
+    // Fallback based on available IDs
+    if (productId != null && productId.isNotEmpty) {
+      Get.toNamed(AppRoutes.itemDetail, arguments: productId);
+    } else if (orderId != null && orderId.isNotEmpty) {
+      Get.toNamed(AppRoutes.myPurchaseDetails, arguments: {'orderId': orderId});
+    } else {
+      Get.toNamed(AppRoutes.notification);
     }
   }
 }

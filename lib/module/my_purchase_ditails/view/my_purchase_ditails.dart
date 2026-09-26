@@ -4,12 +4,14 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cpk1989/config/themes/app_theme.dart';
+import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/core/widgets/custom_item_status_card.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
 import 'package:cpk1989/module/my_purchase_ditails/controller/my_purchase_ditails_controller.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
+import 'package:cpk1989/core/utils/status_helper.dart';
 
 class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
   const MyPurchaseDitails({super.key});
@@ -17,21 +19,9 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
   @override
   Widget build(BuildContext context) {
     final item = controller.item;
-    final order = item.orderModel;
-    final displayStatus = item.displayStatus;
-    final rawSt = (item.status ?? order?.status ?? '').toLowerCase();
-    final isCancelled = rawSt == 'cancelled' || rawSt == 'refunded';
 
     final formattedPrice =
         "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
-
-    // Seller info from order
-    final sellerName = order?.sellerModel?.name ?? '';
-
-    // Product details from ProductModel
-    final prod = order?.productModel;
-    final description = prod?.description ?? '';
-    final condition = prod?.condition ?? '';
 
     return Scaffold(
       backgroundColor: const Color(0xFF0F1012),
@@ -66,77 +56,128 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: Obx(() {
+          final liveStatus = controller.rxLiveStatus.value.isNotEmpty
+              ? controller.rxLiveStatus.value
+              : (item.status ?? '');
+          final displayStatus = StatusHelper.getDisplayStatus(liveStatus);
+          final isCancelled = StatusHelper.isCancelledOrRefunded(liveStatus);
+
+          final images = controller.rxImages.isNotEmpty
+              ? controller.rxImages
+              : item.itemImages;
+
+          final sellerName = controller.rxSellerName.value.isNotEmpty
+              ? controller.rxSellerName.value
+              : (item.orderModel?.sellerModel?.name ?? 'Seller');
+          final sellerAvatar = controller.rxSellerAvatar.value;
+
+          final description = controller.rxDescription.value.isNotEmpty
+              ? controller.rxDescription.value
+              : (item.description ?? item.productModel?.description ?? '');
+
+          final condition = controller.rxCondition.value.isNotEmpty
+              ? controller.rxCondition.value
+              : (item.condition ?? item.productModel?.condition ?? '');
+
+          final proofOfPurchase = controller.rxProofOfPurchase.value ??
+              item.proofOfPurchase ??
+              item.productModel?.proofOfPurchase;
+
+          final originalPackaging =
+              controller.rxOriginalPackagingAvailable.value ??
+              item.originalPackagingAvailable ??
+              item.productModel?.originalPackagingAvailable;
+
+          if (controller.rxIsLoadingDetails.value) {
+            return Center(
+              child: CustomGoldLoader(
+                size: 44.r,
+                strokeWidth: 3.5.r,
+              ),
+            );
+          }
+
+          return Stack(
             children: [
-              // ── Product Image Carousel ──────────────────────────────────
-              SizedBox(
-                height: 300.h,
-                child: OverflowBox(
-                  minWidth: MediaQuery.of(context).size.width,
-                  maxWidth: MediaQuery.of(context).size.width,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    alignment: Alignment.bottomCenter,
+              RefreshIndicator(
+                color: const Color(0xFFFFAF2C),
+                backgroundColor: const Color(0xFF181A1E),
+                onRefresh: () async {
+                  await controller.fetchOrderDetails();
+                },
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Positioned.fill(
-                        child: PageView.builder(
-                          controller: controller.pageController,
-                          onPageChanged: (index) {
-                            controller.rxCurrentPage.value = index;
-                          },
-                          itemCount: item.itemImages.length,
-                          itemBuilder: (context, index) {
-                            final imgUrl = item.itemImages[index];
-                            return Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.w),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(20.r),
-                                child: Container(
-                                  color: const Color(0xFF1C1D20),
-                                  child: imgUrl.startsWith('http')
-                                      ? Image.network(
-                                          imgUrl,
-                                          fit: BoxFit.cover,
-                                          loadingBuilder: (
-                                            context,
-                                            child,
-                                            loadingProgress,
-                                          ) {
-                                            if (loadingProgress == null) {
-                                              return child;
-                                            }
-                                            return Center(
-                                              child: CustomGoldLoader(
-                                                size: 24.r,
-                                                strokeWidth: 2.5.r,
-                                              ),
-                                            );
-                                          },
-                                          errorBuilder:
-                                              (context, error, stackTrace) =>
-                                                  const Center(
-                                                    child: Icon(
-                                                      Icons.broken_image,
-                                                      color: Colors.white30,
+                // ── Product Image Carousel ──────────────────────────────────
+                SizedBox(
+                  height: 300.h,
+                  child: OverflowBox(
+                    minWidth: MediaQuery.of(context).size.width,
+                    maxWidth: MediaQuery.of(context).size.width,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      alignment: Alignment.bottomCenter,
+                      children: [
+                        Positioned.fill(
+                          child: PageView.builder(
+                            controller: controller.pageController,
+                            onPageChanged: (index) {
+                              controller.rxCurrentPage.value = index;
+                            },
+                            itemCount: images.length,
+                            itemBuilder: (context, index) {
+                              final imgUrl = images[index];
+                              return Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8.w),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20.r),
+                                  child: Container(
+                                    color: const Color(0xFF1C1D20),
+                                    child: imgUrl.startsWith('http')
+                                        ? Image.network(
+                                            imgUrl,
+                                            fit: BoxFit.cover,
+                                            loadingBuilder: (
+                                              context,
+                                              child,
+                                              loadingProgress,
+                                            ) {
+                                              if (loadingProgress == null) {
+                                                return child;
+                                              }
+                                              return Center(
+                                                child: CustomGoldLoader(
+                                                  size: 24.r,
+                                                  strokeWidth: 2.5.r,
+                                                ),
+                                              );
+                                            },
+                                            errorBuilder:
+                                                (context, error, stackTrace) =>
+                                                    const Center(
+                                                      child: Icon(
+                                                        Icons.broken_image,
+                                                        color: Colors.white30,
+                                                      ),
                                                     ),
-                                                  ),
-                                        )
-                                      : const SizedBox.shrink(),
+                                          )
+                                        : const SizedBox.shrink(),
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                      Positioned(
-                        bottom: -9.h,
-                        child: Obx(
-                          () => CustomPageIndicator(
-                            count: item.itemImages.length,
+                        Positioned(
+                          bottom: -9.h,
+                          child: CustomPageIndicator(
+                            count: images.length,
                             currentPage: controller.rxCurrentPage.value,
                             isSmall: false,
                             showBorder: false,
@@ -145,118 +186,64 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
                             inactiveColor: const Color(0xFF7E7E7E),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
 
-              SizedBox(height: 20.h),
+                SizedBox(height: 20.h),
 
-              // ── ITEM DETAILS header + status badge ─────────────────────
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "ITEM DETAILS",
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white38,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 12.w,
-                      vertical: 6.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isCancelled
-                          ? Colors.red.withValues(alpha: 0.15)
-                          : AppTheme.yellow,
-                      borderRadius: BorderRadius.circular(10.r),
-                      border: isCancelled
-                          ? Border.all(
-                              color: Colors.red.withValues(alpha: 0.4),
-                              width: 1,
-                            )
-                          : null,
-                    ),
-                    child: Text(
-                      "• $displayStatus",
+                // ── ITEM DETAILS header + status badge ─────────────────────
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "ITEM DETAILS",
                       style: GoogleFonts.dmSans(
                         fontSize: 12.sp,
-                        fontWeight: FontWeight.w500,
-                        color: isCancelled ? Colors.redAccent : Colors.black,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white38,
+                        letterSpacing: 1.0,
                       ),
                     ),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 12.h),
-
-              // ── ITEM DETAILS rows ───────────────────────────────────────
-              _buildDetailRow("Title", item.itemName),
-              _buildDetailRow("Brand", item.brand),
-              if (description.isNotEmpty)
-                _buildDescriptionDetailRow("Description", description),
-              _buildDetailRow("Price", formattedPrice),
-              if (condition.isNotEmpty)
-                _buildConditionDetailRow("Condition", condition),
-              _buildProofOfPurchaseRow("Proof of purchase", prod?.proofOfPurchase),
-              _buildOriginalPackagingRow(prod?.originalPackagingAvailable),
-
-              SizedBox(height: 28.h),
-
-              // ── CANCELLED STATE ─────────────────────────────────────────
-              if (isCancelled) ...[
-                Container(
-                  padding: EdgeInsets.all(20.w),
-                  decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: 0.06),
-                    borderRadius: BorderRadius.circular(16.r),
-                    border: Border.all(
-                      color: Colors.red.withValues(alpha: 0.2),
-                      width: 1.0,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.cancel_outlined,
-                        color: Colors.redAccent,
-                        size: 36.r,
-                      ),
-                      SizedBox(height: 12.h),
-                      Text(
-                        "Order Cancelled",
-                        style: GoogleFonts.dmSans(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
-                      SizedBox(height: 6.h),
-                      Text(
-                        "This order was cancelled.\nYour payment will be refunded if charged.",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.dmSans(
-                          fontSize: 13.sp,
-                          color: Colors.white54,
-                          height: 1.5,
-                        ),
-                      ),
-                    ],
-                  ),
+                    StatusHelper.buildStatusBadge(liveStatus),
+                  ],
                 ),
-              ],
 
-              // ── ACTIVE ORDER: timeline + seller ───────────────────────
-              if (!isCancelled) ...[
+                SizedBox(height: 12.h),
+
+                // ── ITEM DETAILS rows ───────────────────────────────────────
+                _buildDetailRow(
+                  "Title",
+                  (controller.rxProductModel.value?.name?.isNotEmpty == true)
+                      ? controller.rxProductModel.value!.name!
+                      : item.itemName,
+                ),
+                _buildDetailRow(
+                  "Brand",
+                  (controller.rxProductModel.value?.brand?.isNotEmpty == true)
+                      ? controller.rxProductModel.value!.brand!
+                      : item.brand,
+                ),
+                if (description.isNotEmpty)
+                  _buildDescriptionDetailRow("Description", description),
+                _buildDetailRow(
+                  "Listing Price",
+                  "AED ${(controller.rxProductModel.value?.price ?? controller.rxOrderModel.value?.price ?? item.price).toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
+                ),
+                if (condition.isNotEmpty)
+                  _buildConditionDetailRow("Condition", condition),
+                _buildProofOfPurchaseRow("Proof of purchase", proofOfPurchase),
+                _buildOriginalPackagingRow(originalPackaging),
+
+                SizedBox(height: 28.h),
+
+                // ── ORDER TIMELINE & STATUS (With Figma Red Alert Card if cancelled) ──
                 CustomItemStatusCard(
-                  status: item.status ?? order?.status,
+                  status: liveStatus,
+                  statusHistory: controller.rxOrderModel.value?.statusHistory,
+                  cancellationReason: controller.rxCancellationReason.value,
+                  outcome: controller.rxOrderModel.value?.outcome,
                   headerTitle: "ITEM CURRENT STATUS",
                   headerStyle: GoogleFonts.dmSans(
                     fontSize: 12.sp,
@@ -307,204 +294,141 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
 
                 SizedBox(height: 28.h),
 
-                // SELLER DETAILS header
-                Text(
-                  "SELLER DETAILS",
-                  style: GoogleFonts.dmSans(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white38,
-                    letterSpacing: 1.0,
+                  // SELLER DETAILS header
+                  Text(
+                    "SELLER DETAILS",
+                    style: GoogleFonts.dmSans(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white38,
+                      letterSpacing: 1.0,
+                    ),
                   ),
-                ),
-                SizedBox(height: 12.h),
+                  SizedBox(height: 12.h),
 
-                // Seller card - name + avatar only
-                Container(
-                  padding: EdgeInsets.all(16.w),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.centerRight,
-                      end: Alignment.centerLeft,
-                      colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-                    ),
-                    borderRadius: BorderRadius.circular(16.r),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.05),
-                      width: 1.0,
+                  // Seller card - clickable to open seller profile
+                  GestureDetector(
+                    onTap: () {
+                      final sellerId = controller.rxSellerId.value.isNotEmpty
+                          ? controller.rxSellerId.value
+                          : (item.orderModel?.sellerModel?.id ??
+                              item.productModel?.seller?.id ??
+                              '');
+                      if (sellerId.isNotEmpty) {
+                        Get.toNamed(
+                          AppRoutes.sellerProfile,
+                          arguments: {
+                            'sellerId': sellerId,
+                            'userName': sellerName.isNotEmpty ? sellerName : 'Seller',
+                            'avatarUrl': sellerAvatar,
+                            'isVerified': controller.rxIsSellerVerified.value,
+                          },
+                        );
+                      }
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(16.w),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.centerRight,
+                          end: Alignment.centerLeft,
+                          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+                        ),
+                        borderRadius: BorderRadius.circular(16.r),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.05),
+                          width: 1.0,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 20.r,
+                            backgroundColor: const Color(0xFF3A3B40),
+                            backgroundImage:
+                                sellerAvatar.isNotEmpty &&
+                                    sellerAvatar.startsWith('http')
+                                ? NetworkImage(sellerAvatar)
+                                : null,
+                            child:
+                                sellerAvatar.isEmpty ||
+                                    !sellerAvatar.startsWith('http')
+                                ? Icon(
+                                    Icons.person,
+                                    color: Colors.white54,
+                                    size: 22.r,
+                                  )
+                                : null,
+                          ),
+                          SizedBox(width: 14.w),
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    sellerName.isNotEmpty ? sellerName : "Seller",
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.white,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                if (controller.rxIsSellerVerified.value) ...[
+                                  SizedBox(width: 6.w),
+                                  SvgPicture.asset(
+                                    'assets/icons/blue_verify-badg.svg',
+                                    width: 16.r,
+                                    height: 16.r,
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 20.r,
-                        backgroundColor: const Color(0xFF3A3B40),
-                        child: Icon(
-                          Icons.person,
-                          color: Colors.white54,
-                          size: 22.r,
+
+                SizedBox(height: 32.h),
+
+                // Bottom Support Help Text
+                GestureDetector(
+                  onTap: () => Helpers.openSupportEmail(),
+                  child: Center(
+                    child: Text.rich(
+                      TextSpan(
+                        text: "Need help? ",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 13.sp,
+                          color: Colors.white38,
+                          fontWeight: FontWeight.w400,
                         ),
-                      ),
-                      SizedBox(width: 14.w),
-                      Expanded(
-                        child: Text(
-                          sellerName.isNotEmpty ? sellerName : "Seller",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
+                        children: [
+                          TextSpan(
+                            text: "Contact support",
+                            style: GoogleFonts.dmSans(
+                              fontSize: 13.sp,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                              decoration: TextDecoration.underline,
+                              decorationColor: Colors.white,
+                            ),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
+                SizedBox(height: 16.h),
               ],
-
-              SizedBox(height: 32.h),
-
-              // Bottom Support Help Text
-              GestureDetector(
-                onTap: () => Helpers.openSupportEmail(),
-                child: Center(
-                  child: Text.rich(
-                    TextSpan(
-                      text: "Need help? ",
-                      style: GoogleFonts.dmSans(
-                        fontSize: 13.sp,
-                        color: Colors.white54,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: "Contact support",
-                          style: GoogleFonts.dmSans(
-                            color: Colors.white,
-                            decoration: TextDecoration.underline,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 12.h),
-            ],
+            ),
           ),
         ),
-      ),
+      ],
     );
-  }
-
-  Widget _buildProofOfPurchaseRow(String label, String? proofUrl) {
-    final hasProof = proofUrl != null && proofUrl.isNotEmpty;
-    return Container(
-      margin: EdgeInsets.only(bottom: 8.h),
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.centerRight,
-          end: Alignment.centerLeft,
-          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-        ),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
-          width: 1.0,
-        ),
-      ),
-      child: Row(
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.dmSans(
-              fontSize: 14.sp,
-              color: Colors.white38,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const Spacer(),
-          if (hasProof)
-            GestureDetector(
-              onTap: () => Helpers.openUrl(proofUrl),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.picture_as_pdf_outlined,
-                      color: const Color(0xFFFFAF2C),
-                      size: 13.sp,
-                    ),
-                    SizedBox(width: 5.w),
-                    Text(
-                      "View",
-                      style: GoogleFonts.dmSans(
-                        fontSize: 12.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          else
-            Text(
-              "N/A",
-              style: GoogleFonts.dmSans(
-                fontSize: 14.sp,
-                color: Colors.white38,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildOriginalPackagingRow(bool? available) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 8.h),
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
-          width: 1.0,
-        ),
-        gradient: const LinearGradient(
-          begin: Alignment.centerRight,
-          end: Alignment.centerLeft,
-          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-        ),
-      ),
-      child: Row(
-        children: [
-          Text(
-            "Original packaging",
-            style: GoogleFonts.dmSans(
-              fontSize: 14.sp,
-              color: Colors.white38,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const Spacer(),
-          Text(
-            (available == true) ? "Yes" : "No",
-            style: GoogleFonts.dmSans(
-              fontSize: 14.sp,
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
+  }),
       ),
     );
   }
@@ -548,48 +472,6 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDescriptionDetailRow(String label, String value) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 8.h),
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.centerRight,
-          end: Alignment.centerLeft,
-          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-        ),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
-          width: 1.0,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.dmSans(
-              fontSize: 13.sp,
-              color: Colors.white38,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            value,
-            style: GoogleFonts.dmSans(
-              fontSize: 14.sp,
-              color: Colors.white,
-              height: 1.4,
-              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -678,5 +560,188 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
       default:
         return '';
     }
+  }
+
+  Widget _buildDescriptionDetailRow(String label, String value) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 8.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.centerRight,
+          end: Alignment.centerLeft,
+          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+        ),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.05),
+          width: 1.0,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.dmSans(
+              fontSize: 13.sp,
+              color: Colors.white38,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Text(
+            value,
+            style: GoogleFonts.dmSans(
+              fontSize: 14.sp,
+              color: Colors.white,
+              height: 1.4,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProofOfPurchaseRow(String label, String? proofUrl) {
+    final bool hasProof = proofUrl != null && proofUrl.trim().isNotEmpty && proofUrl != "N/A";
+    final fileName = hasProof ? StatusHelper.cleanProofFileName(proofUrl) : "";
+    final bool isPdf = fileName.toLowerCase().endsWith('.pdf') ||
+        (proofUrl != null && proofUrl.toLowerCase().endsWith('.pdf'));
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 8.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.centerRight,
+          end: Alignment.centerLeft,
+          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+        ),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.05),
+          width: 1.0,
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: GoogleFonts.dmSans(
+                fontSize: 14.sp,
+                color: Colors.white38,
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          SizedBox(width: 8.w),
+          if (hasProof)
+            GestureDetector(
+              onTap: () => Helpers.openUrl(proofUrl, title: "Proof of Purchase"),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      isPdf
+                          ? Icons.picture_as_pdf_outlined
+                          : Icons.image_outlined,
+                      color: Colors.white,
+                      size: 14.sp,
+                    ),
+                    SizedBox(width: 6.w),
+                    ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: 120.w),
+                      child: Text(
+                        fileName,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 12.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            Text(
+              "Not Available",
+              style: GoogleFonts.dmSans(
+                fontSize: 14.sp,
+                color: Colors.white38,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOriginalPackagingRow(bool? available) {
+    final bool isChecked = available == true;
+    return Container(
+      height: 52.h,
+      margin: EdgeInsets.only(bottom: 8.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.05),
+          width: 1.0,
+        ),
+        gradient: const LinearGradient(
+          begin: Alignment.centerRight,
+          end: Alignment.centerLeft,
+          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 20.r,
+            height: 20.r,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4.r),
+              border: Border.all(
+                color: isChecked ? const Color(0xFFFFAF2C) : Colors.white38,
+                width: 1.5.w,
+              ),
+              color: isChecked ? const Color(0xFFFFAF2C) : Colors.transparent,
+            ),
+            child: isChecked
+                ? const Icon(
+                    Icons.check_rounded,
+                    color: Colors.black,
+                    size: 14,
+                  )
+                : null,
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Text(
+              "Original packaging available?",
+              style: GoogleFonts.dmSans(
+                fontSize: 14.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

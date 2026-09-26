@@ -106,7 +106,6 @@ class HomeController extends GetxController {
       final response = await _productRepo.getProducts(
         page: _currentPage,
         limit: 10,
-        status: 'available', // only display available items
       );
 
       if (response.statusCode == 200) {

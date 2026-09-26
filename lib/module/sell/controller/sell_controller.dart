@@ -26,6 +26,9 @@ class SellController extends GetxController {
   final rxCapturedPaths = <String?>[null, null, null].obs;
   final activeSlotIndex = 0.obs;
 
+  // Flag to prevent double tap / concurrent photo capture
+  final isCapturing = false.obs;
+
   // Flag to check if live camera feed is active/turned on
   final isCameraActive = true.obs;
 
@@ -181,6 +184,9 @@ class SellController extends GetxController {
 
   // Take photo from real camera or activate camera preview
   Future<void> capturePhoto(void Function() onFinish) async {
+    // Prevent multiple simultaneous capture clicks
+    if (isCapturing.value) return;
+
     // If camera feed is not yet active, activate it first
     if (!isCameraActive.value) {
       isCameraActive.value = true;
@@ -189,7 +195,10 @@ class SellController extends GetxController {
     }
 
     if (cameraController != null && isCameraInitialized.value) {
+      if (cameraController!.value.isTakingPicture) return;
+
       try {
+        isCapturing.value = true;
         final XFile file = await cameraController!.takePicture();
         rxCapturedPaths[activeSlotIndex.value] = file.path;
         rxCapturedPath.value = file.path; // update preview compatibility
@@ -205,10 +214,15 @@ class SellController extends GetxController {
 
         onFinish();
       } catch (e) {
-        Get.snackbar(
-          "Capture Error",
-          "Failed to take picture: ${e.toString()}",
-        );
+        debugPrint("Camera capture exception: $e");
+        if (!e.toString().contains("Previous capture has not returned")) {
+          Get.snackbar(
+            "Capture Error",
+            "Failed to take picture: ${e.toString()}",
+          );
+        }
+      } finally {
+        isCapturing.value = false;
       }
     } else {
       // Fallback if camera is unavailable (simulator mode)

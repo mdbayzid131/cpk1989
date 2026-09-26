@@ -21,7 +21,6 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
   @override
   Widget build(BuildContext context) {
     final item = controller.item;
-    final status = item.status ?? "Reserved";
     final String orderId = item.id.startsWith('CLT-')
         ? item.id
         : (item.id.length >= 5
@@ -106,6 +105,9 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                         // 4. Delivery Status Timeline Section
                         CustomItemStatusCard(
                           status: item.status,
+                          statusHistory: item.orderModel?.statusHistory,
+                          cancellationReason: item.orderModel?.cancellationReason,
+                          outcome: item.orderModel?.outcome,
                           headerTitle: "Delivery Status",
                         ),
                         SizedBox(height: 20.h),

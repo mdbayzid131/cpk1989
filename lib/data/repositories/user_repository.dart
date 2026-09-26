@@ -41,12 +41,31 @@ class UserRepository {
     );
   }
 
-  /// Get user's listed items (My Wardrobe / Seller products: GET /products?seller=...)
+  /// Get specific order full details (GET /orders/:id)
+  Future<Response> getOrderDetails(String orderId) async {
+    return await apiClient.getData('${ApiConstants.orders}/$orderId');
+  }
+
+  /// Get logged-in user's listed items (My Profile / Wardrobe: GET /products/my-products)
   Future<Response> getMyWardrobe({
+    String? sellerId,
+    dynamic status,
+    int page = 1,
+    int limit = 50,
+  }) async {
+    return await apiClient.getData(
+      ApiConstants.myProducts,
+      query: {'page': page, 'limit': limit},
+      requiresAuth: true,
+    );
+  }
+
+  /// Get another seller's listed items (Seller Profile screen: GET /products?seller=...)
+  Future<Response> getSellerProducts({
     required String sellerId,
     dynamic status,
     int page = 1,
-    int limit = 20,
+    int limit = 50,
   }) async {
     final Map<String, dynamic> queryParams = {
       'seller': sellerId,
@@ -59,7 +78,7 @@ class UserRepository {
     return await apiClient.getData(
       ApiConstants.products,
       query: queryParams,
-      requiresAuth: false,
+      requiresAuth: true,
     );
   }
 

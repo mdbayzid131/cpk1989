@@ -19,7 +19,6 @@ import 'package:cpk1989/module/home/controller/home_controller.dart';
 import 'package:cpk1989/config/constants/api_constants.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
-import 'package:cpk1989/core/widgets/payment_error_bottom_sheet.dart';
 
 class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
   const SecureCheckoutScreen({super.key});

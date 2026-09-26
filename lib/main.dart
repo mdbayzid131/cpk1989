@@ -3,10 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cpk1989/firebase_options.dart';
 import 'package:cpk1989/core/services/push_notification_service.dart';
+import 'package:cpk1989/config/env_config.dart';
 import 'package:cpk1989/app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Environment Configuration
+  await EnvConfig.init();
 
   // Lock orientation to portrait
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);

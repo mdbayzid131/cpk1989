@@ -9,6 +9,7 @@ import 'package:cpk1989/module/home/controller/home_controller.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
+import 'package:cpk1989/core/utils/status_helper.dart';
 
 class SellerProfileScreen extends GetView<SellerProfileController> {
   const SellerProfileScreen({super.key});
@@ -258,20 +259,38 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
         ? "${(item.likes / 1000).toStringAsFixed(0)}K"
         : "${item.likes}";
 
+    final isLive = (item.status == 'live' || item.status == 'available');
+
     return GestureDetector(
       onTap: () {
+        // Prevent opening details for non-live products
+        if (!isLive) {
+          // Helpers.showCustomSnackBar(
+          //   item.isSold
+          //       ? "This item is already sold and no longer available."
+          //       : item.displayStatus == 'Reserved'
+          //       ? "This item is currently reserved by another buyer."
+          //       : "This item is currently not available for purchase.",
+          //   title: "Item Unavailable",
+          //   type: SnackBarType.warning,
+          // );
+          return;
+        }
+
         // Convert ProfileItem to FeedItem to fit ItemDetailScreen model
         final feedItem = FeedItem(
           id: item.id,
           sellerId: controller.rxSellerId.value,
           imagePath: item.imageUrl,
           userName: controller.rxUserName.value,
-          condition: "Excellent",
+          condition: item.condition ?? "Excellent",
           itemName: item.itemName,
           price: formattedPrice,
           size: "Medium",
           wornCount: "Worn Twice",
-          description: "${item.brand} ${item.itemName} in pristine condition.",
+          description:
+              item.description ??
+              "${item.brand} ${item.itemName} in pristine condition.",
           isVerified: controller.rxIsVerified.value,
           images: item.itemImages,
           sellerProfileImage: controller.rxAvatarUrl.value,
@@ -306,7 +325,22 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
               },
             ),
 
-            // 2. Details footer showing Price & Likes
+            // 2. Dark disabled overlay for all non-live items (reserved, sold, etc.)
+            if (!isLive)
+              Container(color: Colors.black.withValues(alpha: 0.55)),
+
+            // 3. Status capsule badge (Top-Left matching client mockup)
+            Positioned(
+              top: 6.h,
+              left: 6.w,
+              child: StatusHelper.buildItemCardBadge(
+                status: item.status,
+                isSold: item.isSold,
+                displayStatus: item.displayStatus,
+              ),
+            ),
+
+            // 4. Details footer showing Price & Likes
             Positioned(
               bottom: 0,
               left: 0,

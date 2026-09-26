@@ -5,8 +5,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
+import 'package:cpk1989/data/models/product_model.dart';
+import 'package:cpk1989/data/models/order_model.dart';
 import 'package:cpk1989/data/repositories/product_repository.dart';
+import 'package:cpk1989/data/repositories/payment_repository.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
+import 'package:cpk1989/core/utils/status_helper.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MyItemDetailController extends GetxController {
   late final ProfileItem item;
@@ -19,6 +24,13 @@ class MyItemDetailController extends GetxController {
   final rxCurrentPage = 0.obs;
   final rxIsEditing = false.obs;
   final rxIsSaving = false.obs;
+
+  // Dynamic Full Details
+  final rxOrderModel = Rxn<OrderModel>();
+  final rxBuyerModel = Rxn<OrderBuyerModel>();
+  final rxProductModel = Rxn<ProductModel>();
+  final rxCancellationReason = "".obs;
+  final rxIsLoadingDetails = false.obs;
 
   // Text Controllers for Editing
   late final TextEditingController titleController;
@@ -38,18 +50,90 @@ class MyItemDetailController extends GetxController {
 
   ProductRepository get _productRepo => Get.find<ProductRepository>();
 
+  final rxIsCheckingConnectStatus = false.obs;
+  final rxIsStripeOnboarded = false.obs;
+
   bool get isReserved {
-    final st = (item.status ?? '').toLowerCase();
-    return item.isSold || st == 'reserved' || st == 'secured' || st == 'sold' || st == 'in_transit';
+    final liveOrderSt = rxOrderModel.value?.status;
+    final st = liveOrderSt ?? item.status;
+    return StatusHelper.isOrderReservedOrSold(
+          st,
+          isSold: item.isSold,
+        ) ||
+        StatusHelper.isCancelledOrRefunded(st) ||
+        rxOrderModel.value != null;
+  }
+
+  /// Active orders in progress (reserved, collected, authenticating, dispatched) cannot be deleted.
+  /// Items with pending_review, rejected, delivered/completed, or unsold items can be deleted.
+  bool get canDelete {
+    final orderStatus = (rxOrderModel.value?.status ?? '').toLowerCase();
+    if (orderStatus == 'reserved' ||
+        orderStatus == 'collected' ||
+        orderStatus == 'authenticating' ||
+        orderStatus == 'dispatched') {
+      return false;
+    }
+    if (isReserved) {
+      final prodStatus = (rxProductModel.value?.status ?? item.status ?? '').toLowerCase();
+      if (prodStatus != 'delivered' &&
+          prodStatus != 'completed' &&
+          prodStatus != 'refunded' &&
+          prodStatus != 'cancelled' &&
+          prodStatus != 'rejected' &&
+          prodStatus != 'pending_review' &&
+          prodStatus != 'pending' &&
+          orderStatus != 'refunded' &&
+          orderStatus != 'cancelled') {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /// Only items that are in review (`pending_review` / `pending`) or `rejected` can be edited.
+  bool get canEdit {
+    final orderStatus = (rxOrderModel.value?.status ?? '').toLowerCase();
+    if (orderStatus.isNotEmpty) return false;
+    if (isReserved) return false;
+
+    final prodStatus = (rxProductModel.value?.status ?? item.status ?? '').toLowerCase();
+    return prodStatus == 'pending_review' ||
+        prodStatus == 'pending' ||
+        prodStatus == 'rejected';
   }
 
   @override
   void onInit() {
     super.onInit();
     pageController = PageController(viewportFraction: 0.88);
+    // checkStripeConnectStatus(); // Payout account status check disabled for Item Detail screen
 
     if (Get.arguments is ProfileItem) {
       item = Get.arguments as ProfileItem;
+    } else if (Get.arguments is String) {
+      item = ProfileItem(
+        id: Get.arguments as String,
+        imageUrl: '',
+        price: 0,
+        likes: 0,
+        isSold: false,
+        brand: "",
+        itemName: "",
+        status: null,
+      );
+    } else if (Get.arguments is Map) {
+      final map = Get.arguments as Map;
+      item = ProfileItem(
+        id: map['productId']?.toString() ?? map['id']?.toString() ?? 'fallback',
+        imageUrl: '',
+        price: 0,
+        likes: 0,
+        isSold: false,
+        brand: "",
+        itemName: "",
+        status: map['status']?.toString(),
+      );
     } else {
       item = ProfileItem(
         id: 'fallback',
@@ -63,6 +147,16 @@ class MyItemDetailController extends GetxController {
       );
     }
 
+    if (item.orderModel != null) {
+      rxOrderModel.value = item.orderModel;
+    }
+    if (item.productModel?.buyer != null) {
+      rxBuyerModel.value = item.productModel!.buyer;
+    }
+    if (item.productModel != null) {
+      rxProductModel.value = item.productModel;
+    }
+
     if (item.proofOfPurchase != null && item.proofOfPurchase!.isNotEmpty) {
       rxBillName.value = item.proofOfPurchase!.split('/').last.split('\\').last;
       rxBillPath.value = item.proofOfPurchase!;
@@ -70,15 +164,93 @@ class MyItemDetailController extends GetxController {
     if (item.originalPackagingAvailable != null) {
       rxOriginalPackaging.value = item.originalPackagingAvailable!;
     }
+    if (item.condition != null && item.condition!.isNotEmpty) {
+      rxSelectedCondition.value = item.condition!;
+    }
 
     titleController = TextEditingController(text: item.itemName);
     brandController = TextEditingController(text: item.brand);
     descriptionController = TextEditingController(
-      text: "Black caviar leather with gold hardware. Comes with original dust bag and authenticity card.",
+      text: (item.description != null && item.description!.isNotEmpty)
+          ? item.description!
+          : "",
     );
     priceController = TextEditingController(
-      text: item.price > 0 ? item.price.toInt().toString() : "3200",
+      text: item.price > 0
+          ? (item.price == item.price.roundToDouble()
+              ? item.price.toInt().toString()
+              : item.price.toStringAsFixed(2))
+          : "0",
     );
+
+    // Fetch full order and buyer details asynchronously
+    fetchFullDetails();
+  }
+
+  Future<void> fetchFullDetails() async {
+    final targetId = item.id;
+    if (targetId.isEmpty || targetId == 'fallback') return;
+
+    rxIsLoadingDetails.value = true;
+    try {
+      final res = await _productRepo.getProductById(targetId);
+      if (res.statusCode == 200 && res.data != null) {
+        final data = res.data['data'];
+        if (data != null && data is Map<String, dynamic>) {
+          final prod = ProductModel.fromJson(data);
+          rxProductModel.value = prod;
+          if (prod.order != null) {
+            rxOrderModel.value = prod.order;
+            if (prod.order!.cancellationReason != null &&
+                prod.order!.cancellationReason!.isNotEmpty) {
+              rxCancellationReason.value = prod.order!.cancellationReason!;
+            }
+          }
+          if (data['order'] is Map) {
+            final oMap = data['order'];
+            if (oMap['cancellationReason'] != null &&
+                oMap['cancellationReason'].toString().isNotEmpty) {
+              rxCancellationReason.value = oMap['cancellationReason'].toString();
+            } else if (oMap['note'] != null &&
+                oMap['note'].toString().isNotEmpty) {
+              rxCancellationReason.value = oMap['note'].toString();
+            }
+          }
+          if (prod.buyer != null) {
+            rxBuyerModel.value = prod.buyer;
+          }
+          if (prod.name != null && prod.name!.isNotEmpty) {
+            titleController.text = prod.name!;
+          }
+          if (prod.brand != null && prod.brand!.isNotEmpty) {
+            brandController.text = prod.brand!;
+          }
+          if (prod.description != null && prod.description!.isNotEmpty) {
+            descriptionController.text = prod.description!;
+          }
+          if (prod.price != null && prod.price! > 0) {
+            priceController.text = (prod.price == prod.price!.roundToDouble())
+                ? prod.price!.toInt().toString()
+                : prod.price!.toStringAsFixed(2);
+          }
+          if (prod.condition != null && prod.condition!.isNotEmpty) {
+            rxSelectedCondition.value = prod.condition!;
+          }
+          if (prod.originalPackagingAvailable != null) {
+            rxOriginalPackaging.value = prod.originalPackagingAvailable!;
+          }
+          if (prod.proofOfPurchase != null && prod.proofOfPurchase!.isNotEmpty) {
+            rxBillPath.value = prod.proofOfPurchase!;
+            rxBillName.value =
+                prod.proofOfPurchase!.split('/').last.split('\\').last;
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('⚠️ Fetch full item details error: $e');
+    } finally {
+      rxIsLoadingDetails.value = false;
+    }
   }
 
   /// Pick Bill File (Image or PDF) matching sell flow
@@ -309,17 +481,8 @@ class MyItemDetailController extends GetxController {
       Helpers.showLoadingDialog(message: "Updating product...");
 
       final priceVal = double.tryParse(priceController.text) ?? item.price;
-
-      // Determine proofOfPurchase URL string value (Backend Zod schema enforces z.string().url())
-      String? proofUrl;
-      if (rxBillPath.value.startsWith('http://') ||
-          rxBillPath.value.startsWith('https://')) {
-        proofUrl = rxBillPath.value;
-      } else if (item.proofOfPurchase != null &&
-          (item.proofOfPurchase!.startsWith('http://') ||
-              item.proofOfPurchase!.startsWith('https://'))) {
-        proofUrl = item.proofOfPurchase;
-      }
+      final currentProdStatus = (rxProductModel.value?.status ?? item.status ?? '').toLowerCase();
+      final bool wasRejected = currentProdStatus == 'rejected';
 
       final updateData = <String, dynamic>{
         "name": titleController.text.trim(),
@@ -330,18 +493,39 @@ class MyItemDetailController extends GetxController {
         "originalPackagingAvailable": rxOriginalPackaging.value,
       };
 
-      if (proofUrl != null && proofUrl.isNotEmpty) {
-        updateData["proofOfPurchase"] = proofUrl;
+      if (wasRejected) {
+        updateData["status"] = "pending_review";
+        updateData["rejectionReason"] = "";
       }
 
-      final response = await _productRepo.updateProduct(item.id, updateData);
+      String? localProofPath;
+      if (rxBillPath.value.isNotEmpty) {
+        if (rxBillPath.value.startsWith('http://') ||
+            rxBillPath.value.startsWith('https://')) {
+          updateData["proofOfPurchase"] = rxBillPath.value;
+        } else {
+          localProofPath = rxBillPath.value;
+        }
+      } else {
+        updateData["proofOfPurchase"] = null;
+      }
+
+      final response = await _productRepo.updateProduct(
+        item.id,
+        updateData,
+        proofOfPurchasePath: localProofPath,
+      );
       Get.back(); // dismiss loading
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         rxIsEditing.value = false;
+        await fetchFullDetails();
+
         Get.snackbar(
           'Success',
-          'Product updated successfully!',
+          wasRejected
+              ? 'Product updated and submitted for review!'
+              : 'Product updated successfully!',
           snackPosition: SnackPosition.TOP,
           backgroundColor: const Color(0xFF161719),
           colorText: Colors.white,
@@ -373,6 +557,62 @@ class MyItemDetailController extends GetxController {
       );
     } finally {
       rxIsSaving.value = false;
+    }
+  }
+
+  Future<void> checkStripeConnectStatus({bool showLoading = false}) async {
+    if (!Get.isRegistered<PaymentRepository>()) {
+      Get.put(PaymentRepository());
+    }
+    final paymentRepo = Get.find<PaymentRepository>();
+
+    rxIsCheckingConnectStatus.value = true;
+    if (showLoading) {
+      Helpers.showLoadingDialog(message: "Checking payout status...");
+    }
+
+    try {
+      final statusData = await paymentRepo.getConnectStatus();
+      final bool isReady =
+          statusData['connected'] == true &&
+          statusData['detailsSubmitted'] == true &&
+          statusData['payoutsEnabled'] == true;
+
+      rxIsStripeOnboarded.value = isReady;
+    } catch (_) {
+      rxIsStripeOnboarded.value = false;
+    } finally {
+      rxIsCheckingConnectStatus.value = false;
+      if (showLoading) {
+        Helpers.hideLoadingDialog();
+      }
+    }
+  }
+
+  Future<void> startStripeOnboarding() async {
+    try {
+      Helpers.showLoadingDialog(message: "Generating setup link...");
+      if (!Get.isRegistered<PaymentRepository>()) {
+        Get.put(PaymentRepository());
+      }
+      final paymentRepo = Get.find<PaymentRepository>();
+      final onboardingUrl = await paymentRepo.createConnectOnboardingUrl();
+      Helpers.hideLoadingDialog();
+
+      if (onboardingUrl != null && onboardingUrl.isNotEmpty) {
+        final uri = Uri.parse(onboardingUrl);
+        // Open Stripe Connect inside In-App Browser/WebView without leaving the app
+        await launchUrl(uri, mode: LaunchMode.inAppBrowserView);
+        // When returning to app, re-check Stripe Connect status
+        await checkStripeConnectStatus(showLoading: false);
+      } else {
+        Helpers.showError(
+          "Unable to generate payout setup link. Please try again.",
+        );
+      }
+    } catch (e) {
+      Helpers.hideLoadingDialog();
+      Helpers.showError("Error starting onboarding: $e");
     }
   }
 

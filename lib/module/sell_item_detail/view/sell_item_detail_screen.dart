@@ -16,6 +16,7 @@ import 'package:cpk1989/core/utils/validators.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
+import 'package:cpk1989/config/env_config.dart';
 
 class SellItemDetailScreen extends GetView<SellItemDetailController> {
   const SellItemDetailScreen({super.key});
@@ -72,268 +73,236 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
               children: [
                 SizedBox(
                   height: 300.h,
-                child: OverflowBox(
-                  minWidth: MediaQuery.of(context).size.width,
-                  maxWidth: MediaQuery.of(context).size.width,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    alignment: Alignment.bottomCenter,
-                    children: [
-                      Positioned.fill(
-                        child: PageView.builder(
-                          controller: controller.pageController,
-                          onPageChanged: (index) {
-                            controller.rxCurrentPage.value = index;
-                          },
-                          itemCount: item.itemImages.length,
-                          itemBuilder: (context, index) {
-                            final imgUrl = item.itemImages[index];
-                            return Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.w),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(20.r),
-                                child: Container(
-                                  color: const Color(0xFF1C1D20),
-                                  child: imgUrl.startsWith('http')
-                                      ? Image.network(
-                                          imgUrl,
-                                          fit: BoxFit.cover,
-                                          loadingBuilder:
-                                              (
-                                                context,
-                                                child,
-                                                loadingProgress,
-                                              ) {
-                                                if (loadingProgress == null) {
-                                                  return child;
-                                                }
-                                                return Center(
-                                                  child: CustomGoldLoader(
-                                                    size: 24.r,
-                                                    strokeWidth: 2.5.r,
-                                                  ),
-                                                );
-                                              },
-                                          errorBuilder:
-                                              (context, error, stackTrace) =>
-                                                  const Center(
-                                                    child: Icon(
-                                                      Icons.broken_image,
-                                                      color: Colors.white30,
+                  child: OverflowBox(
+                    minWidth: MediaQuery.of(context).size.width,
+                    maxWidth: MediaQuery.of(context).size.width,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      alignment: Alignment.bottomCenter,
+                      children: [
+                        Positioned.fill(
+                          child: PageView.builder(
+                            controller: controller.pageController,
+                            onPageChanged: (index) {
+                              controller.rxCurrentPage.value = index;
+                            },
+                            itemCount: item.itemImages.length,
+                            itemBuilder: (context, index) {
+                              final imgUrl = item.itemImages[index];
+                              return Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8.w),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20.r),
+                                  child: Container(
+                                    color: const Color(0xFF1C1D20),
+                                    child: imgUrl.startsWith('http')
+                                        ? Image.network(
+                                            imgUrl,
+                                            fit: BoxFit.cover,
+                                            loadingBuilder:
+                                                (
+                                                  context,
+                                                  child,
+                                                  loadingProgress,
+                                                ) {
+                                                  if (loadingProgress == null) {
+                                                    return child;
+                                                  }
+                                                  return Center(
+                                                    child: CustomGoldLoader(
+                                                      size: 24.r,
+                                                      strokeWidth: 2.5.r,
                                                     ),
-                                                  ),
-                                        )
-                                      : Image.file(
-                                          File(imgUrl),
-                                          fit: BoxFit.cover,
-                                          errorBuilder:
-                                              (context, error, stackTrace) =>
-                                                  const Center(
-                                                    child: Icon(
-                                                      Icons.broken_image,
-                                                      color: Colors.white30,
+                                                  );
+                                                },
+                                            errorBuilder:
+                                                (context, error, stackTrace) =>
+                                                    const Center(
+                                                      child: Icon(
+                                                        Icons.broken_image,
+                                                        color: Colors.white30,
+                                                      ),
                                                     ),
-                                                  ),
-                                        ),
+                                          )
+                                        : Image.file(
+                                            File(imgUrl),
+                                            fit: BoxFit.cover,
+                                            errorBuilder:
+                                                (context, error, stackTrace) =>
+                                                    const Center(
+                                                      child: Icon(
+                                                        Icons.broken_image,
+                                                        color: Colors.white30,
+                                                      ),
+                                                    ),
+                                          ),
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      Positioned(
-                        bottom: -9.h,
-                        child: CustomPageIndicator(
-                          count: item.itemImages.length,
-                          currentPage: controller.rxCurrentPage.value,
-                          isSmall: false,
-                          showBorder: false,
-                          backgroundColor: const Color(0xFF0F1012),
-                          activeColor: const Color(0xFFFFAF2C),
-                          inactiveColor: const Color(0xFF7E7E7E),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(height: 30.h),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "ITEM DETAILS",
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white38,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 12.h),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildTitleEditRow(),
-                  _buildBrandEditRow(),
-                  _buildDescriptionEditRow(),
-                  _buildPriceEditRow(),
-                  _buildConditionEditRow(context),
-                  _buildProofOfPurchaseEditRow(),
-                  _buildOriginalPackagingRow(),
-                ],
-              ),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox(width: 4.w),
-                  Icon(Icons.info_outline, color: Colors.white38, size: 14.sp),
-                  SizedBox(width: 6.w),
-                  Text(
-                    "Final verification happens after pickup.",
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12.sp,
-                      color: Colors.white38,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 24.h),
-
-              SizedBox(height: 2.h),
-              Text(
-                "SELLER DETAILS",
-                style: GoogleFonts.dmSans(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white38,
-                  letterSpacing: 1.0,
-                ),
-              ),
-              SizedBox(height: 12.h),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildSellerInputRow(
-                    "Name",
-                    controller.sellerNameController,
-                    rxValue: controller.rxSellerName,
-                    errorMessage: "Seller name is required",
-                  ),
-                  _buildSellerInputRow(
-                    "Location",
-                    controller.sellerLocationController,
-                    rxValue: controller.rxSellerLocation,
-                    errorMessage: "Seller location is required",
-                  ),
-                  _buildSellerInputRow(
-                    "Country",
-                    controller.sellerCountryController,
-                    rxValue: controller.rxSellerCountry,
-                    errorMessage: "Seller country is required",
-                  ),
-                  _buildSellerInputRow(
-                    "Phone number",
-                    controller.sellerPhoneController,
-                    rxValue: controller.rxSellerPhone,
-                    errorMessage: "Valid seller phone number is required",
-                    isPhone: true,
-                  ),
-                ],
-              ),
-              SizedBox(height: 24.h),
-              Text(
-                "YOUR EARNINGS",
-                style: GoogleFonts.dmSans(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white38,
-                  letterSpacing: 1.0,
-                ),
-              ),
-              SizedBox(height: 12.h),
-              _buildEarningsCard(item.price),
-              SizedBox(height: 24.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "STRIPE PAYOUT ACCOUNT",
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white38,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                  Obx(() {
-                    if (!controller.rxIsCheckingConnectStatus.value) {
-                      return GestureDetector(
-                        onTap: () => controller.checkStripeConnectStatus(
-                          showLoading: true,
-                        ),
-                        child: Text(
-                          "Refresh status",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 12.sp,
-                            color: const Color(0xFFFFAF2C),
-                            fontWeight: FontWeight.w600,
-                            decoration: TextDecoration.underline,
-                            decorationColor: const Color(0xFFFFAF2C),
+                              );
+                            },
                           ),
                         ),
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  }),
-                ],
-              ),
-              SizedBox(height: 12.h),
-              _buildStripeOnboardingCard(),
-              SizedBox(height: 24.h),
-              _buildPostItemButton(context, item),
-              SizedBox(height: 16.h),
-              GestureDetector(
-                onTap: () => Get.toNamed(AppRoutes.termsAndPolicies),
-                child: Center(
-                  child: Text.rich(
-                    TextSpan(
-                      text: "By posting, you agree to Closeté ",
+                        Positioned(
+                          bottom: -9.h,
+                          child: CustomPageIndicator(
+                            count: item.itemImages.length,
+                            currentPage: controller.rxCurrentPage.value,
+                            isSmall: false,
+                            showBorder: false,
+                            backgroundColor: const Color(0xFF0F1012),
+                            activeColor: const Color(0xFFFFAF2C),
+                            inactiveColor: const Color(0xFF7E7E7E),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 30.h),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "ITEM DETAILS",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white38,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 12.h),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildTitleEditRow(),
+                    _buildBrandEditRow(),
+                    _buildDescriptionEditRow(),
+                    _buildPriceEditRow(),
+                    _buildConditionEditRow(context),
+                    _buildProofOfPurchaseEditRow(),
+                    _buildOriginalPackagingRow(),
+                  ],
+                ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(width: 4.w),
+                    Icon(
+                      Icons.info_outline,
+                      color: Colors.white38,
+                      size: 14.sp,
+                    ),
+                    SizedBox(width: 6.w),
+                    Text(
+                      "Final verification happens after pickup.",
                       style: GoogleFonts.dmSans(
                         fontSize: 12.sp,
                         color: Colors.white38,
                         fontWeight: FontWeight.w500,
                       ),
-                      children: [
-                        const TextSpan(
-                          text: "Terms & Policies",
-                          style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            decorationColor: Colors.white38,
-                          ),
-                        ),
-                      ],
                     ),
-                    textAlign: TextAlign.center,
+                  ],
+                ),
+                SizedBox(height: 24.h),
+
+                SizedBox(height: 2.h),
+                Text(
+                  "SELLER DETAILS",
+                  style: GoogleFonts.dmSans(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white38,
+                    letterSpacing: 1.0,
                   ),
                 ),
-              ),
-              SizedBox(
-                height:
-                    24.h +
-                    (MediaQuery.of(context).padding.bottom > 0
-                        ? MediaQuery.of(context).padding.bottom
-                        : 20.h),
-              ),
-            ],
+                SizedBox(height: 12.h),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildSellerInputRow(
+                      "Name",
+                      controller.sellerNameController,
+                      rxValue: controller.rxSellerName,
+                      errorMessage: "Seller name is required",
+                    ),
+                    _buildSellerInputRow(
+                      "Location (e.g. Dubai)",
+                      controller.sellerLocationController,
+                      rxValue: controller.rxSellerLocation,
+                      errorMessage: "Seller location is required",
+                    ),
+                    _buildSellerInputRow(
+                      "Country",
+                      controller.sellerCountryController,
+                      rxValue: controller.rxSellerCountry,
+                      errorMessage: "Seller country is required",
+                    ),
+                    _buildSellerInputRow(
+                      "Phone number",
+                      controller.sellerPhoneController,
+                      rxValue: controller.rxSellerPhone,
+                      errorMessage: "Valid seller phone number is required",
+                      isPhone: true,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 24.h),
+                Text(
+                  "YOUR EARNINGS",
+                  style: GoogleFonts.dmSans(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white38,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+                SizedBox(height: 12.h),
+                _buildEarningsCard(item.price),
+                SizedBox(height: 24.h),
+                _buildPostItemButton(context, item),
+                SizedBox(height: 16.h),
+                GestureDetector(
+                  onTap: () => Get.toNamed(AppRoutes.termsAndPolicies),
+                  child: Center(
+                    child: Text.rich(
+                      TextSpan(
+                        text: "By posting, you agree to Closeté ",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 12.sp,
+                          color: Colors.white38,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        children: [
+                          const TextSpan(
+                            text: "Terms & Policies",
+                            style: TextStyle(
+                              decoration: TextDecoration.underline,
+                              decorationColor: Colors.white38,
+                            ),
+                          ),
+                        ],
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height:
+                      24.h +
+                      (MediaQuery.of(context).padding.bottom > 0
+                          ? MediaQuery.of(context).padding.bottom
+                          : 20.h),
+                ),
+              ],
+            ),
           ),
         ),
-      ));
+      );
     });
   }
 
@@ -362,41 +331,27 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
               ),
             ),
-            child: Row(
-              children: [
-                Text(
-                  "Title",
-                  style: GoogleFonts.dmSans(
-                    fontSize: 14.sp,
-                    color: Colors.white38,
-                    fontWeight: FontWeight.w500,
-                  ),
+            alignment: Alignment.centerLeft,
+            child: TextField(
+              controller: controller.titleController,
+              textAlign: TextAlign.start,
+              textInputAction: TextInputAction.next,
+              style: GoogleFonts.dmSans(
+                fontSize: 14.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+              decoration: InputDecoration(
+                hintText: "Enter title",
+                hintStyle: GoogleFonts.dmSans(
+                  fontSize: 14.sp,
+                  color: Colors.white38,
+                  fontWeight: FontWeight.w400,
                 ),
-                SizedBox(width: 16.w),
-                Expanded(
-                  child: TextField(
-                    controller: controller.titleController,
-                    textAlign: TextAlign.end,
-                    textInputAction: TextInputAction.next,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 14.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: "Enter title",
-                      hintStyle: GoogleFonts.dmSans(
-                        fontSize: 14.sp,
-                        color: Colors.white24,
-                        fontWeight: FontWeight.w400,
-                      ),
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                  ),
-                ),
-              ],
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+              ),
             ),
           ),
           if (isInvalid)
@@ -494,8 +449,8 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
       final bool hasPrice = parsedPrice != null && parsedPrice > 0;
 
       final currentPrice = hasPrice ? parsedPrice : 0.0;
-      final closetFee = currentPrice * 0.12;
-      final youEarn = currentPrice * 0.88;
+      final closetFee = currentPrice * EnvConfig.feeRate;
+      final youEarn = currentPrice * EnvConfig.sellerRate;
 
       final formattedPrice = hasPrice
           ? "AED ${currentPrice.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}"
@@ -531,7 +486,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
             children: [
               _buildEarningsRow("Listing price", formattedPrice),
               SizedBox(height: 8.h),
-              _buildEarningsRow("Closeté fee (12%)", formattedFee),
+              _buildEarningsRow(EnvConfig.feeLabel, formattedFee),
               SizedBox(height: 10.h),
               const Divider(color: Colors.white10),
               SizedBox(height: 10.h),
@@ -664,44 +619,30 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
               ),
             ),
-            child: Row(
-              children: [
-                Text(
-                  "Brand",
-                  style: GoogleFonts.dmSans(
-                    fontSize: 14.sp,
-                    color: Colors.white38,
-                    fontWeight: FontWeight.w500,
-                  ),
+            alignment: Alignment.centerLeft,
+            child: TextField(
+              controller: controller.brandController,
+              textAlign: TextAlign.start,
+              textInputAction: TextInputAction.next,
+              enableSuggestions: false,
+              autocorrect: false,
+              autofillHints: const [],
+              style: GoogleFonts.dmSans(
+                fontSize: 14.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+              decoration: InputDecoration(
+                hintText: "Enter brand",
+                hintStyle: GoogleFonts.dmSans(
+                  fontSize: 14.sp,
+                  color: Colors.white38,
+                  fontWeight: FontWeight.w400,
                 ),
-                SizedBox(width: 16.w),
-                Expanded(
-                  child: TextField(
-                    controller: controller.brandController,
-                    textAlign: TextAlign.end,
-                    textInputAction: TextInputAction.next,
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    autofillHints: const [],
-                    style: GoogleFonts.dmSans(
-                      fontSize: 14.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: "Enter brand",
-                      hintStyle: GoogleFonts.dmSans(
-                        fontSize: 14.sp,
-                        color: Colors.white24,
-                        fontWeight: FontWeight.w400,
-                      ),
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                  ),
-                ),
-              ],
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+              ),
             ),
           ),
           if (isInvalid)
@@ -732,7 +673,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
         children: [
           Container(
             margin: EdgeInsets.only(bottom: isInvalid ? 4.h : 8.h),
-            padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 16.h),
+            padding: EdgeInsets.fromLTRB(16.w, 14.h, 16.w, 14.h),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12.r),
               border: Border.all(
@@ -745,41 +686,29 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
               ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Description",
-                  style: GoogleFonts.dmSans(
-                    fontSize: 13.sp,
-                    color: Colors.white38,
-                    fontWeight: FontWeight.w500,
-                  ),
+            child: TextField(
+              controller: controller.descriptionController,
+              maxLines: null,
+              minLines: 3,
+              textInputAction: TextInputAction.newline,
+              textAlign: TextAlign.start,
+              style: GoogleFonts.dmSans(
+                fontSize: 14.sp,
+                color: Colors.white,
+                height: 1.4,
+                fontWeight: FontWeight.w500,
+              ),
+              decoration: InputDecoration(
+                hintText: "Enter description...",
+                hintStyle: GoogleFonts.dmSans(
+                  fontSize: 14.sp,
+                  color: Colors.white38,
+                  fontWeight: FontWeight.w400,
                 ),
-                SizedBox(height: 8.h),
-                TextField(
-                  controller: controller.descriptionController,
-                  maxLines: null,
-                  textInputAction: TextInputAction.newline,
-                  style: GoogleFonts.dmSans(
-                    fontSize: 14.sp,
-                    color: Colors.white,
-                    height: 1.4,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: "Enter description...",
-                    hintStyle: GoogleFonts.dmSans(
-                      fontSize: 14.sp,
-                      color: Colors.white24,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    border: InputBorder.none,
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
-              ],
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+              ),
             ),
           ),
           if (isInvalid)
@@ -829,62 +758,40 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
               ),
             ),
-            child: Row(
-              children: [
-                Text(
-                  "Listing price",
-                  style: GoogleFonts.dmSans(
-                    fontSize: 14.sp,
-                    color: Colors.white38,
-                    fontWeight: FontWeight.w500,
-                  ),
+            alignment: Alignment.centerLeft,
+            child: TextField(
+              controller: controller.priceController,
+              textAlign: TextAlign.start,
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+              style: GoogleFonts.dmSans(
+                fontSize: 14.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+              decoration: InputDecoration(
+                hintText: "Listing price AED",
+                hintStyle: GoogleFonts.dmSans(
+                  fontSize: 14.sp,
+                  color: Colors.white38,
+                  fontWeight: FontWeight.w400,
                 ),
-                const Spacer(),
-                Obx(() {
-                  final hasValue = controller.rxPrice.value.trim().isNotEmpty;
-                  return Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (hasValue)
-                        Padding(
-                          padding: EdgeInsets.only(right: 6.w),
-                          child: Text(
-                            "AED",
-                            style: GoogleFonts.dmSans(
-                              fontSize: 14.sp,
-                              color: Colors.white38,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      SizedBox(
-                        width: 130.w,
-                        child: TextField(
-                          controller: controller.priceController,
-                          textAlign: TextAlign.end,
-                          keyboardType: TextInputType.number,
-                          textInputAction: TextInputAction.done,
-                          onSubmitted: (_) =>
-                              FocusManager.instance.primaryFocus?.unfocus(),
-                          style: GoogleFonts.dmSans(
-                            fontSize: 14.sp,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            isDense: true,
-                            contentPadding: EdgeInsets.zero,
-                          ),
-                          onChanged: (val) {
-                            controller.rxPrice.value = val;
-                          },
-                        ),
-                      ),
-                    ],
-                  );
-                }),
-              ],
+                prefixText: controller.rxPrice.value.trim().isNotEmpty
+                    ? "AED "
+                    : null,
+                prefixStyle: GoogleFonts.dmSans(
+                  fontSize: 14.sp,
+                  color: Colors.white70,
+                  fontWeight: FontWeight.w500,
+                ),
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+              ),
+              onChanged: (val) {
+                controller.rxPrice.value = val;
+              },
             ),
           ),
           if (isInvalid)
@@ -1192,9 +1099,9 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 ),
               );
             } else {
-              final isPdf = controller.rxBillName.value
-                  .toLowerCase()
-                  .endsWith('.pdf');
+              final isPdf = controller.rxBillName.value.toLowerCase().endsWith(
+                '.pdf',
+              );
               return Container(
                 padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                 decoration: BoxDecoration(
@@ -1430,7 +1337,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
   // }
 
   Widget _buildSellerInputRow(
-    String label,
+    String hintText,
     TextEditingController textController, {
     RxString? rxValue,
     String? errorMessage,
@@ -1463,37 +1370,35 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
               ),
             ),
-            child: Row(
-              children: [
-                Text(
-                  label,
-                  style: GoogleFonts.dmSans(
-                    fontSize: 14.sp,
-                    color: Colors.white38,
-                    fontWeight: FontWeight.w500,
-                  ),
+            alignment: Alignment.centerLeft,
+            child: TextField(
+              controller: textController,
+              textAlign: TextAlign.start,
+              keyboardType: isPhone ? TextInputType.phone : TextInputType.text,
+              textInputAction: isPhone
+                  ? TextInputAction.done
+                  : TextInputAction.next,
+              onSubmitted: isPhone
+                  ? (_) => FocusManager.instance.primaryFocus?.unfocus()
+                  : null,
+              enableSuggestions: false,
+              autocorrect: false,
+              style: GoogleFonts.dmSans(
+                fontSize: 14.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+              decoration: InputDecoration(
+                hintText: hintText,
+                hintStyle: GoogleFonts.dmSans(
+                  fontSize: 14.sp,
+                  color: Colors.white38,
+                  fontWeight: FontWeight.w400,
                 ),
-                SizedBox(width: 16.w),
-                Expanded(
-                  child: TextField(
-                    controller: textController,
-                    textAlign: TextAlign.end,
-                    textInputAction: TextInputAction.next,
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 14.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                  ),
-                ),
-              ],
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+              ),
             ),
           ),
           if (isInvalid && errorMessage != null)
@@ -2222,8 +2127,9 @@ class _SuccessBottomSheetContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String brandName = item.brand.trim().isNotEmpty ? item.brand.trim() : '';
-    String itemName =
-        item.itemName.trim().isNotEmpty ? item.itemName.trim() : '';
+    String itemName = item.itemName.trim().isNotEmpty
+        ? item.itemName.trim()
+        : '';
     String imagePath = item.imageUrl;
 
     if (Get.isRegistered<SellItemDetailController>()) {
@@ -2249,10 +2155,10 @@ class _SuccessBottomSheetContent extends StatelessWidget {
         // SizedBox(height: 12.h),
         Center(
           child: Text(
-            "Your item is live",
+            "Listing Submitted for Review",
             style: TextStyle(
               fontFamily: 'Schnyder L',
-              fontSize: 30.sp,
+              fontSize: 26.sp,
               fontWeight: FontWeight.w300,
               color: Colors.white,
               letterSpacing: -0.5,
@@ -2262,7 +2168,8 @@ class _SuccessBottomSheetContent extends StatelessWidget {
         SizedBox(height: 8.h),
         Center(
           child: Text(
-            "We'll arrange pickup and verification shortly",
+            "Closeté team is reviewing your listing before publication",
+            textAlign: TextAlign.center,
             style: GoogleFonts.dmSans(
               fontSize: 13.sp,
               color: Colors.white38,

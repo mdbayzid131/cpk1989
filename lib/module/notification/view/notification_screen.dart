@@ -188,20 +188,78 @@ class NotificationScreen extends GetView<NotificationController> {
     return GestureDetector(
       onTap: () {
         final data = item.data;
-        if (data != null) {
-          final orderId = data['orderId']?.toString();
-          final productId = data['productId']?.toString();
+        final String? screen = data?['screen']?.toString();
+        final String? role = data?['role']?.toString();
+        final String? orderId = data?['orderId']?.toString();
+        final String? productId = data?['productId']?.toString();
+        final String? sellerId = data?['sellerId']?.toString();
+
+        // 1. Seller Notifications -> Seller Item Detail / My Listings
+        final bool isSellerNotification =
+            screen == 'seller_item_detail' ||
+            screen == 'my_listings' ||
+            role == 'seller' ||
+            item.type == NotificationType.itemReserved ||
+            item.type == NotificationType.itemListed ||
+            item.type == NotificationType.payoutPaid ||
+            item.type == NotificationType.payoutProcessing ||
+            item.type == NotificationType.collectionMissed;
+
+        if (isSellerNotification) {
+          if (productId != null && productId.isNotEmpty) {
+            Get.toNamed(AppRoutes.myItemDetail, arguments: productId);
+            return;
+          }
+        }
+
+        // 2. Buyer Notifications -> My Purchase Details
+        final bool isBuyerNotification =
+            screen == 'order_details' ||
+            screen == 'my_purchase_details' ||
+            role == 'buyer' ||
+            item.type == NotificationType.orderSecured;
+
+        if (isBuyerNotification) {
           if (orderId != null && orderId.isNotEmpty) {
             Get.toNamed(
               AppRoutes.myPurchaseDetails,
               arguments: {'orderId': orderId},
             );
-          } else if (productId != null && productId.isNotEmpty) {
-            Get.toNamed(
-              AppRoutes.itemDetail,
-              arguments: {'productId': productId},
-            );
+            return;
           }
+        }
+
+        // 3. Public Product / Wishlist Details
+        if (screen == 'product_details' || screen == 'item_detail') {
+          if (productId != null && productId.isNotEmpty) {
+            Get.toNamed(AppRoutes.itemDetail, arguments: productId);
+            return;
+          }
+        }
+
+        // 4. Seller Profile
+        if (screen == 'seller_profile' ||
+            screen == 'seller_onboarding' ||
+            item.type == NotificationType.sellerOnboardingRequired) {
+          if (sellerId != null && sellerId.isNotEmpty) {
+            Get.toNamed(
+              AppRoutes.sellerProfile,
+              arguments: {'sellerId': sellerId},
+            );
+          } else {
+            Get.toNamed(AppRoutes.sellerProfile);
+          }
+          return;
+        }
+
+        // Fallbacks
+        if (productId != null && productId.isNotEmpty) {
+          Get.toNamed(AppRoutes.itemDetail, arguments: productId);
+        } else if (orderId != null && orderId.isNotEmpty) {
+          Get.toNamed(
+            AppRoutes.myPurchaseDetails,
+            arguments: {'orderId': orderId},
+          );
         }
       },
       behavior: HitTestBehavior.opaque,
