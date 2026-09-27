@@ -83,6 +83,10 @@ class ProductRepository {
     required bool originalPackagingAvailable,
     required List<String> imagePaths, // camera or gallery local file paths
     String? proofOfPurchasePath, // proof of purchase PDF file path (optional)
+    String? sellerName,
+    String? sellerLocation,
+    String? sellerCountry,
+    String? sellerPhone,
   }) async {
     final formData = FormData();
 
@@ -94,6 +98,13 @@ class ProductRepository {
       "price": price,
       "condition": condition,
       "originalPackagingAvailable": originalPackagingAvailable,
+      if (sellerName != null && sellerName.isNotEmpty) "sellerName": sellerName,
+      if (sellerLocation != null && sellerLocation.isNotEmpty)
+        "sellerLocation": sellerLocation,
+      if (sellerCountry != null && sellerCountry.isNotEmpty)
+        "sellerCountry": sellerCountry,
+      if (sellerPhone != null && sellerPhone.isNotEmpty)
+        "sellerPhone": sellerPhone,
     };
     formData.fields.add(MapEntry('data', jsonEncode(productMetadata)));
 

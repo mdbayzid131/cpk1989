@@ -225,7 +225,9 @@ class OrderBuyerModel {
       profileImage: json['profileImage'] ?? json['avatar'] ?? json['image'],
       phone: json['phone'] ?? json['contact'],
       location: json['location'],
-      country: json['country'],
+      country: (json['country'] != null && json['country'].toString().trim().isNotEmpty)
+          ? json['country'].toString().trim()
+          : 'UAE',
       address: json['address'],
     );
   }
@@ -238,7 +240,7 @@ class OrderBuyerModel {
       'profileImage': profileImage,
       'phone': phone,
       'location': location,
-      'country': country,
+      'country': country ?? 'UAE',
       'address': address,
     };
   }
@@ -249,6 +251,9 @@ class OrderSellerModel {
   final String? name;
   final String? email;
   final String? contact;
+  final String? phone;
+  final String? location;
+  final String? country;
   final String? profileImage;
   final bool? isVerified;
 
@@ -257,16 +262,27 @@ class OrderSellerModel {
     this.name,
     this.email,
     this.contact,
+    this.phone,
+    this.location,
+    this.country,
     this.profileImage,
     this.isVerified,
   });
 
+  String? get effectivePhone => phone ?? contact;
+
   factory OrderSellerModel.fromJson(Map<String, dynamic> json) {
+    final ph = json['phone'] ?? json['contact'];
     return OrderSellerModel(
       id: json['_id'] ?? json['id'],
       name: json['name'],
       email: json['email'],
-      contact: json['contact'] ?? json['phone'],
+      contact: ph,
+      phone: ph,
+      location: json['location'],
+      country: (json['country'] != null && json['country'].toString().trim().isNotEmpty)
+          ? json['country'].toString().trim()
+          : 'UAE',
       profileImage: json['profileImage'] ?? json['avatar'] ?? json['image'],
       isVerified: json['isVerified'],
     );
@@ -277,7 +293,10 @@ class OrderSellerModel {
       'id': id,
       'name': name,
       'email': email,
-      'contact': contact,
+      'contact': contact ?? phone,
+      'phone': phone ?? contact,
+      'location': location,
+      'country': country ?? 'UAE',
       'profileImage': profileImage,
       'isVerified': isVerified,
     };
@@ -288,19 +307,28 @@ class DeliveryDetailsModel {
   final String? address;
   final String? location;
   final String? phone;
+  final String? country;
 
-  DeliveryDetailsModel({this.address, this.location, this.phone});
+  DeliveryDetailsModel({this.address, this.location, this.phone, this.country});
 
   factory DeliveryDetailsModel.fromJson(Map<String, dynamic> json) {
     return DeliveryDetailsModel(
       address: json['address'],
       location: json['location'],
       phone: json['phone'],
+      country: (json['country'] != null && json['country'].toString().trim().isNotEmpty)
+          ? json['country'].toString().trim()
+          : 'UAE',
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'address': address, 'location': location, 'phone': phone};
+    return {
+      'address': address,
+      'location': location,
+      'phone': phone,
+      'country': country ?? 'UAE',
+    };
   }
 }
 

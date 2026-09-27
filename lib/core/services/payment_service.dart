@@ -63,6 +63,7 @@ class PaymentService extends GetxService {
     required String address,
     required String location,
     required String phone,
+    String country = 'UAE',
   }) async {
     try {
       final apiClient = Get.find<ApiClient>();
@@ -73,6 +74,7 @@ class PaymentService extends GetxService {
             'address': address,
             'location': location,
             'phone': phone,
+            'country': country.isNotEmpty ? country : 'UAE',
           },
         },
       );
@@ -171,6 +173,7 @@ class PaymentService extends GetxService {
     required String address,
     required String location,
     required String phone,
+    String country = 'UAE',
     String? selectedPaymentMethodId,
   }) async {
     debugPrint('🚀 Hitting backend checkout API for productId: $productId...');
@@ -181,6 +184,7 @@ class PaymentService extends GetxService {
       address: address,
       location: location,
       phone: phone,
+      country: country,
     );
 
     if (checkoutResponse.success == false) {

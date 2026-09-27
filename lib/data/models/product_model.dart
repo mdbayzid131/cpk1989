@@ -168,6 +168,7 @@ class SellerModel {
   final String? name;
   final String? profileImage;
   final String? contact;
+  final String? phone;
   final String? location;
   final String? country;
   final bool? isVerified;
@@ -177,10 +178,13 @@ class SellerModel {
     this.name,
     this.profileImage,
     this.contact,
+    this.phone,
     this.location,
     this.country,
     this.isVerified,
   });
+
+  String? get effectivePhone => phone ?? contact;
 
   String get displayProfileImage {
     final raw = profileImage ?? '';
@@ -201,6 +205,7 @@ class SellerModel {
     }
     if (json is Map) {
       final map = Map<String, dynamic>.from(json);
+      final ph = map['phone'] ?? map['contact'];
       return SellerModel(
         id: map['id'] ?? map['_id'],
         name: map['name'],
@@ -209,9 +214,12 @@ class SellerModel {
             map['image'] ??
             map['avatar'] ??
             map['profilePicture'],
-        contact: map['contact'],
+        contact: ph,
+        phone: ph,
         location: map['location'],
-        country: map['country'],
+        country: (map['country'] != null && map['country'].toString().trim().isNotEmpty)
+            ? map['country'].toString().trim()
+            : 'UAE',
         isVerified: map['isVerified'],
       );
     }
@@ -223,9 +231,10 @@ class SellerModel {
       'id': id,
       'name': name,
       'profileImage': profileImage,
-      'contact': contact,
+      'contact': contact ?? phone,
+      'phone': phone ?? contact,
       'location': location,
-      'country': country,
+      'country': country ?? 'UAE',
       'isVerified': isVerified,
     };
   }

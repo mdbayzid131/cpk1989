@@ -236,18 +236,12 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                       rxValue: controller.rxSellerLocation,
                       errorMessage: "Seller location is required",
                     ),
-                    _buildSellerInputRow(
-                      "Country",
-                      controller.sellerCountryController,
-                      rxValue: controller.rxSellerCountry,
-                      errorMessage: "Seller country is required",
+                    _buildFixedCountryField(
+                      countryName: "UAE",
                     ),
-                    _buildSellerInputRow(
-                      "Phone number",
-                      controller.sellerPhoneController,
-                      rxValue: controller.rxSellerPhone,
+                    _buildSellerPhoneInputField(
+                      context: context,
                       errorMessage: "Valid seller phone number is required",
-                      isPhone: true,
                     ),
                   ],
                 ),
@@ -1399,6 +1393,134 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 isDense: true,
                 contentPadding: EdgeInsets.zero,
               ),
+            ),
+          ),
+          if (isInvalid && errorMessage != null)
+            Padding(
+              padding: EdgeInsets.only(left: 4.w, bottom: 8.h),
+              child: Text(
+                errorMessage,
+                style: GoogleFonts.dmSans(
+                  fontSize: 12.sp,
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
+        ],
+      );
+    });
+  }
+
+  Widget _buildFixedCountryField({
+    String countryName = "UAE",
+  }) {
+    return Container(
+      height: 52.h,
+      margin: EdgeInsets.only(bottom: 8.h),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+          begin: Alignment.centerRight,
+          end: Alignment.centerLeft,
+        ),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.05),
+          width: 1.0,
+        ),
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      alignment: Alignment.centerLeft,
+      child: Text(
+        countryName,
+        style: GoogleFonts.dmSans(
+          fontSize: 14.sp,
+          color: Colors.white,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSellerPhoneInputField({
+    required BuildContext context,
+    String? errorMessage,
+  }) {
+    return Obx(() {
+      final value = controller.rxSellerPhone.value;
+      final isInvalid =
+          controller.rxFormSubmitted.value &&
+          (value.trim().isEmpty ||
+              Validators.phone(controller.formattedSellerPhone) != null);
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 52.h,
+            margin: EdgeInsets.only(bottom: isInvalid ? 4.h : 8.h),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+                begin: Alignment.centerRight,
+                end: Alignment.centerLeft,
+              ),
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.05),
+                width: 1.0,
+              ),
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            child: Row(
+              children: [
+                // Fixed UAE Phone Code (+971)
+                Obx(
+                  () => Text(
+                    controller.rxPhoneCode.value,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 12.w),
+                // Vertical divider line
+                Container(
+                  width: 1,
+                  height: 20.h,
+                  color: Colors.white.withValues(alpha: 0.08),
+                ),
+                SizedBox(width: 12.w),
+                // Number field
+                Expanded(
+                  child: TextField(
+                    controller: controller.sellerPhoneController,
+                    keyboardType: TextInputType.phone,
+                    textInputAction: TextInputAction.done,
+                    onSubmitted: (_) =>
+                        FocusManager.instance.primaryFocus?.unfocus(),
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: "Phone number",
+                      hintStyle: GoogleFonts.dmSans(
+                        fontSize: 14.sp,
+                        color: Colors.white38,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           if (isInvalid && errorMessage != null)

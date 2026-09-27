@@ -4,6 +4,7 @@ class ApiConstants {
   static String get baseUrl => EnvConfig.apiBaseUrl;
 
   //Auth
+  static const String signUp = '/auth/signup';
   static const String login = '/auth/login';
   static const String verifyOtp = '/auth/login-otp';
   static const String resendOtp = '/auth/resend-otp';

@@ -113,14 +113,24 @@ class SecureCheckoutController extends GetxController {
       }
       final profileCtrl = Get.find<ProfileController>();
       syncFromProfile(profileCtrl);
-
-      // Fetch fresh profile from API & sync
-      profileCtrl.fetchUserProfile().then((_) {
-        syncFromProfile(profileCtrl);
-      });
     } catch (e) {
       debugPrint("⚠️ Sync profile in checkout error: $e");
     }
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      try {
+        final profileCtrl = Get.find<ProfileController>();
+        profileCtrl.fetchUserProfile().then((_) {
+          syncFromProfile(profileCtrl);
+        });
+      } catch (e) {
+        debugPrint("⚠️ Fresh profile fetch in checkout onReady error: $e");
+      }
+    });
   }
 
   void setPhoneAndCode(String rawPhone) {
@@ -261,8 +271,12 @@ class SecureCheckoutController extends GetxController {
 
     final fullPhone = formattedFullPhone;
     final cityInput = locationController.text.trim();
-    final countrySelected = rxLocation.value;
-    final addressText = cityInput.isNotEmpty ? cityInput : countrySelected;
+    final countrySelected = rxLocation.value.isNotEmpty
+        ? rxLocation.value
+        : "UAE";
+    final addressText = addressController.text.trim().isNotEmpty
+        ? addressController.text.trim()
+        : (cityInput.isNotEmpty ? cityInput : countrySelected);
 
     // 1. Sync delivery details to user profile backend API & local storage FIRST
     // Profile's location gets cityInput, Profile's country gets countrySelected
@@ -292,8 +306,9 @@ class SecureCheckoutController extends GetxController {
         paymentMethod: rxPaymentMethod.value,
         productId: item.id.isNotEmpty ? item.id : 'unknown',
         address: addressText,
-        location: countrySelected,
+        location: cityInput.isNotEmpty ? cityInput : countrySelected,
         phone: fullPhone,
+        country: countrySelected,
         selectedPaymentMethodId: selectedCardId,
       );
 

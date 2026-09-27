@@ -5,7 +5,8 @@ class EnvConfig {
   static double _platformFeePercentage = 12.0;
   static String _apiBaseUrl = const String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://smart-shopping-mall.onrender.com/api/v1',
+    defaultValue:
+        'https://erik-additionally-vinyl-obligations.trycloudflare.com/api/v1',
   );
   static String _stripePublishableKey = const String.fromEnvironment(
     'STRIPE_PUBLISHABLE_KEY',

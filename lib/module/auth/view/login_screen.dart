@@ -120,7 +120,12 @@ class LoginScreen extends GetView<AuthController> {
                                             hintText: "First name",
                                             prefixIconPath:
                                                 "assets/icons/person.svg",
-                                            validator: null,
+                                            validator: isSignUp
+                                                ? (val) => Validators.required(
+                                                    val,
+                                                    message: "First name is required",
+                                                  )
+                                                : null,
                                           ),
                                           SizedBox(height: 10.h),
                                           _buildTextField(
@@ -129,7 +134,12 @@ class LoginScreen extends GetView<AuthController> {
                                             hintText: "Last name",
                                             prefixIconPath:
                                                 "assets/icons/person.svg",
-                                            validator: null,
+                                            validator: isSignUp
+                                                ? (val) => Validators.required(
+                                                    val,
+                                                    message: "Last name is required",
+                                                  )
+                                                : null,
                                           ),
                                           SizedBox(height: 10.h),
                                         ],

@@ -258,6 +258,47 @@ class SellItemDetailController extends GetxController
   final rxIsStripeOnboarded = false.obs;
   final rxStripeStatusData = <String, dynamic>{}.obs;
 
+  // Phone Code & Formatting (Fixed +971 default matching Profile / Checkout)
+  final rxPhoneCode = "+971".obs;
+
+  void setPhoneAndCode(String rawPhone) {
+    if (rawPhone.trim().isEmpty) return;
+
+    final codes = [
+      "+971",
+      "+880",
+      "+966",
+      "+974",
+      "+965",
+      "+968",
+      "+973",
+      "+44",
+      "+1",
+    ];
+
+    String clean = rawPhone.trim();
+    for (final code in codes) {
+      if (clean.startsWith(code)) {
+        rxPhoneCode.value = code;
+        clean = clean.substring(code.length).trim();
+        break;
+      }
+    }
+
+    sellerPhoneController.text = clean.trim();
+    rxSellerPhone.value = clean.trim();
+  }
+
+  String get formattedSellerPhone {
+    String digitsOnly = sellerPhoneController.text.trim();
+    if (digitsOnly.isEmpty) return "";
+    final code = rxPhoneCode.value;
+    if (digitsOnly.startsWith(code)) {
+      return digitsOnly;
+    }
+    return "$code $digitsOnly";
+  }
+
   @override
   void onInit() {
     super.onInit();
@@ -290,8 +331,13 @@ class SellItemDetailController extends GetxController
     sellerLocationController = TextEditingController(
       text: user?.location ?? "",
     );
-    sellerCountryController = TextEditingController(text: user?.country ?? "");
-    sellerPhoneController = TextEditingController(text: user?.phone ?? "");
+    sellerCountryController = TextEditingController(
+      text: (user?.country?.isNotEmpty ?? false) ? user!.country! : "UAE",
+    );
+    sellerPhoneController = TextEditingController();
+    if (user?.phone != null && user!.phone!.isNotEmpty) {
+      setPhoneAndCode(user.phone!);
+    }
 
     rxTitle.value = titleController.text;
     rxBrand.value = brandController.text;
@@ -316,21 +362,21 @@ class SellItemDetailController extends GetxController
           sellerLocationController.text = userModel.location!;
           rxSellerLocation.value = userModel.location!;
         }
-        if (sellerCountryController.text.isEmpty &&
+        if ((sellerCountryController.text.isEmpty ||
+                sellerCountryController.text == "Select country") &&
             (userModel.country?.isNotEmpty ?? false)) {
           sellerCountryController.text = userModel.country!;
           rxSellerCountry.value = userModel.country!;
+        } else if (sellerCountryController.text.isEmpty) {
+          sellerCountryController.text = "UAE";
+          rxSellerCountry.value = "UAE";
         }
         if (sellerPhoneController.text.isEmpty &&
             (userModel.phone?.isNotEmpty ?? false)) {
-          sellerPhoneController.text = userModel.phone!;
-          rxSellerPhone.value = userModel.phone!;
+          setPhoneAndCode(userModel.phone!);
         }
       }
     });
-
-    // Sync user profile
-    profileController.fetchUserProfile();
 
     // Listen to changes in controllers to keep rx variables in sync
     titleController.addListener(() {
@@ -359,6 +405,15 @@ class SellItemDetailController extends GetxController
     });
     sellerPhoneController.addListener(() {
       rxSellerPhone.value = sellerPhoneController.text;
+    });
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    // Sync user profile safely after the widget has completed initial build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      profileController.fetchUserProfile();
     });
   }
 
@@ -424,8 +479,12 @@ class SellItemDetailController extends GetxController
     );
     if (countryError != null) return countryError;
 
+    if (sellerPhoneController.text.trim().isEmpty) {
+      return "Valid seller phone number is required";
+    }
+
     final phoneError = Validators.phone(
-      rxSellerPhone.value,
+      formattedSellerPhone,
       message: "Valid seller phone number is required",
     );
     if (phoneError != null) return phoneError;
@@ -466,6 +525,16 @@ class SellItemDetailController extends GetxController
         imagePaths: imagePaths,
         proofOfPurchasePath: rxBillPath.value.isNotEmpty
             ? rxBillPath.value
+            : null,
+        sellerName: sellerNameController.text.trim().isNotEmpty
+            ? sellerNameController.text.trim()
+            : null,
+        sellerLocation: sellerLocationController.text.trim().isNotEmpty
+            ? sellerLocationController.text.trim()
+            : null,
+        sellerCountry: "UAE",
+        sellerPhone: formattedSellerPhone.isNotEmpty
+            ? formattedSellerPhone
             : null,
       );
 

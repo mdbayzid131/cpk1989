@@ -667,7 +667,7 @@ class ProfileScreen extends GetView<ProfileController> {
           imageSize: 130.r,
           fallbackIcon: Icons.shopping_bag_outlined,
           title: "No Orders Yet",
-          subtitle: "Start exploring luxury pieces\nfrom real women",
+          subtitle: "Start exploring luxury pieces",
           buttonText: "Explore Items",
           padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
           onButtonTap: () {
@@ -1053,7 +1053,7 @@ class ProfileScreen extends GetView<ProfileController> {
             _buildInputField(
               controller: controller.firstNameController,
               prefixIcon: 'assets/icons/person.svg',
-              hintText: "Enter first name here",
+              hintText: "First name",
               readOnly: !isEditing,
               isEditing: isEditing,
             ),
@@ -1063,17 +1063,17 @@ class ProfileScreen extends GetView<ProfileController> {
             _buildInputField(
               controller: controller.lastNameController,
               prefixIcon: 'assets/icons/person.svg',
-              hintText: "Enter last name here",
+              hintText: "Last name",
               readOnly: !isEditing,
               isEditing: isEditing,
             ),
             SizedBox(height: 12.h),
 
-            // Location
+            // Location / Full Address
             _buildInputField(
               controller: controller.locationController,
               prefixIcon: 'assets/icons/location.svg',
-              hintText: "Enter location here",
+              hintText: "Full Address",
               readOnly: !isEditing,
               isEditing: isEditing,
             ),
@@ -1092,7 +1092,7 @@ class ProfileScreen extends GetView<ProfileController> {
             // Phone Number
             _buildPhoneInputField(
               controller.phoneController,
-              hintText: "Enter number here",
+              hintText: "Phone number",
               isEditing: isEditing,
               readOnly: !isEditing,
             ),
@@ -1448,7 +1448,7 @@ class ProfileScreen extends GetView<ProfileController> {
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 12.w),
                     child: Text(
-                      "Add a payment method to make secure purchase",
+                      "Add a payment method to make secure purchases",
                       textAlign: TextAlign.center,
                       style: GoogleFonts.dmSans(
                         fontSize: 13.5.sp,

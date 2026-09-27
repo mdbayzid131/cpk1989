@@ -64,10 +64,9 @@ class ProfileItem {
     this.productModel,
   });
 
-  List<String> get itemImages =>
-      (images != null && images!.isNotEmpty)
-          ? images!
-          : (imageUrl.isNotEmpty ? [imageUrl] : []);
+  List<String> get itemImages => (images != null && images!.isNotEmpty)
+      ? images!
+      : (imageUrl.isNotEmpty ? [imageUrl] : []);
 
   String get displayStatus => StatusHelper.getDisplayStatus(status);
 
@@ -345,12 +344,13 @@ class ProfileController extends GetxController {
             id: prod.id ?? '',
             imageUrl: (prod.images != null && prod.images!.isNotEmpty)
                 ? (prod.images!.first.startsWith('http')
-                    ? prod.images!.first
-                    : prod.displayFirstImage)
+                      ? prod.images!.first
+                      : prod.displayFirstImage)
                 : '',
             price: prod.price ?? 0.0,
             likes: prod.wishlistCount ?? 0,
-            isSold: prod.status == 'sold' ||
+            isSold:
+                prod.status == 'sold' ||
                 prod.status == 'delivered' ||
                 prod.status == 'completed' ||
                 prod.orderStatus == 'delivered' ||
@@ -1005,6 +1005,7 @@ class ProfileController extends GetxController {
         img.contains('placeholder') ||
         img.contains('avatar-placeholder') ||
         img.contains('user.png') ||
+        img.contains('profile.png') ||
         img.contains('dummy') ||
         img.contains('no-image') ||
         img == 'null') {
