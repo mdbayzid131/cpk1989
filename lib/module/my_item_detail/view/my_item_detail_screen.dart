@@ -62,21 +62,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
               child: Center(
                 child: CustomGlassButton(
                   size: 40.r,
-                  onTap: () {
-                    if (Get.isRegistered<ProfileController>()) {
-                      Get.find<ProfileController>().deleteWardrobeItem(
-                        controller.item,
-                      );
-                    } else {
-                      Get.snackbar(
-                        "Delete Item",
-                        "Are you sure you want to delete this item?",
-                        snackPosition: SnackPosition.TOP,
-                        backgroundColor: const Color(0xFF161719),
-                        colorText: Colors.white,
-                      );
-                    }
-                  },
+                  onTap: () => _showRemoveBottomSheet(context),
                   child: SvgPicture.asset(
                     'assets/icons/delete .svg',
                     width: 16.r,
@@ -163,37 +149,54 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                                                   ? Image.network(
                                                       imgUrl,
                                                       fit: BoxFit.cover,
-                                                      loadingBuilder: (
-                                                        context,
-                                                        child,
-                                                        loadingProgress,
-                                                      ) {
-                                                        if (loadingProgress == null) return child;
-                                                        return Center(
-                                                          child: CustomGoldLoader(
-                                                            size: 24.r,
-                                                            strokeWidth: 2.5.r,
+                                                      loadingBuilder:
+                                                          (
+                                                            context,
+                                                            child,
+                                                            loadingProgress,
+                                                          ) {
+                                                            if (loadingProgress ==
+                                                                null)
+                                                              return child;
+                                                            return Center(
+                                                              child:
+                                                                  CustomGoldLoader(
+                                                                    size: 24.r,
+                                                                    strokeWidth:
+                                                                        2.5.r,
+                                                                  ),
+                                                            );
+                                                          },
+                                                      errorBuilder:
+                                                          (
+                                                            _,
+                                                            __,
+                                                            ___,
+                                                          ) => const Center(
+                                                            child: Icon(
+                                                              Icons
+                                                                  .broken_image,
+                                                              color: Colors
+                                                                  .white38,
+                                                            ),
                                                           ),
-                                                        );
-                                                      },
-                                                      errorBuilder: (_, __, ___) =>
-                                                          const Center(
-                                                        child: Icon(
-                                                          Icons.broken_image,
-                                                          color: Colors.white38,
-                                                        ),
-                                                      ),
                                                     )
                                                   : Image.file(
                                                       File(imgUrl),
                                                       fit: BoxFit.cover,
-                                                      errorBuilder: (_, __, ___) =>
-                                                          const Center(
-                                                        child: Icon(
-                                                          Icons.broken_image,
-                                                          color: Colors.white38,
-                                                        ),
-                                                      ),
+                                                      errorBuilder:
+                                                          (
+                                                            _,
+                                                            __,
+                                                            ___,
+                                                          ) => const Center(
+                                                            child: Icon(
+                                                              Icons
+                                                                  .broken_image,
+                                                              color: Colors
+                                                                  .white38,
+                                                            ),
+                                                          ),
                                                     ),
                                             ),
                                           ),
@@ -205,7 +208,8 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                                     bottom: -9.h,
                                     child: CustomPageIndicator(
                                       count: images.length,
-                                      currentPage: controller.rxCurrentPage.value,
+                                      currentPage:
+                                          controller.rxCurrentPage.value,
                                       isSmall: false,
                                       showBorder: false,
                                       backgroundColor: const Color(0xFF0F1012),
@@ -277,14 +281,18 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                                       controller.rxOrderModel.value?.status ??
                                       controller.rxProductModel.value?.status ??
                                       item.status;
-                                  final norm = StatusHelper.normalize(liveStatus);
+                                  final norm = StatusHelper.normalize(
+                                    liveStatus,
+                                  );
                                   // For pending/rejected, status is already in LISTING STATUS section
                                   if (norm == 'pending_review' ||
                                       norm == 'pending' ||
                                       norm == 'rejected') {
                                     return const SizedBox.shrink();
                                   }
-                                  return StatusHelper.buildStatusBadge(liveStatus);
+                                  return StatusHelper.buildStatusBadge(
+                                    liveStatus,
+                                  );
                                 }),
                                 // Edit Pen Icon (shown when canEdit)
                                 Obx(() {
@@ -729,10 +737,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
           gradient: const LinearGradient(
             begin: Alignment.centerRight,
             end: Alignment.centerLeft,
-            colors: [
-              Color(0xFF2B2D32),
-              Color(0xFF1C1D20),
-            ],
+            colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
           ),
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
@@ -812,10 +817,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
         gradient: const LinearGradient(
           begin: Alignment.centerRight,
           end: Alignment.centerLeft,
-          colors: [
-            Color(0xFF2B2D32),
-            Color(0xFF1C1D20),
-          ],
+          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
         ),
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(
@@ -932,11 +934,17 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildDetailRow("Title", title),
-          _buildDetailRow("Brand", brand),
-          _buildDescriptionDetailRow("Description", description),
-          _buildDetailRow("Listing Price", formattedPrice),
-          _buildConditionDetailRow("Condition", condition),
+          _buildLeftAlignedField(title.isNotEmpty ? title : "Title"),
+          _buildLeftAlignedField(brand.isNotEmpty ? brand : "Brand"),
+          _buildLeftAlignedDescriptionField(
+            description.isNotEmpty ? description : "Description",
+          ),
+          _buildLeftAlignedField(
+            formattedPrice.isNotEmpty ? formattedPrice : "Listing price AED",
+          ),
+          _buildLeftAlignedConditionField(
+            condition.isNotEmpty ? condition : "Select condition",
+          ),
           _buildReadonlyProofOfPurchaseRow(proofUrl, rawProofName),
           _buildOriginalPackagingRow(),
         ],
@@ -952,23 +960,22 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Title Input
-        _buildEditInputRow("Title", controller.titleController),
+        _buildEditInputRow(controller.titleController, hintText: "Enter title"),
 
         // Brand Input
-        _buildEditInputRow("Brand", controller.brandController),
+        _buildEditInputRow(controller.brandController, hintText: "Enter brand"),
 
         // Description Input
         _buildEditDescriptionRow(
-          "Description",
           controller.descriptionController,
+          hintText: "Enter description...",
         ),
 
         // Price Input
         _buildEditInputRow(
-          "Listing Price",
           controller.priceController,
+          hintText: "Listing price AED",
           keyboardType: TextInputType.number,
-          prefixText: "AED ",
         ),
 
         // Condition Picker Dropdown
@@ -995,235 +1002,436 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
     );
   }
 
-  // Editable single-line text row (Matches Profile Details dark sleek style)
+  // Left aligned single-line read-only display
+  Widget _buildLeftAlignedField(String text) {
+    return Container(
+      height: 52.h,
+      margin: EdgeInsets.only(bottom: 8.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.05),
+          width: 1.0,
+        ),
+        gradient: const LinearGradient(
+          begin: Alignment.centerRight,
+          end: Alignment.centerLeft,
+          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+        ),
+      ),
+      alignment: Alignment.centerLeft,
+      child: Text(
+        text,
+        textAlign: TextAlign.start,
+        style: GoogleFonts.dmSans(
+          fontSize: 14.sp,
+          color: Colors.white,
+          fontWeight: FontWeight.w500,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+
+  // Left aligned multi-line description read-only display
+  Widget _buildLeftAlignedDescriptionField(String text) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 8.h),
+      padding: EdgeInsets.fromLTRB(16.w, 14.h, 16.w, 14.h),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.05),
+          width: 1.0,
+        ),
+        gradient: const LinearGradient(
+          begin: Alignment.centerRight,
+          end: Alignment.centerLeft,
+          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+        ),
+      ),
+      alignment: Alignment.topLeft,
+      child: Text(
+        text,
+        textAlign: TextAlign.start,
+        style: GoogleFonts.dmSans(
+          fontSize: 14.sp,
+          color: Colors.white,
+          height: 1.4,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  // Left aligned condition read-only display
+  Widget _buildLeftAlignedConditionField(String condition) {
+    final description = _getConditionDescription(condition);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          height: 52.h,
+          margin: EdgeInsets.only(bottom: description.isNotEmpty ? 4.h : 8.h),
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.05),
+              width: 1.0,
+            ),
+            gradient: const LinearGradient(
+              begin: Alignment.centerRight,
+              end: Alignment.centerLeft,
+              colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+            ),
+          ),
+          alignment: Alignment.centerLeft,
+          child: Text(
+            condition,
+            textAlign: TextAlign.start,
+            style: GoogleFonts.dmSans(
+              fontSize: 14.sp,
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        if (description.isNotEmpty) ...[
+          Padding(
+            padding: EdgeInsets.only(left: 4.w, right: 4.w, bottom: 8.h),
+            child: Text(
+              description,
+              style: GoogleFonts.dmSans(
+                fontSize: 12.sp,
+                color: const Color(0xFFA2A2A2),
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  String _getConditionDescription(String condition) {
+    switch (condition) {
+      case 'New with Tags':
+        return 'Brand new, never used, original tags attached';
+      case 'Like New':
+        return 'Excellent condition with little to no visible signs of wear';
+      case 'Excellent':
+        return 'Light signs of use, very well maintained';
+      case 'Very Good':
+        return 'Noticeable but minor wear, no significant defects';
+      case 'Good':
+        return 'Visible signs of wear but fully functional and presentable';
+      case 'Fair':
+        return 'Heavy wear or imperfections, reflected in the price';
+      default:
+        return '';
+    }
+  }
+
+  // Editable single-line text row (Matches Profile user information border-only edit style)
   Widget _buildEditInputRow(
-    String label,
     TextEditingController textCtrl, {
+    required String hintText,
     TextInputType keyboardType = TextInputType.text,
     String? prefixText,
   }) {
     return Container(
       margin: EdgeInsets.only(bottom: 8.h),
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.centerRight,
-          end: Alignment.centerLeft,
-          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-        ),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
-          width: 1.0,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.dmSans(
-              fontSize: 12.sp,
-              color: Colors.white38,
-              fontWeight: FontWeight.w500,
-            ),
+      child: CustomPaint(
+        painter: _GradientBorderPainter(
+          gradient: const LinearGradient(
+            begin: Alignment.centerRight,
+            end: Alignment.centerLeft,
+            colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
           ),
-          SizedBox(height: 4.h),
-          TextField(
+          strokeWidth: 1.0,
+          borderRadius: 12.r,
+        ),
+        child: Container(
+          height: 52.h,
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          alignment: Alignment.centerLeft,
+          child: TextField(
             controller: textCtrl,
             keyboardType: keyboardType,
+            textAlign: TextAlign.start,
             style: GoogleFonts.dmSans(
-              fontSize: 15.sp,
+              fontSize: 14.sp,
               color: Colors.white,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
             ),
             decoration: InputDecoration(
               isDense: true,
               contentPadding: EdgeInsets.zero,
               border: InputBorder.none,
+              hintText: hintText,
+              hintStyle: GoogleFonts.dmSans(
+                fontSize: 14.sp,
+                color: Colors.white38,
+                fontWeight: FontWeight.w400,
+              ),
               prefixText: prefixText,
               prefixStyle: GoogleFonts.dmSans(
-                fontSize: 15.sp,
+                fontSize: 14.sp,
                 color: Colors.white,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
 
-  // Editable multi-line description row (Matches Profile Details dark sleek style)
+  // Editable multi-line description row (Matches Profile user information border-only edit style)
   Widget _buildEditDescriptionRow(
-    String label,
-    TextEditingController textCtrl,
-  ) {
+    TextEditingController textCtrl, {
+    required String hintText,
+  }) {
     return Container(
       margin: EdgeInsets.only(bottom: 8.h),
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.centerRight,
-          end: Alignment.centerLeft,
-          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-        ),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
-          width: 1.0,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.dmSans(
-              fontSize: 12.sp,
-              color: Colors.white38,
-              fontWeight: FontWeight.w500,
-            ),
+      child: CustomPaint(
+        painter: _GradientBorderPainter(
+          gradient: const LinearGradient(
+            begin: Alignment.centerRight,
+            end: Alignment.centerLeft,
+            colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
           ),
-          SizedBox(height: 6.h),
-          TextField(
+          strokeWidth: 1.0,
+          borderRadius: 12.r,
+        ),
+        child: Container(
+          padding: EdgeInsets.fromLTRB(16.w, 14.h, 16.w, 14.h),
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          child: TextField(
             controller: textCtrl,
-            maxLines: 3,
+            maxLines: null,
+            minLines: 3,
+            textAlign: TextAlign.start,
             style: GoogleFonts.dmSans(
               fontSize: 14.sp,
               color: Colors.white,
               height: 1.4,
               fontWeight: FontWeight.w500,
             ),
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               isDense: true,
               contentPadding: EdgeInsets.zero,
               border: InputBorder.none,
+              hintText: hintText,
+              hintStyle: GoogleFonts.dmSans(
+                fontSize: 14.sp,
+                color: Colors.white38,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
 
-  // Condition Dropdown Picker (Matches Profile Details dark sleek style)
+  // Condition Dropdown Picker (Matches Sell Flow Review Listing popup menu design anchored to the right)
   Widget _buildConditionPickerRow(BuildContext context) {
-    return Obx(() {
-      final selected = controller.rxSelectedCondition.value;
-      return GestureDetector(
-        onTap: () => _showConditionBottomSheet(context),
-        child: Container(
-          margin: EdgeInsets.only(bottom: 8.h),
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.centerRight,
-              end: Alignment.centerLeft,
-              colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-            ),
-            borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.05),
-              width: 1.0,
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Condition",
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12.sp,
-                      color: Colors.white38,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  SizedBox(height: 4.h),
-                  Text(
-                    selected,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 15.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-              Icon(
-                Icons.keyboard_arrow_down_rounded,
-                color: Colors.white70,
-                size: 22.sp,
-              ),
-            ],
-          ),
-        ),
-      );
-    });
-  }
+    final List<String> conditions = [
+      'New with Tags',
+      'Like New',
+      'Excellent',
+      'Very Good',
+      'Good',
+      'Fair',
+    ];
 
-  void _showConditionBottomSheet(BuildContext context) {
-    Get.bottomSheet(
-      Container(
-        padding: EdgeInsets.all(20.w),
-        decoration: BoxDecoration(
-          color: const Color(0xFF161719),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40.w,
-              height: 4.h,
-              decoration: BoxDecoration(
-                color: Colors.white24,
-                borderRadius: BorderRadius.circular(2.r),
-              ),
-            ),
-            SizedBox(height: 16.h),
-            Text(
-              "Select Condition",
-              style: GoogleFonts.dmSans(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
-              ),
-            ),
-            SizedBox(height: 12.h),
-            ...controller.conditionOptions.map((cond) {
-              final isSel = controller.rxSelectedCondition.value == cond;
-              return Material(
-                color: Colors.transparent,
-                child: ListTile(
-                  title: Text(
-                    cond,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 15.sp,
-                      fontWeight: isSel ? FontWeight.w700 : FontWeight.w500,
-                      color: isSel ? const Color(0xFFFFAF2C) : Colors.white70,
+    return Obx(() {
+      final currentCondition = controller.rxSelectedCondition.value;
+      final dropdownValue = conditions.contains(currentCondition)
+          ? currentCondition
+          : null;
+      final description = _getConditionDescription(currentCondition);
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Builder(
+            builder: (fieldContext) {
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  FocusScope.of(fieldContext).unfocus();
+                  final RenderBox? box =
+                      fieldContext.findRenderObject() as RenderBox?;
+                  if (box == null) return;
+                  final Offset position = box.localToGlobal(Offset.zero);
+                  final Size size = box.size;
+
+                  final double left = position.dx + size.width - 175.w - 10.w;
+                  final double top = position.dy + size.height + 4.h;
+
+                  showMenu<String>(
+                    context: fieldContext,
+                    position: RelativeRect.fromLTRB(
+                      left,
+                      top,
+                      MediaQuery.of(fieldContext).size.width - left - 175.w,
+                      0,
+                    ),
+                    color: Colors.transparent,
+                    elevation: 0,
+                    shadowColor: Colors.transparent,
+                    surfaceTintColor: Colors.transparent,
+                    items: [
+                      PopupMenuItem<String>(
+                        enabled: false,
+                        padding: EdgeInsets.zero,
+                        child: Container(
+                          width: 175.w,
+                          height: 213.h,
+                          padding: EdgeInsets.all(10.r),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF2E3036),
+                            borderRadius: BorderRadius.circular(10.r),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.3),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              for (int i = 0; i < conditions.length; i++) ...[
+                                if (i > 0) SizedBox(height: 5.h),
+                                Builder(
+                                  builder: (itemContext) {
+                                    final cond = conditions[i];
+                                    final isSelected = cond == currentCondition;
+                                    return GestureDetector(
+                                      onTap: () {
+                                        controller.rxSelectedCondition.value =
+                                            cond;
+                                        Navigator.pop(fieldContext);
+                                      },
+                                      child: Container(
+                                        width: 155.w,
+                                        height: 28.h,
+                                        alignment: Alignment.centerLeft,
+                                        padding: EdgeInsets.only(
+                                          top: 5.h,
+                                          bottom: 5.h,
+                                          left: 8.w,
+                                          right: 8.w,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: isSelected
+                                              ? const Color(0xFF3C3E46)
+                                              : Colors.transparent,
+                                          borderRadius: BorderRadius.circular(
+                                            6.r,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          cond,
+                                          style: GoogleFonts.dmSans(
+                                            fontSize: 14.sp,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w400,
+                                            height: 1.0,
+                                            letterSpacing: 0.0,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+                child: Container(
+                  margin: EdgeInsets.only(
+                    bottom: description.isNotEmpty ? 4.h : 8.h,
+                  ),
+                  child: CustomPaint(
+                    painter: _GradientBorderPainter(
+                      gradient: const LinearGradient(
+                        begin: Alignment.centerRight,
+                        end: Alignment.centerLeft,
+                        colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+                      ),
+                      strokeWidth: 1.0,
+                      borderRadius: 12.r,
+                    ),
+                    child: Container(
+                      height: 52.h,
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              dropdownValue ?? "Select condition",
+                              style: GoogleFonts.dmSans(
+                                fontSize: 14.sp,
+                                color: dropdownValue != null
+                                    ? Colors.white
+                                    : Colors.white38,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            color: Colors.white70,
+                            size: 20.sp,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  trailing: isSel
-                      ? Icon(
-                          Icons.check_rounded,
-                          color: const Color(0xFFFFAF2C),
-                          size: 20.sp,
-                        )
-                      : null,
-                  onTap: () {
-                    controller.rxSelectedCondition.value = cond;
-                    Get.back();
-                  },
                 ),
               );
-            }),
+            },
+          ),
+          if (description.isNotEmpty) ...[
+            Padding(
+              padding: EdgeInsets.only(left: 4.w, right: 4.w, bottom: 8.h),
+              child: Text(
+                description,
+                style: GoogleFonts.dmSans(
+                  fontSize: 12.sp,
+                  color: const Color(0xFFA2A2A2),
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
           ],
-        ),
-      ),
-    );
+        ],
+      );
+    });
   }
 
   // ---------------------------------------------------------------------------
@@ -1337,180 +1545,64 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 8.h),
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.centerRight,
-          end: Alignment.centerLeft,
-          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-        ),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
-          width: 1.0,
-        ),
-      ),
-      child: Row(
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.dmSans(
-              fontSize: 14.sp,
-              color: Colors.white38,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const Spacer(),
-          Expanded(
-            flex: 2,
-            child: Text(
-              value,
-              textAlign: TextAlign.end,
-              style: GoogleFonts.dmSans(
-                fontSize: 14.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildConditionDetailRow(String label, String value) {
-    final description = _getConditionDescription(value);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Container(
-          margin: EdgeInsets.only(bottom: 8.h),
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.centerRight,
-              end: Alignment.centerLeft,
-              colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-            ),
-            borderRadius: BorderRadius.circular(12.r),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.05),
-              width: 1.0,
-            ),
-          ),
-          child: Row(
-            children: [
-              Text(
-                label,
-                style: GoogleFonts.dmSans(
-                  fontSize: 14.sp,
-                  color: Colors.white38,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const Spacer(),
-              Expanded(
-                flex: 2,
-                child: Text(
-                  value,
-                  textAlign: TextAlign.end,
-                  style: GoogleFonts.dmSans(
-                    fontSize: 14.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-        ),
-        if (description.isNotEmpty)
-          Padding(
-            padding: EdgeInsets.only(left: 4.w, right: 4.w, bottom: 12.h),
-            child: Text(
-              description,
-              style: GoogleFonts.dmSans(
-                fontSize: 12.sp,
-                color: const Color(0xFFA2A2A2),
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-
-  String _getConditionDescription(String condition) {
-    switch (condition) {
-      case 'New with Tags':
-        return 'Brand new, never used, original tags attached';
-      case 'Like New':
-        return 'Excellent condition with little to no visible signs of wear';
-      case 'Excellent':
-        return 'Light signs of use, very well maintained';
-      case 'Very Good':
-        return 'Noticeable but minor wear, no significant defects';
-      case 'Good':
-        return 'Visible signs of wear but fully functional and presentable';
-      case 'Fair':
-        return 'Heavy wear or imperfections, reflected in the price';
-      default:
-        return '';
-    }
-  }
-
-  Widget _buildDescriptionDetailRow(String label, String value) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 8.h),
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.centerRight,
-          end: Alignment.centerLeft,
-          colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-        ),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
-          width: 1.0,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.dmSans(
-              fontSize: 13.sp,
-              color: Colors.white38,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            value,
-            style: GoogleFonts.dmSans(
-              fontSize: 14.sp,
-              color: Colors.white,
-              height: 1.4,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildProofOfPurchaseRow(String label) {
     return Obx(() {
+      final isEditing = controller.rxIsEditing.value;
       if (controller.rxBillName.value.isEmpty) {
+        if (isEditing) {
+          return Container(
+            margin: EdgeInsets.only(bottom: 8.h),
+            child: CustomPaint(
+              painter: _GradientBorderPainter(
+                gradient: const LinearGradient(
+                  begin: Alignment.centerRight,
+                  end: Alignment.centerLeft,
+                  colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+                ),
+                strokeWidth: 1.0,
+                borderRadius: 12.r,
+              ),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        label,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14.sp,
+                          color: Colors.white38,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: controller.pickBillFile,
+                      child: Text(
+                        "Upload Bill",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14.sp,
+                          color: const Color(0xFFFFAF2C),
+                          fontWeight: FontWeight.w700,
+                          decoration: TextDecoration.underline,
+                          decorationColor: const Color(0xFFFFAF2C),
+                          decorationThickness: 1.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+
         return Container(
           margin: EdgeInsets.only(bottom: 8.h),
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
@@ -1558,6 +1650,93 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
           ),
         );
       } else {
+        if (isEditing) {
+          return Container(
+            margin: EdgeInsets.only(bottom: 8.h),
+            child: CustomPaint(
+              painter: _GradientBorderPainter(
+                gradient: const LinearGradient(
+                  begin: Alignment.centerRight,
+                  end: Alignment.centerLeft,
+                  colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+                ),
+                strokeWidth: 1.0,
+                borderRadius: 12.r,
+              ),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        label,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14.sp,
+                          color: Colors.white38,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10.w,
+                        vertical: 6.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            controller.rxBillName.value.toLowerCase().endsWith(
+                                  '.pdf',
+                                )
+                                ? Icons.picture_as_pdf_outlined
+                                : Icons.image_outlined,
+                            color: Colors.white,
+                            size: 14.sp,
+                          ),
+                          SizedBox(width: 6.w),
+                          ConstrainedBox(
+                            constraints: BoxConstraints(maxWidth: 120.w),
+                            child: Text(
+                              controller.rxBillName.value,
+                              style: GoogleFonts.dmSans(
+                                fontSize: 12.sp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          SizedBox(width: 8.w),
+                          GestureDetector(
+                            onTap: controller.removeBillFile,
+                            child: Icon(
+                              Icons.close,
+                              color: Colors.white38,
+                              size: 12.sp,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+
         return Container(
           margin: EdgeInsets.only(bottom: 8.h),
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
@@ -1640,6 +1819,82 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
     return Obx(() {
       final isChecked = controller.rxOriginalPackaging.value;
       final isEditing = controller.rxIsEditing.value;
+
+      final content = Row(
+        children: [
+          GestureDetector(
+            onTap: isEditing
+                ? () {
+                    controller.rxOriginalPackaging.value = !isChecked;
+                  }
+                : null,
+            child: Container(
+              width: 20.r,
+              height: 20.r,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4.r),
+                border: Border.all(
+                  color: isChecked ? const Color(0xFFFFAF2C) : Colors.white38,
+                  width: 1.5.w,
+                ),
+                color: isChecked ? const Color(0xFFFFAF2C) : Colors.transparent,
+              ),
+              child: isChecked
+                  ? const Icon(
+                      Icons.check_rounded,
+                      color: Colors.black,
+                      size: 14,
+                    )
+                  : null,
+            ),
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: GestureDetector(
+              onTap: isEditing
+                  ? () {
+                      controller.rxOriginalPackaging.value = !isChecked;
+                    }
+                  : null,
+              child: Text(
+                "Original packaging available?",
+                style: GoogleFonts.dmSans(
+                  fontSize: 14.sp,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+
+      if (isEditing) {
+        return Container(
+          margin: EdgeInsets.only(bottom: 8.h),
+          child: CustomPaint(
+            painter: _GradientBorderPainter(
+              gradient: const LinearGradient(
+                begin: Alignment.centerRight,
+                end: Alignment.centerLeft,
+                colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
+              ),
+              strokeWidth: 1.0,
+              borderRadius: 12.r,
+            ),
+            child: Container(
+              height: 52.h,
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: content,
+            ),
+          ),
+        );
+      }
+
       return Container(
         height: 52.h,
         margin: EdgeInsets.only(bottom: 8.h),
@@ -1656,56 +1911,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
             colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
           ),
         ),
-        child: Row(
-          children: [
-            GestureDetector(
-              onTap: isEditing
-                  ? () {
-                      controller.rxOriginalPackaging.value = !isChecked;
-                    }
-                  : null,
-              child: Container(
-                width: 20.r,
-                height: 20.r,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4.r),
-                  border: Border.all(
-                    color: isChecked ? const Color(0xFFFFAF2C) : Colors.white38,
-                    width: 1.5.w,
-                  ),
-                  color: isChecked
-                      ? const Color(0xFFFFAF2C)
-                      : Colors.transparent,
-                ),
-                child: isChecked
-                    ? const Icon(
-                        Icons.check_rounded,
-                        color: Colors.black,
-                        size: 14,
-                      )
-                    : null,
-              ),
-            ),
-            SizedBox(width: 12.w),
-            Expanded(
-              child: GestureDetector(
-                onTap: isEditing
-                    ? () {
-                        controller.rxOriginalPackaging.value = !isChecked;
-                      }
-                    : null,
-                child: Text(
-                  "Original packaging available?",
-                  style: GoogleFonts.dmSans(
-                    fontSize: 14.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+        child: content,
       );
     });
   }
@@ -1734,141 +1940,280 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
     );
   }
 
-  Widget _buildStripeConnectPayoutCard(BuildContext context) {
-    return Obx(() {
-      final isOnboarded = controller.rxIsStripeOnboarded.value;
-
-      if (isOnboarded) {
-        return Container(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-          decoration: BoxDecoration(
-            color: const Color(0xFF34C759).withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(16.r),
-            border: Border.all(
-              color: const Color(0xFF34C759).withValues(alpha: 0.2),
-              width: 1.0,
-            ),
+  void _showRemoveBottomSheet(BuildContext context) {
+    final item = controller.item;
+    Get.bottomSheet(
+      Container(
+        decoration: BoxDecoration(
+          color: const Color(
+            0xFF111214,
+          ), // Dark background matching bottom sheet mockup
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.05),
+            width: 1.0,
           ),
-          child: Row(
-            children: [
-              Container(
-                width: 38.r,
-                height: 38.r,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF34C759).withValues(alpha: 0.15),
-                  shape: BoxShape.circle,
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.check_circle_rounded,
-                    color: Color(0xFF34C759),
-                    size: 20,
+        ),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 8.h),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Drag handle
+                  Center(
+                    child: Container(
+                      width: 40.w,
+                      height: 4.h,
+                      decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(2.r),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              SizedBox(width: 12.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Payout Account Connected",
-                      style: GoogleFonts.dmSans(
-                        fontSize: 14.sp,
+                  SizedBox(height: 16.h),
+
+                  // Title: "Remove this item?" (Cormorant Garamond, bold, white, centered)
+                  Center(
+                    child: Text(
+                      "Remove this item?",
+                      style: GoogleFonts.cormorantGaramond(
+                        fontSize: 28.sp,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(height: 2.h),
-                    Text(
-                      "Earnings will be transferred directly to your bank upon delivery.",
-                      style: GoogleFonts.dmSans(
-                        fontSize: 12.sp,
-                        color: Colors.white60,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      }
+                  ),
+                  SizedBox(height: 8.h),
 
-      return Container(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.centerRight,
-            end: Alignment.centerLeft,
-            colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
-          ),
-          borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(
-            color: const Color(0xFFFFAF2C).withValues(alpha: 0.3),
-            width: 1.0,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 36.r,
-                  height: 36.r,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFAF2C).withValues(alpha: 0.15),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.account_balance_wallet_outlined,
-                      color: Color(0xFFFFAF2C),
-                      size: 20,
-                    ),
-                  ),
-                ),
-                SizedBox(width: 12.w),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Payout Setup Required",
+                  // Subtitle
+                  Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: Text(
+                        "This listing will be removed from your wardrobe and won't be visible to buyers.",
+                        textAlign: TextAlign.center,
                         style: GoogleFonts.dmSans(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFFFFAF2C),
+                          fontSize: 13.sp,
+                          color: Colors.white54,
+                          height: 1.4,
                         ),
                       ),
-                      SizedBox(height: 2.h),
-                      Text(
-                        "Connect your bank via Stripe to receive your earnings.",
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+                  Container(
+                    padding: EdgeInsets.all(10.w),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment.centerRight,
+                        end: Alignment.centerLeft,
+                        colors: [Color(0xFF292A2D), Color(0xFF1C1D21)],
+                      ),
+                      borderRadius: BorderRadius.circular(16.r),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.05),
+                        width: 1.0,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.brand.toUpperCase(),
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 11.sp,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white38,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                              SizedBox(height: 4.h),
+                              Text(
+                                item.itemName,
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              SizedBox(height: 12.h),
+                              Row(
+                                children: [
+                                  Text(
+                                    "Listed at  ",
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 12.sp,
+                                      color: Colors.white38,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 8.w,
+                                      vertical: 4.h,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.08,
+                                      ),
+                                      borderRadius: BorderRadius.circular(6.r),
+                                    ),
+                                    child: Text(
+                                      "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 11.sp,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: 16.w),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12.r),
+                          child: item.imageUrl.startsWith('http')
+                              ? Image.network(
+                                  item.imageUrl,
+                                  width: 102.r,
+                                  height: 102.r,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                        if (loadingProgress == null) {
+                                          return child;
+                                        }
+                                        return Container(
+                                          width: 102.r,
+                                          height: 102.r,
+                                          color: const Color(0xFF1E2022),
+                                          child: Center(
+                                            child: CustomGoldLoader(
+                                              size: 24.r,
+                                              strokeWidth: 2.5.r,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      width: 102.r,
+                                      height: 102.r,
+                                      color: const Color(0xFF1E2022),
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.image,
+                                          color: Colors.white30,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                )
+                              : Image.file(
+                                  File(item.imageUrl),
+                                  width: 102.r,
+                                  height: 102.r,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      width: 102.r,
+                                      height: 102.r,
+                                      color: const Color(0xFF1E2022),
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.image,
+                                          color: Colors.white30,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Help text
+                  Center(
+                    child: Text(
+                      "You can relist this item anytime",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12.sp,
+                        color: Colors.white38,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 12.h),
+
+                  // Remove Button (using custom gold button styling)
+                  CustomGoldButton(
+                    text: "Remove Item",
+                    suffix: Icon(
+                      Icons.arrow_forward,
+                      size: 16.r,
+                      color: Colors.black,
+                    ),
+                    onTap: () async {
+                      Get.back(); // Dismiss bottom sheet
+                      await Future.delayed(const Duration(milliseconds: 150));
+                      final profileCtrl = Get.isRegistered<ProfileController>()
+                          ? Get.find<ProfileController>()
+                          : Get.put(ProfileController());
+                      final success = await profileCtrl.deleteWardrobeItem(item);
+                      if (success) {
+                        if (context.mounted && Navigator.canPop(context)) {
+                          Navigator.pop(context);
+                        } else {
+                          Get.back();
+                        }
+                      }
+                    },
+                  ),
+                  SizedBox(height: 8.h),
+
+                  // Cancel text button
+                  Center(
+                    child: TextButton(
+                      onPressed: () => Get.back(),
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 8.h,
+                          horizontal: 16.w,
+                        ),
+                      ),
+                      child: Text(
+                        "Cancel",
                         style: GoogleFonts.dmSans(
-                          fontSize: 12.sp,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
                           color: Colors.white60,
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-            SizedBox(height: 14.h),
-            CustomGoldButton(
-              text: "Complete Payout Setup",
-              suffix: Icon(
-                Icons.arrow_forward_rounded,
-                size: 16.sp,
-                color: Colors.black,
+                ],
               ),
-              onTap: () => controller.startStripeOnboarding(),
             ),
-          ],
+          ),
         ),
-      );
-    });
+      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    );
   }
 }
 

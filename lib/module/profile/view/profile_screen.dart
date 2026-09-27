@@ -905,11 +905,8 @@ class ProfileScreen extends GetView<ProfileController> {
                     ),
                   ),
 
-                  // Delete squircle button (Visible on live wardrobe items only if canDelete is true)
-                  if (isWardrobe &&
-                      item.canDelete &&
-                      (StatusHelper.normalize(item.status) == 'live' ||
-                          StatusHelper.normalize(item.status) == 'available')) ...[
+                  // Delete squircle button (Visible on wardrobe items if canDelete is true)
+                  if (isWardrobe && item.canDelete) ...[
                     SizedBox(width: 4.w),
                     GestureDetector(
                       onTap: () => _showRemoveBottomSheet(context, item),
@@ -1332,25 +1329,39 @@ class ProfileScreen extends GetView<ProfileController> {
                     vertical: 12.h,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF2D3037).withValues(alpha: 0.6),
-                    borderRadius: BorderRadius.circular(12.r),
+                    color: const Color(0xFFFF5252).withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(16.r),
+                    border: Border.all(
+                      color: const Color(0xFFFF5252).withValues(alpha: 0.25),
+                      width: 1.0,
+                    ),
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.warning_amber_rounded,
-                        color: const Color(0xFF9EA0A5),
-                        size: 20.sp,
+                      Container(
+                        width: 36.r,
+                        height: 36.r,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFF5252).withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        child: Center(
+                          child: Icon(
+                            Icons.warning_amber_rounded,
+                            color: const Color(0xFFFF5252),
+                            size: 20.sp,
+                          ),
+                        ),
                       ),
-                      SizedBox(width: 10.w),
+                      SizedBox(width: 12.w),
                       Expanded(
                         child: Text(
                           "We cannot collect your item or arrange delivery until this step has been completed.",
                           style: GoogleFonts.dmSans(
                             fontSize: 12.sp,
-                            color: const Color(0xFF9EA0A5),
-                            fontWeight: FontWeight.w400,
+                            color: const Color(0xFFFF6B6B),
+                            fontWeight: FontWeight.w500,
                             height: 1.35,
                           ),
                         ),

@@ -211,7 +211,7 @@ class ProfileController extends GetxController {
 
   /// Start in-app Stripe Connect Onboarding
   Future<void> startStripeConnectOnboarding() async {
-    Helpers.showLoadingDialog(message: "Opening payout setup...");
+    Helpers.showLoadingDialog(message: "Loading payout setup...");
     try {
       if (!Get.isRegistered<PaymentRepository>()) {
         Get.put(PaymentRepository());
@@ -604,7 +604,7 @@ class ProfileController extends GetxController {
     try {
       Helpers.showLoadingDialog(message: "Deleting item...");
       final response = await _productRepo.deleteProduct(item.id);
-      Get.back(); // Dismiss loading
+      Helpers.hideLoadingDialog();
 
       if (response.statusCode == 200 ||
           response.statusCode == 201 ||
@@ -632,7 +632,7 @@ class ProfileController extends GetxController {
         return false;
       }
     } catch (e) {
-      Get.back(); // Dismiss loading if open
+      Helpers.hideLoadingDialog();
       debugPrint('⚠️ Delete product error: $e');
       Get.snackbar(
         'Error',

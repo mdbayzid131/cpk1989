@@ -236,9 +236,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                       rxValue: controller.rxSellerLocation,
                       errorMessage: "Seller location is required",
                     ),
-                    _buildFixedCountryField(
-                      countryName: "UAE",
-                    ),
+                    _buildFixedCountryField(countryName: "UAE"),
                     _buildSellerPhoneInputField(
                       context: context,
                       errorMessage: "Valid seller phone number is required",
@@ -543,7 +541,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
           "AED ${priceVal.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
 
       return CustomGoldButton(
-        text: "Post Item",
+        text: "Submit Item",
         suffix: Icon(
           Icons.arrow_forward_rounded,
           color: Colors.black,
@@ -554,6 +552,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
           if (success && context.mounted) {
             if (Get.isRegistered<ProfileController>()) {
               final profileController = Get.find<ProfileController>();
+              profileController.fetchUserProfile();
               profileController.fetchMyWardrobe();
               profileController.fetchProfileStats();
             }
@@ -573,6 +572,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 onDismiss: () {
                   if (Get.isRegistered<ProfileController>()) {
                     final profileController = Get.find<ProfileController>();
+                    profileController.fetchUserProfile();
                     profileController.fetchMyWardrobe();
                     profileController.fetchProfileStats();
                   }
@@ -1412,9 +1412,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
     });
   }
 
-  Widget _buildFixedCountryField({
-    String countryName = "UAE",
-  }) {
+  Widget _buildFixedCountryField({String countryName = "UAE"}) {
     return Container(
       height: 52.h,
       margin: EdgeInsets.only(bottom: 8.h),
