@@ -122,7 +122,7 @@ class ProfileItem {
   }
 }
 
-class ProfileController extends GetxController {
+class ProfileController extends GetxController with WidgetsBindingObserver {
   final rxSelectedIndex = 0.obs;
   final rxIsEditing = false.obs;
   final rxIsLoadingProfile = false.obs;
@@ -168,6 +168,7 @@ class ProfileController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    WidgetsBinding.instance.addObserver(this);
     firstNameController = TextEditingController(text: "");
     lastNameController = TextEditingController(text: "");
     addressController = TextEditingController(text: "");
@@ -177,6 +178,14 @@ class ProfileController extends GetxController {
 
     _loadUserData();
     fetchProfileApiData();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      checkStripeConnectStatus();
+      fetchProfileStats();
+    }
   }
 
   /// Main API loader for Profile, Stats, Wardrobe & Purchases
@@ -228,6 +237,13 @@ class ProfileController extends GetxController {
         await checkStripeConnectStatus();
         await fetchMyWardrobe();
         await fetchProfileStats();
+        if (rxIsPayoutConnected.value) {
+          Helpers.showCustomSnackBar(
+            "Stripe payout setup completed successfully!",
+            title: "Setup Complete",
+            type: SnackBarType.success,
+          );
+        }
       } else {
         Helpers.showCustomSnackBar(
           "Unable to generate payout setup link. Please try again.",
@@ -715,6 +731,7 @@ class ProfileController extends GetxController {
 
   @override
   void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
     firstNameController.dispose();
     lastNameController.dispose();
     addressController.dispose();

@@ -76,5 +76,18 @@
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.closete.app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>closete</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>
