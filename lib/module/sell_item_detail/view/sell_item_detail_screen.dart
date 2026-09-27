@@ -2275,11 +2275,11 @@ class _SuccessBottomSheetContent extends StatelessWidget {
         // SizedBox(height: 12.h),
         Center(
           child: Text(
-            "Listing Submitted for Review",
+            "Listing Submitted",
             style: TextStyle(
               fontFamily: 'Schnyder L',
-              fontSize: 26.sp,
-              fontWeight: FontWeight.w300,
+              fontSize: 28.sp,
+              fontWeight: FontWeight.w400,
               color: Colors.white,
               letterSpacing: -0.5,
             ),
@@ -2287,17 +2287,21 @@ class _SuccessBottomSheetContent extends StatelessWidget {
         ),
         SizedBox(height: 8.h),
         Center(
-          child: Text(
-            "Closeté team is reviewing your listing before publication",
-            textAlign: TextAlign.center,
-            style: GoogleFonts.dmSans(
-              fontSize: 13.sp,
-              color: Colors.white38,
-              fontWeight: FontWeight.w500,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            child: Text(
+              "Your listing has been received and is now under review. We’ll notify you within 24 hours.",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.dmSans(
+                fontSize: 13.5.sp,
+                color: Colors.white60,
+                fontWeight: FontWeight.w400,
+                height: 1.4,
+              ),
             ),
           ),
         ),
-        SizedBox(height: 24.h),
+        SizedBox(height: 20.h),
         Container(
           padding: EdgeInsets.all(10.w),
           decoration: BoxDecoration(
@@ -2318,6 +2322,25 @@ class _SuccessBottomSheetContent extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 8.w,
+                        vertical: 3.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF28A745).withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(6.r),
+                      ),
+                      child: Text(
+                        "Pending review",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 11.sp,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF28A745),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 8.h),
                     Text(
                       brandName.toUpperCase(),
                       style: GoogleFonts.dmSans(
