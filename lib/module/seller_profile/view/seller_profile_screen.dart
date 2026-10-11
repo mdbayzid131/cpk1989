@@ -10,6 +10,8 @@ import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/core/utils/status_helper.dart';
+import 'package:cpk1989/core/widgets/custom_empty_state.dart';
+import 'package:cpk1989/module/bottom_nav_bar/controller/bottom_nav_bar_controller.dart';
 
 class SellerProfileScreen extends GetView<SellerProfileController> {
   const SellerProfileScreen({super.key});
@@ -221,13 +223,19 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
 
       final items = controller.rxItems;
       if (items.isEmpty) {
-        return Container(
-          height: 200.h,
-          alignment: Alignment.center,
-          child: Text(
-            "Closet is empty.",
-            style: GoogleFonts.dmSans(color: Colors.white38, fontSize: 14.sp),
-          ),
+        return CustomEmptyState(
+          imagePath: 'assets/images/my_wardrobe.svg',
+          imageSize: 130.r,
+          fallbackIcon: Icons.checkroom_rounded,
+          title: "Seller hasn't listed any items yet",
+          buttonText: "Continue exploring",
+          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+          onButtonTap: () {
+            if (Get.isRegistered<BottomNavBarController>()) {
+              Get.find<BottomNavBarController>().changeIndex(0);
+            }
+            Get.offAllNamed(AppRoutes.bottomNavBar);
+          },
         );
       }
 

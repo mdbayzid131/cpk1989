@@ -5,6 +5,7 @@ import 'package:cpk1989/module/wishlist/controller/wishlist_controller.dart';
 import 'package:cpk1989/data/models/product_model.dart';
 import 'package:cpk1989/data/repositories/product_repository.dart';
 import 'package:cpk1989/core/services/api_client.dart';
+import 'package:cpk1989/core/utils/helpers.dart';
 
 class ItemDetailController extends GetxController {
   late final Rx<FeedItem> rxFeedItem;
@@ -153,16 +154,13 @@ class ItemDetailController extends GetxController {
         }
       } else {
         if (item.id.isNotEmpty) {
-          wishlistController.toggleFavorite(item.id);
+          wishlistController.toggleFavorite(item.id, showFeedback: false);
         }
       }
     }
-    Get.snackbar(
-      rxIsFavorite.value ? "Added to Wishlist" : "Removed from Wishlist",
+    Helpers.showSuccess(
       "${item.itemName} has been ${rxIsFavorite.value ? "added to" : "removed from"} your wishlist.",
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: const Color(0xFF161719),
-      colorText: Colors.white,
+      title: rxIsFavorite.value ? "Added to Wishlist" : "Removed from Wishlist",
     );
   }
 }

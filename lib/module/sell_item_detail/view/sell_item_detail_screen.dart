@@ -231,10 +231,10 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                       errorMessage: "Seller name is required",
                     ),
                     _buildSellerInputRow(
-                      "Location (e.g. Dubai)",
+                      "Full address",
                       controller.sellerLocationController,
                       rxValue: controller.rxSellerLocation,
-                      errorMessage: "Seller location is required",
+                      errorMessage: "Address is required",
                     ),
                     _buildFixedCountryField(countryName: "UAE"),
                     _buildSellerPhoneInputField(

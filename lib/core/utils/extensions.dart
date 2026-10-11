@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:cpk1989/core/utils/helpers.dart';
 
 /// ===================== EXTENSIONS =====================
 /// Reusable extension methods on core Dart/Flutter types.
@@ -113,13 +114,11 @@ extension ContextExtension on BuildContext {
 
   // Snackbar shortcut
   void showSnackBar(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(this).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? Colors.red.shade100 : Colors.green.shade100,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    if (isError) {
+      Helpers.showError(message);
+    } else {
+      Helpers.showSuccess(message);
+    }
   }
 }
 

@@ -89,6 +89,7 @@ class SecureCheckoutController extends GetxController {
     phoneController = TextEditingController();
 
     locationController.addListener(() {
+      addressController.text = locationController.text;
       if (rxLocationError.value.isNotEmpty &&
           locationController.text.trim().isNotEmpty) {
         rxLocationError.value = "";
@@ -244,12 +245,10 @@ class SecureCheckoutController extends GetxController {
 
     bool isValid = true;
 
-    final locText = locationController.text.trim().isNotEmpty
-        ? locationController.text.trim()
-        : addressController.text.trim();
+    final locText = locationController.text.trim();
 
     if (locText.isEmpty) {
-      rxLocationError.value = "Location / Address is required.";
+      rxLocationError.value = "Address is required.";
       isValid = false;
     }
 
@@ -270,13 +269,10 @@ class SecureCheckoutController extends GetxController {
     }
 
     final fullPhone = formattedFullPhone;
-    final cityInput = locationController.text.trim();
+    final addressText = locationController.text.trim();
     final countrySelected = rxLocation.value.isNotEmpty
         ? rxLocation.value
         : "UAE";
-    final addressText = addressController.text.trim().isNotEmpty
-        ? addressController.text.trim()
-        : (cityInput.isNotEmpty ? cityInput : countrySelected);
 
     // 1. Sync delivery details to user profile backend API & local storage FIRST
     // Profile's location gets cityInput, Profile's country gets countrySelected
@@ -306,7 +302,7 @@ class SecureCheckoutController extends GetxController {
         paymentMethod: rxPaymentMethod.value,
         productId: item.id.isNotEmpty ? item.id : 'unknown',
         address: addressText,
-        location: cityInput.isNotEmpty ? cityInput : countrySelected,
+        location: addressText.isNotEmpty ? addressText : countrySelected,
         phone: fullPhone,
         country: countrySelected,
         selectedPaymentMethodId: selectedCardId,

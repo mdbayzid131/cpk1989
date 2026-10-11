@@ -1701,23 +1701,10 @@ class ProfileScreen extends GetView<ProfileController> {
                 }
                 FocusScope.of(context).unfocus();
                 FocusManager.instance.primaryFocus?.unfocus();
-                Get.snackbar(
-                  'Success',
-                  'Card saved successfully!',
-                  snackPosition: SnackPosition.TOP,
-                  backgroundColor: const Color(0xFF161719),
-                  colorText: Colors.white,
-                  duration: const Duration(seconds: 2),
-                );
+                Helpers.showSuccess('Card saved successfully!');
                 await controller.fetchSavedCards();
               } else if (!result.isCancelled && result.errorMessage != null) {
-                Get.snackbar(
-                  'Card Error',
-                  result.errorMessage!,
-                  snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: Colors.redAccent,
-                  colorText: Colors.white,
-                );
+                Helpers.showError(result.errorMessage!, title: 'Card Error');
               }
             },
       ),

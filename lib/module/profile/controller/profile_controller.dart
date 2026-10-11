@@ -564,23 +564,10 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
   Future<void> addNewCard() async {
     final result = await PaymentService.to.addCardWithSetupIntent();
     if (result.success) {
-      Get.snackbar(
-        'Success',
-        'Card saved successfully!',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF161719),
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-      );
+      Helpers.showSuccess('Card saved successfully!');
       await fetchSavedCards();
     } else if (!result.isCancelled && result.errorMessage != null) {
-      Get.snackbar(
-        'Card Error',
-        result.errorMessage!,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-      );
+      Helpers.showError(result.errorMessage!, title: 'Card Error');
     }
   }
 
@@ -590,13 +577,7 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
       final paymentRepo = Get.find<PaymentRepository>();
       await paymentRepo.deletePaymentMethod(cardId);
       rxSavedCards.removeWhere((card) => card.id == cardId);
-      Get.snackbar(
-        'Success',
-        'Card removed successfully',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF161719),
-        colorText: Colors.white,
-      );
+      Helpers.showSuccess('Card removed successfully');
     } catch (e) {
       debugPrint('⚠️ Delete card error: $e');
       rxSavedCards.removeWhere((card) => card.id == cardId);
@@ -606,13 +587,9 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
   /// Delete a product listing from My Wardrobe (DELETE /products/:id)
   Future<bool> deleteWardrobeItem(ProfileItem item) async {
     if (!item.canDelete) {
-      Get.snackbar(
-        'Action Blocked',
+      Helpers.showWarning(
         'Items in active order progression cannot be deleted.',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF161719),
-        colorText: const Color(0xFFFF453A),
-        duration: const Duration(seconds: 3),
+        title: 'Action Blocked',
       );
       return false;
     }
@@ -626,37 +603,18 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
           response.statusCode == 201 ||
           response.statusCode == 204) {
         rxWardrobeItems.removeWhere((i) => i.id == item.id);
-        Get.snackbar(
-          'Success',
-          'Item deleted from wardrobe successfully',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: const Color(0xFF161719),
-          colorText: Colors.white,
-          duration: const Duration(seconds: 2),
-        );
+        Helpers.showSuccess('Item deleted from wardrobe successfully');
         fetchProfileStats(); // Update listed stats count
         return true;
       } else {
         final msg = response.data?['message'] ?? 'Failed to delete item';
-        Get.snackbar(
-          'Error',
-          msg,
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: const Color(0xFF161719),
-          colorText: const Color(0xFFFF453A),
-        );
+        Helpers.showError(msg);
         return false;
       }
     } catch (e) {
       Helpers.hideLoadingDialog();
       debugPrint('⚠️ Delete product error: $e');
-      Get.snackbar(
-        'Error',
-        'Unable to delete item. Please try again.',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF161719),
-        colorText: const Color(0xFFFF453A),
-      );
+      Helpers.showError('Unable to delete item. Please try again.');
       return false;
     }
   }
@@ -672,36 +630,18 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
       Get.back(); // Dismiss loading
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        Get.snackbar(
-          'Success',
-          'Item updated successfully!',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: const Color(0xFF161719),
-          colorText: Colors.white,
-        );
+        Helpers.showSuccess('Item updated successfully!');
         await fetchMyWardrobe();
         return true;
       } else {
         final msg = response.data?['message'] ?? 'Failed to update item';
-        Get.snackbar(
-          'Error',
-          msg,
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: const Color(0xFF161719),
-          colorText: const Color(0xFFFF453A),
-        );
+        Helpers.showError(msg);
         return false;
       }
     } catch (e) {
       Get.back();
       debugPrint('⚠️ Update product error: $e');
-      Get.snackbar(
-        'Error',
-        'Unable to update item. Please try again.',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF161719),
-        colorText: const Color(0xFFFF453A),
-      );
+      Helpers.showError('Unable to update item. Please try again.');
       return false;
     }
   }
@@ -809,16 +749,7 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
       debugPrint('⚠️ Update profile API error: $e');
     }
 
-    Get.snackbar(
-      'Success',
-      'Personal details updated successfully.',
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: const Color(0xFF161719),
-      colorText: Colors.white,
-      duration: const Duration(seconds: 2),
-      borderRadius: 16,
-      margin: const EdgeInsets.all(16),
-    );
+    Helpers.showSuccess('Personal details updated successfully.');
   }
 
   void setPhoneAndCode(String rawPhone) {
@@ -918,16 +849,7 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
 
   void deleteItem(String id) {
     rxWardrobeItems.removeWhere((item) => item.id == id);
-    Get.snackbar(
-      'Success',
-      'Item successfully removed',
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: const Color(0xFF161719),
-      colorText: Colors.white,
-      duration: const Duration(seconds: 2),
-      borderRadius: 16,
-      margin: const EdgeInsets.all(16),
-    );
+    Helpers.showSuccess('Item successfully removed');
   }
 
   /// Update Profile Picture (via Camera or Gallery)
@@ -967,16 +889,7 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
           }
         }
 
-        Get.snackbar(
-          'Success',
-          'Profile picture updated successfully.',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: const Color(0xFF161719),
-          colorText: Colors.white,
-          duration: const Duration(seconds: 2),
-          borderRadius: 16,
-          margin: const EdgeInsets.all(16),
-        );
+        Helpers.showSuccess('Profile picture updated successfully.');
       } else {
         Helpers.showError("Failed to update profile picture.");
       }
@@ -1049,15 +962,9 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
           );
         }
 
-        Get.snackbar(
-          'Removed',
+        Helpers.showSuccess(
           'Profile photo removed successfully.',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: const Color(0xFF161719),
-          colorText: Colors.white,
-          duration: const Duration(seconds: 2),
-          borderRadius: 16,
-          margin: const EdgeInsets.all(16),
+          title: 'Removed',
         );
       } else {
         final msg = response.data?['message'] ?? 'Failed to remove photo';

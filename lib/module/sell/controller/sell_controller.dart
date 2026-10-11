@@ -112,12 +112,9 @@ class SellController extends GetxController {
   Future<void> flipCameraHardware() async {
     final cameras = await availableCameras();
     if (cameras.length < 2) {
-      Get.snackbar(
-        "Camera",
+      Helpers.showWarning(
         "Only one camera is available on this device.",
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF1E1F22).withValues(alpha: 0.9),
-        colorText: Colors.white,
+        title: "Camera",
       );
       return;
     }
@@ -216,9 +213,9 @@ class SellController extends GetxController {
       } catch (e) {
         debugPrint("Camera capture exception: $e");
         if (!e.toString().contains("Previous capture has not returned")) {
-          Get.snackbar(
-            "Capture Error",
+          Helpers.showError(
             "Failed to take picture: ${e.toString()}",
+            title: "Capture Error",
           );
         }
       } finally {
@@ -264,9 +261,9 @@ class SellController extends GetxController {
         onPicked();
       }
     } catch (e) {
-      Get.snackbar(
-        "Gallery Error",
+      Helpers.showError(
         "Failed to access gallery: ${e.toString()}",
+        title: "Gallery Error",
       );
     }
   }
@@ -350,19 +347,15 @@ class SellController extends GetxController {
       // Select the first tab (Wardrobe) in profile
       profileController.rxSelectedIndex.value = 0;
 
-      Get.snackbar(
-        "Success",
+      Helpers.showSuccess(
         "${newItem.itemName} listed successfully!",
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF1E1F22),
-        colorText: Colors.white,
       );
     } catch (e) {
       Get.back();
       Get.back();
-      Get.snackbar(
-        "Listed",
+      Helpers.showSuccess(
         "Item has been listed in your Wardrobe.",
+        title: "Listed",
       );
     }
   }

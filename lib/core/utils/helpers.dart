@@ -371,14 +371,14 @@ class Helpers {
               style: TextStyle(
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w400,
-                color: Colors.white.withValues(alpha: 0.9),
+                color: Colors.white,
                 height: 1.25,
               ),
             ),
           ],
         ),
         snackPosition: SnackPosition.TOP,
-        backgroundColor: (config['bg'] as Color).withValues(alpha: 0.92),
+        backgroundColor: (config['bg'] as Color).withValues(alpha: 0.95),
         colorText: Colors.white,
         duration: duration,
         isDismissible: true,
@@ -469,8 +469,8 @@ class Helpers {
     switch (type) {
       case SnackBarType.success:
         return {
-          'bg': const Color(0xFF161719),
-          'iconBg': const Color(0xFF161719),
+          'bg': const Color(0xFF28A745),
+          'iconBg': const Color(0xFF218838),
           'icon': Icons.check_rounded,
           'defaultTitle': 'Success',
         };
@@ -506,18 +506,45 @@ class Helpers {
   }
 
   /// Shortcut for Success
-  static void showSuccess(String message, {String? title}) {
-    showCustomSnackBar(message, title: title, type: SnackBarType.success);
+  static void showSuccess(
+    String message, {
+    String? title,
+    Duration duration = const Duration(seconds: 3),
+  }) {
+    showCustomSnackBar(
+      message,
+      title: title,
+      type: SnackBarType.success,
+      duration: duration,
+    );
   }
 
   /// Shortcut for Error
-  static void showError(String message, {String? title}) {
-    showCustomSnackBar(message, title: title, type: SnackBarType.error);
+  static void showError(
+    String message, {
+    String? title,
+    Duration duration = const Duration(seconds: 3),
+  }) {
+    showCustomSnackBar(
+      message,
+      title: title,
+      type: SnackBarType.error,
+      duration: duration,
+    );
   }
 
   /// Shortcut for Warning
-  static void showWarning(String message, {String? title}) {
-    showCustomSnackBar(message, title: title, type: SnackBarType.warning);
+  static void showWarning(
+    String message, {
+    String? title,
+    Duration duration = const Duration(seconds: 3),
+  }) {
+    showCustomSnackBar(
+      message,
+      title: title,
+      type: SnackBarType.warning,
+      duration: duration,
+    );
   }
 
   // ──────────────────── KEYBOARD ────────────────────

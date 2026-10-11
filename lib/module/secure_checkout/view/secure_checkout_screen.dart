@@ -99,7 +99,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                     Obx(
                       () => _buildTextInputField(
                         controller: controller.locationController,
-                        hintText: "Location (e.g. Dubai)",
+                        hintText: "Full address",
                         svgPath: "assets/icons/location.svg",
                         errorText: controller.rxLocationError.value,
                       ),
@@ -1077,14 +1077,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                 }
                 FocusScope.of(context).unfocus();
                 FocusManager.instance.primaryFocus?.unfocus();
-                Get.snackbar(
-                  'Success',
-                  'Card saved successfully!',
-                  snackPosition: SnackPosition.TOP,
-                  backgroundColor: const Color(0xFF161719),
-                  colorText: Colors.white,
-                  duration: const Duration(seconds: 2),
-                );
+                Helpers.showSuccess('Card saved successfully!');
                 try {
                   await controller.profileController.fetchSavedCards();
                   if (controller.profileController.rxSavedCards.isNotEmpty) {
@@ -1093,13 +1086,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                   }
                 } catch (_) {}
               } else if (!result.isCancelled && result.errorMessage != null) {
-                Get.snackbar(
-                  'Card Error',
-                  result.errorMessage!,
-                  snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: Colors.redAccent,
-                  colorText: Colors.white,
-                );
+                Helpers.showError(result.errorMessage!, title: 'Card Error');
               }
             },
       ),

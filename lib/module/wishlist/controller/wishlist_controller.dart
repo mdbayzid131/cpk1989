@@ -93,7 +93,7 @@ class WishlistController extends GetxController {
   }
 
   /// 2. Toggle / Remove Item from Wishlist: DELETE /wishlist/:productId
-  Future<void> toggleFavorite(String id) async {
+  Future<void> toggleFavorite(String id, {bool showFeedback = true}) async {
     if (rxRemovingIds.contains(id)) return;
     rxRemovingIds.add(id);
 
@@ -101,16 +101,12 @@ class WishlistController extends GetxController {
       final response = await _wishlistRepo.removeFromWishlist(id);
       if (response.statusCode == 200 || response.statusCode == 204) {
         rxItems.removeWhere((item) => item.id == id);
-        Get.snackbar(
-          'Removed',
-          'Item removed from your wishlist.',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: const Color(0xFF161719),
-          colorText: Colors.white,
-          duration: const Duration(seconds: 2),
-          borderRadius: 16,
-          margin: const EdgeInsets.all(16),
-        );
+        if (showFeedback) {
+          Helpers.showSuccess(
+            'Item removed from your wishlist.',
+            title: 'Removed',
+          );
+        }
       } else {
         // Fallback optimistic removal
         rxItems.removeWhere((item) => item.id == id);

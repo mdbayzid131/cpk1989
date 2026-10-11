@@ -6,7 +6,7 @@ class EnvConfig {
   static String _apiBaseUrl = const String.fromEnvironment(
     'API_BASE_URL',
     defaultValue:
-        'https://erik-additionally-vinyl-obligations.trycloudflare.com/api/v1',
+        'http://localhost:5000/api/v1',
   );
   static String _stripePublishableKey = const String.fromEnvironment(
     'STRIPE_PUBLISHABLE_KEY',

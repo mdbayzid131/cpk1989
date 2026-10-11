@@ -10,7 +10,7 @@ class AppTheme {
   static const Color primaryColor = Color(0xff9945FF);
   static const Color secondaryColor = Color(0xFF03DAC6);
   static const Color errorColor = Color(0xFFB00020);
-  static const Color successColor = Color(0xFF4CAF50);
+  static const Color successColor = Color(0xFF28A745);
   static const Color warningColor = Color(0xFFFF9800);
 
   // Premium Gold Gradient

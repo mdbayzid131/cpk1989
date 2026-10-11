@@ -521,14 +521,10 @@ class MyItemDetailController extends GetxController {
         rxIsEditing.value = false;
         await fetchFullDetails();
 
-        Get.snackbar(
-          'Success',
+        Helpers.showSuccess(
           wasRejected
               ? 'Product updated and submitted for review!'
               : 'Product updated successfully!',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: const Color(0xFF161719),
-          colorText: Colors.white,
         );
 
         // Refresh profile wardrobe if available
@@ -537,24 +533,12 @@ class MyItemDetailController extends GetxController {
         }
       } else {
         final msg = response.data?['message'] ?? 'Failed to update product.';
-        Get.snackbar(
-          'Error',
-          msg,
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: const Color(0xFF161719),
-          colorText: const Color(0xFFFF453A),
-        );
+        Helpers.showError(msg);
       }
     } catch (e) {
       Get.back(); // dismiss loading
       debugPrint('⚠️ Error saving product changes: $e');
-      Get.snackbar(
-        'Error',
-        'Unable to update product. Please try again.',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF161719),
-        colorText: const Color(0xFFFF453A),
-      );
+      Helpers.showError('Unable to update product. Please try again.');
     } finally {
       rxIsSaving.value = false;
     }
