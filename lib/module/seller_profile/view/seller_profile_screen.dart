@@ -11,6 +11,7 @@ import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/core/utils/status_helper.dart';
 import 'package:cpk1989/core/widgets/custom_empty_state.dart';
+import 'package:cpk1989/core/widgets/custom_initials_avatar.dart';
 import 'package:cpk1989/module/bottom_nav_bar/controller/bottom_nav_bar_controller.dart';
 
 class SellerProfileScreen extends GetView<SellerProfileController> {
@@ -83,17 +84,12 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Circular avatar (Without edit button)
-          // Circular avatar (Without edit button)
+          // Circular avatar with initials fallback matching Client Design
           Obx(
-            () => CircleAvatar(
-              radius: 46.r,
-              backgroundColor: const Color(0xFF282A2E),
-              backgroundImage:
-                  (controller.rxAvatarUrl.value.isNotEmpty &&
-                      controller.rxAvatarUrl.value.startsWith('http'))
-                  ? NetworkImage(controller.rxAvatarUrl.value)
-                  : const NetworkImage("https://i.ibb.co/z5YHLV9/profile.png"),
+            () => CustomInitialsAvatar(
+              size: 92.r,
+              imageUrl: controller.rxAvatarUrl.value,
+              name: controller.rxUserName.value,
             ),
           ),
           SizedBox(width: 16.w),

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cpk1989/config/themes/app_theme.dart';
 import 'package:cpk1989/core/services/payment_service.dart';
 import 'package:cpk1989/core/utils/status_helper.dart';
+import 'package:cpk1989/module/bottom_nav_bar/controller/bottom_nav_bar_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,8 +19,8 @@ import 'package:cpk1989/core/services/auth_service.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/core/widgets/custom_empty_state.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
-import 'package:cpk1989/module/bottom_nav_bar/controller/bottom_nav_bar_controller.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
+import 'package:cpk1989/core/widgets/custom_initials_avatar.dart';
 
 class ProfileScreen extends GetView<ProfileController> {
   const ProfileScreen({super.key});
@@ -127,48 +128,17 @@ class ProfileScreen extends GetView<ProfileController> {
                       : '$serverBase/$fullUrl';
                 }
 
-                if (hasCustomPhoto && fullUrl.isNotEmpty) {
-                  return Container(
-                    width: 92.r,
-                    height: 92.r,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.15),
-                        width: 1.5,
-                      ),
-                      image: DecorationImage(
-                        image: NetworkImage(fullUrl),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  );
-                }
-
-                // Default Initials Avatar: Gold/Yellow on Black background matching tab indicators
-                final initials = controller.getUserInitials();
-                return Container(
-                  width: 92.r,
-                  height: 92.r,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF0F1012),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: const Color(0xFFFFAF2C),
-                      width: 1.5,
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      initials,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 26.sp,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFFFFAF2C),
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                  ),
+                return CustomInitialsAvatar(
+                  size: 92.r,
+                  imageUrl: (hasCustomPhoto && fullUrl.isNotEmpty)
+                      ? fullUrl
+                      : null,
+                  name:
+                      controller.rxUserProfile.value?.name ??
+                      controller.rxUserName.value,
+                  fontSize: 26.sp,
+                  fontWeight: FontWeight.w800,
+                  borderWidth: 1.5,
                 );
               }),
               Positioned(
@@ -1259,10 +1229,7 @@ class ProfileScreen extends GetView<ProfileController> {
               gradient: const LinearGradient(
                 begin: Alignment.centerRight,
                 end: Alignment.centerLeft,
-                colors: [
-                  Color(0xFF2B2D32),
-                  Color(0xFF1C1D20),
-                ],
+                colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
               ),
               borderRadius: BorderRadius.circular(16.r),
               border: Border.all(
@@ -1343,7 +1310,9 @@ class ProfileScreen extends GetView<ProfileController> {
                         width: 36.r,
                         height: 36.r,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFF5252).withValues(alpha: 0.12),
+                          color: const Color(
+                            0xFFFF5252,
+                          ).withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(10.r),
                         ),
                         child: Center(
@@ -1423,10 +1392,7 @@ class ProfileScreen extends GetView<ProfileController> {
                 gradient: const LinearGradient(
                   begin: Alignment.centerRight,
                   end: Alignment.centerLeft,
-                  colors: [
-                    Color(0xFF2B2D32),
-                    Color(0xFF1C1D20),
-                  ],
+                  colors: [Color(0xFF2B2D32), Color(0xFF1C1D20)],
                 ),
                 borderRadius: BorderRadius.circular(16.r),
                 border: Border.all(
@@ -1495,15 +1461,17 @@ class ProfileScreen extends GetView<ProfileController> {
                 final brandLower = card.brand.toLowerCase();
                 final brandName = card.brand.isNotEmpty
                     ? (card.brand[0].toUpperCase() +
-                        card.brand.substring(1).toLowerCase())
+                          card.brand.substring(1).toLowerCase())
                     : "Card";
-                final digitsOnly =
-                    card.maskedNumber.replaceAll(RegExp(r'[^0-9]'), '');
+                final digitsOnly = card.maskedNumber.replaceAll(
+                  RegExp(r'[^0-9]'),
+                  '',
+                );
                 final last4 = card.last4.isNotEmpty
                     ? card.last4
                     : (digitsOnly.length >= 4
-                        ? digitsOnly.substring(digitsOnly.length - 4)
-                        : (digitsOnly.isNotEmpty ? digitsOnly : '4242'));
+                          ? digitsOnly.substring(digitsOnly.length - 4)
+                          : (digitsOnly.isNotEmpty ? digitsOnly : '4242'));
                 final formattedCardNumber = "**** **** **** $last4";
 
                 String expiryDisplay = card.expiry;
@@ -1576,8 +1544,9 @@ class ProfileScreen extends GetView<ProfileController> {
                           vertical: 5.h,
                         ),
                         decoration: BoxDecoration(
-                          color:
-                              const Color(0xFF28A745).withValues(alpha: 0.12),
+                          color: const Color(
+                            0xFF28A745,
+                          ).withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(100.r),
                         ),
                         child: Row(

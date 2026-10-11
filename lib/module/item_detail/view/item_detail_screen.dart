@@ -13,6 +13,7 @@ import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/module/home/controller/home_controller.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
+import 'package:cpk1989/core/widgets/custom_initials_avatar.dart';
 
 class ItemDetailScreen extends GetView<ItemDetailController> {
   const ItemDetailScreen({super.key});
@@ -157,28 +158,10 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                     },
                                     child: Row(
                                       children: [
-                                        CircleAvatar(
-                                          radius: 20.r,
-                                          backgroundColor: Colors.grey.shade900,
-                                          child: ClipOval(
-                                            child: Image.network(
-                                              item.sellerProfileImage.isNotEmpty
-                                                  ? item.sellerProfileImage
-                                                  : "https://i.ibb.co/z5YHLV9/profile.png",
-                                              width: 40.r,
-                                              height: 40.r,
-                                              fit: BoxFit.cover,
-                                              errorBuilder:
-                                                  (
-                                                    context,
-                                                    error,
-                                                    stackTrace,
-                                                  ) => const Icon(
-                                                    Icons.person,
-                                                    color: Colors.white70,
-                                                  ),
-                                            ),
-                                          ),
+                                        CustomInitialsAvatar(
+                                          size: 40.r,
+                                          imageUrl: item.sellerProfileImage,
+                                          name: item.userName,
                                         ),
                                         SizedBox(width: 10.w),
                                         Text(

@@ -14,6 +14,7 @@ import 'package:cpk1989/core/utils/helpers.dart';
 import 'package:cpk1989/module/my_item_detail/controller/my_item_detail_controller.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:cpk1989/config/env_config.dart';
+import 'package:cpk1989/core/widgets/custom_initials_avatar.dart';
 
 class MyItemDetailScreen extends GetView<MyItemDetailController> {
   const MyItemDetailScreen({super.key});
@@ -478,21 +479,10 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                                     children: [
                                       Row(
                                         children: [
-                                          CircleAvatar(
-                                            radius: 18.r,
-                                            backgroundColor: const Color(
-                                              0xFF282A2E,
-                                            ),
-                                            backgroundImage:
-                                                (buyerAvatar != null &&
-                                                    buyerAvatar.isNotEmpty &&
-                                                    buyerAvatar.startsWith(
-                                                      'http',
-                                                    ))
-                                                ? NetworkImage(buyerAvatar)
-                                                : const NetworkImage(
-                                                    'https://i.ibb.co/z5YHLV9/profile.png',
-                                                  ),
+                                          CustomInitialsAvatar(
+                                            size: 36.r,
+                                            imageUrl: buyerAvatar,
+                                            name: buyerName,
                                           ),
                                           SizedBox(width: 12.w),
                                           Text(

@@ -11,6 +11,7 @@ import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/core/widgets/custom_empty_state.dart';
+import 'package:cpk1989/core/widgets/custom_initials_avatar.dart';
 
 class HomeScreen extends GetView<HomeController> {
   const HomeScreen({super.key});
@@ -158,25 +159,10 @@ class HomeScreen extends GetView<HomeController> {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    CircleAvatar(
-                                      radius: 20.r,
-                                      backgroundColor: Colors.grey.shade900,
-                                      child: ClipOval(
-                                        child: Image.network(
-                                          item.sellerProfileImage.isNotEmpty
-                                              ? item.sellerProfileImage
-                                              : "https://i.ibb.co/z5YHLV9/profile.png",
-                                          width: 40.r,
-                                          height: 40.r,
-                                          fit: BoxFit.cover,
-                                          errorBuilder:
-                                              (context, error, stackTrace) =>
-                                                  const Icon(
-                                                    Icons.person,
-                                                    color: Colors.white70,
-                                                  ),
-                                        ),
-                                      ),
+                                    CustomInitialsAvatar(
+                                      size: 40.r,
+                                      imageUrl: item.sellerProfileImage,
+                                      name: item.userName,
                                     ),
                                     SizedBox(width: 10.w),
                                     Flexible(

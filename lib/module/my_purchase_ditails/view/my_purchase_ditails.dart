@@ -12,6 +12,7 @@ import 'package:cpk1989/core/utils/helpers.dart';
 import 'package:cpk1989/module/my_purchase_ditails/controller/my_purchase_ditails_controller.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/core/utils/status_helper.dart';
+import 'package:cpk1989/core/widgets/custom_initials_avatar.dart';
 
 class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
   const MyPurchaseDitails({super.key});
@@ -342,23 +343,10 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
                       ),
                       child: Row(
                         children: [
-                          CircleAvatar(
-                            radius: 20.r,
-                            backgroundColor: const Color(0xFF3A3B40),
-                            backgroundImage:
-                                sellerAvatar.isNotEmpty &&
-                                    sellerAvatar.startsWith('http')
-                                ? NetworkImage(sellerAvatar)
-                                : null,
-                            child:
-                                sellerAvatar.isEmpty ||
-                                    !sellerAvatar.startsWith('http')
-                                ? Icon(
-                                    Icons.person,
-                                    color: Colors.white54,
-                                    size: 22.r,
-                                  )
-                                : null,
+                          CustomInitialsAvatar(
+                            size: 40.r,
+                            imageUrl: sellerAvatar,
+                            name: sellerName.isNotEmpty ? sellerName : "Seller",
                           ),
                           SizedBox(width: 14.w),
                           Expanded(
