@@ -842,7 +842,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                 ),
                 SizedBox(height: 6.h),
                 Text(
-                  "Your listing has been submitted and is awaiting review. It isn't visible to buyers yet.",
+                  "Your listing has been submitted and is awaiting review. It isn’t visible to buyers just yet. We’ll update you within 24 hours.",
                   style: GoogleFonts.dmSans(
                     fontSize: 12.sp,
                     color: Colors.white60,

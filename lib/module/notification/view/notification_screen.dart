@@ -9,6 +9,8 @@ import 'package:cpk1989/module/notification/controller/notification_controller.d
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/core/widgets/custom_empty_state.dart';
+import 'package:cpk1989/module/bottom_nav_bar/controller/bottom_nav_bar_controller.dart';
+import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 
 class NotificationScreen extends GetView<NotificationController> {
   const NotificationScreen({super.key});
@@ -237,10 +239,15 @@ class NotificationScreen extends GetView<NotificationController> {
           }
         }
 
-        // 4. Seller Profile
-        if (screen == 'seller_profile' ||
-            screen == 'seller_onboarding' ||
+        // 4. Seller Onboarding / Payout Setup -> My Profile > Personal Details (Payout section)
+        if (screen == 'seller_onboarding' ||
             item.type == NotificationType.sellerOnboardingRequired) {
+          _navigateToProfilePayout();
+          return;
+        }
+
+        // 5. Seller Profile (Public Closet)
+        if (screen == 'seller_profile') {
           if (sellerId != null && sellerId.isNotEmpty) {
             Get.toNamed(
               AppRoutes.sellerProfile,
@@ -333,6 +340,25 @@ class NotificationScreen extends GetView<NotificationController> {
         ),
       ),
     );
+  }
+
+  void _navigateToProfilePayout() {
+    if (Get.isRegistered<BottomNavBarController>()) {
+      Get.find<BottomNavBarController>().changeIndex(3);
+      if (Get.isRegistered<ProfileController>()) {
+        Get.find<ProfileController>().changeTab(2);
+      }
+    } else {
+      Get.offAllNamed(AppRoutes.bottomNavBar);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (Get.isRegistered<BottomNavBarController>()) {
+          Get.find<BottomNavBarController>().changeIndex(3);
+        }
+        if (Get.isRegistered<ProfileController>()) {
+          Get.find<ProfileController>().changeTab(2);
+        }
+      });
+    }
   }
 
   Widget _buildNotificationSvgIcon(NotificationType type) {

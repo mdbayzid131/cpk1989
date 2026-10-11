@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,6 +15,7 @@ import 'package:cpk1989/core/services/api_client.dart';
 import 'package:cpk1989/data/repositories/notification_repository.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:cpk1989/module/home/controller/home_controller.dart';
+import 'package:cpk1989/module/bottom_nav_bar/controller/bottom_nav_bar_controller.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -59,7 +61,9 @@ class PushNotificationService {
       );
 
       if (kDebugMode) {
-        print('User notification permission status: ${settings.authorizationStatus}');
+        print(
+          'User notification permission status: ${settings.authorizationStatus}',
+        );
       }
 
       // 3. Initialize Local Notifications for Foreground Channel
@@ -134,7 +138,8 @@ class PushNotificationService {
 
       await _localNotifications
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.createNotificationChannel(androidChannel);
     }
   }
@@ -173,10 +178,14 @@ class PushNotificationService {
   /// Send FCM token and device info to Backend
   Future<void> _sendTokenToBackend(String fcmToken) async {
     try {
-      final authToken = await StorageService.getString(StorageConstants.bearerToken);
+      final authToken = await StorageService.getString(
+        StorageConstants.bearerToken,
+      );
       if (authToken.isEmpty) {
         if (kDebugMode) {
-          print('ℹ️ PushNotificationService: User not logged in yet, skipping backend device registration.');
+          print(
+            'ℹ️ PushNotificationService: User not logged in yet, skipping backend device registration.',
+          );
         }
         return;
       }
@@ -191,8 +200,8 @@ class PushNotificationService {
       final platform = Platform.isAndroid
           ? 'android'
           : Platform.isIOS
-              ? 'ios'
-              : 'web';
+          ? 'ios'
+          : 'web';
 
       NotificationRepository repo;
       if (Get.isRegistered<NotificationRepository>()) {
@@ -211,7 +220,9 @@ class PushNotificationService {
       );
       if (kDebugMode) {
         print('FCM Token registration API status: ${response.statusCode}');
-        print('FCM Token successfully registered with backend server ($platform).');
+        print(
+          'FCM Token successfully registered with backend server ($platform).',
+        );
       }
     } catch (e) {
       if (kDebugMode) {
@@ -284,7 +295,9 @@ class PushNotificationService {
     final String? sellerId = data['sellerId']?.toString();
 
     // 1. Seller Item Detail / My Listings (Seller notifications)
-    if (screen == 'seller_item_detail' || screen == 'my_listings' || role == 'seller') {
+    if (screen == 'seller_item_detail' ||
+        screen == 'my_listings' ||
+        role == 'seller') {
       if (productId != null && productId.isNotEmpty) {
         Get.toNamed(AppRoutes.myItemDetail, arguments: productId);
         return;
@@ -292,9 +305,14 @@ class PushNotificationService {
     }
 
     // 2. Buyer Order Details / Purchases (Buyer notifications)
-    if (screen == 'order_details' || screen == 'my_purchase_details' || role == 'buyer') {
+    if (screen == 'order_details' ||
+        screen == 'my_purchase_details' ||
+        role == 'buyer') {
       if (orderId != null && orderId.isNotEmpty) {
-        Get.toNamed(AppRoutes.myPurchaseDetails, arguments: {'orderId': orderId});
+        Get.toNamed(
+          AppRoutes.myPurchaseDetails,
+          arguments: {'orderId': orderId},
+        );
       } else {
         Get.toNamed(AppRoutes.bottomNavBar);
       }
@@ -311,8 +329,29 @@ class PushNotificationService {
       return;
     }
 
-    // 4. Seller Profile
-    if (screen == 'seller_profile' || screen == 'seller_onboarding') {
+    // 4. Seller Onboarding / Payout Setup -> My Profile > Personal Details (Payout section)
+    if (screen == 'seller_onboarding') {
+      if (Get.isRegistered<BottomNavBarController>()) {
+        Get.find<BottomNavBarController>().changeIndex(3);
+        if (Get.isRegistered<ProfileController>()) {
+          Get.find<ProfileController>().changeTab(2);
+        }
+      } else {
+        Get.offAllNamed(AppRoutes.bottomNavBar);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (Get.isRegistered<BottomNavBarController>()) {
+            Get.find<BottomNavBarController>().changeIndex(3);
+          }
+          if (Get.isRegistered<ProfileController>()) {
+            Get.find<ProfileController>().changeTab(2);
+          }
+        });
+      }
+      return;
+    }
+
+    // 5. Seller Profile (Public Closet)
+    if (screen == 'seller_profile') {
       if (sellerId != null && sellerId.isNotEmpty) {
         Get.toNamed(AppRoutes.sellerProfile, arguments: {'sellerId': sellerId});
       } else {
