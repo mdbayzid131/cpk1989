@@ -14,6 +14,7 @@ import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/module/home/controller/home_controller.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
 import 'package:cpk1989/core/widgets/custom_initials_avatar.dart';
+import 'package:cpk1989/core/widgets/dirham_symbol.dart';
 
 class ItemDetailScreen extends GetView<ItemDetailController> {
   const ItemDetailScreen({super.key});
@@ -118,8 +119,11 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                     ),
                                   ],
                                 ),
-                                child: Text(
-                                  item.price,
+                                child: DirhamPrice(
+                                  price: item.price,
+                                  symbolSize: 13.5.sp,
+                                  spacing: 3.5,
+                                  color: Colors.black,
                                   style: GoogleFonts.dmSans(
                                     fontSize: 16.sp,
                                     fontWeight: FontWeight.w800,

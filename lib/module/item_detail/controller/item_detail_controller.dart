@@ -95,7 +95,7 @@ class ItemDetailController extends GetxController {
 
           final rawPrice = prod.price ?? 0;
           final formattedPrice =
-              "AED ${rawPrice.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
+              rawPrice.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
 
           rxFeedItem.value = FeedItem(
             id: prod.id ?? item.id,

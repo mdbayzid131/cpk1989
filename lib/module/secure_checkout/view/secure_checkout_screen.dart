@@ -21,6 +21,7 @@ import 'package:cpk1989/module/home/controller/home_controller.dart';
 import 'package:cpk1989/config/constants/api_constants.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
+import 'package:cpk1989/core/widgets/dirham_symbol.dart';
 
 class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
   const SecureCheckoutScreen({super.key});
@@ -278,10 +279,10 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                     color: Colors.white.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8.r),
                   ),
-                  child: Text(
-                    item.price.startsWith('AED')
-                        ? item.price
-                        : "AED ${item.price}",
+                  child: DirhamPrice(
+                    price: item.price,
+                    symbolSize: 11.5.sp,
+                    spacing: 3.0,
                     style: GoogleFonts.dmSans(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w500,

@@ -9,6 +9,7 @@ import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/core/widgets/custom_empty_state.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
+import 'package:cpk1989/core/widgets/dirham_symbol.dart';
 
 class WishlistScreen extends GetView<WishlistController> {
   const WishlistScreen({super.key});
@@ -97,7 +98,7 @@ class WishlistScreen extends GetView<WishlistController> {
           Get.toNamed(AppRoutes.itemDetail, arguments: feedItem);
         } else {
           final formattedPrice =
-              "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
+              item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
           final feedItem = FeedItem(
             id: item.id,
             imagePath: item.imageUrl,
@@ -227,8 +228,10 @@ class WishlistScreen extends GetView<WishlistController> {
                       color: Colors.white.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(6.r),
                     ),
-                    child: Text(
-                      "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
+                    child: DirhamPrice(
+                      price: item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},'),
+                      symbolSize: 8.5.sp,
+                      spacing: 2.5,
                       style: GoogleFonts.dmSans(
                         fontSize: 11.sp,
                         fontWeight: FontWeight.w700,

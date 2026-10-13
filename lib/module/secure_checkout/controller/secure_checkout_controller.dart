@@ -291,7 +291,7 @@ class SecureCheckoutController extends GetxController {
 
     double finalPrice = 3200.0;
     try {
-      finalPrice = double.parse(item.price.replaceAll(',', ''));
+      finalPrice = double.tryParse(item.price.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 3200.0;
     } catch (_) {}
 
     final selectedCardId = rxSelectedCardId.value.isNotEmpty

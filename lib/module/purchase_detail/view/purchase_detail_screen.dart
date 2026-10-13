@@ -14,6 +14,7 @@ import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 import 'package:cpk1989/config/constants/api_constants.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
+import 'package:cpk1989/core/widgets/dirham_symbol.dart';
 
 class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
   const PurchaseDetailScreen({super.key});
@@ -29,8 +30,8 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
 
     // Format price nicely
     final formattedPrice = item.price > 0
-        ? "AED ${item.price % 1 == 0 ? item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},') : item.price.toStringAsFixed(2)}"
-        : "AED 3,200";
+        ? (item.price % 1 == 0 ? item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},') : item.price.toStringAsFixed(2))
+        : "3,200";
 
     return Scaffold(
       backgroundColor: const Color(0xFF0F1012),
@@ -246,8 +247,10 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                     color: Colors.white.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8.r),
                   ),
-                  child: Text(
-                    formattedPrice,
+                  child: DirhamPrice(
+                    price: formattedPrice,
+                    symbolSize: 11.5.sp,
+                    spacing: 3.0,
                     style: GoogleFonts.dmSans(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w500,

@@ -11,6 +11,7 @@ import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/core/widgets/custom_empty_state.dart';
 import 'package:cpk1989/module/bottom_nav_bar/controller/bottom_nav_bar_controller.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
+import 'package:cpk1989/core/widgets/dirham_symbol.dart';
 
 class NotificationScreen extends GetView<NotificationController> {
   const NotificationScreen({super.key});
@@ -484,7 +485,7 @@ class NotificationScreen extends GetView<NotificationController> {
 
   Widget _buildSubtitleText(String subtitle) {
     // Parse words like "AED 3,200" or "AED 3,200." to bold them matching mockup
-    final List<TextSpan> spans = [];
+    final List<InlineSpan> spans = [];
     final RegExp regExp = RegExp(r'(AED\s?[\d,]+(\.)?)', caseSensitive: false);
 
     int start = 0;
@@ -502,9 +503,18 @@ class NotificationScreen extends GetView<NotificationController> {
           ),
         );
       }
+      final matchedText = match.group(0) ?? '';
+      final numPart = matchedText.replaceAll(RegExp(r'AED\s?', caseSensitive: false), '');
+      spans.add(
+        DirhamSymbol.span(
+          size: 11.sp,
+          color: const Color(0xFFEBEBF5),
+          padding: EdgeInsets.only(right: 2.w),
+        ),
+      );
       spans.add(
         TextSpan(
-          text: match.group(0),
+          text: numPart,
           style: GoogleFonts.dmSans(
             fontSize: 13.sp,
             fontWeight: FontWeight.w700,

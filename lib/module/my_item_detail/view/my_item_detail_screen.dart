@@ -15,6 +15,7 @@ import 'package:cpk1989/module/my_item_detail/controller/my_item_detail_controll
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:cpk1989/config/env_config.dart';
 import 'package:cpk1989/core/widgets/custom_initials_avatar.dart';
+import 'package:cpk1989/core/widgets/dirham_symbol.dart';
 
 class MyItemDetailScreen extends GetView<MyItemDetailController> {
   const MyItemDetailScreen({super.key});
@@ -591,12 +592,12 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                                   children: [
                                     _buildEarningsRow(
                                       "Listing price",
-                                      "AED ${listingPriceVal.toInt()}",
+                                      "${listingPriceVal.toInt()}",
                                     ),
                                     SizedBox(height: 8.h),
                                     _buildEarningsRow(
                                       "Closeté fee (12%)",
-                                      "AED ${platformFeeVal.toInt()}",
+                                      "${platformFeeVal.toInt()}",
                                     ),
                                     SizedBox(height: 10.h),
                                     const Divider(color: Colors.white10),
@@ -613,8 +614,10 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                                             fontWeight: FontWeight.w700,
                                           ),
                                         ),
-                                        Text(
-                                          "AED ${sellerPayoutVal.toInt()}",
+                                        DirhamPrice(
+                                          price: "${sellerPayoutVal.toInt()}",
+                                          symbolSize: 12.sp,
+                                          color: const Color(0xFFFFAF2C),
                                           style: GoogleFonts.dmSans(
                                             fontSize: 16.sp,
                                             color: const Color(0xFFFFAF2C),
@@ -896,7 +899,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
           prod?.price ??
           (double.tryParse(controller.priceController.text) ?? item.price);
       final formattedPrice =
-          "AED ${rawPrice.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
+          rawPrice.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
 
       final condition = (prod?.condition != null && prod!.condition!.isNotEmpty)
           ? prod.condition!
@@ -930,7 +933,8 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
             description.isNotEmpty ? description : "Description",
           ),
           _buildLeftAlignedField(
-            formattedPrice.isNotEmpty ? formattedPrice : "Listing price AED",
+            formattedPrice,
+            isPrice: true,
           ),
           _buildLeftAlignedConditionField(
             condition.isNotEmpty ? condition : "Select condition",
@@ -964,8 +968,12 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
         // Price Input
         _buildEditInputRow(
           controller.priceController,
-          hintText: "Listing price AED",
+          hintText: "Listing price",
           keyboardType: TextInputType.number,
+          prefixWidget: Padding(
+            padding: EdgeInsets.only(right: 6.w),
+            child: const DirhamSymbol(size: 13, color: Colors.white),
+          ),
         ),
 
         // Condition Picker Dropdown
@@ -993,7 +1001,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
   }
 
   // Left aligned single-line read-only display
-  Widget _buildLeftAlignedField(String text) {
+  Widget _buildLeftAlignedField(String text, {bool isPrice = false}) {
     return Container(
       height: 52.h,
       margin: EdgeInsets.only(bottom: 8.h),
@@ -1011,17 +1019,28 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
         ),
       ),
       alignment: Alignment.centerLeft,
-      child: Text(
-        text,
-        textAlign: TextAlign.start,
-        style: GoogleFonts.dmSans(
-          fontSize: 14.sp,
-          color: Colors.white,
-          fontWeight: FontWeight.w500,
-        ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
+      child: isPrice
+          ? DirhamPrice(
+              price: text,
+              symbolSize: 11.sp,
+              spacing: 3.0,
+              style: GoogleFonts.dmSans(
+                fontSize: 14.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+            )
+          : Text(
+              text,
+              textAlign: TextAlign.start,
+              style: GoogleFonts.dmSans(
+                fontSize: 14.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
     );
   }
 
@@ -1131,6 +1150,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
     required String hintText,
     TextInputType keyboardType = TextInputType.text,
     String? prefixText,
+    Widget? prefixWidget,
   }) {
     return Container(
       margin: EdgeInsets.only(bottom: 8.h),
@@ -1166,6 +1186,8 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
               contentPadding: EdgeInsets.zero,
               border: InputBorder.none,
               hintText: hintText,
+              prefixIcon: prefixWidget,
+              prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
               hintStyle: GoogleFonts.dmSans(
                 fontSize: 14.sp,
                 color: Colors.white38,
@@ -1918,8 +1940,10 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
             fontWeight: FontWeight.w500,
           ),
         ),
-        Text(
-          value,
+        DirhamPrice(
+          price: value,
+          symbolSize: 10.sp,
+          color: Colors.white70,
           style: GoogleFonts.dmSans(
             fontSize: 13.sp,
             color: Colors.white70,
@@ -2058,8 +2082,10 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                                       ),
                                       borderRadius: BorderRadius.circular(6.r),
                                     ),
-                                    child: Text(
-                                      "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
+                                    child: DirhamPrice(
+                                      price: item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},'),
+                                      symbolSize: 8.5.sp,
+                                      spacing: 2.5,
                                       style: GoogleFonts.dmSans(
                                         fontSize: 11.sp,
                                         fontWeight: FontWeight.w700,

@@ -13,6 +13,7 @@ import 'package:cpk1989/core/utils/status_helper.dart';
 import 'package:cpk1989/core/widgets/custom_empty_state.dart';
 import 'package:cpk1989/core/widgets/custom_initials_avatar.dart';
 import 'package:cpk1989/module/bottom_nav_bar/controller/bottom_nav_bar_controller.dart';
+import 'package:cpk1989/core/widgets/dirham_symbol.dart';
 
 class SellerProfileScreen extends GetView<SellerProfileController> {
   const SellerProfileScreen({super.key});
@@ -257,7 +258,7 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
   Widget _buildGridCard(BuildContext context, ProfileItem item) {
     // Format Price nicely with commas
     final formattedPrice =
-        "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
+        item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
     // Format Likes count (e.g. 2000 -> 2K)
     final formattedLikes = item.likes >= 1000
         ? "${(item.likes / 1000).toStringAsFixed(0)}K"
@@ -366,6 +367,7 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
                   children: [
                     // Likes (Outline heart ♡ + text)
                     Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
                           Icons.favorite_border,
@@ -383,13 +385,19 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
                         ),
                       ],
                     ),
-                    // Price
-                    Text(
-                      formattedPrice,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 11.sp,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                    SizedBox(width: 4.w),
+                    // Price with official Dirham symbol & auto scale-down for large numbers
+                    Flexible(
+                      child: DirhamPrice(
+                        price: formattedPrice,
+                        fitScaleDown: true,
+                        symbolSize: 8.5.sp,
+                        spacing: 2.5,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 10.5.sp,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ],

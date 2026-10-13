@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:cpk1989/config/themes/app_theme.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/core/widgets/custom_item_status_card.dart';
@@ -13,6 +12,7 @@ import 'package:cpk1989/module/my_purchase_ditails/controller/my_purchase_ditail
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/core/utils/status_helper.dart';
 import 'package:cpk1989/core/widgets/custom_initials_avatar.dart';
+import 'package:cpk1989/core/widgets/dirham_symbol.dart';
 
 class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
   const MyPurchaseDitails({super.key});
@@ -21,8 +21,6 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
   Widget build(BuildContext context) {
     final item = controller.item;
 
-    final formattedPrice =
-        "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
 
     return Scaffold(
       backgroundColor: const Color(0xFF0F1012),
@@ -230,7 +228,8 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
                   _buildDescriptionDetailRow("Description", description),
                 _buildDetailRow(
                   "Listing Price",
-                  "AED ${(controller.rxProductModel.value?.price ?? controller.rxOrderModel.value?.price ?? item.price).toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
+                  "${(controller.rxProductModel.value?.price ?? controller.rxOrderModel.value?.price ?? item.price).toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
+                  isPrice: true,
                 ),
                 if (condition.isNotEmpty)
                   _buildConditionDetailRow("Condition", condition),
@@ -421,7 +420,7 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
+  Widget _buildDetailRow(String label, String value, {bool isPrice = false}) {
     return Container(
       margin: EdgeInsets.only(bottom: 8.h),
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
@@ -450,17 +449,31 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
           const Spacer(),
           Expanded(
             flex: 2,
-            child: Text(
-              value,
-              textAlign: TextAlign.end,
-              style: GoogleFonts.dmSans(
-                fontSize: 14.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+            child: isPrice
+                ? Align(
+                    alignment: Alignment.centerRight,
+                    child: DirhamPrice(
+                      price: value,
+                      symbolSize: 11.sp,
+                      spacing: 3.0,
+                      style: GoogleFonts.dmSans(
+                        fontSize: 14.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  )
+                : Text(
+                    value,
+                    textAlign: TextAlign.end,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
           ),
         ],
       ),

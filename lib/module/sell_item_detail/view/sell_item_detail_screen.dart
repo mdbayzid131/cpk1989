@@ -1,6 +1,5 @@
 import 'package:cpk1989/core/services/payment_service.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,14 +8,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/core/widgets/custom_gold_button.dart';
 import 'package:cpk1989/core/widgets/custom_dipped_bottom_sheet.dart';
-import 'package:cpk1989/core/widgets/custom_add_card_bottom_sheet.dart';
 import 'package:cpk1989/module/sell_item_detail/controller/sell_item_detail_controller.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:cpk1989/core/utils/validators.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
-import 'package:cpk1989/core/utils/helpers.dart';
 import 'package:cpk1989/config/env_config.dart';
+import 'package:cpk1989/core/widgets/dirham_symbol.dart';
 
 class SellItemDetailScreen extends GetView<SellItemDetailController> {
   const SellItemDetailScreen({super.key});
@@ -445,13 +443,13 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
       final youEarn = currentPrice * EnvConfig.sellerRate;
 
       final formattedPrice = hasPrice
-          ? "AED ${currentPrice.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}"
+          ? currentPrice.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')
           : "-";
       final formattedFee = hasPrice
-          ? "AED ${closetFee.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}"
+          ? closetFee.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')
           : "-";
       final formattedEarn = hasPrice
-          ? "AED ${youEarn.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}"
+          ? youEarn.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')
           : "-";
 
       return Container(
@@ -493,14 +491,25 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  Text(
-                    formattedEarn,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 14.sp,
-                      color: const Color(0xFFFFAF2C),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  formattedEarn == "-"
+                      ? Text(
+                          "-",
+                          style: GoogleFonts.dmSans(
+                            fontSize: 14.sp,
+                            color: const Color(0xFFFFAF2C),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        )
+                      : DirhamPrice(
+                          price: formattedEarn,
+                          symbolSize: 11.sp,
+                          color: const Color(0xFFFFAF2C),
+                          style: GoogleFonts.dmSans(
+                            fontSize: 14.sp,
+                            color: const Color(0xFFFFAF2C),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                 ],
               ),
             ],
@@ -522,14 +531,25 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
             fontWeight: FontWeight.w500,
           ),
         ),
-        Text(
-          value,
-          style: GoogleFonts.dmSans(
-            fontSize: 13.sp,
-            color: Colors.white70,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        value == "-"
+            ? Text(
+                "-",
+                style: GoogleFonts.dmSans(
+                  fontSize: 13.sp,
+                  color: Colors.white70,
+                  fontWeight: FontWeight.w600,
+                ),
+              )
+            : DirhamPrice(
+                price: value,
+                symbolSize: 10.sp,
+                color: Colors.white70,
+                style: GoogleFonts.dmSans(
+                  fontSize: 13.sp,
+                  color: Colors.white70,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
       ],
     );
   }
@@ -538,7 +558,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
     return Obx(() {
       final priceVal = double.tryParse(controller.rxPrice.value) ?? item.price;
       final formattedPrice =
-          "AED ${priceVal.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
+          priceVal.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
 
       return CustomGoldButton(
         text: "Submit Item",
@@ -765,20 +785,19 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 fontWeight: FontWeight.w500,
               ),
               decoration: InputDecoration(
-                hintText: "Listing price AED",
+                hintText: "Listing price",
                 hintStyle: GoogleFonts.dmSans(
                   fontSize: 14.sp,
                   color: Colors.white38,
                   fontWeight: FontWeight.w400,
                 ),
-                prefixText: controller.rxPrice.value.trim().isNotEmpty
-                    ? "AED "
+                prefixIcon: controller.rxPrice.value.trim().isNotEmpty
+                    ? Padding(
+                        padding: EdgeInsets.only(right: 6.w),
+                        child: const DirhamSymbol(size: 13, color: Colors.white),
+                      )
                     : null,
-                prefixStyle: GoogleFonts.dmSans(
-                  fontSize: 14.sp,
-                  color: Colors.white70,
-                  fontWeight: FontWeight.w500,
-                ),
+                prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
                 border: InputBorder.none,
                 isDense: true,
                 contentPadding: EdgeInsets.zero,

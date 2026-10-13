@@ -21,6 +21,7 @@ import 'package:cpk1989/core/widgets/custom_empty_state.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
 import 'package:cpk1989/core/widgets/custom_initials_avatar.dart';
+import 'package:cpk1989/core/widgets/dirham_symbol.dart';
 
 class ProfileScreen extends GetView<ProfileController> {
   const ProfileScreen({super.key});
@@ -206,8 +207,8 @@ class ProfileScreen extends GetView<ProfileController> {
                       ? stats.totalProductsPurchased
                       : controller.rxPurchaseItems.length;
                   final earningsText = stats.totalEarnings > 0
-                      ? "${stats.currency} ${stats.formattedEarnings}"
-                      : "AED 0";
+                      ? stats.formattedEarnings
+                      : "0";
 
                   return Container(
                     padding: EdgeInsets.symmetric(
@@ -237,7 +238,11 @@ class ProfileScreen extends GetView<ProfileController> {
                         ),
                         _buildStatDivider(),
                         Expanded(
-                          child: _buildStatItem("Closet Value", earningsText),
+                          child: _buildStatItem(
+                            "Closet Value",
+                            earningsText,
+                            isCurrency: true,
+                          ),
                         ),
                       ],
                     ),
@@ -466,7 +471,7 @@ class ProfileScreen extends GetView<ProfileController> {
     );
   }
 
-  Widget _buildStatItem(String label, String value) {
+  Widget _buildStatItem(String label, String value, {bool isCurrency = false}) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -484,15 +489,25 @@ class ProfileScreen extends GetView<ProfileController> {
         SizedBox(height: 4.h),
         FittedBox(
           fit: BoxFit.scaleDown,
-          child: Text(
-            value,
-            maxLines: 1,
-            style: GoogleFonts.dmSans(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w700,
-              color: Colors.white, // White bold value matching mockup
-            ),
-          ),
+          child: isCurrency
+              ? DirhamPrice(
+                  price: value,
+                  symbolSize: 11.sp,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                )
+              : Text(
+                  value,
+                  maxLines: 1,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white, // White bold value matching mockup
+                  ),
+                ),
         ),
       ],
     );
@@ -752,8 +767,9 @@ class ProfileScreen extends GetView<ProfileController> {
                   SizedBox(height: 6.h),
 
                   // Price
-                  Text(
-                    "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
+                  DirhamPrice(
+                    price: item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},'),
+                    symbolSize: 9.sp,
                     style: GoogleFonts.dmSans(
                       fontSize: 12.sp,
                       color: AppTheme.gray,
@@ -788,7 +804,7 @@ class ProfileScreen extends GetView<ProfileController> {
   }) {
     // Format Price nicely with commas
     final formattedPrice =
-        "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
+        item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
     // Format Likes count (e.g. 2000 -> 2K)
     final formattedLikes = item.likes >= 1000
         ? "${(item.likes / 1000).toStringAsFixed(0)}K"
@@ -931,6 +947,7 @@ class ProfileScreen extends GetView<ProfileController> {
                   children: [
                     // Likes (Outline heart ♡ + text)
                     Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
                           Icons.favorite_border,
@@ -948,13 +965,19 @@ class ProfileScreen extends GetView<ProfileController> {
                         ),
                       ],
                     ),
-                    // Price
-                    Text(
-                      formattedPrice,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 11.sp,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                    SizedBox(width: 4.w),
+                    // Price with official Dirham symbol & auto scale-down for large numbers
+                    Flexible(
+                      child: DirhamPrice(
+                        price: formattedPrice,
+                        fitScaleDown: true,
+                        symbolSize: 8.5.sp,
+                        spacing: 2.5,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 10.5.sp,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ],
@@ -2066,8 +2089,10 @@ class ProfileScreen extends GetView<ProfileController> {
                                       ),
                                       borderRadius: BorderRadius.circular(6.r),
                                     ),
-                                    child: Text(
-                                      "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}",
+                                    child: DirhamPrice(
+                                      price: item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},'),
+                                      symbolSize: 8.5.sp,
+                                      spacing: 2.5,
                                       style: GoogleFonts.dmSans(
                                         fontSize: 11.sp,
                                         fontWeight: FontWeight.w700,

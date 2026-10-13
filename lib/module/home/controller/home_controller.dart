@@ -46,7 +46,7 @@ class FeedItem {
   factory FeedItem.fromProductModel(ProductModel product) {
     final double rawPrice = product.price ?? 0.0;
     final formattedPrice =
-        "AED ${rawPrice.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
+        rawPrice.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
 
     return FeedItem(
       id: product.id ?? '',

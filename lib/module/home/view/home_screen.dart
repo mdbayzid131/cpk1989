@@ -12,6 +12,7 @@ import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/core/widgets/custom_empty_state.dart';
 import 'package:cpk1989/core/widgets/custom_initials_avatar.dart';
+import 'package:cpk1989/core/widgets/dirham_symbol.dart';
 
 class HomeScreen extends GetView<HomeController> {
   const HomeScreen({super.key});
@@ -199,9 +200,11 @@ class HomeScreen extends GetView<HomeController> {
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(8.r),
                               ),
-                              child: Text(
-                                item.price,
-                                textAlign: TextAlign.center,
+                              child: DirhamPrice(
+                                price: item.price,
+                                symbolSize: 11.sp,
+                                spacing: 3.0,
+                                color: Colors.black,
                                 style: GoogleFonts.dmSans(
                                   fontSize: 13.sp,
                                   fontWeight: FontWeight.w700,
