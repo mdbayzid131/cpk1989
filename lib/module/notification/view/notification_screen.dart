@@ -189,6 +189,10 @@ class NotificationScreen extends GetView<NotificationController> {
   Widget _buildNotificationCard(NotificationItem item) {
     return GestureDetector(
       onTap: () {
+        if (!item.isRead) {
+          controller.markAsRead(item.id);
+        }
+
         final data = item.data;
         final String? screen = data?['screen']?.toString();
         final String? role = data?['role']?.toString();
@@ -307,14 +311,31 @@ class NotificationScreen extends GetView<NotificationController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-                        child: Text(
-                          item.title,
-                          style: GoogleFonts.dmSans(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
-                            height: 1.2,
-                          ),
+                        child: Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                item.title,
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 15.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  height: 1.2,
+                                ),
+                              ),
+                            ),
+                            if (!item.isRead) ...[
+                              SizedBox(width: 6.w),
+                              Container(
+                                width: 7.r,
+                                height: 7.r,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFEA384C),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
                       SizedBox(width: 8.w),

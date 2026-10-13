@@ -66,32 +66,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
           ),
 
-          // 2. Floating Skip Button at the top-left (only visible if not on the last page)
-          if (_currentPage < 2)
-            Positioned(
-              top: MediaQuery.of(context).padding.top + 20.h,
-              left: 20.w,
-              child: GestureDetector(
-                onTap: () async {
-                  await StorageService.setBool(
-                    StorageConstants.onboardingSeen,
-                    true,
-                  );
-                  Get.offAllNamed(AppRoutes.login);
-                },
-                child: Padding(
-                  padding: EdgeInsets.all(8.r),
-                  child: Text(
-                    'Skip',
-                    style: GoogleFonts.dmSans(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.white.withValues(alpha: 0.55),
-                    ),
-                  ),
-                ),
-              ),
-            ),
 
           Positioned(
             bottom: MediaQuery.of(context).padding.bottom + 50.h,

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart' hide Response;
@@ -123,12 +124,16 @@ class PaymentService extends GetxService {
           merchantDisplayName: 'Closeté',
           style: ThemeMode.dark,
           allowsDelayedPaymentMethods: true,
-          applePay: const PaymentSheetApplePay(merchantCountryCode: 'AE'),
-          googlePay: const PaymentSheetGooglePay(
-            merchantCountryCode: 'AE',
-            currencyCode: 'AED',
-            testEnv: true,
-          ),
+          applePay: Platform.isIOS
+              ? const PaymentSheetApplePay(merchantCountryCode: 'AE')
+              : null,
+          googlePay: Platform.isAndroid
+              ? const PaymentSheetGooglePay(
+                  merchantCountryCode: 'AE',
+                  currencyCode: 'AED',
+                  testEnv: true,
+                )
+              : null,
         ),
       );
 

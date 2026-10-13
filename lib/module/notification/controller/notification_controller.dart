@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cpk1989/data/repositories/notification_repository.dart';
+import 'package:cpk1989/module/bottom_nav_bar/controller/bottom_nav_bar_controller.dart';
 
 enum NotificationType {
   // 1. Product & Seller
@@ -139,6 +140,9 @@ class NotificationController extends GetxController {
           }
 
           rxNotifications.assignAll(fetched);
+          if (Get.isRegistered<BottomNavBarController>()) {
+            Get.find<BottomNavBarController>().fetchUnreadCount();
+          }
         }
       }
     } catch (e) {
@@ -197,6 +201,37 @@ class NotificationController extends GetxController {
     );
   }
 
+  Future<void> markAsRead(String id) async {
+    final index = rxNotifications.indexWhere((item) => item.id == id);
+    if (index != -1 && !rxNotifications[index].isRead) {
+      final old = rxNotifications[index];
+      rxNotifications[index] = NotificationItem(
+        id: old.id,
+        title: old.title,
+        subtitle: old.subtitle,
+        timeAgo: old.timeAgo,
+        dateGroup: old.dateGroup,
+        type: old.type,
+        isRead: true,
+        route: old.route,
+        data: old.data,
+      );
+
+      if (Get.isRegistered<BottomNavBarController>()) {
+        Get.find<BottomNavBarController>().decrementUnreadCount();
+      }
+
+      try {
+        final repo = _repo;
+        if (repo != null) {
+          await repo.markAsRead(id);
+        }
+      } catch (e) {
+        debugPrint('Error marking notification $id as read: $e');
+      }
+    }
+  }
+
   Future<void> markAllAsRead() async {
     try {
       final repo = _repo;
@@ -220,13 +255,22 @@ class NotificationController extends GetxController {
     }).toList();
 
     rxNotifications.assignAll(updated);
+
+    if (Get.isRegistered<BottomNavBarController>()) {
+      Get.find<BottomNavBarController>().clearUnreadCount();
+    }
   }
 
   Future<bool> deleteNotification(String id) async {
     final index = rxNotifications.indexWhere((item) => item.id == id);
     NotificationItem? removedItem;
+    bool wasUnread = false;
     if (index != -1) {
+      wasUnread = !rxNotifications[index].isRead;
       removedItem = rxNotifications.removeAt(index);
+      if (wasUnread && Get.isRegistered<BottomNavBarController>()) {
+        Get.find<BottomNavBarController>().decrementUnreadCount();
+      }
     }
 
     try {
@@ -243,6 +287,9 @@ class NotificationController extends GetxController {
           index != -1 &&
           index <= rxNotifications.length) {
         rxNotifications.insert(index, removedItem);
+        if (wasUnread && Get.isRegistered<BottomNavBarController>()) {
+          Get.find<BottomNavBarController>().fetchUnreadCount();
+        }
       }
       return false;
     }
@@ -257,6 +304,9 @@ class NotificationController extends GetxController {
       }
     } catch (_) {}
     rxNotifications.clear();
+    if (Get.isRegistered<BottomNavBarController>()) {
+      Get.find<BottomNavBarController>().clearUnreadCount();
+    }
   }
 
   NotificationType _parseType(String? typeStr) {

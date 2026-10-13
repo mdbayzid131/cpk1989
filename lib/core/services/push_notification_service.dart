@@ -14,8 +14,8 @@ import 'package:cpk1989/core/services/storage_service.dart';
 import 'package:cpk1989/core/services/api_client.dart';
 import 'package:cpk1989/data/repositories/notification_repository.dart';
 import 'package:cpk1989/module/profile/controller/profile_controller.dart';
-import 'package:cpk1989/module/home/controller/home_controller.dart';
 import 'package:cpk1989/module/bottom_nav_bar/controller/bottom_nav_bar_controller.dart';
+import 'package:cpk1989/module/notification/controller/notification_controller.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -80,16 +80,28 @@ class PushNotificationService {
       // 6. Handle Messages in Foreground
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         _showForegroundNotification(message);
+        if (Get.isRegistered<BottomNavBarController>()) {
+          Get.find<BottomNavBarController>().fetchUnreadCount();
+        }
+        if (Get.isRegistered<NotificationController>()) {
+          Get.find<NotificationController>().fetchNotifications(isRefresh: true);
+        }
       });
 
       // 7. Handle Background/Terminated Notification Tap
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        if (Get.isRegistered<BottomNavBarController>()) {
+          Get.find<BottomNavBarController>().fetchUnreadCount();
+        }
         _handleNotificationClick(message.data);
       });
 
       // Check initial message if launched from terminated state
       RemoteMessage? initialMessage = await _fcm.getInitialMessage();
       if (initialMessage != null) {
+        if (Get.isRegistered<BottomNavBarController>()) {
+          Get.find<BottomNavBarController>().fetchUnreadCount();
+        }
         _handleNotificationClick(initialMessage.data);
       }
 
@@ -246,6 +258,9 @@ class PushNotificationService {
           repo = NotificationRepository(apiClient: apiClient);
         }
         await repo.unregisterDevice(registrationToken: token);
+      }
+      if (Get.isRegistered<BottomNavBarController>()) {
+        Get.find<BottomNavBarController>().clearUnreadCount();
       }
     } catch (e) {
       if (kDebugMode) {

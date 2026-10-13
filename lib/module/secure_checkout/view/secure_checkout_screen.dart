@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'dart:ui' show ImageFilter;
+import 'package:flutter/foundation.dart';
 import 'package:cpk1989/config/themes/app_theme.dart';
 import 'package:cpk1989/core/services/payment_service.dart';
 import 'package:flutter/material.dart';
@@ -161,30 +163,34 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                     ),
                     SizedBox(height: 16.h),
 
-                    // Payment options
+                    // Payment options (Apple Pay on iOS only; Google Pay on Android only)
                     Obx(
                       () => Column(
                         children: [
-                          _buildPaymentOptionTile(
-                            context: context,
-                            id: "apple_pay",
-                            label: "Apple Pay",
-                            logoWidget: _buildSvgLogo(
-                              "assets/icons/apple pay.svg",
-                              bgColor: Colors.white,
+                          if (Platform.isIOS || (!Platform.isAndroid && kDebugMode)) ...[
+                            _buildPaymentOptionTile(
+                              context: context,
+                              id: "apple_pay",
+                              label: "Apple Pay",
+                              logoWidget: _buildSvgLogo(
+                                "assets/icons/apple pay.svg",
+                                bgColor: Colors.white,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 12.h),
-                          _buildPaymentOptionTile(
-                            context: context,
-                            id: "google_pay",
-                            label: "Google Pay",
-                            logoWidget: _buildSvgLogo(
-                              "assets/icons/google pay.svg",
-                              bgColor: const Color(0xFFFFC226),
+                            SizedBox(height: 12.h),
+                          ],
+                          if (Platform.isAndroid || (!Platform.isIOS && kDebugMode)) ...[
+                            _buildPaymentOptionTile(
+                              context: context,
+                              id: "google_pay",
+                              label: "Google Pay",
+                              logoWidget: _buildSvgLogo(
+                                "assets/icons/google pay.svg",
+                                bgColor: const Color(0xFFFFC226),
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 12.h),
+                            SizedBox(height: 12.h),
+                          ],
                           _buildPaymentOptionTile(
                             context: context,
                             id: "card",

@@ -10,14 +10,14 @@ import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 class BottomNavBarBinding extends Bindings {
   @override
   void dependencies() {
-    Get.put<BottomNavBarController>(BottomNavBarController());
-    Get.put<HomeController>(HomeController());
-    Get.put<WishlistController>(WishlistController());
     if (Get.isRegistered<ApiClient>()) {
       Get.lazyPut<NotificationRepository>(
         () => NotificationRepository(apiClient: Get.find<ApiClient>()),
       );
     }
+    Get.put<BottomNavBarController>(BottomNavBarController());
+    Get.put<HomeController>(HomeController());
+    Get.put<WishlistController>(WishlistController());
     Get.put<NotificationController>(
       NotificationController(
         repository: Get.isRegistered<NotificationRepository>()

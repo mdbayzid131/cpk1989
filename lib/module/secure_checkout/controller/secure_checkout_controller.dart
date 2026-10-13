@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -236,6 +237,8 @@ class SecureCheckoutController extends GetxController {
   }
 
   void selectPaymentMethod(String method) {
+    if (Platform.isAndroid && method == "apple_pay") return;
+    if (Platform.isIOS && method == "google_pay") return;
     rxPaymentMethod.value = method;
   }
 
