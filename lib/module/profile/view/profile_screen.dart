@@ -22,6 +22,7 @@ import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
 import 'package:cpk1989/core/widgets/custom_initials_avatar.dart';
 import 'package:cpk1989/core/widgets/dirham_symbol.dart';
+import 'package:cpk1989/data/models/saved_card_model.dart';
 
 class ProfileScreen extends GetView<ProfileController> {
   const ProfileScreen({super.key});
@@ -1211,35 +1212,68 @@ class ProfileScreen extends GetView<ProfileController> {
                     ],
                   ),
                   SizedBox(height: 18.h),
-                  // Payout Details Verified Pill Badge
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 10.w,
-                      vertical: 5.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF28A745).withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(100.r),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.check_circle_outline_rounded,
-                          color: const Color(0xFF28A745),
-                          size: 15.sp,
+                  // Payout Details Verified Pill Badge & Delete button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 10.w,
+                          vertical: 5.h,
                         ),
-                        SizedBox(width: 5.w),
-                        Text(
-                          "Payout Details Verified",
-                          style: GoogleFonts.dmSans(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF28A745),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF28A745).withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(100.r),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.check_circle_outline_rounded,
+                              color: const Color(0xFF28A745),
+                              size: 15.sp,
+                            ),
+                            SizedBox(width: 5.w),
+                            Text(
+                              "Payout Details Verified",
+                              style: GoogleFonts.dmSans(
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF28A745),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => _showRemovePayoutBottomSheet(context),
+                        behavior: HitTestBehavior.opaque,
+                        child: Container(
+                          height: 28.r,
+                          width: 28.r,
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.45),
+                            borderRadius: BorderRadius.circular(6.r),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.15),
+                              width: 1.0,
+                            ),
+                          ),
+                          child: Center(
+                            child: SvgPicture.asset(
+                              'assets/icons/delete .svg',
+                              width: 13.r,
+                              height: 13.r,
+                              colorFilter: const ColorFilter.mode(
+                                Colors.white,
+                                BlendMode.srcIn,
+                              ),
+                            ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -1561,36 +1595,70 @@ class ProfileScreen extends GetView<ProfileController> {
                         ],
                       ),
                       SizedBox(height: 16.h),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 10.w,
-                          vertical: 5.h,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(
-                            0xFF28A745,
-                          ).withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(100.r),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.check_circle_outline_rounded,
-                              color: const Color(0xFF28A745),
-                              size: 15.sp,
+                      // Verified for payments badge & Delete button
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 10.w,
+                              vertical: 5.h,
                             ),
-                            SizedBox(width: 5.w),
-                            Text(
-                              "Verified for payments",
-                              style: GoogleFonts.dmSans(
-                                fontSize: 12.sp,
-                                color: const Color(0xFF28A745),
-                                fontWeight: FontWeight.w600,
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFF28A745,
+                              ).withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(100.r),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.check_circle_outline_rounded,
+                                  color: const Color(0xFF28A745),
+                                  size: 15.sp,
+                                ),
+                                SizedBox(width: 5.w),
+                                Text(
+                                  "Verified for payments",
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 12.sp,
+                                    color: const Color(0xFF28A745),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => _showRemoveCardBottomSheet(context, card),
+                            behavior: HitTestBehavior.opaque,
+                            child: Container(
+                              height: 28.r,
+                              width: 28.r,
+                              decoration: BoxDecoration(
+                                color: Colors.black.withValues(alpha: 0.45),
+                                borderRadius: BorderRadius.circular(6.r),
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.15),
+                                  width: 1.0,
+                                ),
+                              ),
+                              child: Center(
+                                child: SvgPicture.asset(
+                                  'assets/icons/delete .svg',
+                                  width: 13.r,
+                                  height: 13.r,
+                                  colorFilter: const ColorFilter.mode(
+                                    Colors.white,
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -2193,6 +2261,385 @@ class ProfileScreen extends GetView<ProfileController> {
                     onTap: () async {
                       Get.back();
                       await controller.deleteWardrobeItem(item);
+                    },
+                  ),
+                  SizedBox(height: 8.h),
+
+                  // Cancel text button
+                  Center(
+                    child: TextButton(
+                      onPressed: () => Get.back(),
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 8.h,
+                          horizontal: 16.w,
+                        ),
+                      ),
+                      child: Text(
+                        "Cancel",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white60,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
+  void _showRemoveCardBottomSheet(BuildContext context, SavedCardModel card) {
+    final brandLower = card.brand.toLowerCase();
+    final brandName = card.brand.isNotEmpty
+        ? (card.brand[0].toUpperCase() + card.brand.substring(1).toLowerCase())
+        : "Card";
+    final digitsOnly = card.maskedNumber.replaceAll(RegExp(r'[^0-9]'), '');
+    final last4 = card.last4.isNotEmpty
+        ? card.last4
+        : (digitsOnly.length >= 4
+            ? digitsOnly.substring(digitsOnly.length - 4)
+            : (digitsOnly.isNotEmpty ? digitsOnly : '4242'));
+    final formattedCardNumber = "**** **** **** $last4";
+    String expiryDisplay = card.expiry;
+    if (expiryDisplay.isNotEmpty && !expiryDisplay.toLowerCase().startsWith('exp')) {
+      expiryDisplay = "Exp $expiryDisplay";
+    }
+
+    Get.bottomSheet(
+      Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF111214),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.05),
+            width: 1.0,
+          ),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 8.h),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Drag handle
+                  Center(
+                    child: Container(
+                      width: 40.w,
+                      height: 4.h,
+                      decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(2.r),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Title: "Remove this card?"
+                  Center(
+                    child: Text(
+                      "Remove this card?",
+                      style: GoogleFonts.cormorantGaramond(
+                        fontSize: 28.sp,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+
+                  // Subtitle
+                  Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: Text(
+                        "This card will be removed from your saved payment methods.",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 13.sp,
+                          color: Colors.white54,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Card preview
+                  Container(
+                    padding: EdgeInsets.all(16.r),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment.centerRight,
+                        end: Alignment.centerLeft,
+                        colors: [Color(0xFF292A2D), Color(0xFF1C1D21)],
+                      ),
+                      borderRadius: BorderRadius.circular(16.r),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.05),
+                        width: 1.0,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        _buildProfileCardLogo(brandLower),
+                        SizedBox(width: 14.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                brandName,
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 15.sp,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              SizedBox(height: 4.h),
+                              Text(
+                                formattedCardNumber,
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 13.sp,
+                                  color: const Color(0xFF8E9096),
+                                  fontWeight: FontWeight.w400,
+                                  letterSpacing: 0.8,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (expiryDisplay.isNotEmpty)
+                          Text(
+                            expiryDisplay,
+                            style: GoogleFonts.dmSans(
+                              fontSize: 12.sp,
+                              color: const Color(0xFF8E9096),
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Help text
+                  Center(
+                    child: Text(
+                      "You can add a new card anytime",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12.sp,
+                        color: Colors.white38,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 12.h),
+
+                  // Remove Button
+                  CustomGoldButton(
+                    text: "Remove Card",
+                    suffix: Icon(
+                      Icons.arrow_forward,
+                      size: 16.r,
+                      color: Colors.black,
+                    ),
+                    onTap: () async {
+                      Get.back();
+                      await controller.deleteSavedCard(card.id);
+                    },
+                  ),
+                  SizedBox(height: 8.h),
+
+                  // Cancel text button
+                  Center(
+                    child: TextButton(
+                      onPressed: () => Get.back(),
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 8.h,
+                          horizontal: 16.w,
+                        ),
+                      ),
+                      child: Text(
+                        "Cancel",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white60,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
+  void _showRemovePayoutBottomSheet(BuildContext context) {
+    Get.bottomSheet(
+      Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF111214),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.05),
+            width: 1.0,
+          ),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 8.h),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Drag handle
+                  Center(
+                    child: Container(
+                      width: 40.w,
+                      height: 4.h,
+                      decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(2.r),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Title: "Remove payout details?"
+                  Center(
+                    child: Text(
+                      "Remove payout details?",
+                      style: GoogleFonts.cormorantGaramond(
+                        fontSize: 28.sp,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+
+                  // Subtitle
+                  Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: Text(
+                        "Your connected Stripe account will be removed. You will need to reconnect to receive payouts.",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 13.sp,
+                          color: Colors.white54,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Payout preview
+                  Container(
+                    padding: EdgeInsets.all(16.r),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment.centerRight,
+                        end: Alignment.centerLeft,
+                        colors: [Color(0xFF292A2D), Color(0xFF1C1D21)],
+                      ),
+                      borderRadius: BorderRadius.circular(16.r),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.05),
+                        width: 1.0,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(top: 2.h),
+                          child: Text(
+                            "stripe",
+                            style: GoogleFonts.poppins(
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF635BFF),
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 18.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Stripe",
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 15.sp,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(height: 2.h),
+                              Text(
+                                controller.rxUserName.value.isNotEmpty
+                                    ? controller.rxUserName.value
+                                    : "Connected Account",
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 13.sp,
+                                  color: const Color(0xFF8E9096),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Help text
+                  Center(
+                    child: Text(
+                      "You can reconnect your payout details anytime",
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12.sp,
+                        color: Colors.white38,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 12.h),
+
+                  // Remove Button
+                  CustomGoldButton(
+                    text: "Remove Payout Details",
+                    suffix: Icon(
+                      Icons.arrow_forward,
+                      size: 16.r,
+                      color: Colors.black,
+                    ),
+                    onTap: () async {
+                      Get.back();
+                      await controller.disconnectPayoutAccount();
                     },
                   ),
                   SizedBox(height: 8.h),

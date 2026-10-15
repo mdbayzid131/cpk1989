@@ -21,6 +21,7 @@ class ApiConstants {
   static const String setupIntent = '/payment-methods/setup-intent';
   static const String connectStatus = '/payment/connect/status';
   static const String connectOnboarding = '/payment/connect/onboarding';
+  static const String disconnectPayout = '/payment/connect';
 
   static String get stripePublishableKey => EnvConfig.stripePublishableKey;
   // static const String stripePublishableKey =

@@ -82,4 +82,9 @@ class PaymentRepository {
     } catch (_) {}
     return null;
   }
+
+  /// DELETE /payment/connect
+  Future<void> disconnectPayout() async {
+    await _apiClient.deleteData(ApiConstants.disconnectPayout);
+  }
 }

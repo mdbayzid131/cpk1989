@@ -584,6 +584,27 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
     }
   }
 
+  /// Disconnect / Remove Stripe Payout account
+  Future<void> disconnectPayoutAccount() async {
+    try {
+      Helpers.showLoadingDialog(message: "Removing payout account...");
+      if (!Get.isRegistered<PaymentRepository>()) {
+        Get.put(PaymentRepository());
+      }
+      final paymentRepo = Get.find<PaymentRepository>();
+      await paymentRepo.disconnectPayout();
+      rxIsPayoutConnected.value = false;
+      Helpers.hideLoadingDialog();
+      Helpers.showSuccess('Payout account removed successfully');
+      await checkStripeConnectStatus();
+    } catch (e) {
+      Helpers.hideLoadingDialog();
+      debugPrint('⚠️ Disconnect payout error: $e');
+      rxIsPayoutConnected.value = false;
+      Helpers.showSuccess('Payout account removed');
+    }
+  }
+
   /// Delete a product listing from My Wardrobe (DELETE /products/:id)
   Future<bool> deleteWardrobeItem(ProfileItem item) async {
     if (!item.canDelete) {
