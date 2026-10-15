@@ -45,6 +45,9 @@ class SecureCheckoutController extends GetxController {
   // Processing state
   final rxIsProcessing = false.obs;
 
+  bool isPurchaseCompleted = false;
+  String? activePendingOrderId;
+
   @override
   void onInit() {
     super.onInit();
@@ -233,6 +236,16 @@ class SecureCheckoutController extends GetxController {
     addressController.dispose();
     phoneController.dispose();
     termsRecognizer.dispose();
+
+    // If buyer leaves without completing purchase, immediately release the product reservation
+    if (!isPurchaseCompleted) {
+      final toCancel =
+          activePendingOrderId ?? (item.id.isNotEmpty ? item.id : null);
+      if (toCancel != null) {
+        PaymentService.to.cancelPendingOrder(toCancel);
+      }
+    }
+
     super.onClose();
   }
 
@@ -311,6 +324,10 @@ class SecureCheckoutController extends GetxController {
         selectedPaymentMethodId: selectedCardId,
       );
 
+      if (paymentResult.orderData?.id != null) {
+        activePendingOrderId = paymentResult.orderData!.id;
+      }
+
       if (!paymentResult.success) {
         if (!paymentResult.isCancelled) {
           lastErrorMessage =
@@ -321,6 +338,8 @@ class SecureCheckoutController extends GetxController {
         }
         return null;
       }
+
+      isPurchaseCompleted = true;
 
       // Create purchased item using real order data from backend API
       final realOrder = paymentResult.orderData;

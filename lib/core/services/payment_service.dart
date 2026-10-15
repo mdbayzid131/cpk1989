@@ -171,6 +171,21 @@ class PaymentService extends GetxService {
     }
   }
 
+  /// Cancel a pending checkout reservation on backend immediately
+  Future<void> cancelPendingOrder(String? orderIdOrProductId) async {
+    if (orderIdOrProductId == null || orderIdOrProductId.isEmpty) return;
+    try {
+      final apiClient = Get.find<ApiClient>();
+      await apiClient.postData(
+        '${ApiConstants.orders}/$orderIdOrProductId/cancel',
+        {},
+      );
+      debugPrint('✅ Pending checkout reservation released: $orderIdOrProductId');
+    } catch (e) {
+      debugPrint('⚠️ Cancellation error for $orderIdOrProductId: $e');
+    }
+  }
+
   /// Main entry: Get clientSecret from backend → Present Stripe PaymentSheet
   Future<PaymentResult> processPayment({
     required String paymentMethod, // 'apple_pay', 'google_pay', or 'card'
@@ -245,16 +260,25 @@ class PaymentService extends GetxService {
             '❌ StripeException during confirmPayment: ${e.error.localizedMessage}',
           );
           if (e.error.code == FailureCode.Canceled) {
-            return PaymentResult(success: false, isCancelled: true);
+            return PaymentResult(
+              success: false,
+              isCancelled: true,
+              orderData: checkoutData?.order,
+            );
           }
           return PaymentResult(
             success: false,
+            orderData: checkoutData?.order,
             errorMessage:
                 e.error.localizedMessage ?? 'Payment confirmation failed.',
           );
         } catch (e) {
           debugPrint('❌ Exception during confirmPayment: $e');
-          return PaymentResult(success: false, errorMessage: e.toString());
+          return PaymentResult(
+            success: false,
+            orderData: checkoutData?.order,
+            errorMessage: e.toString(),
+          );
         }
       }
 
@@ -265,7 +289,12 @@ class PaymentService extends GetxService {
         }
         return PaymentResult(success: true, orderData: checkoutData?.order);
       }
-      return sheetResult;
+      return PaymentResult(
+        success: false,
+        isCancelled: sheetResult.isCancelled,
+        errorMessage: sheetResult.errorMessage,
+        orderData: checkoutData?.order,
+      );
     } else {
       debugPrint('⚠️ Stripe SDK not initialized, but API succeeded.');
       await Future.delayed(const Duration(milliseconds: 1000));
