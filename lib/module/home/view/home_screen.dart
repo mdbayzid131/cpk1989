@@ -224,7 +224,9 @@ class HomeScreen extends GetView<HomeController> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              item.condition,
+                              item.condition.trim().toLowerCase().startsWith('condition:')
+                                  ? item.condition
+                                  : "Condition: ${item.condition}",
                               style: GoogleFonts.dmSans(
                                 fontSize: 12.sp,
                                 color: Colors.white,

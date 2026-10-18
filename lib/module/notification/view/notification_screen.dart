@@ -313,7 +313,19 @@ class NotificationScreen extends GetView<NotificationController> {
                     children: [
                       Expanded(
                         child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            if (!item.isRead) ...[
+                              Container(
+                                width: 7.r,
+                                height: 7.r,
+                                margin: EdgeInsets.only(right: 6.w, top: 5.h),
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFEA384C),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ],
                             Flexible(
                               child: Text(
                                 item.title,
@@ -325,17 +337,6 @@ class NotificationScreen extends GetView<NotificationController> {
                                 ),
                               ),
                             ),
-                            if (!item.isRead) ...[
-                              SizedBox(width: 6.w),
-                              Container(
-                                width: 7.r,
-                                height: 7.r,
-                                decoration: const BoxDecoration(
-                                  color: Color(0xFFEA384C),
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                            ],
                           ],
                         ),
                       ),

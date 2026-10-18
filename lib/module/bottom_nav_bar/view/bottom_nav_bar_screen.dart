@@ -172,7 +172,7 @@ class BottomNavBarScreen extends GetView<BottomNavBarController> {
                   color: const Color(0xFFEA384C),
                   borderRadius: BorderRadius.circular(10.0 * k),
                   border: Border.all(
-                    color: const Color(0xFF0F1012),
+                    color: const Color(0xFFEA384C),
                     width: 1.5 * k,
                   ),
                   boxShadow: [
