@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cpk1989/config/constants/storage_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +15,8 @@ import 'package:cpk1989/data/repositories/user_repository.dart';
 import 'package:cpk1989/data/repositories/payment_repository.dart';
 import 'package:cpk1989/data/repositories/product_repository.dart';
 import 'package:cpk1989/core/services/payment_service.dart';
+import 'package:cpk1989/core/services/auth_service.dart';
+import 'package:cpk1989/config/routes/app_pages.dart';
 
 import 'package:cpk1989/core/utils/status_helper.dart';
 
@@ -995,6 +998,39 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
       Helpers.hideLoadingDialog();
       Helpers.debug("Delete profile image error: $e");
       Helpers.showError("Something went wrong while removing photo.");
+    }
+  }
+
+  /// Delete user account permanently: DELETE /user/profile
+  Future<void> deleteAccount() async {
+    try {
+      Helpers.showLoadingDialog(message: "Deleting account...");
+
+      final response = await _userRepo.deleteAccount();
+      Helpers.hideLoadingDialog();
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        Helpers.showSuccess(
+          'Your account has been deleted successfully.',
+          title: 'Account Deleted',
+        );
+
+        // Clear local credentials & token without attempting unregister on deleted user
+        await Get.find<AuthService>().clearLocalSessionOnly();
+
+        // Ensure onboarding flag is preserved so app stays on login screen
+        await StorageService.setBool(StorageConstants.onboardingSeen, true);
+
+        // Navigate back to login screen
+        Get.offAllNamed(AppRoutes.login);
+      } else {
+        final msg = response.data?['message'] ?? 'Failed to delete account';
+        Helpers.showError(msg);
+      }
+    } catch (e) {
+      Helpers.hideLoadingDialog();
+      Helpers.debug("Delete account error: $e");
+      Helpers.showError("Something went wrong while deleting account.");
     }
   }
 }

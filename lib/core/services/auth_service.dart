@@ -75,6 +75,11 @@ class AuthService extends GetxService {
     }
   }
 
+  /// Clears session without calling backend (used after account deletion)
+  Future<void> clearLocalSessionOnly() async {
+    await _clearLocalAuth();
+  }
+
   /// ===================== OTP VERIFY =====================
   Future<Response> verifyOtp({
     required String email,

@@ -429,15 +429,24 @@ class ApiClient extends GetxService {
   static bool _isLoggingOut = false;
 
   /// Force logout when refresh fails with single-flight guard
-  void _forceLogout() {
+  void _forceLogout() async {
     if (_isLoggingOut) return;
     _isLoggingOut = true;
 
-    StorageService.clearAll();
+    final onboardingSeen =
+        await StorageService.getBool(StorageConstants.onboardingSeen) ?? true;
+    final quickSetup =
+        await StorageService.getBool(StorageConstants.quickSetupCompleted) ?? true;
+
+    await StorageService.clearAll();
+    await StorageService.setBool(StorageConstants.onboardingSeen, onboardingSeen);
+    await StorageService.setBool(StorageConstants.quickSetupCompleted, quickSetup);
+
     if (Get.key.currentContext != null || Get.context != null) {
       try {
-        Get.offAllNamed(AppRoutes.splash);
-        Helpers.showError('Session reset.', title: 'Session Expired');
+        Get.offAllNamed(AppRoutes.login);
+        Helpers.showError('Session expired. Please log in again.',
+            title: 'Session Expired');
       } catch (e) {
         Helpers.debug('Force logout navigation error: $e');
       }

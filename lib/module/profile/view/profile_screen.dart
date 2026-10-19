@@ -1119,6 +1119,43 @@ class ProfileScreen extends GetView<ProfileController> {
               ),
               onTap: () => _showLogoutDialog(context),
             ),
+            SizedBox(height: 20.h),
+
+            // No longer wish to use Closete? Delete Account (Matches Apple Store requirement & client feedback)
+            Center(
+              child: TextButton(
+                onPressed: () => _showDeleteAccountDialog(context),
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 8.h,
+                  ),
+                ),
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14.sp,
+                      color: AppTheme.gray,
+                    ),
+                    children: const [
+                      TextSpan(
+                        text: "No longer wish to use Closete? ",
+                      ),
+                      TextSpan(
+                        text: "Delete Account",
+                        style: TextStyle(
+                          color: Color(0xFFE2B744),
+                          fontWeight: FontWeight.w600,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.h),
           ],
         ),
       );
@@ -2753,6 +2790,151 @@ class ProfileScreen extends GetView<ProfileController> {
                       await Get.find<AuthService>().logout();
                       Get.back(); // close loading dialog
                       Get.offAllNamed(AppRoutes.login);
+                    },
+                  ),
+                  SizedBox(height: 8.h),
+
+                  // Cancel text button
+                  Center(
+                    child: TextButton(
+                      onPressed: () => Get.back(),
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 8.h,
+                          horizontal: 16.w,
+                        ),
+                      ),
+                      child: Text(
+                        "Cancel",
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white60,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
+  void _showDeleteAccountDialog(BuildContext context) {
+    Get.bottomSheet(
+      Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF111214),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.05),
+            width: 1.0,
+          ),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 8.h),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Drag handle
+                  Center(
+                    child: Container(
+                      width: 40.w,
+                      height: 4.h,
+                      decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(2.r),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Title: "Delete Account?" (Cormorant Garamond, bold, white, centered)
+                  Center(
+                    child: Text(
+                      "Delete Account?",
+                      style: GoogleFonts.cormorantGaramond(
+                        fontSize: 28.sp,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+
+                  // Subtitle (DM Sans)
+                  Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: Text(
+                        "Are you sure you want to permanently delete your Closeté account?",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 13.sp,
+                          color: Colors.white54,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // Information Warning Box
+                  Container(
+                    padding: EdgeInsets.all(14.r),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E2022).withValues(alpha: 0.6),
+                      borderRadius: BorderRadius.circular(14.r),
+                      border: Border.all(
+                        color: const Color(0xFFE2B744).withValues(alpha: 0.2),
+                        width: 1.0,
+                      ),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.warning_amber_rounded,
+                          color: const Color(0xFFE2B744),
+                          size: 20.r,
+                        ),
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          child: Text(
+                            "This action is permanent and cannot be undone. All your active wardrobe listings, purchase history, and personal details will be deleted immediately.",
+                            style: GoogleFonts.dmSans(
+                              fontSize: 12.sp,
+                              color: Colors.white70,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 20.h),
+
+                  // CTA Button (Delete Account)
+                  CustomGoldButton(
+                    text: "Delete Account",
+                    suffix: Icon(
+                      Icons.arrow_forward,
+                      size: 16.r,
+                      color: Colors.black,
+                    ),
+                    onTap: () async {
+                      Get.back();
+                      await controller.deleteAccount();
                     },
                   ),
                   SizedBox(height: 8.h),

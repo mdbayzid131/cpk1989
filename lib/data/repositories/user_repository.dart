@@ -33,6 +33,11 @@ class UserRepository {
     return await apiClient.deleteData(ApiConstants.profilePhoto);
   }
 
+  /// Delete user account permanently: DELETE /user/profile
+  Future<Response> deleteAccount() async {
+    return await apiClient.deleteData(ApiConstants.profile);
+  }
+
   /// Get user's purchased items / orders history with pagination
   Future<Response> getMyOrders({int page = 1, int limit = 10}) async {
     return await apiClient.getData(
