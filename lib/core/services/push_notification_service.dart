@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,6 +13,9 @@ import 'package:cpk1989/config/constants/storage_constants.dart';
 import 'package:cpk1989/core/services/storage_service.dart';
 import 'package:cpk1989/core/services/api_client.dart';
 import 'package:cpk1989/data/repositories/notification_repository.dart';
+import 'package:cpk1989/module/profile/controller/profile_controller.dart';
+import 'package:cpk1989/module/bottom_nav_bar/controller/bottom_nav_bar_controller.dart';
+import 'package:cpk1989/module/notification/controller/notification_controller.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -56,7 +61,9 @@ class PushNotificationService {
       );
 
       if (kDebugMode) {
-        print('User notification permission status: ${settings.authorizationStatus}');
+        print(
+          'User notification permission status: ${settings.authorizationStatus}',
+        );
       }
 
       // 3. Initialize Local Notifications for Foreground Channel
@@ -73,16 +80,28 @@ class PushNotificationService {
       // 6. Handle Messages in Foreground
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         _showForegroundNotification(message);
+        if (Get.isRegistered<BottomNavBarController>()) {
+          Get.find<BottomNavBarController>().fetchUnreadCount();
+        }
+        if (Get.isRegistered<NotificationController>()) {
+          Get.find<NotificationController>().fetchNotifications(isRefresh: true);
+        }
       });
 
       // 7. Handle Background/Terminated Notification Tap
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        if (Get.isRegistered<BottomNavBarController>()) {
+          Get.find<BottomNavBarController>().fetchUnreadCount();
+        }
         _handleNotificationClick(message.data);
       });
 
       // Check initial message if launched from terminated state
       RemoteMessage? initialMessage = await _fcm.getInitialMessage();
       if (initialMessage != null) {
+        if (Get.isRegistered<BottomNavBarController>()) {
+          Get.find<BottomNavBarController>().fetchUnreadCount();
+        }
         _handleNotificationClick(initialMessage.data);
       }
 
@@ -107,7 +126,16 @@ class PushNotificationService {
       initSettings,
       onDidReceiveNotificationResponse: (details) {
         if (details.payload != null && details.payload!.isNotEmpty) {
-          // Payload parsing if needed
+          try {
+            final dynamic decoded = jsonDecode(details.payload!);
+            if (decoded is Map<String, dynamic>) {
+              _handleNotificationClick(decoded);
+            }
+          } catch (e) {
+            if (kDebugMode) {
+              print('Error decoding local notification payload: $e');
+            }
+          }
         }
       },
     );
@@ -122,7 +150,8 @@ class PushNotificationService {
 
       await _localNotifications
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.createNotificationChannel(androidChannel);
     }
   }
@@ -161,10 +190,14 @@ class PushNotificationService {
   /// Send FCM token and device info to Backend
   Future<void> _sendTokenToBackend(String fcmToken) async {
     try {
-      final authToken = await StorageService.getString(StorageConstants.bearerToken);
+      final authToken = await StorageService.getString(
+        StorageConstants.bearerToken,
+      );
       if (authToken.isEmpty) {
         if (kDebugMode) {
-          print('ℹ️ PushNotificationService: User not logged in yet, skipping backend device registration.');
+          print(
+            'ℹ️ PushNotificationService: User not logged in yet, skipping backend device registration.',
+          );
         }
         return;
       }
@@ -179,8 +212,8 @@ class PushNotificationService {
       final platform = Platform.isAndroid
           ? 'android'
           : Platform.isIOS
-              ? 'ios'
-              : 'web';
+          ? 'ios'
+          : 'web';
 
       NotificationRepository repo;
       if (Get.isRegistered<NotificationRepository>()) {
@@ -199,7 +232,9 @@ class PushNotificationService {
       );
       if (kDebugMode) {
         print('FCM Token registration API status: ${response.statusCode}');
-        print('FCM Token successfully registered with backend server ($platform).');
+        print(
+          'FCM Token successfully registered with backend server ($platform).',
+        );
       }
     } catch (e) {
       if (kDebugMode) {
@@ -223,6 +258,9 @@ class PushNotificationService {
           repo = NotificationRepository(apiClient: apiClient);
         }
         await repo.unregisterDevice(registrationToken: token);
+      }
+      if (Get.isRegistered<BottomNavBarController>()) {
+        Get.find<BottomNavBarController>().clearUnreadCount();
       }
     } catch (e) {
       if (kDebugMode) {
@@ -256,40 +294,94 @@ class PushNotificationService {
             presentSound: true,
           ),
         ),
+        payload: jsonEncode(message.data),
       );
     }
   }
 
-  /// Handle Notification Click Navigation based on `data.screen`
+  /// Handle Notification Click Navigation based on `data`
   void _handleNotificationClick(Map<String, dynamic> data) {
     if (data.isEmpty) return;
 
-    final String? screen = data['screen'];
-    final String? orderId = data['orderId'];
-    final String? productId = data['productId'];
+    final String? screen = data['screen']?.toString();
+    final String? role = data['role']?.toString();
+    final String? orderId = data['orderId']?.toString();
+    final String? productId = data['productId']?.toString();
+    final String? sellerId = data['sellerId']?.toString();
 
-    switch (screen) {
-      case 'order_details':
-        if (orderId != null && orderId.isNotEmpty) {
-          Get.toNamed(AppRoutes.myPurchaseDetails, arguments: {'orderId': orderId});
-        } else {
-          Get.toNamed(AppRoutes.bottomNavBar);
-        }
-        break;
-      case 'product_details':
-        if (productId != null && productId.isNotEmpty) {
-          Get.toNamed(AppRoutes.itemDetail, arguments: productId);
-        }
-        break;
-      case 'wishlist':
+    // 1. Seller Item Detail / My Listings (Seller notifications)
+    if (screen == 'seller_item_detail' ||
+        screen == 'my_listings' ||
+        role == 'seller') {
+      if (productId != null && productId.isNotEmpty) {
+        Get.toNamed(AppRoutes.myItemDetail, arguments: productId);
+        return;
+      }
+    }
+
+    // 2. Buyer Order Details / Purchases (Buyer notifications)
+    if (screen == 'order_details' ||
+        screen == 'my_purchase_details' ||
+        role == 'buyer') {
+      if (orderId != null && orderId.isNotEmpty) {
+        Get.toNamed(
+          AppRoutes.myPurchaseDetails,
+          arguments: {'orderId': orderId},
+        );
+      } else {
         Get.toNamed(AppRoutes.bottomNavBar);
-        break;
-      case 'seller_onboarding':
+      }
+      return;
+    }
+
+    // 3. Public Product Details (e.g. wishlist, feed)
+    if (screen == 'product_details' || screen == 'item_detail') {
+      if (productId != null && productId.isNotEmpty) {
+        Get.toNamed(AppRoutes.itemDetail, arguments: productId);
+      } else {
+        Get.toNamed(AppRoutes.bottomNavBar);
+      }
+      return;
+    }
+
+    // 4. Seller Onboarding / Payout Setup -> My Profile > Personal Details (Payout section)
+    if (screen == 'seller_onboarding') {
+      if (Get.isRegistered<BottomNavBarController>()) {
+        Get.find<BottomNavBarController>().changeIndex(3);
+        if (Get.isRegistered<ProfileController>()) {
+          Get.find<ProfileController>().changeTab(2);
+        }
+      } else {
+        Get.offAllNamed(AppRoutes.bottomNavBar);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (Get.isRegistered<BottomNavBarController>()) {
+            Get.find<BottomNavBarController>().changeIndex(3);
+          }
+          if (Get.isRegistered<ProfileController>()) {
+            Get.find<ProfileController>().changeTab(2);
+          }
+        });
+      }
+      return;
+    }
+
+    // 5. Seller Profile (Public Closet)
+    if (screen == 'seller_profile') {
+      if (sellerId != null && sellerId.isNotEmpty) {
+        Get.toNamed(AppRoutes.sellerProfile, arguments: {'sellerId': sellerId});
+      } else {
         Get.toNamed(AppRoutes.sellerProfile);
-        break;
-      default:
-        Get.toNamed(AppRoutes.notification);
-        break;
+      }
+      return;
+    }
+
+    // Fallback based on available IDs
+    if (productId != null && productId.isNotEmpty) {
+      Get.toNamed(AppRoutes.itemDetail, arguments: productId);
+    } else if (orderId != null && orderId.isNotEmpty) {
+      Get.toNamed(AppRoutes.myPurchaseDetails, arguments: {'orderId': orderId});
+    } else {
+      Get.toNamed(AppRoutes.notification);
     }
   }
 }

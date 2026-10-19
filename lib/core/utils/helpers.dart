@@ -64,13 +64,19 @@ class Helpers {
       final BuildContext? context = Get.context;
       if (context == null) return;
 
+      final lower = fullUrl.toLowerCase();
+      final bool isPdf = lower.contains('.pdf');
+
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
         builder: (ctx) {
           return Container(
-            height: MediaQuery.of(ctx).size.height * 0.88,
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(ctx).size.height * 0.88,
+            ),
+            height: isPdf ? MediaQuery.of(ctx).size.height * 0.88 : null,
             decoration: BoxDecoration(
               color: const Color(0xFF1B1C1E),
               borderRadius: BorderRadius.only(
@@ -83,6 +89,7 @@ class Helpers {
               ),
             ),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 // Modal Header
                 Padding(
@@ -131,24 +138,29 @@ class Helpers {
                 ),
 
                 // Document Content Area
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(24.r),
-                        bottomRight: Radius.circular(24.r),
-                      ),
-                    ),
+                if (isPdf)
+                  Expanded(
                     child: ClipRRect(
                       borderRadius: BorderRadius.only(
                         bottomLeft: Radius.circular(24.r),
                         bottomRight: Radius.circular(24.r),
                       ),
-                      child: _buildDocumentContent(fullUrl),
+                      child: InAppPdfViewerWidget(pdfUrl: fullUrl),
+                    ),
+                  )
+                else
+                  Flexible(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(24.r),
+                        bottomRight: Radius.circular(24.r),
+                      ),
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        child: _buildDocumentContent(fullUrl),
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
           );
@@ -162,11 +174,6 @@ class Helpers {
   static Widget _buildDocumentContent(String fullUrl) {
     final lower = fullUrl.toLowerCase();
     final bool isPdf = lower.contains('.pdf');
-    final bool isImage =
-        lower.contains('.png') ||
-        lower.contains('.jpg') ||
-        lower.contains('.jpeg') ||
-        lower.contains('.webp');
 
     if (isPdf) {
       return InAppPdfViewerWidget(pdfUrl: fullUrl);
@@ -174,51 +181,43 @@ class Helpers {
 
     if (fullUrl.startsWith('/') && File(fullUrl).existsSync()) {
       return InteractiveViewer(
-        minScale: 0.5,
+        minScale: 1.0,
         maxScale: 4.0,
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: Image.file(
-            File(fullUrl),
-            fit: BoxFit.fitWidth,
-            width: double.infinity,
-            errorBuilder: (_, _, _) => InAppPdfViewerWidget(pdfUrl: fullUrl),
-          ),
+        child: Image.file(
+          File(fullUrl),
+          fit: BoxFit.fitWidth,
+          width: double.infinity,
+          errorBuilder: (_, _, _) => InAppPdfViewerWidget(pdfUrl: fullUrl),
         ),
       );
     }
 
-    if (isImage ||
-        (!isPdf &&
-            (fullUrl.startsWith('http') || fullUrl.startsWith('assets/')))) {
-      return InteractiveViewer(
-        minScale: 0.5,
-        maxScale: 4.0,
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: fullUrl.startsWith('assets/')
-              ? Image.asset(
-                  fullUrl,
-                  fit: BoxFit.fitWidth,
-                  width: double.infinity,
-                )
-              : Image.network(
-                  fullUrl,
-                  fit: BoxFit.fitWidth,
-                  width: double.infinity,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return const Center(child: CustomGoldLoader(size: 40));
-                  },
-                  errorBuilder: (context, error, stackTrace) {
-                    return InAppPdfViewerWidget(pdfUrl: fullUrl);
-                  },
-                ),
-        ),
-      );
-    }
-
-    return InAppPdfViewerWidget(pdfUrl: fullUrl);
+    return InteractiveViewer(
+      minScale: 1.0,
+      maxScale: 4.0,
+      child: fullUrl.startsWith('assets/')
+          ? Image.asset(
+              fullUrl,
+              fit: BoxFit.fitWidth,
+              width: double.infinity,
+            )
+          : Image.network(
+              fullUrl,
+              fit: BoxFit.fitWidth,
+              width: double.infinity,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Container(
+                  height: 200.h,
+                  alignment: Alignment.center,
+                  child: const CustomGoldLoader(size: 40),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) {
+                return InAppPdfViewerWidget(pdfUrl: fullUrl);
+              },
+            ),
+    );
   }
 
   // ──────────────────── TIME FORMATTING ────────────────────
@@ -372,14 +371,14 @@ class Helpers {
               style: TextStyle(
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w400,
-                color: Colors.white.withValues(alpha: 0.9),
+                color: Colors.white,
                 height: 1.25,
               ),
             ),
           ],
         ),
         snackPosition: SnackPosition.TOP,
-        backgroundColor: (config['bg'] as Color).withValues(alpha: 0.92),
+        backgroundColor: (config['bg'] as Color).withValues(alpha: 0.95),
         colorText: Colors.white,
         duration: duration,
         isDismissible: true,
@@ -470,8 +469,8 @@ class Helpers {
     switch (type) {
       case SnackBarType.success:
         return {
-          'bg': const Color(0xFF161719),
-          'iconBg': const Color(0xFF161719),
+          'bg': const Color(0xFF28A745),
+          'iconBg': const Color(0xFF218838),
           'icon': Icons.check_rounded,
           'defaultTitle': 'Success',
         };
@@ -507,18 +506,45 @@ class Helpers {
   }
 
   /// Shortcut for Success
-  static void showSuccess(String message, {String? title}) {
-    showCustomSnackBar(message, title: title, type: SnackBarType.success);
+  static void showSuccess(
+    String message, {
+    String? title,
+    Duration duration = const Duration(seconds: 3),
+  }) {
+    showCustomSnackBar(
+      message,
+      title: title,
+      type: SnackBarType.success,
+      duration: duration,
+    );
   }
 
   /// Shortcut for Error
-  static void showError(String message, {String? title}) {
-    showCustomSnackBar(message, title: title, type: SnackBarType.error);
+  static void showError(
+    String message, {
+    String? title,
+    Duration duration = const Duration(seconds: 3),
+  }) {
+    showCustomSnackBar(
+      message,
+      title: title,
+      type: SnackBarType.error,
+      duration: duration,
+    );
   }
 
   /// Shortcut for Warning
-  static void showWarning(String message, {String? title}) {
-    showCustomSnackBar(message, title: title, type: SnackBarType.warning);
+  static void showWarning(
+    String message, {
+    String? title,
+    Duration duration = const Duration(seconds: 3),
+  }) {
+    showCustomSnackBar(
+      message,
+      title: title,
+      type: SnackBarType.warning,
+      duration: duration,
+    );
   }
 
   // ──────────────────── KEYBOARD ────────────────────
@@ -707,8 +733,8 @@ class _InAppPdfViewerWidgetState extends State<InAppPdfViewerWidget> {
           pageFling: false,
           pageSnap: false,
           fitPolicy: FitPolicy.WIDTH,
-          fitEachPage: false,
-          backgroundColor: Colors.white,
+          fitEachPage: true,
+          backgroundColor: const Color(0xFF1B1C1E),
           onRender: (pages) {
             if (mounted) {
               setState(() {

@@ -10,24 +10,36 @@ import 'package:cpk1989/module/item_detail/controller/item_detail_controller.dar
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/core/widgets/processing_overlay.dart';
 import 'package:cpk1989/core/widgets/custom_page_indicator.dart';
+import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/module/home/controller/home_controller.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
+import 'package:cpk1989/core/widgets/custom_initials_avatar.dart';
+import 'package:cpk1989/core/widgets/dirham_symbol.dart';
 
 class ItemDetailScreen extends GetView<ItemDetailController> {
   const ItemDetailScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final item = controller.item;
-
     return Scaffold(
       backgroundColor: const Color(0xFF0F1012),
-      body: SafeArea(
-        top: false,
-        child: Stack(
-          children: [
-            // 1. Scrollable Content + Bottom Action Bar
-            Column(
+      body: Obx(() {
+        final item = controller.item;
+        final isLoading = controller.rxIsLoading.value;
+        if (isLoading && controller.rxProductModel.value == null) {
+          return Center(
+            child: CustomGoldLoader(
+              size: 44.r,
+              strokeWidth: 3.5.r,
+            ),
+          );
+        }
+        return SafeArea(
+          top: false,
+          child: Stack(
+            children: [
+              // 1. Scrollable Content + Bottom Action Bar
+              Column(
               children: [
                 Expanded(
                   child: SingleChildScrollView(
@@ -107,8 +119,11 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                     ),
                                   ],
                                 ),
-                                child: Text(
-                                  item.price,
+                                child: DirhamPrice(
+                                  price: item.price,
+                                  symbolSize: 13.5.sp,
+                                  spacing: 3.5,
+                                  color: Colors.black,
                                   style: GoogleFonts.dmSans(
                                     fontSize: 16.sp,
                                     fontWeight: FontWeight.w800,
@@ -147,28 +162,10 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                     },
                                     child: Row(
                                       children: [
-                                        CircleAvatar(
-                                          radius: 20.r,
-                                          backgroundColor: Colors.grey.shade900,
-                                          child: ClipOval(
-                                            child: Image.network(
-                                              item.sellerProfileImage.isNotEmpty
-                                                  ? item.sellerProfileImage
-                                                  : "https://i.ibb.co/z5YHLV9/profile.png",
-                                              width: 40.r,
-                                              height: 40.r,
-                                              fit: BoxFit.cover,
-                                              errorBuilder:
-                                                  (
-                                                    context,
-                                                    error,
-                                                    stackTrace,
-                                                  ) => const Icon(
-                                                    Icons.person,
-                                                    color: Colors.white70,
-                                                  ),
-                                            ),
-                                          ),
+                                        CustomInitialsAvatar(
+                                          size: 40.r,
+                                          imageUrl: item.sellerProfileImage,
+                                          name: item.userName,
                                         ),
                                         SizedBox(width: 10.w),
                                         Text(
@@ -427,11 +424,26 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                 ],
               ),
             ),
+
+            // 3. Luxurious golden loading overlay when fetching live data
+            if (isLoading)
+              Positioned.fill(
+                child: Container(
+                  color: const Color(0xFF0F1012).withValues(alpha: 0.75),
+                  child: Center(
+                    child: CustomGoldLoader(
+                      size: 40.r,
+                      strokeWidth: 3.5.r,
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
-      ),
-    );
-  }
+      );
+    }),
+  );
+}
 
   Widget _buildSecurityBadge({required String svgPath, required String label}) {
     return Column(

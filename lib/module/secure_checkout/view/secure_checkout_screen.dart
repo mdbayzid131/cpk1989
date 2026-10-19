@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'dart:ui' show ImageFilter;
+import 'package:flutter/foundation.dart';
 import 'package:cpk1989/config/themes/app_theme.dart';
 import 'package:cpk1989/core/services/payment_service.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +21,7 @@ import 'package:cpk1989/module/home/controller/home_controller.dart';
 import 'package:cpk1989/config/constants/api_constants.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/core/utils/helpers.dart';
-import 'package:cpk1989/core/widgets/payment_error_bottom_sheet.dart';
+import 'package:cpk1989/core/widgets/dirham_symbol.dart';
 
 class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
   const SecureCheckoutScreen({super.key});
@@ -100,7 +102,7 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                     Obx(
                       () => _buildTextInputField(
                         controller: controller.locationController,
-                        hintText: "Location (e.g. Dubai)",
+                        hintText: "Full address",
                         svgPath: "assets/icons/location.svg",
                         errorText: controller.rxLocationError.value,
                       ),
@@ -162,30 +164,34 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                     ),
                     SizedBox(height: 16.h),
 
-                    // Payment options
+                    // Payment options (Apple Pay on iOS only; Google Pay on Android only)
                     Obx(
                       () => Column(
                         children: [
-                          _buildPaymentOptionTile(
-                            context: context,
-                            id: "apple_pay",
-                            label: "Apple Pay",
-                            logoWidget: _buildSvgLogo(
-                              "assets/icons/apple pay.svg",
-                              bgColor: Colors.white,
+                          if (Platform.isIOS || (!Platform.isAndroid && kDebugMode)) ...[
+                            _buildPaymentOptionTile(
+                              context: context,
+                              id: "apple_pay",
+                              label: "Apple Pay",
+                              logoWidget: _buildSvgLogo(
+                                "assets/icons/apple pay.svg",
+                                bgColor: Colors.white,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 12.h),
-                          _buildPaymentOptionTile(
-                            context: context,
-                            id: "google_pay",
-                            label: "Google Pay",
-                            logoWidget: _buildSvgLogo(
-                              "assets/icons/google pay.svg",
-                              bgColor: const Color(0xFFFFC226),
+                            SizedBox(height: 12.h),
+                          ],
+                          if (Platform.isAndroid || (!Platform.isIOS && kDebugMode)) ...[
+                            _buildPaymentOptionTile(
+                              context: context,
+                              id: "google_pay",
+                              label: "Google Pay",
+                              logoWidget: _buildSvgLogo(
+                                "assets/icons/google pay.svg",
+                                bgColor: const Color(0xFFFFC226),
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 12.h),
+                            SizedBox(height: 12.h),
+                          ],
                           _buildPaymentOptionTile(
                             context: context,
                             id: "card",
@@ -273,10 +279,10 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                     color: Colors.white.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8.r),
                   ),
-                  child: Text(
-                    item.price.startsWith('AED')
-                        ? item.price
-                        : "AED ${item.price}",
+                  child: DirhamPrice(
+                    price: item.price,
+                    symbolSize: 11.5.sp,
+                    spacing: 3.0,
                     style: GoogleFonts.dmSans(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w500,
@@ -1049,73 +1055,48 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       useRootNavigator: true,
-      builder: (sheetContext) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
-          ),
-          child: CustomAddCardBottomSheet(
-            onAdd:
-                ({
-                  required String name,
-                  required String cardNumber,
-                  required String expiry,
-                  required String cvv,
-                }) async {
-                  FocusScope.of(sheetContext).unfocus();
-                  FocusManager.instance.primaryFocus?.unfocus();
-                  Helpers.showLoadingDialog();
+      builder: (sheetContext) => CustomAddCardBottomSheet(
+        onAdd:
+            ({
+              required String name,
+              required String cardNumber,
+              required String expiry,
+              required String cvv,
+            }) async {
+              FocusScope.of(sheetContext).unfocus();
+              FocusManager.instance.primaryFocus?.unfocus();
+              Helpers.showLoadingDialog();
 
-                  final result = await PaymentService.to.addCardWithDetails(
-                    name: name,
-                    cardNumber: cardNumber,
-                    expiry: expiry,
-                    cvv: cvv,
-                  );
+              final result = await PaymentService.to.addCardWithDetails(
+                name: name,
+                cardNumber: cardNumber,
+                expiry: expiry,
+                cvv: cvv,
+              );
 
-                  if (Get.isDialogOpen ?? false) {
-                    Get.back();
+              if (Get.isDialogOpen ?? false) {
+                Get.back();
+              }
+
+              if (result.success) {
+                if (sheetContext.mounted && Navigator.canPop(sheetContext)) {
+                  Navigator.pop(sheetContext);
+                }
+                FocusScope.of(context).unfocus();
+                FocusManager.instance.primaryFocus?.unfocus();
+                Helpers.showSuccess('Card saved successfully!');
+                try {
+                  await controller.profileController.fetchSavedCards();
+                  if (controller.profileController.rxSavedCards.isNotEmpty) {
+                    controller.rxSelectedCardId.value =
+                        controller.profileController.rxSavedCards.last.id;
                   }
-
-                  if (result.success) {
-                    if (sheetContext.mounted &&
-                        Navigator.canPop(sheetContext)) {
-                      Navigator.pop(sheetContext);
-                    }
-                    FocusScope.of(context).unfocus();
-                    FocusManager.instance.primaryFocus?.unfocus();
-                    Get.snackbar(
-                      'Success',
-                      'Card saved successfully!',
-                      snackPosition: SnackPosition.TOP,
-                      backgroundColor: const Color(0xFF161719),
-                      colorText: Colors.white,
-                      duration: const Duration(seconds: 2),
-                    );
-                    try {
-                      await controller.profileController.fetchSavedCards();
-                      if (controller
-                          .profileController
-                          .rxSavedCards
-                          .isNotEmpty) {
-                        controller.rxSelectedCardId.value =
-                            controller.profileController.rxSavedCards.last.id;
-                      }
-                    } catch (_) {}
-                  } else if (!result.isCancelled &&
-                      result.errorMessage != null) {
-                    Get.snackbar(
-                      'Card Error',
-                      result.errorMessage!,
-                      snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor: Colors.redAccent,
-                      colorText: Colors.white,
-                    );
-                  }
-                },
-          ),
-        );
-      },
+                } catch (_) {}
+              } else if (!result.isCancelled && result.errorMessage != null) {
+                Helpers.showError(result.errorMessage!, title: 'Card Error');
+              }
+            },
+      ),
     ).then((_) {
       FocusScope.of(context).unfocus();
       FocusManager.instance.primaryFocus?.unfocus();

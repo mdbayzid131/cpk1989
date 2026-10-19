@@ -9,6 +9,9 @@ import 'package:cpk1989/module/notification/controller/notification_controller.d
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/core/widgets/custom_empty_state.dart';
+import 'package:cpk1989/module/bottom_nav_bar/controller/bottom_nav_bar_controller.dart';
+import 'package:cpk1989/module/profile/controller/profile_controller.dart';
+import 'package:cpk1989/core/widgets/dirham_symbol.dart';
 
 class NotificationScreen extends GetView<NotificationController> {
   const NotificationScreen({super.key});
@@ -187,21 +190,88 @@ class NotificationScreen extends GetView<NotificationController> {
   Widget _buildNotificationCard(NotificationItem item) {
     return GestureDetector(
       onTap: () {
+        if (!item.isRead) {
+          controller.markAsRead(item.id);
+        }
+
         final data = item.data;
-        if (data != null) {
-          final orderId = data['orderId']?.toString();
-          final productId = data['productId']?.toString();
+        final String? screen = data?['screen']?.toString();
+        final String? role = data?['role']?.toString();
+        final String? orderId = data?['orderId']?.toString();
+        final String? productId = data?['productId']?.toString();
+        final String? sellerId = data?['sellerId']?.toString();
+
+        // 1. Seller Notifications -> Seller Item Detail / My Listings
+        final bool isSellerNotification =
+            screen == 'seller_item_detail' ||
+            screen == 'my_listings' ||
+            role == 'seller' ||
+            item.type == NotificationType.itemReserved ||
+            item.type == NotificationType.itemListed ||
+            item.type == NotificationType.payoutPaid ||
+            item.type == NotificationType.payoutProcessing ||
+            item.type == NotificationType.collectionMissed;
+
+        if (isSellerNotification) {
+          if (productId != null && productId.isNotEmpty) {
+            Get.toNamed(AppRoutes.myItemDetail, arguments: productId);
+            return;
+          }
+        }
+
+        // 2. Buyer Notifications -> My Purchase Details
+        final bool isBuyerNotification =
+            screen == 'order_details' ||
+            screen == 'my_purchase_details' ||
+            role == 'buyer' ||
+            item.type == NotificationType.orderSecured;
+
+        if (isBuyerNotification) {
           if (orderId != null && orderId.isNotEmpty) {
             Get.toNamed(
               AppRoutes.myPurchaseDetails,
               arguments: {'orderId': orderId},
             );
-          } else if (productId != null && productId.isNotEmpty) {
-            Get.toNamed(
-              AppRoutes.itemDetail,
-              arguments: {'productId': productId},
-            );
+            return;
           }
+        }
+
+        // 3. Public Product / Wishlist Details
+        if (screen == 'product_details' || screen == 'item_detail') {
+          if (productId != null && productId.isNotEmpty) {
+            Get.toNamed(AppRoutes.itemDetail, arguments: productId);
+            return;
+          }
+        }
+
+        // 4. Seller Onboarding / Payout Setup -> My Profile > Personal Details (Payout section)
+        if (screen == 'seller_onboarding' ||
+            item.type == NotificationType.sellerOnboardingRequired) {
+          _navigateToProfilePayout();
+          return;
+        }
+
+        // 5. Seller Profile (Public Closet)
+        if (screen == 'seller_profile') {
+          if (sellerId != null && sellerId.isNotEmpty) {
+            Get.toNamed(
+              AppRoutes.sellerProfile,
+              arguments: {'sellerId': sellerId},
+            );
+          } else {
+            Get.toNamed(AppRoutes.sellerProfile);
+          }
+          return;
+        }
+
+        // Fallbacks
+        if (productId != null && productId.isNotEmpty) {
+          Get.toNamed(AppRoutes.itemDetail, arguments: productId);
+        } else if (orderId != null && orderId.isNotEmpty) {
+          Get.toNamed(
+            AppRoutes.myPurchaseDetails,
+            arguments: {'orderId': orderId},
+          );
         }
       },
       behavior: HitTestBehavior.opaque,
@@ -242,14 +312,32 @@ class NotificationScreen extends GetView<NotificationController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-                        child: Text(
-                          item.title,
-                          style: GoogleFonts.dmSans(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
-                            height: 1.2,
-                          ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (!item.isRead) ...[
+                              Container(
+                                width: 7.r,
+                                height: 7.r,
+                                margin: EdgeInsets.only(right: 6.w, top: 5.h),
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFEA384C),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ],
+                            Flexible(
+                              child: Text(
+                                item.title,
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 15.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  height: 1.2,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       SizedBox(width: 8.w),
@@ -275,6 +363,25 @@ class NotificationScreen extends GetView<NotificationController> {
         ),
       ),
     );
+  }
+
+  void _navigateToProfilePayout() {
+    if (Get.isRegistered<BottomNavBarController>()) {
+      Get.find<BottomNavBarController>().changeIndex(3);
+      if (Get.isRegistered<ProfileController>()) {
+        Get.find<ProfileController>().changeTab(2);
+      }
+    } else {
+      Get.offAllNamed(AppRoutes.bottomNavBar);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (Get.isRegistered<BottomNavBarController>()) {
+          Get.find<BottomNavBarController>().changeIndex(3);
+        }
+        if (Get.isRegistered<ProfileController>()) {
+          Get.find<ProfileController>().changeTab(2);
+        }
+      });
+    }
   }
 
   Widget _buildNotificationSvgIcon(NotificationType type) {
@@ -379,7 +486,7 @@ class NotificationScreen extends GetView<NotificationController> {
 
   Widget _buildSubtitleText(String subtitle) {
     // Parse words like "AED 3,200" or "AED 3,200." to bold them matching mockup
-    final List<TextSpan> spans = [];
+    final List<InlineSpan> spans = [];
     final RegExp regExp = RegExp(r'(AED\s?[\d,]+(\.)?)', caseSensitive: false);
 
     int start = 0;
@@ -397,9 +504,18 @@ class NotificationScreen extends GetView<NotificationController> {
           ),
         );
       }
+      final matchedText = match.group(0) ?? '';
+      final numPart = matchedText.replaceAll(RegExp(r'AED\s?', caseSensitive: false), '');
+      spans.add(
+        DirhamSymbol.span(
+          size: 11.sp,
+          color: const Color(0xFFEBEBF5),
+          padding: EdgeInsets.only(right: 2.w),
+        ),
+      );
       spans.add(
         TextSpan(
-          text: match.group(0),
+          text: numPart,
           style: GoogleFonts.dmSans(
             fontSize: 13.sp,
             fontWeight: FontWeight.w700,

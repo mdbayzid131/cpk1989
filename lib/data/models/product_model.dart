@@ -1,4 +1,5 @@
 import 'package:cpk1989/config/constants/api_constants.dart';
+import 'package:cpk1989/data/models/order_model.dart';
 
 class ProductModel {
   final String? id;
@@ -11,7 +12,16 @@ class ProductModel {
   final double? price;
   final String? condition;
   final String? status;
+  final String? rejectionReason;
+  final double? commissionAmount;
+  final double? sellerEarnings;
+  final String? packaging;
+  final String? collectionAddress;
+  final String? sellerPhone;
   final SellerModel? seller;
+  final OrderBuyerModel? buyer;
+  final OrderModel? order;
+  final String? orderStatus;
   final bool? originalPackagingAvailable;
   final int? wishlistCount;
   final DateTime? createdAt;
@@ -28,7 +38,16 @@ class ProductModel {
     this.price,
     this.condition,
     this.status,
+    this.rejectionReason,
+    this.commissionAmount,
+    this.sellerEarnings,
+    this.packaging,
+    this.collectionAddress,
+    this.sellerPhone,
     this.seller,
+    this.buyer,
+    this.order,
+    this.orderStatus,
     this.originalPackagingAvailable,
     this.wishlistCount,
     this.createdAt,
@@ -36,6 +55,22 @@ class ProductModel {
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
+    OrderModel? parsedOrder;
+    if (json['order'] is Map) {
+      parsedOrder = OrderModel.fromJson(
+        Map<String, dynamic>.from(json['order']),
+      );
+    }
+
+    OrderBuyerModel? parsedBuyer;
+    if (json['buyer'] is Map) {
+      parsedBuyer = OrderBuyerModel.fromJson(
+        Map<String, dynamic>.from(json['buyer']),
+      );
+    } else if (parsedOrder?.buyerModel != null) {
+      parsedBuyer = parsedOrder!.buyerModel;
+    }
+
     return ProductModel(
       id: json['id'] ?? json['_id'],
       images: json['images'] != null ? List<String>.from(json['images']) : [],
@@ -51,9 +86,22 @@ class ProductModel {
           : null,
       condition: json['condition'],
       status: json['status'],
+      rejectionReason: json['rejectionReason'],
+      commissionAmount: json['commissionAmount'] != null
+          ? double.tryParse(json['commissionAmount'].toString())
+          : null,
+      sellerEarnings: json['sellerEarnings'] != null
+          ? double.tryParse(json['sellerEarnings'].toString())
+          : null,
+      packaging: json['packaging'],
+      collectionAddress: json['collectionAddress'],
+      sellerPhone: json['sellerPhone'],
       seller: json['seller'] != null
           ? SellerModel.fromJson(json['seller'])
           : null,
+      buyer: parsedBuyer,
+      order: parsedOrder,
+      orderStatus: json['orderStatus'] ?? parsedOrder?.status,
       originalPackagingAvailable: json['originalPackagingAvailable'],
       wishlistCount: json['wishlistCount'] != null
           ? int.tryParse(json['wishlistCount'].toString())
@@ -86,6 +134,33 @@ class ProductModel {
       'updatedAt': updatedAt?.toIso8601String(),
     };
   }
+
+  String get displayFirstImage {
+    if (images != null && images!.isNotEmpty) {
+      final raw = images!.first;
+      if (raw.startsWith('http://') || raw.startsWith('https://')) return raw;
+      final serverBase = ApiConstants.baseUrl.replaceAll(
+        RegExp(r'/api/v1/?$'),
+        '',
+      );
+      return raw.startsWith('/') ? '$serverBase$raw' : '$serverBase/$raw';
+    }
+    return '';
+  }
+
+  String? get sellerId => seller?.id;
+
+  List<String> get displayImages {
+    if (images == null) return [];
+    final serverBase = ApiConstants.baseUrl.replaceAll(
+      RegExp(r'/api/v1/?$'),
+      '',
+    );
+    return images!.map((raw) {
+      if (raw.startsWith('http://') || raw.startsWith('https://')) return raw;
+      return raw.startsWith('/') ? '$serverBase$raw' : '$serverBase/$raw';
+    }).toList();
+  }
 }
 
 class SellerModel {
@@ -93,17 +168,23 @@ class SellerModel {
   final String? name;
   final String? profileImage;
   final String? contact;
+  final String? phone;
   final String? location;
   final String? country;
+  final bool? isVerified;
 
   SellerModel({
     this.id,
     this.name,
     this.profileImage,
     this.contact,
+    this.phone,
     this.location,
     this.country,
+    this.isVerified,
   });
+
+  String? get effectivePhone => phone ?? contact;
 
   String get displayProfileImage {
     final raw = profileImage ?? '';
@@ -124,6 +205,7 @@ class SellerModel {
     }
     if (json is Map) {
       final map = Map<String, dynamic>.from(json);
+      final ph = map['phone'] ?? map['contact'];
       return SellerModel(
         id: map['id'] ?? map['_id'],
         name: map['name'],
@@ -132,9 +214,13 @@ class SellerModel {
             map['image'] ??
             map['avatar'] ??
             map['profilePicture'],
-        contact: map['contact'],
+        contact: ph,
+        phone: ph,
         location: map['location'],
-        country: map['country'],
+        country: (map['country'] != null && map['country'].toString().trim().isNotEmpty)
+            ? map['country'].toString().trim()
+            : 'UAE',
+        isVerified: map['isVerified'],
       );
     }
     return SellerModel();
@@ -145,9 +231,11 @@ class SellerModel {
       'id': id,
       'name': name,
       'profileImage': profileImage,
-      'contact': contact,
+      'contact': contact ?? phone,
+      'phone': phone ?? contact,
       'location': location,
-      'country': country,
+      'country': country ?? 'UAE',
+      'isVerified': isVerified,
     };
   }
 }

@@ -32,17 +32,31 @@ class AuthService extends GetxService {
     return this;
   }
 
-  /// ===================== LOGIN / SIGNUP (OTP REQUEST) =====================
+  /// ===================== SIGNUP (OTP REQUEST) =====================
+  Future<Response> signUp({
+    required String email,
+    required String firstName,
+    required String lastName,
+  }) async {
+    try {
+      final response = await _authRepo.signUp(
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
+      );
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// ===================== LOGIN (OTP REQUEST) =====================
   Future<Response> login({
     required String email,
-    String? firstName,
-    String? lastName,
   }) async {
     try {
       final response = await _authRepo.login(
         email: email,
-        firstName: firstName,
-        lastName: lastName,
       );
       return response;
     } catch (e) {
@@ -59,6 +73,11 @@ class AuthService extends GetxService {
       await _clearLocalAuth();
       rethrow;
     }
+  }
+
+  /// Clears session without calling backend (used after account deletion)
+  Future<void> clearLocalSessionOnly() async {
+    await _clearLocalAuth();
   }
 
   /// ===================== OTP VERIFY =====================

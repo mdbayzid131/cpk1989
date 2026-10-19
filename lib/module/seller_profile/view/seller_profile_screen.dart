@@ -9,6 +9,11 @@ import 'package:cpk1989/module/home/controller/home_controller.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
+import 'package:cpk1989/core/utils/status_helper.dart';
+import 'package:cpk1989/core/widgets/custom_empty_state.dart';
+import 'package:cpk1989/core/widgets/custom_initials_avatar.dart';
+import 'package:cpk1989/module/bottom_nav_bar/controller/bottom_nav_bar_controller.dart';
+import 'package:cpk1989/core/widgets/dirham_symbol.dart';
 
 class SellerProfileScreen extends GetView<SellerProfileController> {
   const SellerProfileScreen({super.key});
@@ -80,17 +85,12 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Circular avatar (Without edit button)
-          // Circular avatar (Without edit button)
+          // Circular avatar with initials fallback matching Client Design
           Obx(
-            () => CircleAvatar(
-              radius: 46.r,
-              backgroundColor: const Color(0xFF282A2E),
-              backgroundImage:
-                  (controller.rxAvatarUrl.value.isNotEmpty &&
-                      controller.rxAvatarUrl.value.startsWith('http'))
-                  ? NetworkImage(controller.rxAvatarUrl.value)
-                  : const NetworkImage("https://i.ibb.co/z5YHLV9/profile.png"),
+            () => CustomInitialsAvatar(
+              size: 92.r,
+              imageUrl: controller.rxAvatarUrl.value,
+              name: controller.rxUserName.value,
             ),
           ),
           SizedBox(width: 16.w),
@@ -220,13 +220,19 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
 
       final items = controller.rxItems;
       if (items.isEmpty) {
-        return Container(
-          height: 200.h,
-          alignment: Alignment.center,
-          child: Text(
-            "Closet is empty.",
-            style: GoogleFonts.dmSans(color: Colors.white38, fontSize: 14.sp),
-          ),
+        return CustomEmptyState(
+          imagePath: 'assets/images/my_wardrobe.svg',
+          imageSize: 130.r,
+          fallbackIcon: Icons.checkroom_rounded,
+          title: "Seller hasn't listed any items yet",
+          buttonText: "Continue exploring",
+          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+          onButtonTap: () {
+            if (Get.isRegistered<BottomNavBarController>()) {
+              Get.find<BottomNavBarController>().changeIndex(0);
+            }
+            Get.offAllNamed(AppRoutes.bottomNavBar);
+          },
         );
       }
 
@@ -252,26 +258,44 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
   Widget _buildGridCard(BuildContext context, ProfileItem item) {
     // Format Price nicely with commas
     final formattedPrice =
-        "AED ${item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}";
+        item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
     // Format Likes count (e.g. 2000 -> 2K)
     final formattedLikes = item.likes >= 1000
         ? "${(item.likes / 1000).toStringAsFixed(0)}K"
         : "${item.likes}";
 
+    final isLive = (item.status == 'live' || item.status == 'available');
+
     return GestureDetector(
       onTap: () {
+        // Prevent opening details for non-live products
+        if (!isLive) {
+          // Helpers.showCustomSnackBar(
+          //   item.isSold
+          //       ? "This item is already sold and no longer available."
+          //       : item.displayStatus == 'Reserved'
+          //       ? "This item is currently reserved by another buyer."
+          //       : "This item is currently not available for purchase.",
+          //   title: "Item Unavailable",
+          //   type: SnackBarType.warning,
+          // );
+          return;
+        }
+
         // Convert ProfileItem to FeedItem to fit ItemDetailScreen model
         final feedItem = FeedItem(
           id: item.id,
           sellerId: controller.rxSellerId.value,
           imagePath: item.imageUrl,
           userName: controller.rxUserName.value,
-          condition: "Excellent",
+          condition: item.condition ?? "Excellent",
           itemName: item.itemName,
           price: formattedPrice,
           size: "Medium",
           wornCount: "Worn Twice",
-          description: "${item.brand} ${item.itemName} in pristine condition.",
+          description:
+              item.description ??
+              "${item.brand} ${item.itemName} in pristine condition.",
           isVerified: controller.rxIsVerified.value,
           images: item.itemImages,
           sellerProfileImage: controller.rxAvatarUrl.value,
@@ -306,7 +330,22 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
               },
             ),
 
-            // 2. Details footer showing Price & Likes
+            // 2. Dark disabled overlay for all non-live items (reserved, sold, etc.)
+            if (!isLive)
+              Container(color: Colors.black.withValues(alpha: 0.55)),
+
+            // 3. Status capsule badge (Top-Left matching client mockup)
+            Positioned(
+              top: 6.h,
+              left: 6.w,
+              child: StatusHelper.buildItemCardBadge(
+                status: item.status,
+                isSold: item.isSold,
+                displayStatus: item.displayStatus,
+              ),
+            ),
+
+            // 4. Details footer showing Price & Likes
             Positioned(
               bottom: 0,
               left: 0,
@@ -328,6 +367,7 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
                   children: [
                     // Likes (Outline heart ♡ + text)
                     Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
                           Icons.favorite_border,
@@ -345,13 +385,19 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
                         ),
                       ],
                     ),
-                    // Price
-                    Text(
-                      formattedPrice,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 11.sp,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                    SizedBox(width: 4.w),
+                    // Price with official Dirham symbol & auto scale-down for large numbers
+                    Flexible(
+                      child: DirhamPrice(
+                        price: formattedPrice,
+                        fitScaleDown: true,
+                        symbolSize: 8.5.sp,
+                        spacing: 2.5,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 10.5.sp,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ],

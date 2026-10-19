@@ -6,20 +6,26 @@ class AuthRepo {
   final ApiClient apiClient;
   AuthRepo({required this.apiClient});
 
-  /// ===================== LOGIN / SIGNUP (OTP REQUEST) =====================
+  /// ===================== SIGN UP (REGISTRATION) =====================
+  Future<Response> signUp({
+    required String email,
+    required String firstName,
+    required String lastName,
+  }) async {
+    return await apiClient.postData(ApiConstants.signUp, {
+      "email": email.trim(),
+      "firstName": firstName.trim(),
+      "lastName": lastName.trim(),
+    });
+  }
+
+  /// ===================== LOGIN (OTP REQUEST) =====================
   Future<Response> login({
     required String email,
-    String? firstName,
-    String? lastName,
   }) async {
-    final Map<String, dynamic> body = {"email": email};
-    if (firstName != null && firstName.trim().isNotEmpty) {
-      body["firstName"] = firstName.trim();
-    }
-    if (lastName != null && lastName.trim().isNotEmpty) {
-      body["lastName"] = lastName.trim();
-    }
-    return await apiClient.postData(ApiConstants.login, body);
+    return await apiClient.postData(ApiConstants.login, {
+      "email": email.trim(),
+    });
   }
 
   /// ===================== OTP VERIFY =====================

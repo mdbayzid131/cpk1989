@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cpk1989/config/constants/storage_constants.dart';
@@ -131,20 +132,48 @@ class AuthController extends GetxController {
     final lastName = lastNameController.text.trim();
 
     try {
-      final response = await authService.login(
-        email: email,
-        firstName: firstName.isNotEmpty ? firstName : null,
-        lastName: lastName.isNotEmpty ? lastName : null,
-      );
+      final dynamic response;
+      if (rxIsSignUp.value) {
+        if (firstName.isEmpty) {
+          Helpers.showError("Please enter your first name");
+          rxIsLoading.value = false;
+          return false;
+        }
+        if (lastName.isEmpty) {
+          Helpers.showError("Please enter your last name");
+          rxIsLoading.value = false;
+          return false;
+        }
+        response = await authService.signUp(
+          email: email,
+          firstName: firstName,
+          lastName: lastName,
+        );
+      } else {
+        response = await authService.login(
+          email: email,
+        );
+      }
       rxIsLoading.value = false;
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return true;
       } else {
-        final errorMsg = response.statusMessage ?? "Failed to request OTP";
+        final errorMsg = response.statusMessage ?? "Failed to request code";
         Helpers.showError(errorMsg);
         return false;
       }
+    } on DioException catch (e) {
+      rxIsLoading.value = false;
+      String errorMsg = "Failed to request code";
+      final resData = e.response?.data;
+      if (resData is Map && resData['message'] != null) {
+        errorMsg = resData['message'].toString();
+      } else if (e.message != null && e.message!.isNotEmpty) {
+        errorMsg = e.message!;
+      }
+      Helpers.showError(errorMsg);
+      return false;
     } catch (e) {
       rxIsLoading.value = false;
       Helpers.showError("An error occurred: $e");

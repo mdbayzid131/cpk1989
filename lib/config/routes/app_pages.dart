@@ -25,6 +25,8 @@ import 'package:cpk1989/module/my_purchase_ditails/binding/my_purchase_ditails_b
 import 'package:cpk1989/module/seller_profile/view/seller_profile_screen.dart';
 import 'package:cpk1989/module/seller_profile/binding/seller_profile_binding.dart';
 import 'package:cpk1989/module/terms_and_policies/view/terms_and_policies_screen.dart';
+import 'package:flutter/widgets.dart';
+import 'package:cpk1989/module/profile/view/stripe_return_view.dart';
 import 'package:cpk1989/module/notification/view/notification_screen.dart';
 import 'package:cpk1989/module/notification/binding/notification_binding.dart';
 
@@ -44,6 +46,7 @@ class AppRoutes {
   static const String termsAndPolicies = '/terms-and-policies';
   static const String myPurchaseDetails = '/my-purchase-details';
   static const String sellerProfile = '/seller-profile';
+  static const String stripeReturn = '/stripe-return';
 }
 
 final Transition transition = Transition.fade;
@@ -138,5 +141,10 @@ final pages = [
     page: () => const NotificationScreen(),
     binding: NotificationBinding(),
     transition: transition,
+  ),
+  GetPage(
+    name: AppRoutes.stripeReturn,
+    page: () => const StripeReturnView(),
+    transition: Transition.noTransition,
   ),
 ];

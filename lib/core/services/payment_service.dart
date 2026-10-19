@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart' hide Response;
@@ -63,6 +64,7 @@ class PaymentService extends GetxService {
     required String address,
     required String location,
     required String phone,
+    String country = 'UAE',
   }) async {
     try {
       final apiClient = Get.find<ApiClient>();
@@ -73,6 +75,7 @@ class PaymentService extends GetxService {
             'address': address,
             'location': location,
             'phone': phone,
+            'country': country.isNotEmpty ? country : 'UAE',
           },
         },
       );
@@ -121,12 +124,16 @@ class PaymentService extends GetxService {
           merchantDisplayName: 'Closeté',
           style: ThemeMode.dark,
           allowsDelayedPaymentMethods: true,
-          applePay: const PaymentSheetApplePay(merchantCountryCode: 'AE'),
-          googlePay: const PaymentSheetGooglePay(
-            merchantCountryCode: 'AE',
-            currencyCode: 'AED',
-            testEnv: true,
-          ),
+          applePay: Platform.isIOS
+              ? const PaymentSheetApplePay(merchantCountryCode: 'AE')
+              : null,
+          googlePay: Platform.isAndroid
+              ? const PaymentSheetGooglePay(
+                  merchantCountryCode: 'AE',
+                  currencyCode: 'AED',
+                  testEnv: true,
+                )
+              : null,
         ),
       );
 
@@ -149,6 +156,36 @@ class PaymentService extends GetxService {
     }
   }
 
+  /// Confirm payment with backend to ensure order status updates to 'secured'
+  Future<void> _confirmPaymentWithBackend(String? orderId) async {
+    if (orderId == null || orderId.isEmpty) return;
+    try {
+      final apiClient = Get.find<ApiClient>();
+      await apiClient.postData(
+        '${ApiConstants.orders}/$orderId/confirm-payment',
+        {},
+      );
+      debugPrint('✅ Order $orderId payment confirmed with backend.');
+    } catch (e) {
+      debugPrint('⚠️ Order $orderId backend confirmation warning: $e');
+    }
+  }
+
+  /// Cancel a pending checkout reservation on backend immediately
+  Future<void> cancelPendingOrder(String? orderIdOrProductId) async {
+    if (orderIdOrProductId == null || orderIdOrProductId.isEmpty) return;
+    try {
+      final apiClient = Get.find<ApiClient>();
+      await apiClient.postData(
+        '${ApiConstants.orders}/$orderIdOrProductId/cancel',
+        {},
+      );
+      debugPrint('✅ Pending checkout reservation released: $orderIdOrProductId');
+    } catch (e) {
+      debugPrint('⚠️ Cancellation error for $orderIdOrProductId: $e');
+    }
+  }
+
   /// Main entry: Get clientSecret from backend → Present Stripe PaymentSheet
   Future<PaymentResult> processPayment({
     required String paymentMethod, // 'apple_pay', 'google_pay', or 'card'
@@ -156,6 +193,7 @@ class PaymentService extends GetxService {
     required String address,
     required String location,
     required String phone,
+    String country = 'UAE',
     String? selectedPaymentMethodId,
   }) async {
     debugPrint('🚀 Hitting backend checkout API for productId: $productId...');
@@ -166,6 +204,7 @@ class PaymentService extends GetxService {
       address: address,
       location: location,
       phone: phone,
+      country: country,
     );
 
     if (checkoutResponse.success == false) {
@@ -212,30 +251,50 @@ class PaymentService extends GetxService {
               ),
             ),
           );
+          if (checkoutData?.order?.id != null) {
+            await _confirmPaymentWithBackend(checkoutData!.order!.id);
+          }
           return PaymentResult(success: true, orderData: checkoutData?.order);
         } on StripeException catch (e) {
           debugPrint(
             '❌ StripeException during confirmPayment: ${e.error.localizedMessage}',
           );
           if (e.error.code == FailureCode.Canceled) {
-            return PaymentResult(success: false, isCancelled: true);
+            return PaymentResult(
+              success: false,
+              isCancelled: true,
+              orderData: checkoutData?.order,
+            );
           }
           return PaymentResult(
             success: false,
+            orderData: checkoutData?.order,
             errorMessage:
                 e.error.localizedMessage ?? 'Payment confirmation failed.',
           );
         } catch (e) {
           debugPrint('❌ Exception during confirmPayment: $e');
-          return PaymentResult(success: false, errorMessage: e.toString());
+          return PaymentResult(
+            success: false,
+            orderData: checkoutData?.order,
+            errorMessage: e.toString(),
+          );
         }
       }
 
       final sheetResult = await _presentPaymentSheet(clientSecret);
       if (sheetResult.success) {
+        if (checkoutData?.order?.id != null) {
+          await _confirmPaymentWithBackend(checkoutData!.order!.id);
+        }
         return PaymentResult(success: true, orderData: checkoutData?.order);
       }
-      return sheetResult;
+      return PaymentResult(
+        success: false,
+        isCancelled: sheetResult.isCancelled,
+        errorMessage: sheetResult.errorMessage,
+        orderData: checkoutData?.order,
+      );
     } else {
       debugPrint('⚠️ Stripe SDK not initialized, but API succeeded.');
       await Future.delayed(const Duration(milliseconds: 1000));
@@ -391,7 +450,10 @@ class PaymentService extends GetxService {
           ),
         ),
       );
-      return PaymentResult(success: true);
+      if (checkoutResponse.data?.order?.id != null) {
+        await _confirmPaymentWithBackend(checkoutResponse.data!.order!.id);
+      }
+      return PaymentResult(success: true, orderData: checkoutResponse.data?.order);
     } on StripeException catch (e) {
       if (e.error.code == FailureCode.Canceled) {
         return PaymentResult(success: false, isCancelled: true);

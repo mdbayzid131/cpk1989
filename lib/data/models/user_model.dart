@@ -134,12 +134,14 @@ class UserModel {
       image: json['image'] ?? json['profileImage'] ?? json['profilePicture'],
       avatar: json['avatar'],
       provider: json['provider'],
-      country: json['country'],
+      country: (json['country'] != null && json['country'].toString().trim().isNotEmpty)
+          ? json['country'].toString().trim()
+          : 'UAE',
       location: json['location'],
       address: json['address'],
       gender: json['gender'],
       dateOfBirth: json['dateOfBirth'],
-      phone: json['phone'],
+      phone: json['phone'] ?? json['contact'],
       isOnboardingCompleted: json['isOnboardingCompleted'],
       status: json['status'],
       verified: json['verified'],

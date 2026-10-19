@@ -22,7 +22,7 @@ class ProductRepository {
     return await apiClient.getData(
       ApiConstants.products,
       query: query,
-      requiresAuth: false,
+      requiresAuth: true,
     );
   }
 
@@ -30,15 +30,40 @@ class ProductRepository {
   Future<Response> getProductById(String id) async {
     return await apiClient.getData(
       '${ApiConstants.products}/$id',
-      requiresAuth: false,
+      requiresAuth: true,
     );
   }
 
-  /// Update product details by ID (PATCH /products/:id - JSON only)
+  /// Update product details by ID (PATCH /products/:id - JSON or Multipart if proof document is attached)
   Future<Response> updateProduct(
     String id,
-    Map<String, dynamic> data,
-  ) async {
+    Map<String, dynamic> data, {
+    String? proofOfPurchasePath,
+  }) async {
+    if (proofOfPurchasePath != null &&
+        proofOfPurchasePath.isNotEmpty &&
+        !proofOfPurchasePath.startsWith('http') &&
+        !proofOfPurchasePath.startsWith('MOCK_')) {
+      final file = File(proofOfPurchasePath);
+      if (await file.exists()) {
+        final formData = FormData();
+        formData.fields.add(MapEntry('data', jsonEncode(data)));
+        final fileName = proofOfPurchasePath.split(RegExp(r'[/\\]')).last;
+        formData.files.add(
+          MapEntry(
+            'doc',
+            await MultipartFile.fromFile(
+              proofOfPurchasePath,
+              filename: fileName,
+            ),
+          ),
+        );
+        return await apiClient.patchData(
+          '${ApiConstants.products}/$id',
+          formData,
+        );
+      }
+    }
     return await apiClient.patchData('${ApiConstants.products}/$id', data);
   }
 
@@ -58,6 +83,10 @@ class ProductRepository {
     required bool originalPackagingAvailable,
     required List<String> imagePaths, // camera or gallery local file paths
     String? proofOfPurchasePath, // proof of purchase PDF file path (optional)
+    String? sellerName,
+    String? sellerLocation,
+    String? sellerCountry,
+    String? sellerPhone,
   }) async {
     final formData = FormData();
 
@@ -69,6 +98,13 @@ class ProductRepository {
       "price": price,
       "condition": condition,
       "originalPackagingAvailable": originalPackagingAvailable,
+      if (sellerName != null && sellerName.isNotEmpty) "sellerName": sellerName,
+      if (sellerLocation != null && sellerLocation.isNotEmpty)
+        "sellerLocation": sellerLocation,
+      if (sellerCountry != null && sellerCountry.isNotEmpty)
+        "sellerCountry": sellerCountry,
+      if (sellerPhone != null && sellerPhone.isNotEmpty)
+        "sellerPhone": sellerPhone,
     };
     formData.fields.add(MapEntry('data', jsonEncode(productMetadata)));
 
@@ -99,12 +135,14 @@ class ProductRepository {
           !proofOfPurchasePath.startsWith('MOCK_')) {
         final file = File(proofOfPurchasePath);
         if (await file.exists()) {
+          final fileName =
+              proofOfPurchasePath.split(RegExp(r'[/\\]')).last;
           formData.files.add(
             MapEntry(
               'doc',
               await MultipartFile.fromFile(
                 proofOfPurchasePath,
-                filename: proofOfPurchasePath.split('/').last,
+                filename: fileName,
               ),
             ),
           );

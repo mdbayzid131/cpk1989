@@ -9,9 +9,15 @@ class Validators {
   // ===========================================================================
 
   /// Validates that the value is not null or empty.
-  static String? required(String? value, {String? message}) {
+  static String? required(
+    String? value, {
+    String? message,
+    String? fieldName,
+  }) {
     if (value == null || value.trim().isEmpty) {
-      return message ?? 'This field is required';
+      if (message != null) return message;
+      if (fieldName != null) return '$fieldName is required';
+      return 'This field is required';
     }
     return null;
   }

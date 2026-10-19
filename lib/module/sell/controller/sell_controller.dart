@@ -26,6 +26,9 @@ class SellController extends GetxController {
   final rxCapturedPaths = <String?>[null, null, null].obs;
   final activeSlotIndex = 0.obs;
 
+  // Flag to prevent double tap / concurrent photo capture
+  final isCapturing = false.obs;
+
   // Flag to check if live camera feed is active/turned on
   final isCameraActive = true.obs;
 
@@ -109,12 +112,9 @@ class SellController extends GetxController {
   Future<void> flipCameraHardware() async {
     final cameras = await availableCameras();
     if (cameras.length < 2) {
-      Get.snackbar(
-        "Camera",
+      Helpers.showWarning(
         "Only one camera is available on this device.",
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF1E1F22).withValues(alpha: 0.9),
-        colorText: Colors.white,
+        title: "Camera",
       );
       return;
     }
@@ -181,6 +181,9 @@ class SellController extends GetxController {
 
   // Take photo from real camera or activate camera preview
   Future<void> capturePhoto(void Function() onFinish) async {
+    // Prevent multiple simultaneous capture clicks
+    if (isCapturing.value) return;
+
     // If camera feed is not yet active, activate it first
     if (!isCameraActive.value) {
       isCameraActive.value = true;
@@ -189,7 +192,10 @@ class SellController extends GetxController {
     }
 
     if (cameraController != null && isCameraInitialized.value) {
+      if (cameraController!.value.isTakingPicture) return;
+
       try {
+        isCapturing.value = true;
         final XFile file = await cameraController!.takePicture();
         rxCapturedPaths[activeSlotIndex.value] = file.path;
         rxCapturedPath.value = file.path; // update preview compatibility
@@ -205,10 +211,15 @@ class SellController extends GetxController {
 
         onFinish();
       } catch (e) {
-        Get.snackbar(
-          "Capture Error",
-          "Failed to take picture: ${e.toString()}",
-        );
+        debugPrint("Camera capture exception: $e");
+        if (!e.toString().contains("Previous capture has not returned")) {
+          Helpers.showError(
+            "Failed to take picture: ${e.toString()}",
+            title: "Capture Error",
+          );
+        }
+      } finally {
+        isCapturing.value = false;
       }
     } else {
       // Fallback if camera is unavailable (simulator mode)
@@ -250,9 +261,9 @@ class SellController extends GetxController {
         onPicked();
       }
     } catch (e) {
-      Get.snackbar(
-        "Gallery Error",
+      Helpers.showError(
         "Failed to access gallery: ${e.toString()}",
+        title: "Gallery Error",
       );
     }
   }
@@ -336,19 +347,15 @@ class SellController extends GetxController {
       // Select the first tab (Wardrobe) in profile
       profileController.rxSelectedIndex.value = 0;
 
-      Get.snackbar(
-        "Success",
+      Helpers.showSuccess(
         "${newItem.itemName} listed successfully!",
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF1E1F22),
-        colorText: Colors.white,
       );
     } catch (e) {
       Get.back();
       Get.back();
-      Get.snackbar(
-        "Listed",
+      Helpers.showSuccess(
         "Item has been listed in your Wardrobe.",
+        title: "Listed",
       );
     }
   }

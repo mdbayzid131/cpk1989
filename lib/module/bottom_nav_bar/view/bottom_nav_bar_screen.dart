@@ -135,6 +135,72 @@ class BottomNavBarScreen extends GetView<BottomNavBarController> {
 
   Widget _buildNavItem(int index, String iconPath, double k) {
     final isSelected = controller.selectedIndex == index;
+
+    Widget iconWidget = SvgPicture.asset(
+      iconPath,
+      colorFilter: ColorFilter.mode(
+        isSelected ? Colors.white : AppTheme.gray,
+        BlendMode.srcIn,
+      ),
+      width: 26.0 * k,
+      height: 26.0 * k,
+    );
+
+    if (index == 2) {
+      iconWidget = Stack(
+        clipBehavior: Clip.none,
+        children: [
+          iconWidget,
+          Obx(() {
+            final count = controller.unreadNotificationCount;
+            if (count <= 0) return const SizedBox.shrink();
+
+            final displayCount = count > 99 ? '99+' : '$count';
+            return Positioned(
+              top: -4.0 * k,
+              right: -6.0 * k,
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: count > 9 ? 4.5 * k : 3.5 * k,
+                  vertical: 1.5 * k,
+                ),
+                constraints: BoxConstraints(
+                  minWidth: 16.0 * k,
+                  minHeight: 16.0 * k,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEA384C),
+                  borderRadius: BorderRadius.circular(10.0 * k),
+                  border: Border.all(
+                    color: const Color(0xFFEA384C),
+                    width: 1.5 * k,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFEA384C).withValues(alpha: 0.45),
+                      blurRadius: 4.0 * k,
+                      offset: Offset(0, 1.0 * k),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Text(
+                    displayCount,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 9.0 * k,
+                      fontWeight: FontWeight.w700,
+                      height: 1.0,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }),
+        ],
+      );
+    }
+
     return GestureDetector(
       onTap: () => controller.changeIndex(index),
       child: AnimatedContainer(
@@ -146,15 +212,7 @@ class BottomNavBarScreen extends GetView<BottomNavBarController> {
               ? const Color(0xFFffffff).withValues(alpha: 0.15)
               : Colors.transparent,
         ),
-        child: SvgPicture.asset(
-          iconPath,
-          colorFilter: ColorFilter.mode(
-            isSelected ? Colors.white : AppTheme.gray,
-            BlendMode.srcIn,
-          ),
-          width: 26.0 * k,
-          height: 26.0 * k,
-        ),
+        child: iconWidget,
       ),
     );
   }

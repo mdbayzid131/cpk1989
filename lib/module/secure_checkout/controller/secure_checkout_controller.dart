@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -44,6 +45,9 @@ class SecureCheckoutController extends GetxController {
   // Processing state
   final rxIsProcessing = false.obs;
 
+  bool isPurchaseCompleted = false;
+  String? activePendingOrderId;
+
   @override
   void onInit() {
     super.onInit();
@@ -89,6 +93,7 @@ class SecureCheckoutController extends GetxController {
     phoneController = TextEditingController();
 
     locationController.addListener(() {
+      addressController.text = locationController.text;
       if (rxLocationError.value.isNotEmpty &&
           locationController.text.trim().isNotEmpty) {
         rxLocationError.value = "";
@@ -113,14 +118,24 @@ class SecureCheckoutController extends GetxController {
       }
       final profileCtrl = Get.find<ProfileController>();
       syncFromProfile(profileCtrl);
-
-      // Fetch fresh profile from API & sync
-      profileCtrl.fetchUserProfile().then((_) {
-        syncFromProfile(profileCtrl);
-      });
     } catch (e) {
       debugPrint("⚠️ Sync profile in checkout error: $e");
     }
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      try {
+        final profileCtrl = Get.find<ProfileController>();
+        profileCtrl.fetchUserProfile().then((_) {
+          syncFromProfile(profileCtrl);
+        });
+      } catch (e) {
+        debugPrint("⚠️ Fresh profile fetch in checkout onReady error: $e");
+      }
+    });
   }
 
   void setPhoneAndCode(String rawPhone) {
@@ -221,10 +236,22 @@ class SecureCheckoutController extends GetxController {
     addressController.dispose();
     phoneController.dispose();
     termsRecognizer.dispose();
+
+    // If buyer leaves without completing purchase, immediately release the product reservation
+    if (!isPurchaseCompleted) {
+      final toCancel =
+          activePendingOrderId ?? (item.id.isNotEmpty ? item.id : null);
+      if (toCancel != null) {
+        PaymentService.to.cancelPendingOrder(toCancel);
+      }
+    }
+
     super.onClose();
   }
 
   void selectPaymentMethod(String method) {
+    if (Platform.isAndroid && method == "apple_pay") return;
+    if (Platform.isIOS && method == "google_pay") return;
     rxPaymentMethod.value = method;
   }
 
@@ -234,12 +261,10 @@ class SecureCheckoutController extends GetxController {
 
     bool isValid = true;
 
-    final locText = locationController.text.trim().isNotEmpty
-        ? locationController.text.trim()
-        : addressController.text.trim();
+    final locText = locationController.text.trim();
 
     if (locText.isEmpty) {
-      rxLocationError.value = "Location / Address is required.";
+      rxLocationError.value = "Address is required.";
       isValid = false;
     }
 
@@ -260,9 +285,10 @@ class SecureCheckoutController extends GetxController {
     }
 
     final fullPhone = formattedFullPhone;
-    final cityInput = locationController.text.trim();
-    final countrySelected = rxLocation.value;
-    final addressText = cityInput.isNotEmpty ? cityInput : countrySelected;
+    final addressText = locationController.text.trim();
+    final countrySelected = rxLocation.value.isNotEmpty
+        ? rxLocation.value
+        : "UAE";
 
     // 1. Sync delivery details to user profile backend API & local storage FIRST
     // Profile's location gets cityInput, Profile's country gets countrySelected
@@ -278,7 +304,7 @@ class SecureCheckoutController extends GetxController {
 
     double finalPrice = 3200.0;
     try {
-      finalPrice = double.parse(item.price.replaceAll(',', ''));
+      finalPrice = double.tryParse(item.price.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 3200.0;
     } catch (_) {}
 
     final selectedCardId = rxSelectedCardId.value.isNotEmpty
@@ -292,10 +318,15 @@ class SecureCheckoutController extends GetxController {
         paymentMethod: rxPaymentMethod.value,
         productId: item.id.isNotEmpty ? item.id : 'unknown',
         address: addressText,
-        location: countrySelected,
+        location: addressText.isNotEmpty ? addressText : countrySelected,
         phone: fullPhone,
+        country: countrySelected,
         selectedPaymentMethodId: selectedCardId,
       );
+
+      if (paymentResult.orderData?.id != null) {
+        activePendingOrderId = paymentResult.orderData!.id;
+      }
 
       if (!paymentResult.success) {
         if (!paymentResult.isCancelled) {
@@ -307,6 +338,8 @@ class SecureCheckoutController extends GetxController {
         }
         return null;
       }
+
+      isPurchaseCompleted = true;
 
       // Create purchased item using real order data from backend API
       final realOrder = paymentResult.orderData;

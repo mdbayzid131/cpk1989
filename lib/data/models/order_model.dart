@@ -60,6 +60,9 @@ class OrderModel {
   final PaymentDetailsModel? payment;
   final String? payoutStatus;
   final String? status;
+  final String? outcome;
+  final String? note;
+  final String? cancellationReason;
   final List<StatusHistoryModel>? statusHistory;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -78,6 +81,9 @@ class OrderModel {
     this.payment,
     this.payoutStatus,
     this.status,
+    this.outcome,
+    this.note,
+    this.cancellationReason,
     this.statusHistory,
     this.createdAt,
     this.updatedAt,
@@ -148,6 +154,9 @@ class OrderModel {
           : null,
       payoutStatus: json['payoutStatus'],
       status: json['status'],
+      outcome: json['outcome'],
+      note: json['note'],
+      cancellationReason: json['cancellationReason'] ?? json['note'],
       statusHistory:
           json['statusHistory'] != null && json['statusHistory'] is List
           ? (json['statusHistory'] as List)
@@ -191,19 +200,49 @@ class OrderBuyerModel {
   final String? id;
   final String? name;
   final String? email;
+  final String? profileImage;
+  final String? phone;
+  final String? location;
+  final String? country;
+  final String? address;
 
-  OrderBuyerModel({this.id, this.name, this.email});
+  OrderBuyerModel({
+    this.id,
+    this.name,
+    this.email,
+    this.profileImage,
+    this.phone,
+    this.location,
+    this.country,
+    this.address,
+  });
 
   factory OrderBuyerModel.fromJson(Map<String, dynamic> json) {
     return OrderBuyerModel(
       id: json['_id'] ?? json['id'],
       name: json['name'],
       email: json['email'],
+      profileImage: json['profileImage'] ?? json['avatar'] ?? json['image'],
+      phone: json['phone'] ?? json['contact'],
+      location: json['location'],
+      country: (json['country'] != null && json['country'].toString().trim().isNotEmpty)
+          ? json['country'].toString().trim()
+          : 'UAE',
+      address: json['address'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'name': name, 'email': email};
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'profileImage': profileImage,
+      'phone': phone,
+      'location': location,
+      'country': country ?? 'UAE',
+      'address': address,
+    };
   }
 }
 
@@ -212,20 +251,55 @@ class OrderSellerModel {
   final String? name;
   final String? email;
   final String? contact;
+  final String? phone;
+  final String? location;
+  final String? country;
+  final String? profileImage;
+  final bool? isVerified;
 
-  OrderSellerModel({this.id, this.name, this.email, this.contact});
+  OrderSellerModel({
+    this.id,
+    this.name,
+    this.email,
+    this.contact,
+    this.phone,
+    this.location,
+    this.country,
+    this.profileImage,
+    this.isVerified,
+  });
+
+  String? get effectivePhone => phone ?? contact;
 
   factory OrderSellerModel.fromJson(Map<String, dynamic> json) {
+    final ph = json['phone'] ?? json['contact'];
     return OrderSellerModel(
       id: json['_id'] ?? json['id'],
       name: json['name'],
       email: json['email'],
-      contact: json['contact'],
+      contact: ph,
+      phone: ph,
+      location: json['location'],
+      country: (json['country'] != null && json['country'].toString().trim().isNotEmpty)
+          ? json['country'].toString().trim()
+          : 'UAE',
+      profileImage: json['profileImage'] ?? json['avatar'] ?? json['image'],
+      isVerified: json['isVerified'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'name': name, 'email': email, 'contact': contact};
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'contact': contact ?? phone,
+      'phone': phone ?? contact,
+      'location': location,
+      'country': country ?? 'UAE',
+      'profileImage': profileImage,
+      'isVerified': isVerified,
+    };
   }
 }
 
@@ -233,19 +307,28 @@ class DeliveryDetailsModel {
   final String? address;
   final String? location;
   final String? phone;
+  final String? country;
 
-  DeliveryDetailsModel({this.address, this.location, this.phone});
+  DeliveryDetailsModel({this.address, this.location, this.phone, this.country});
 
   factory DeliveryDetailsModel.fromJson(Map<String, dynamic> json) {
     return DeliveryDetailsModel(
       address: json['address'],
       location: json['location'],
       phone: json['phone'],
+      country: (json['country'] != null && json['country'].toString().trim().isNotEmpty)
+          ? json['country'].toString().trim()
+          : 'UAE',
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'address': address, 'location': location, 'phone': phone};
+    return {
+      'address': address,
+      'location': location,
+      'phone': phone,
+      'country': country ?? 'UAE',
+    };
   }
 }
 
