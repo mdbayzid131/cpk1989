@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cpk1989/core/utils/product_ownership.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -147,6 +148,10 @@ class HomeScreen extends GetView<HomeController> {
                             Expanded(
                               child: GestureDetector(
                                 onTap: () {
+                                  if (isOwnProduct(item.sellerId)) {
+                                    openOwnProfile();
+                                    return;
+                                  }
                                   Get.toNamed(
                                     AppRoutes.sellerProfile,
                                     arguments: {
@@ -224,7 +229,9 @@ class HomeScreen extends GetView<HomeController> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              item.condition.trim().toLowerCase().startsWith('condition:')
+                              item.condition.trim().toLowerCase().startsWith(
+                                    'condition:',
+                                  )
                                   ? item.condition
                                   : "Condition: ${item.condition}",
                               style: GoogleFonts.dmSans(
@@ -305,27 +312,27 @@ class HomeScreen extends GetView<HomeController> {
                           ),
                         ),
 
-                        SizedBox(height: 13.h),
+                        if (canSecureProduct(item.sellerId)) ...[
+                          SizedBox(height: 13.h),
 
-                        // Secure This Item Button (Gradient)
-                        CustomGoldButton(
-                          text: "Secure This Item",
-                          suffix: const Icon(
-                            Icons.arrow_forward,
-                            color: Colors.black,
-                            size: 18,
+                          // Secure This Item Button (Gradient)
+                          CustomGoldButton(
+                            text: "Secure This Item",
+                            suffix: const Icon(
+                              Icons.arrow_forward,
+                              color: Colors.black,
+                              size: 18,
+                            ),
+                            onTap: () {
+                              showProcessingOverlay(context, () {
+                                Get.toNamed(
+                                  AppRoutes.secureCheckout,
+                                  arguments: item,
+                                );
+                              });
+                            },
                           ),
-                          onTap: () {
-                            showProcessingOverlay(context, () {
-                              // Close bottom sheet first
-                              Get.back();
-                              Get.toNamed(
-                                AppRoutes.secureCheckout,
-                                arguments: item,
-                              );
-                            });
-                          },
-                        ),
+                        ],
                       ],
                     ),
                   ),

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cpk1989/core/utils/product_ownership.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -28,10 +29,7 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
         final isLoading = controller.rxIsLoading.value;
         if (isLoading && controller.rxProductModel.value == null) {
           return Center(
-            child: CustomGoldLoader(
-              size: 44.r,
-              strokeWidth: 3.5.r,
-            ),
+            child: CustomGoldLoader(size: 44.r, strokeWidth: 3.5.r),
           );
         }
         return SafeArea(
@@ -40,410 +38,417 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
             children: [
               // 1. Scrollable Content + Bottom Action Bar
               Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.zero,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Hero Image Card
-                        Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.vertical(
-                                bottom: Radius.circular(24.r),
-                              ),
-                              child: DetailImageSlider(
-                                item: item,
-                                height: 380.h,
-                              ),
-                            ),
-                            // Vignette overlay
-                            Positioned.fill(
-                              child: IgnorePointer(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.vertical(
-                                    bottom: Radius.circular(24.r),
-                                  ),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          Colors.black.withValues(alpha: 0.3),
-                                          Colors.transparent,
-                                          Colors.black.withValues(alpha: 0.2),
-                                        ],
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            // Page indicator bottom left (half-cut sitting on the boundary line)
-                            Positioned(
-                              bottom: -9.h, // half of 18.h indicator height
-                              left: 41.w,
-                              child: Obx(
-                                () => CustomPageIndicator(
-                                  count: item.itemImages.length,
-                                  currentPage: controller.rxCurrentPage.value,
-                                ),
-                              ),
-                            ),
-                            // Price tag bottom right
-                            Positioned(
-                              bottom: -22.h,
-                              right: 16.w,
-                              child: Container(
-                                width: 120.w,
-                                height: 48.h,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(20.r),
-                                  border: Border.all(
-                                    color: Colors.black,
-                                    width: 2.w,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withValues(
-                                        alpha: 0.25,
-                                      ),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: DirhamPrice(
-                                  price: item.price,
-                                  symbolSize: 13.5.sp,
-                                  spacing: 3.5,
-                                  color: Colors.black,
-                                  style: GoogleFonts.dmSans(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        SizedBox(height: 30.h),
-
-                        // Scrollable content wrapped in horizontal padding
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16.w),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.zero,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Hero Image Card
+                          Stack(
+                            clipBehavior: Clip.none,
                             children: [
-                              // 2. Seller Profile row
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      Get.toNamed(
-                                        AppRoutes.sellerProfile,
-                                        arguments: {
-                                          'sellerId': item.sellerId,
-                                          'userName': item.userName,
-                                          'avatarUrl': item.sellerProfileImage,
-                                          'isVerified': item.isVerified,
-                                        },
-                                      );
-                                    },
-                                    child: Row(
-                                      children: [
-                                        CustomInitialsAvatar(
-                                          size: 40.r,
-                                          imageUrl: item.sellerProfileImage,
-                                          name: item.userName,
-                                        ),
-                                        SizedBox(width: 10.w),
-                                        Text(
-                                          item.userName,
-                                          style: GoogleFonts.dmSans(
-                                            fontSize: 16.sp,
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                        if (item.isVerified) ...[
-                                          SizedBox(width: 6.w),
-                                          SvgPicture.asset(
-                                            'assets/icons/blue_verify-badg.svg',
-                                            width: 18.r,
-                                            height: 18.r,
-                                          ),
-                                        ],
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 120.w,
-                                    child: Center(
-                                      child: Text(
-                                        "Listed price",
-                                        textAlign: TextAlign.center,
-                                        style: GoogleFonts.dmSans(
-                                          fontSize: 14.sp,
-                                          color: Colors.white38,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                              ClipRRect(
+                                borderRadius: BorderRadius.vertical(
+                                  bottom: Radius.circular(24.r),
+                                ),
+                                child: DetailImageSlider(
+                                  item: item,
+                                  height: 380.h,
+                                ),
                               ),
-
-                              SizedBox(height: 12.h),
-
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          item.itemName,
-                                          style: GoogleFonts.dmSans(
-                                            fontSize: 22.sp,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.white,
-                                          ),
+                              // Vignette overlay
+                              Positioned.fill(
+                                child: IgnorePointer(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.vertical(
+                                      bottom: Radius.circular(24.r),
+                                    ),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            Colors.black.withValues(alpha: 0.3),
+                                            Colors.transparent,
+                                            Colors.black.withValues(alpha: 0.2),
+                                          ],
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
                                         ),
                                       ),
-                                      if (item.proofOfPurchase != null &&
-                                          item.proofOfPurchase!
-                                              .trim()
-                                              .isNotEmpty) ...[
-                                        SizedBox(width: 12.w),
-                                        _buildProofOfPurchaseButton(
-                                          item.proofOfPurchase!,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              // Page indicator bottom left (half-cut sitting on the boundary line)
+                              Positioned(
+                                bottom: -9.h, // half of 18.h indicator height
+                                left: 41.w,
+                                child: Obx(
+                                  () => CustomPageIndicator(
+                                    count: item.itemImages.length,
+                                    currentPage: controller.rxCurrentPage.value,
+                                  ),
+                                ),
+                              ),
+                              // Price tag bottom right
+                              Positioned(
+                                bottom: -22.h,
+                                right: 16.w,
+                                child: Container(
+                                  width: 120.w,
+                                  height: 48.h,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20.r),
+                                    border: Border.all(
+                                      color: Colors.black,
+                                      width: 2.w,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(
+                                          alpha: 0.25,
                                         ),
-                                      ],
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
+                                      ),
                                     ],
                                   ),
+                                  child: DirhamPrice(
+                                    price: item.price,
+                                    symbolSize: 13.5.sp,
+                                    spacing: 3.5,
+                                    color: Colors.black,
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
 
-                                  SizedBox(height: 12.h),
-                                  // Condition
-                                  Builder(
-                                    builder: (context) {
-                                      final desc = _getConditionDescription(
-                                        item.condition,
-                                      );
-                                      return Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                          SizedBox(height: 30.h),
+
+                          // Scrollable content wrapped in horizontal padding
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.w),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // 2. Seller Profile row
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        if (isOwnProduct(item.sellerId)) {
+                                          openOwnProfile();
+                                          return;
+                                        }
+                                        Get.toNamed(
+                                          AppRoutes.sellerProfile,
+                                          arguments: {
+                                            'sellerId': item.sellerId,
+                                            'userName': item.userName,
+                                            'avatarUrl':
+                                                item.sellerProfileImage,
+                                            'isVerified': item.isVerified,
+                                          },
+                                        );
+                                      },
+                                      child: Row(
                                         children: [
+                                          CustomInitialsAvatar(
+                                            size: 40.r,
+                                            imageUrl: item.sellerProfileImage,
+                                            name: item.userName,
+                                          ),
+                                          SizedBox(width: 10.w),
                                           Text(
-                                            "Condition: ${item.condition}",
+                                            item.userName,
                                             style: GoogleFonts.dmSans(
-                                              fontSize: 12.sp,
-                                              color: const Color(
-                                                0xFFA2A2A2,
-                                              ),
-                                              fontWeight: FontWeight.w400,
+                                              fontSize: 16.sp,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.white,
                                             ),
                                           ),
-                                          if (desc.isNotEmpty) ...[
-                                            SizedBox(height: 2.h),
-                                            Text(
-                                              desc,
-                                              style: GoogleFonts.dmSans(
-                                                fontSize: 12.sp,
-                                                color: const Color(
-                                                  0xFFA2A2A2,
-                                                ),
-                                                fontWeight:
-                                                    FontWeight.w400,
-                                              ),
+                                          if (item.isVerified) ...[
+                                            SizedBox(width: 6.w),
+                                            SvgPicture.asset(
+                                              'assets/icons/blue_verify-badg.svg',
+                                              width: 18.r,
+                                              height: 18.r,
                                             ),
                                           ],
                                         ],
-                                      );
-                                    },
-                                  ),
-                                  SizedBox(height: 6.h),
-                                  // Packaging
-                                  Text(
-                                    item.originalPackagingAvailable
-                                        ? "Original packaging available"
-                                        : "Original packaging unavailable",
-                                    style: GoogleFonts.dmSans(
-                                      fontSize: 12.sp,
-                                      color: const Color(0xFFA2A2A2),
-                                      fontWeight: FontWeight.w400,
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(height: 6.h),
-                                ],
-                              ),
-
-                              SizedBox(height: 15.h),
-                              const Divider(color: Colors.white10, height: 1),
-                              SizedBox(height: 15.h),
-
-                              // 5. Description
-                              Text(
-                                "DESCRIPTION",
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 12.sp,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white38,
-                                  letterSpacing: 1.2,
+                                    SizedBox(
+                                      width: 120.w,
+                                      child: Center(
+                                        child: Text(
+                                          "Listed price",
+                                          textAlign: TextAlign.center,
+                                          style: GoogleFonts.dmSans(
+                                            fontSize: 14.sp,
+                                            color: Colors.white38,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              SizedBox(height: 8.h),
-                              Text(
-                                item.description,
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 14.sp,
-                                  color: Colors.white70,
-                                  height: 1.5,
+
+                                SizedBox(height: 12.h),
+
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            item.itemName,
+                                            style: GoogleFonts.dmSans(
+                                              fontSize: 22.sp,
+                                              fontWeight: FontWeight.w700,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                        if (item.proofOfPurchase != null &&
+                                            item.proofOfPurchase!
+                                                .trim()
+                                                .isNotEmpty) ...[
+                                          SizedBox(width: 12.w),
+                                          _buildProofOfPurchaseButton(
+                                            item.proofOfPurchase!,
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+
+                                    SizedBox(height: 12.h),
+                                    // Condition
+                                    Builder(
+                                      builder: (context) {
+                                        final desc = _getConditionDescription(
+                                          item.condition,
+                                        );
+                                        return Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "Condition: ${item.condition}",
+                                              style: GoogleFonts.dmSans(
+                                                fontSize: 12.sp,
+                                                color: const Color(0xFFA2A2A2),
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                            if (desc.isNotEmpty) ...[
+                                              SizedBox(height: 2.h),
+                                              Text(
+                                                desc,
+                                                style: GoogleFonts.dmSans(
+                                                  fontSize: 12.sp,
+                                                  color: const Color(
+                                                    0xFFA2A2A2,
+                                                  ),
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                              ),
+                                            ],
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                    SizedBox(height: 6.h),
+                                    // Packaging
+                                    Text(
+                                      item.originalPackagingAvailable
+                                          ? "Original packaging available"
+                                          : "Original packaging unavailable",
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 12.sp,
+                                        color: const Color(0xFFA2A2A2),
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                    SizedBox(height: 6.h),
+                                  ],
                                 ),
-                              ),
 
-                              SizedBox(height: 20.h),
+                                SizedBox(height: 15.h),
+                                const Divider(color: Colors.white10, height: 1),
+                                SizedBox(height: 15.h),
 
-                              // 6. Security Assurances Grid/Row
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Expanded(
-                                    child: _buildSecurityBadge(
-                                      svgPath:
-                                          'assets/icons/Authenticity Verified.svg',
-                                      label: "Authenticity\nVerified",
+                                // 5. Description
+                                Text(
+                                  "DESCRIPTION",
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white38,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                                SizedBox(height: 8.h),
+                                Text(
+                                  item.description,
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 14.sp,
+                                    color: Colors.white70,
+                                    height: 1.5,
+                                  ),
+                                ),
+
+                                SizedBox(height: 20.h),
+
+                                // 6. Security Assurances Grid/Row
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Expanded(
+                                      child: _buildSecurityBadge(
+                                        svgPath:
+                                            'assets/icons/Authenticity Verified.svg',
+                                        label: "Authenticity\nVerified",
+                                      ),
                                     ),
-                                  ),
-                                  Container(
-                                    width: 1.w,
-                                    height: 36.h,
-                                    color: Colors.white.withValues(alpha: 0.08),
-                                  ),
-                                  Expanded(
-                                    child: _buildSecurityBadge(
-                                      svgPath:
-                                          'assets/icons/Payment Protected .svg',
-                                      label: "Payment\nProtected",
+                                    Container(
+                                      width: 1.w,
+                                      height: 36.h,
+                                      color: Colors.white.withValues(
+                                        alpha: 0.08,
+                                      ),
                                     ),
-                                  ),
-                                  Container(
-                                    width: 1.w,
-                                    height: 36.h,
-                                    color: Colors.white.withValues(alpha: 0.08),
-                                  ),
-                                  Expanded(
-                                    child: _buildSecurityBadge(
-                                      svgPath:
-                                          'assets/icons/Secure Delivery.svg',
-                                      label: "Secure\nDelivery",
+                                    Expanded(
+                                      child: _buildSecurityBadge(
+                                        svgPath:
+                                            'assets/icons/Payment Protected .svg',
+                                        label: "Payment\nProtected",
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 16.h),
-                            ],
+                                    Container(
+                                      width: 1.w,
+                                      height: 36.h,
+                                      color: Colors.white.withValues(
+                                        alpha: 0.08,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: _buildSecurityBadge(
+                                        svgPath:
+                                            'assets/icons/Secure Delivery.svg',
+                                        label: "Secure\nDelivery",
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 16.h),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // 7. Persistent Gold Action Button at Bottom
+                  if (canSecureProduct(item.sellerId))
+                    Container(
+                      padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 20.h),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0F1012),
+                        border: Border(
+                          top: BorderSide(
+                            color: Colors.white.withValues(alpha: 0.05),
+                            width: 1,
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // 7. Persistent Gold Action Button at Bottom
-                Container(
-                  padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 20.h),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF0F1012),
-                    border: Border(
-                      top: BorderSide(
-                        color: Colors.white.withValues(alpha: 0.05),
-                        width: 1,
+                      ),
+                      child: CustomGoldButton(
+                        text: "Secure This Item",
+                        suffix: const Icon(
+                          Icons.arrow_forward,
+                          color: Colors.black,
+                          size: 18,
+                        ),
+                        onTap: () {
+                          showProcessingOverlay(context, () {
+                            Get.toNamed(
+                              AppRoutes.secureCheckout,
+                              arguments: item,
+                            );
+                          });
+                        },
                       ),
                     ),
-                  ),
-                  child: CustomGoldButton(
-                    text: "Secure This Item",
-                    suffix: const Icon(
-                      Icons.arrow_forward,
-                      color: Colors.black,
-                      size: 18,
-                    ),
-                    onTap: () {
-                      showProcessingOverlay(context, () {
-                        Get.toNamed(AppRoutes.secureCheckout, arguments: item);
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
-
-            // 2. Fixed Top Navigation Controls (Floats above layout)
-            Positioned(
-              top: MediaQuery.of(context).padding.top + 16.h,
-              left: 16.w,
-              right: 16.w,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CustomGlassButton(
-                    onTap: () => Get.back(),
-                    child: Icon(
-                      Icons.arrow_back_ios_new_rounded,
-                      color: Colors.white,
-                      size: 18.sp,
-                    ),
-                  ),
-                  Obx(() {
-                    final isFav = controller.rxIsFavorite.value;
-                    return CustomGlassButton(
-                      onTap: controller.toggleFavorite,
-                      child: Icon(
-                        isFav
-                            ? Icons.favorite_rounded
-                            : Icons.favorite_border_rounded,
-                        color: isFav ? Colors.red : Colors.white,
-                        size: 18.sp,
-                      ),
-                    );
-                  }),
                 ],
               ),
-            ),
 
-            // 3. Luxurious golden loading overlay when fetching live data
-            if (isLoading)
-              Positioned.fill(
-                child: Container(
-                  color: const Color(0xFF0F1012).withValues(alpha: 0.75),
-                  child: Center(
-                    child: CustomGoldLoader(
-                      size: 40.r,
-                      strokeWidth: 3.5.r,
+              // 2. Fixed Top Navigation Controls (Floats above layout)
+              Positioned(
+                top: MediaQuery.of(context).padding.top + 16.h,
+                left: 16.w,
+                right: 16.w,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CustomGlassButton(
+                      onTap: () => Get.back(),
+                      child: Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: Colors.white,
+                        size: 18.sp,
+                      ),
+                    ),
+                    Obx(() {
+                      final isFav = controller.rxIsFavorite.value;
+                      return CustomGlassButton(
+                        onTap: controller.toggleFavorite,
+                        child: Icon(
+                          isFav
+                              ? Icons.favorite_rounded
+                              : Icons.favorite_border_rounded,
+                          color: isFav ? Colors.red : Colors.white,
+                          size: 18.sp,
+                        ),
+                      );
+                    }),
+                  ],
+                ),
+              ),
+
+              // 3. Luxurious golden loading overlay when fetching live data
+              if (isLoading)
+                Positioned.fill(
+                  child: Container(
+                    color: const Color(0xFF0F1012).withValues(alpha: 0.75),
+                    child: Center(
+                      child: CustomGoldLoader(size: 40.r, strokeWidth: 3.5.r),
                     ),
                   ),
                 ),
-              ),
-          ],
-        ),
-      );
-    }),
-  );
-}
+            ],
+          ),
+        );
+      }),
+    );
+  }
 
   Widget _buildSecurityBadge({required String svgPath, required String label}) {
     return Column(
