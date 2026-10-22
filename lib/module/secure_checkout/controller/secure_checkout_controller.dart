@@ -129,9 +129,9 @@ class SecureCheckoutController extends GetxController {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       try {
         final profileCtrl = Get.find<ProfileController>();
-        profileCtrl.fetchUserProfile().then((_) {
-          syncFromProfile(profileCtrl);
-        });
+        if (profileCtrl.rxUserProfile.value == null) {
+          profileCtrl.fetchUserProfile().then((_) => syncFromProfile(profileCtrl));
+        }
       } catch (e) {
         debugPrint("⚠️ Fresh profile fetch in checkout onReady error: $e");
       }
@@ -297,6 +297,7 @@ class SecureCheckoutController extends GetxController {
         address: addressText,
         country: countrySelected,
         phone: fullPhone,
+        persistRemotely: false,
       );
     } catch (e) {
       debugPrint('⚠️ Error syncing profile delivery details: $e');

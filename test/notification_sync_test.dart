@@ -15,24 +15,34 @@ class FakeNotifications extends NotificationRepository {
   FakeNotifications() : super(apiClient: ApiClient());
   int count = 3;
   int mutationStatus = 200;
+  int countCalls = 0;
+  int listCalls = 0;
   List<Map<String, dynamic>> items = [];
   final Map<int, List<Map<String, dynamic>>> pages = {};
   Future<Response> Function()? countRequest;
   Future<Response> Function()? listRequest;
   @override
-  Future<Response> getUnreadCount() async => countRequest != null
-      ? countRequest!()
-      : reply({
-          'data': {'unreadCount': count},
-        });
+  Future<Response> getUnreadCount() async {
+    countCalls++;
+    return countRequest != null
+        ? countRequest!()
+        : reply({
+            'data': {'unreadCount': count},
+          });
+  }
+
   @override
   Future<Response> getNotifications({
     int page = 1,
     int limit = 20,
     bool? unread,
-  }) async => listRequest != null
-      ? listRequest!()
-      : reply({'data': pages[page] ?? items});
+  }) async {
+    listCalls++;
+    return listRequest != null
+        ? listRequest!()
+        : reply({'data': pages[page] ?? items});
+  }
+
   @override
   Future<Response> markAsRead(String id) async => reply({}, mutationStatus);
   @override
@@ -84,6 +94,41 @@ Future<void> drain() async {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   tearDown(() => Get.reset());
+
+  test(
+    'complete push updates list and badge without redundant API calls',
+    () async {
+      final repo = FakeNotifications();
+      final nav = Get.put<BottomNavBarController>(QuietNavigation(repo));
+      final notifications = Get.put<NotificationController>(
+        QuietNotifications(repo),
+      );
+      notifications.receivePush(push('new'));
+      notifications.receivePush(push('new'));
+      await drain();
+      expect(nav.unreadNotificationCount, 3);
+      expect(notifications.rxNotifications.length, 1);
+      expect(repo.countCalls, 0);
+      expect(repo.listCalls, 0);
+    },
+  );
+
+  test('simultaneous unread requests share one HTTP request', () async {
+    final repo = FakeNotifications();
+    final pending = Completer<Response>();
+    repo.countRequest = () => pending.future;
+    final nav = Get.put<BottomNavBarController>(QuietNavigation(repo));
+    final first = nav.fetchUnreadCount();
+    final second = nav.fetchUnreadCount();
+    expect(repo.countCalls, 1);
+    pending.complete(
+      reply({
+        'data': {'unreadCount': 3},
+      }),
+    );
+    await Future.wait([first, second]);
+    expect(nav.unreadNotificationCount, 3);
+  });
 
   test(
     'push appears immediately and duplicate delivery never doubles count or list',

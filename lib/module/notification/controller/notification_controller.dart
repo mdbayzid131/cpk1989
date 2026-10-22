@@ -120,6 +120,7 @@ class NotificationController extends GetxController {
   Future<void> fetchNotifications({
     bool isRefresh = false,
     bool silent = false,
+    bool refreshCount = true,
   }) async {
     if (_fetching) {
       _refreshQueued = true;
@@ -177,7 +178,7 @@ class NotificationController extends GetxController {
           } else {
             _refreshQueued = true;
           }
-          if (Get.isRegistered<BottomNavBarController>()) {
+          if (refreshCount && Get.isRegistered<BottomNavBarController>()) {
             Get.find<BottomNavBarController>().fetchUnreadCount();
           }
         }
@@ -256,6 +257,7 @@ class NotificationController extends GetxController {
   }
 
   void receivePush(Map<String, dynamic> payload) {
+    final count = int.tryParse('${payload['unreadCount']}');
     final id = (payload['notificationId'] ?? payload['id'])?.toString();
     final alreadyPresent =
         id != null && rxNotifications.any((item) => item.id == id);
@@ -279,11 +281,18 @@ class NotificationController extends GetxController {
     }
     if (Get.isRegistered<BottomNavBarController>()) {
       final nav = Get.find<BottomNavBarController>();
-      final count = int.tryParse('${payload['unreadCount']}');
       if (count != null && !alreadyPresent) nav.updateUnreadCount(count);
-      nav.fetchUnreadCount();
+      if (count == null) nav.fetchUnreadCount();
     }
-    fetchNotifications(isRefresh: true, silent: true);
+    if (payload['type'] == 'notification_sync' ||
+        id == null ||
+        payload['title'] == null) {
+      fetchNotifications(
+        isRefresh: true,
+        silent: true,
+        refreshCount: count == null,
+      );
+    }
   }
 
   NotificationItem _readItem(NotificationItem item) => NotificationItem(
@@ -305,7 +314,7 @@ class NotificationController extends GetxController {
 
   void _reconcileCount() {
     if (Get.isRegistered<BottomNavBarController>()) {
-      Get.find<BottomNavBarController>().fetchUnreadCount();
+      Get.find<BottomNavBarController>().fetchUnreadCount(force: true);
     }
   }
 

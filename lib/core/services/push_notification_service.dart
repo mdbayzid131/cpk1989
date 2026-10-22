@@ -104,7 +104,18 @@ class PushNotificationService {
             },
           });
         }
-        if (message.data['type'] != 'notification_sync') {
+        const statsEvents = {
+          'item_listed',
+          'item_live',
+          'item_rejected',
+          'order_secured',
+          'item_reserved',
+          'item_delivered',
+          'order_completed',
+          'order_cancelled',
+          'payment_refunded',
+        };
+        if (statsEvents.contains(message.data['type'])) {
           if (Get.isRegistered<ProfileController>()) {
             Get.find<ProfileController>().fetchProfileStats();
           }
@@ -120,24 +131,17 @@ class PushNotificationService {
         if (Get.isRegistered<BottomNavBarController>()) {
           final nav = Get.find<BottomNavBarController>();
           nav.updateUnreadCount(nav.unreadNotificationCount);
-          nav.fetchUnreadCount();
         }
       });
 
       // 7. Handle Background/Terminated Notification Tap
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-        if (Get.isRegistered<BottomNavBarController>()) {
-          Get.find<BottomNavBarController>().fetchUnreadCount();
-        }
         _handleNotificationClick(message.data);
       });
 
       // Check initial message if launched from terminated state
       RemoteMessage? initialMessage = await _fcm.getInitialMessage();
       if (initialMessage != null) {
-        if (Get.isRegistered<BottomNavBarController>()) {
-          Get.find<BottomNavBarController>().fetchUnreadCount();
-        }
         _handleNotificationClick(initialMessage.data);
       }
 

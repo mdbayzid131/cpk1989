@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cpk1989/core/utils/resume_refresh_gate.dart';
 import 'package:cpk1989/config/constants/storage_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -164,6 +165,7 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
   final rxUserProfile = Rxn<UserModel>();
   final rxProfileStats = ProfileStatsModel().obs;
   final rxIsPayoutConnected = false.obs;
+  final _resumeGate = ResumeRefreshGate();
   final payoutSectionKey = GlobalKey();
   final rxFocusPayoutRequested = false.obs;
 
@@ -208,7 +210,7 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
+    if (_resumeGate.shouldRefresh(state, checkoutActive: Get.currentRoute == AppRoutes.secureCheckout)) {
       checkStripeConnectStatus();
       fetchProfileStats();
     }
@@ -728,12 +730,6 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
     super.onClose();
   }
 
-  @override
-  void onReady() {
-    super.onReady();
-    fetchProfileApiData();
-  }
-
   void changeTab(int index) {
     rxSelectedIndex.value = index;
     if (index == 0) {
@@ -845,6 +841,7 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
     required String address,
     required String country,
     required String phone,
+    bool persistRemotely = true,
   }) async {
     // 1. Update ProfileController local TextControllers and Rx states
     locationController.text = address;
@@ -862,6 +859,8 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
     await StorageService.setString('country', country);
     await StorageService.setString('address', address);
     await StorageService.setString('phone', phone);
+    // The checkout API already persists these delivery fields on the server.
+    if (!persistRemotely) return;
 
     final fullName =
         "${firstNameController.text.trim()} ${lastNameController.text.trim()}"

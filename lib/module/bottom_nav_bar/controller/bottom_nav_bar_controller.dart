@@ -1,4 +1,5 @@
-import 'dart:async';
+import 'package:cpk1989/core/utils/resume_refresh_gate.dart';
+import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:app_badge_plus/app_badge_plus.dart';
@@ -18,7 +19,9 @@ class BottomNavBarController extends GetxController
   final _selectedIndex = 0.obs;
   final rxUnreadNotificationCount = 0.obs;
   int _countEpoch = 0;
-  Timer? _reconcileTimer;
+  final _resumeGate = ResumeRefreshGate();
+  Future<void>? _unreadRequest;
+  bool _unreadRefreshQueued = false;
   Future<void> _badgeQueue = Future.value();
 
   int get selectedIndex => _selectedIndex.value;
@@ -40,23 +43,22 @@ class BottomNavBarController extends GetxController
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
     fetchUnreadCount();
-    _reconcileTimer = Timer.periodic(const Duration(seconds: 30), (_) {
-      if (WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed) {
-        reconcileNotifications();
-      }
-    });
   }
 
   @override
   void onClose() {
-    _reconcileTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.onClose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) reconcileNotifications();
+    if (_resumeGate.shouldRefresh(
+      state,
+      checkoutActive: Get.currentRoute == AppRoutes.secureCheckout,
+    )) {
+      reconcileNotifications();
+    }
   }
 
   void reconcileNotifications() {
@@ -65,6 +67,7 @@ class BottomNavBarController extends GetxController
       Get.find<NotificationController>().fetchNotifications(
         isRefresh: true,
         silent: true,
+        refreshCount: false,
       );
     }
   }
@@ -79,7 +82,21 @@ class BottomNavBarController extends GetxController
     }
   }
 
-  Future<void> fetchUnreadCount() async {
+  Future<void> fetchUnreadCount({bool force = false}) {
+    if (force && _unreadRequest != null) {
+      ++_countEpoch;
+      _unreadRefreshQueued = true;
+    }
+    return _unreadRequest ??= _fetchUnreadCount().whenComplete(() {
+      _unreadRequest = null;
+      if (_unreadRefreshQueued && !isClosed) {
+        _unreadRefreshQueued = false;
+        fetchUnreadCount();
+      }
+    });
+  }
+
+  Future<void> _fetchUnreadCount() async {
     final epoch = ++_countEpoch;
     try {
       final repo = _repo;
