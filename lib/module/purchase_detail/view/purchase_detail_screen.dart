@@ -249,7 +249,6 @@ class PurchaseDetailScreen extends GetView<PurchaseDetailController> {
                   ),
                   child: DirhamPrice(
                     price: formattedPrice,
-                    symbolSize: 11.5.sp,
                     spacing: 3.0,
                     style: GoogleFonts.dmSans(
                       fontSize: 14.sp,

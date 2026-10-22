@@ -1,3 +1,4 @@
+import 'package:cpk1989/core/utils/payout_navigation.dart';
 import 'dart:ui';
 import 'package:cpk1989/config/routes/app_pages.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +10,6 @@ import 'package:cpk1989/module/notification/controller/notification_controller.d
 import 'package:cpk1989/core/widgets/custom_gold_loader.dart';
 import 'package:cpk1989/core/widgets/custom_glass_button.dart';
 import 'package:cpk1989/core/widgets/custom_empty_state.dart';
-import 'package:cpk1989/module/bottom_nav_bar/controller/bottom_nav_bar_controller.dart';
-import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:cpk1989/core/widgets/dirham_symbol.dart';
 
 class NotificationScreen extends GetView<NotificationController> {
@@ -365,24 +364,7 @@ class NotificationScreen extends GetView<NotificationController> {
     );
   }
 
-  void _navigateToProfilePayout() {
-    if (Get.isRegistered<BottomNavBarController>()) {
-      Get.find<BottomNavBarController>().changeIndex(3);
-      if (Get.isRegistered<ProfileController>()) {
-        Get.find<ProfileController>().changeTab(2);
-      }
-    } else {
-      Get.offAllNamed(AppRoutes.bottomNavBar);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (Get.isRegistered<BottomNavBarController>()) {
-          Get.find<BottomNavBarController>().changeIndex(3);
-        }
-        if (Get.isRegistered<ProfileController>()) {
-          Get.find<ProfileController>().changeTab(2);
-        }
-      });
-    }
-  }
+  void _navigateToProfilePayout() => openProfilePayoutDetails();
 
   Widget _buildNotificationSvgIcon(NotificationType type) {
     switch (type) {
@@ -508,7 +490,7 @@ class NotificationScreen extends GetView<NotificationController> {
       final numPart = matchedText.replaceAll(RegExp(r'AED\s?', caseSensitive: false), '');
       spans.add(
         DirhamSymbol.span(
-          size: 11.sp,
+          size: 13.sp,
           color: const Color(0xFFEBEBF5),
           padding: EdgeInsets.only(right: 2.w),
         ),

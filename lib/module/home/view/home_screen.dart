@@ -207,7 +207,6 @@ class HomeScreen extends GetView<HomeController> {
                               ),
                               child: DirhamPrice(
                                 price: item.price,
-                                symbolSize: 11.sp,
                                 spacing: 3.0,
                                 color: Colors.black,
                                 style: GoogleFonts.dmSans(

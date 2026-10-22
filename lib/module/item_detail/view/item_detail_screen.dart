@@ -119,7 +119,6 @@ class ItemDetailScreen extends GetView<ItemDetailController> {
                                   ),
                                   child: DirhamPrice(
                                     price: item.price,
-                                    symbolSize: 13.5.sp,
                                     spacing: 3.5,
                                     color: Colors.black,
                                     style: GoogleFonts.dmSans(

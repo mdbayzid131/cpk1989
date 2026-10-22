@@ -616,7 +616,6 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                                         ),
                                         DirhamPrice(
                                           price: "${sellerPayoutVal.toInt()}",
-                                          symbolSize: 12.sp,
                                           color: const Color(0xFFFFAF2C),
                                           style: GoogleFonts.dmSans(
                                             fontSize: 16.sp,
@@ -972,7 +971,7 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
           keyboardType: TextInputType.number,
           prefixWidget: Padding(
             padding: EdgeInsets.only(right: 6.w),
-            child: const DirhamSymbol(size: 13, color: Colors.white),
+            child: DirhamSymbol(size: 14.sp, color: Colors.white),
           ),
         ),
 
@@ -1022,7 +1021,6 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
       child: isPrice
           ? DirhamPrice(
               price: text,
-              symbolSize: 11.sp,
               spacing: 3.0,
               style: GoogleFonts.dmSans(
                 fontSize: 14.sp,
@@ -1942,7 +1940,6 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
         ),
         DirhamPrice(
           price: value,
-          symbolSize: 10.sp,
           color: Colors.white70,
           style: GoogleFonts.dmSans(
             fontSize: 13.sp,
@@ -2084,7 +2081,6 @@ class MyItemDetailScreen extends GetView<MyItemDetailController> {
                                     ),
                                     child: DirhamPrice(
                                       price: item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},'),
-                                      symbolSize: 8.5.sp,
                                       spacing: 2.5,
                                       style: GoogleFonts.dmSans(
                                         fontSize: 11.sp,

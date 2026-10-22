@@ -164,6 +164,29 @@ class ProfileController extends GetxController with WidgetsBindingObserver {
   final rxUserProfile = Rxn<UserModel>();
   final rxProfileStats = ProfileStatsModel().obs;
   final rxIsPayoutConnected = false.obs;
+  final payoutSectionKey = GlobalKey();
+  final rxFocusPayoutRequested = false.obs;
+
+  void focusPayoutDetails() {
+    rxFocusPayoutRequested.value = true;
+    rxSelectedIndex.value = 2;
+    checkStripeConnectStatus();
+  }
+
+  void scrollToPayoutIfRequested() {
+    if (!rxFocusPayoutRequested.value) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final context = payoutSectionKey.currentContext;
+      if (!rxFocusPayoutRequested.value || context == null || !context.mounted) return;
+      rxFocusPayoutRequested.value = false;
+      Scrollable.ensureVisible(
+        context,
+        alignment: 0.15,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
 
   UserRepository get _userRepo => Get.find<UserRepository>();
   ProductRepository get _productRepo => Get.find<ProductRepository>();

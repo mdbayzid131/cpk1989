@@ -1,9 +1,9 @@
+import 'package:cpk1989/core/utils/payout_navigation.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,7 +13,6 @@ import 'package:cpk1989/config/constants/storage_constants.dart';
 import 'package:cpk1989/core/services/storage_service.dart';
 import 'package:cpk1989/core/services/api_client.dart';
 import 'package:cpk1989/data/repositories/notification_repository.dart';
-import 'package:cpk1989/module/profile/controller/profile_controller.dart';
 import 'package:cpk1989/module/bottom_nav_bar/controller/bottom_nav_bar_controller.dart';
 import 'package:cpk1989/module/notification/controller/notification_controller.dart';
 
@@ -346,22 +345,7 @@ class PushNotificationService {
 
     // 4. Seller Onboarding / Payout Setup -> My Profile > Personal Details (Payout section)
     if (screen == 'seller_onboarding') {
-      if (Get.isRegistered<BottomNavBarController>()) {
-        Get.find<BottomNavBarController>().changeIndex(3);
-        if (Get.isRegistered<ProfileController>()) {
-          Get.find<ProfileController>().changeTab(2);
-        }
-      } else {
-        Get.offAllNamed(AppRoutes.bottomNavBar);
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (Get.isRegistered<BottomNavBarController>()) {
-            Get.find<BottomNavBarController>().changeIndex(3);
-          }
-          if (Get.isRegistered<ProfileController>()) {
-            Get.find<ProfileController>().changeTab(2);
-          }
-        });
-      }
+      openProfilePayoutDetails();
       return;
     }
 

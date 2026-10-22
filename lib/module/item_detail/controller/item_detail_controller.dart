@@ -158,9 +158,11 @@ class ItemDetailController extends GetxController {
         }
       }
     }
-    Helpers.showSuccess(
-      "${item.itemName} has been ${rxIsFavorite.value ? "added to" : "removed from"} your wishlist.",
-      title: rxIsFavorite.value ? "Added to Wishlist" : "Removed from Wishlist",
-    );
+    if (!rxIsFavorite.value) {
+      Helpers.showSuccess(
+        "${item.itemName} has been removed from your wishlist.",
+        title: "Removed from Wishlist",
+      );
+    }
   }
 }

@@ -8,15 +8,13 @@ class DirhamSymbol extends StatelessWidget {
   final double? size;
   final Color color;
 
-  const DirhamSymbol({
-    super.key,
-    this.size,
-    this.color = Colors.white,
-  });
+  const DirhamSymbol({super.key, this.size, this.color = Colors.white});
 
   @override
   Widget build(BuildContext context) {
-    final s = size ?? 12.sp;
+    final s = MediaQuery.textScalerOf(
+      context,
+    ).scale(size ?? DefaultTextStyle.of(context).style.fontSize ?? 14.sp);
     return SvgPicture.asset(
       'assets/icons/dirham_symbol.svg',
       width: s,
@@ -75,22 +73,20 @@ class DirhamPrice extends StatelessWidget {
   Widget build(BuildContext context) {
     final effectiveColor = color ?? style?.color ?? Colors.white;
     final fontSize = style?.fontSize ?? 14.sp;
-    final sSize = symbolSize ?? (fontSize * 0.82);
+    // One shared proportion across cards, totals, and product detail prices.
+    // The SVG's square box includes its intrinsic vertical padding.
+    final sSize = symbolSize ?? fontSize;
 
     Widget content = Row(
       mainAxisSize: mainAxisSize,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SvgPicture.asset(
-          'assets/icons/dirham_symbol.svg',
-          width: sSize,
-          height: sSize,
-          colorFilter: ColorFilter.mode(effectiveColor, BlendMode.srcIn),
-        ),
+        DirhamSymbol(size: sSize, color: effectiveColor),
         SizedBox(width: spacing.w),
         Text(
           _cleanPrice(price),
-          style: style ??
+          style:
+              style ??
               GoogleFonts.dmSans(
                 fontSize: fontSize,
                 fontWeight: FontWeight.w600,

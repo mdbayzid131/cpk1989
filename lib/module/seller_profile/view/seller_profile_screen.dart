@@ -391,7 +391,6 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
                       child: DirhamPrice(
                         price: formattedPrice,
                         fitScaleDown: true,
-                        symbolSize: 8.5.sp,
                         spacing: 2.5,
                         style: GoogleFonts.dmSans(
                           fontSize: 10.5.sp,

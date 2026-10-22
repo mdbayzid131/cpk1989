@@ -454,7 +454,6 @@ class MyPurchaseDitails extends GetView<MyPurchaseDitailsController> {
                     alignment: Alignment.centerRight,
                     child: DirhamPrice(
                       price: value,
-                      symbolSize: 11.sp,
                       spacing: 3.0,
                       style: GoogleFonts.dmSans(
                         fontSize: 14.sp,

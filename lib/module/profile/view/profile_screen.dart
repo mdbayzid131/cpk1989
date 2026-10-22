@@ -493,7 +493,6 @@ class ProfileScreen extends GetView<ProfileController> {
           child: isCurrency
               ? DirhamPrice(
                   price: value,
-                  symbolSize: 11.sp,
                   style: GoogleFonts.dmSans(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w700,
@@ -770,7 +769,6 @@ class ProfileScreen extends GetView<ProfileController> {
                   // Price
                   DirhamPrice(
                     price: item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},'),
-                    symbolSize: 9.sp,
                     style: GoogleFonts.dmSans(
                       fontSize: 12.sp,
                       color: AppTheme.gray,
@@ -972,7 +970,6 @@ class ProfileScreen extends GetView<ProfileController> {
                       child: DirhamPrice(
                         price: formattedPrice,
                         fitScaleDown: true,
-                        symbolSize: 8.5.sp,
                         spacing: 2.5,
                         style: GoogleFonts.dmSans(
                           fontSize: 10.5.sp,
@@ -993,6 +990,7 @@ class ProfileScreen extends GetView<ProfileController> {
 
   Widget _buildPersonalDetails(BuildContext context) {
     return Obx(() {
+      controller.scrollToPayoutIfRequested();
       final isEditing = controller.rxIsEditing.value;
       final isLoading = controller.rxIsLoadingProfile.value;
 
@@ -1106,7 +1104,10 @@ class ProfileScreen extends GetView<ProfileController> {
 
             _buildSavedCardsSection(context),
             SizedBox(height: 24.h),
-            _buildPayoutDetailsSection(context),
+            Container(
+              key: controller.payoutSectionKey,
+              child: _buildPayoutDetailsSection(context),
+            ),
             SizedBox(height: 32.h),
 
             // Logout Button at the bottom of Personal Details (matching app consistency)
@@ -2196,7 +2197,6 @@ class ProfileScreen extends GetView<ProfileController> {
                                     ),
                                     child: DirhamPrice(
                                       price: item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},'),
-                                      symbolSize: 8.5.sp,
                                       spacing: 2.5,
                                       style: GoogleFonts.dmSans(
                                         fontSize: 11.sp,

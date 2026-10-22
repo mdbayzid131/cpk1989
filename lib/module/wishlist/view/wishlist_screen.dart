@@ -230,7 +230,6 @@ class WishlistScreen extends GetView<WishlistController> {
                     ),
                     child: DirhamPrice(
                       price: item.price.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},'),
-                      symbolSize: 8.5.sp,
                       spacing: 2.5,
                       style: GoogleFonts.dmSans(
                         fontSize: 11.sp,

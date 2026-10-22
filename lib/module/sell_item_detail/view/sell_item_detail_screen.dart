@@ -502,7 +502,6 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                         )
                       : DirhamPrice(
                           price: formattedEarn,
-                          symbolSize: 11.sp,
                           color: const Color(0xFFFFAF2C),
                           style: GoogleFonts.dmSans(
                             fontSize: 14.sp,
@@ -542,7 +541,6 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
               )
             : DirhamPrice(
                 price: value,
-                symbolSize: 10.sp,
                 color: Colors.white70,
                 style: GoogleFonts.dmSans(
                   fontSize: 13.sp,
@@ -794,7 +792,7 @@ class SellItemDetailScreen extends GetView<SellItemDetailController> {
                 prefixIcon: controller.rxPrice.value.trim().isNotEmpty
                     ? Padding(
                         padding: EdgeInsets.only(right: 6.w),
-                        child: const DirhamSymbol(size: 13, color: Colors.white),
+                        child: DirhamSymbol(size: 14.sp, color: Colors.white),
                       )
                     : null,
                 prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),

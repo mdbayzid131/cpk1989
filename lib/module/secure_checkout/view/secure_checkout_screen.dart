@@ -281,7 +281,6 @@ class SecureCheckoutScreen extends GetView<SecureCheckoutController> {
                   ),
                   child: DirhamPrice(
                     price: item.price,
-                    symbolSize: 11.5.sp,
                     spacing: 3.0,
                     style: GoogleFonts.dmSans(
                       fontSize: 14.sp,
