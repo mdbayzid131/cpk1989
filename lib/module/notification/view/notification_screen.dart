@@ -147,9 +147,7 @@ class NotificationScreen extends GetView<NotificationController> {
                                         ),
                                       ),
                                     ),
-                                    onDismissed: (direction) {
-                                      controller.deleteNotification(item.id);
-                                    },
+                                    confirmDismiss: (_) => controller.deleteNotification(item.id),
                                     child: _buildNotificationCard(item),
                                   ),
                                 ),

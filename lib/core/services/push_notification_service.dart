@@ -1,6 +1,7 @@
 import 'package:cpk1989/core/utils/payout_navigation.dart';
 import 'dart:io';
 import 'dart:convert';
+import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -15,10 +16,21 @@ import 'package:cpk1989/core/services/api_client.dart';
 import 'package:cpk1989/data/repositories/notification_repository.dart';
 import 'package:cpk1989/module/bottom_nav_bar/controller/bottom_nav_bar_controller.dart';
 import 'package:cpk1989/module/notification/controller/notification_controller.dart';
+import 'package:cpk1989/module/profile/controller/profile_controller.dart';
+import 'package:cpk1989/module/seller_profile/controller/seller_profile_controller.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
+  final count = int.tryParse(message.data['unreadCount'] ?? '');
+  try {
+    if (count != null && await AppBadgePlus.isSupported()) {
+      await AppBadgePlus.updateBadge(count);
+    }
+    if (count == 0) await FlutterLocalNotificationsPlugin().cancelAll();
+  } catch (e) {
+    debugPrint('Background badge sync failed: $e');
+  }
   if (kDebugMode) {
     print('Handling background message: ${message.messageId}');
   }
@@ -67,6 +79,11 @@ class PushNotificationService {
 
       // 3. Initialize Local Notifications for Foreground Channel
       await _setupLocalNotifications();
+      await _fcm.setForegroundNotificationPresentationOptions(
+        alert: false,
+        badge: false,
+        sound: false,
+      );
 
       // 4. Register FCM Token with Backend API
       await registerDeviceToken();
@@ -77,13 +94,33 @@ class PushNotificationService {
       });
 
       // 6. Handle Messages in Foreground
-      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        _showForegroundNotification(message);
-        if (Get.isRegistered<BottomNavBarController>()) {
-          Get.find<BottomNavBarController>().fetchUnreadCount();
-        }
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
         if (Get.isRegistered<NotificationController>()) {
-          Get.find<NotificationController>().fetchNotifications(isRefresh: true);
+          Get.find<NotificationController>().receivePush({
+            ...message.data,
+            if (message.notification != null) ...{
+              'title': message.notification!.title,
+              'body': message.notification!.body,
+            },
+          });
+        }
+        if (message.data['type'] != 'notification_sync') {
+          if (Get.isRegistered<ProfileController>()) {
+            Get.find<ProfileController>().fetchProfileStats();
+          }
+          if (Get.isRegistered<SellerProfileController>()) {
+            Get.find<SellerProfileController>().fetchSellerStats();
+          }
+        }
+        try {
+          await _showForegroundNotification(message);
+        } catch (e) {
+          debugPrint('Foreground notification display failed: $e');
+        }
+        if (Get.isRegistered<BottomNavBarController>()) {
+          final nav = Get.find<BottomNavBarController>();
+          nav.updateUnreadCount(nav.unreadNotificationCount);
+          nav.fetchUnreadCount();
         }
       });
 
@@ -258,24 +295,34 @@ class PushNotificationService {
         }
         await repo.unregisterDevice(registrationToken: token);
       }
-      if (Get.isRegistered<BottomNavBarController>()) {
-        Get.find<BottomNavBarController>().clearUnreadCount();
-      }
     } catch (e) {
       if (kDebugMode) {
         print('Error unregistering FCM device token: $e');
+      }
+    } finally {
+      if (Get.isRegistered<BottomNavBarController>()) {
+        Get.find<BottomNavBarController>().clearUnreadCount();
+      }
+      try {
+        await _localNotifications.cancelAll();
+        if (await AppBadgePlus.isSupported()) await AppBadgePlus.updateBadge(0);
+      } catch (e) {
+        debugPrint('Logout badge reset failed: $e');
       }
     }
   }
 
   /// Display Foreground Push Notification using Flutter Local Notifications
-  void _showForegroundNotification(RemoteMessage message) {
+  Future<void> _showForegroundNotification(RemoteMessage message) async {
     final notification = message.notification;
     final android = message.notification?.android;
 
     if (notification != null) {
-      _localNotifications.show(
-        notification.hashCode,
+      final count = Get.isRegistered<BottomNavBarController>()
+          ? Get.find<BottomNavBarController>().unreadNotificationCount
+          : int.tryParse(message.data['unreadCount'] ?? '');
+      await _localNotifications.show(
+        0,
         notification.title ?? 'Closeté Notification',
         notification.body ?? '',
         NotificationDetails(
@@ -286,11 +333,14 @@ class PushNotificationService {
             importance: Importance.max,
             priority: Priority.high,
             icon: android?.smallIcon ?? '@mipmap/ic_launcher',
+            tag: 'closete_unread',
+            number: count,
           ),
-          iOS: const DarwinNotificationDetails(
+          iOS: DarwinNotificationDetails(
             presentAlert: true,
             presentBadge: true,
             presentSound: true,
+            badgeNumber: count,
           ),
         ),
         payload: jsonEncode(message.data),
@@ -301,6 +351,7 @@ class PushNotificationService {
   /// Handle Notification Click Navigation based on `data`
   void _handleNotificationClick(Map<String, dynamic> data) {
     if (data.isEmpty) return;
+    _markOpenedNotification(data);
 
     final String? screen = data['screen']?.toString();
     final String? role = data['role']?.toString();
@@ -366,6 +417,25 @@ class PushNotificationService {
       Get.toNamed(AppRoutes.myPurchaseDetails, arguments: {'orderId': orderId});
     } else {
       Get.toNamed(AppRoutes.notification);
+    }
+  }
+
+  Future<void> _markOpenedNotification(Map<String, dynamic> data) async {
+    final id = data['notificationId']?.toString();
+    if (id == null || id.isEmpty) return;
+    try {
+      final repo = Get.isRegistered<NotificationRepository>()
+          ? Get.find<NotificationRepository>()
+          : Get.isRegistered<ApiClient>()
+          ? NotificationRepository(apiClient: Get.find<ApiClient>())
+          : null;
+      if (repo != null) await repo.markAsRead(id);
+    } catch (e) {
+      debugPrint('Unable to mark opened push as read: $e');
+    } finally {
+      if (Get.isRegistered<BottomNavBarController>()) {
+        Get.find<BottomNavBarController>().reconcileNotifications();
+      }
     }
   }
 }

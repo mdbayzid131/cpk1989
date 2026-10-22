@@ -201,15 +201,9 @@ class ProfileScreen extends GetView<ProfileController> {
                 // Translucent Stats Container (Dynamic counts from API)
                 Obx(() {
                   final stats = controller.rxProfileStats.value;
-                  final wardrobeCount = stats.totalProductsListed > 0
-                      ? stats.totalProductsListed
-                      : controller.rxWardrobeItems.length;
-                  final purchasesCount = stats.totalProductsPurchased > 0
-                      ? stats.totalProductsPurchased
-                      : controller.rxPurchaseItems.length;
-                  final earningsText = stats.totalEarnings > 0
-                      ? stats.formattedEarnings
-                      : "0";
+                  final wardrobeCount = stats.totalProductsListed;
+                  final purchasesCount = stats.totalProductsPurchased;
+                  final earningsText = stats.formattedClosetValue;
 
                   return Container(
                     padding: EdgeInsets.symmetric(

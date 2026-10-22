@@ -128,14 +128,10 @@ class SellerProfileController extends GetxController {
     }
   }
 
-  int get itemsListedCount => rxItems.length;
-  int get itemsSoldCount => rxItems.where((i) => i.isSold).length;
+  int get itemsListedCount => rxSellerStats.value.totalProductsListed;
+  int get itemsSoldCount => rxSellerStats.value.totalProductsSold;
 
   String get closetValueFormatted {
-    final totalValue = rxItems.fold<double>(0, (sum, item) => sum + item.price);
-    if (totalValue >= 1000) {
-      return "${(totalValue / 1000).toStringAsFixed(1)}k";
-    }
-    return totalValue.toInt().toString();
+    return rxSellerStats.value.formattedClosetValue;
   }
 }

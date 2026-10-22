@@ -89,6 +89,10 @@ class NotificationController extends GetxController {
   final rxTotalPages = 1.obs;
   final rxNotifications = <NotificationItem>[].obs;
 
+  int _version = 0;
+  bool _fetching = false;
+  bool _refreshQueued = false;
+  final _pendingIds = <String>{};
   late final ScrollController scrollController;
 
   @override
@@ -113,33 +117,66 @@ class NotificationController extends GetxController {
     }
   }
 
-  Future<void> fetchNotifications({bool isRefresh = false}) async {
-    if (isRefresh) {
+  Future<void> fetchNotifications({
+    bool isRefresh = false,
+    bool silent = false,
+  }) async {
+    if (_fetching) {
+      _refreshQueued = true;
+      return;
+    }
+    _fetching = true;
+    final version = _version;
+    final preservePages = silent && rxCurrentPage.value > 1;
+    final pagesToRefresh = preservePages ? rxCurrentPage.value : 1;
+    if (isRefresh && !preservePages) {
       rxCurrentPage.value = 1;
       rxHasMore.value = false;
     }
 
-    rxIsLoading.value = true;
+    if (!silent) rxIsLoading.value = true;
     try {
       final repo = _repo;
       if (repo != null) {
-        final response = await repo.getNotifications(page: 1, limit: 20);
+        final responses = await Future.wait([
+          for (var page = 1; page <= pagesToRefresh; page++)
+            repo.getNotifications(page: page, limit: 20),
+        ]);
+        if (isClosed) return;
+        if (responses.any((response) => response.statusCode != 200)) return;
+        final response = responses.first;
         if (response.statusCode == 200 && response.data != null) {
-          final List rawData = response.data['data'] ?? [];
+          final List rawData = [
+            for (final response in responses) ...response.data['data'] ?? [],
+          ];
           final fetched = rawData.map((json) => _mapJsonToItem(json)).toList();
+
+          if (version != _version) {
+            _refreshQueued = true;
+            return;
+          }
 
           final pagination = response.data['pagination'];
           if (pagination != null) {
             final totalPage = (pagination['totalPage'] ?? 1) as int;
             rxTotalPages.value = totalPage;
-            rxCurrentPage.value = 1;
-            rxHasMore.value = 1 < totalPage;
-          } else {
+            rxCurrentPage.value = pagesToRefresh > totalPage
+                ? (totalPage < 1 ? 1 : totalPage)
+                : pagesToRefresh;
+            rxHasMore.value = rxCurrentPage.value < totalPage;
+          } else if (!preservePages) {
             rxCurrentPage.value = 1;
             rxHasMore.value = fetched.length >= 20;
           }
 
-          rxNotifications.assignAll(fetched);
+          if (version == _version) {
+            final seen = <String>{};
+            rxNotifications.assignAll(
+              fetched.where((item) => seen.add(item.id)),
+            );
+          } else {
+            _refreshQueued = true;
+          }
           if (Get.isRegistered<BottomNavBarController>()) {
             Get.find<BottomNavBarController>().fetchUnreadCount();
           }
@@ -149,18 +186,30 @@ class NotificationController extends GetxController {
       debugPrint('Notification API error: $e');
     } finally {
       rxIsLoading.value = false;
+      _fetching = false;
+      if (_refreshQueued && !isClosed) {
+        _refreshQueued = false;
+        fetchNotifications(isRefresh: true, silent: true);
+      }
     }
   }
 
   Future<void> loadMoreNotifications() async {
-    if (rxIsLoading.value || rxIsLoadingMore.value || !rxHasMore.value) return;
+    if (_fetching ||
+        rxIsLoading.value ||
+        rxIsLoadingMore.value ||
+        !rxHasMore.value) {
+      return;
+    }
 
     rxIsLoadingMore.value = true;
+    final version = _version;
     try {
       final repo = _repo;
       if (repo != null) {
         final nextPage = rxCurrentPage.value + 1;
         final response = await repo.getNotifications(page: nextPage, limit: 20);
+        if (version != _version || isClosed) return;
         if (response.statusCode == 200 && response.data != null) {
           final List rawData = response.data['data'] ?? [];
           final fetched = rawData.map((json) => _mapJsonToItem(json)).toList();
@@ -176,7 +225,12 @@ class NotificationController extends GetxController {
             rxHasMore.value = fetched.isNotEmpty;
           }
 
-          rxNotifications.addAll(fetched);
+          rxNotifications.addAll(
+            fetched.where(
+              (item) =>
+                  !rxNotifications.any((existing) => existing.id == item.id),
+            ),
+          );
         }
       }
     } catch (e) {
@@ -201,111 +255,128 @@ class NotificationController extends GetxController {
     );
   }
 
-  Future<void> markAsRead(String id) async {
-    final index = rxNotifications.indexWhere((item) => item.id == id);
-    if (index != -1 && !rxNotifications[index].isRead) {
-      final old = rxNotifications[index];
-      rxNotifications[index] = NotificationItem(
-        id: old.id,
-        title: old.title,
-        subtitle: old.subtitle,
-        timeAgo: old.timeAgo,
-        dateGroup: old.dateGroup,
-        type: old.type,
-        isRead: true,
-        route: old.route,
-        data: old.data,
+  void receivePush(Map<String, dynamic> payload) {
+    final id = (payload['notificationId'] ?? payload['id'])?.toString();
+    final alreadyPresent =
+        id != null && rxNotifications.any((item) => item.id == id);
+    if (id != null &&
+        id.isNotEmpty &&
+        !alreadyPresent &&
+        payload['title'] != null) {
+      ++_version;
+      rxNotifications.insert(
+        0,
+        _mapJsonToItem({
+          'id': id,
+          'title': payload['title'],
+          'body': payload['body'],
+          'type': payload['type'],
+          'createdAt': payload['createdAt'],
+          'data': payload,
+          'isRead': false,
+        }),
       );
+    }
+    if (Get.isRegistered<BottomNavBarController>()) {
+      final nav = Get.find<BottomNavBarController>();
+      final count = int.tryParse('${payload['unreadCount']}');
+      if (count != null && !alreadyPresent) nav.updateUnreadCount(count);
+      nav.fetchUnreadCount();
+    }
+    fetchNotifications(isRefresh: true, silent: true);
+  }
 
-      if (Get.isRegistered<BottomNavBarController>()) {
-        Get.find<BottomNavBarController>().decrementUnreadCount();
-      }
+  NotificationItem _readItem(NotificationItem item) => NotificationItem(
+    id: item.id,
+    title: item.title,
+    subtitle: item.subtitle,
+    timeAgo: item.timeAgo,
+    dateGroup: item.dateGroup,
+    type: item.type,
+    isRead: true,
+    route: item.route,
+    data: item.data,
+  );
 
-      try {
-        final repo = _repo;
-        if (repo != null) {
-          await repo.markAsRead(id);
-        }
-      } catch (e) {
-        debugPrint('Error marking notification $id as read: $e');
+  bool _success(dynamic response) =>
+      response.statusCode != null &&
+      response.statusCode >= 200 &&
+      response.statusCode < 300;
+
+  void _reconcileCount() {
+    if (Get.isRegistered<BottomNavBarController>()) {
+      Get.find<BottomNavBarController>().fetchUnreadCount();
+    }
+  }
+
+  Future<void> markAsRead(String id) async {
+    if (_pendingIds.contains(id)) return;
+    final item = rxNotifications.firstWhereOrNull((item) => item.id == id);
+    if (item == null || item.isRead || _repo == null) return;
+    _pendingIds.add(id);
+    try {
+      if (!_success(await _repo!.markAsRead(id))) return;
+      ++_version;
+      final index = rxNotifications.indexWhere((item) => item.id == id);
+      if (index != -1) {
+        rxNotifications[index] = _readItem(rxNotifications[index]);
       }
+    } catch (e) {
+      debugPrint('Mark notification read failed: $e');
+    } finally {
+      _pendingIds.remove(id);
+      _reconcileCount();
     }
   }
 
   Future<void> markAllAsRead() async {
+    if (_repo == null) return;
+    final ids = rxNotifications.map((item) => item.id).toSet();
     try {
-      final repo = _repo;
-      if (repo != null) {
-        await repo.markAllAsRead();
-      }
-    } catch (_) {}
-
-    final updated = rxNotifications.map((item) {
-      return NotificationItem(
-        id: item.id,
-        title: item.title,
-        subtitle: item.subtitle,
-        timeAgo: item.timeAgo,
-        dateGroup: item.dateGroup,
-        type: item.type,
-        isRead: true,
-        route: item.route,
-        data: item.data,
+      if (!_success(await _repo!.markAllAsRead())) return;
+      ++_version;
+      rxNotifications.assignAll(
+        rxNotifications
+            .map((item) => ids.contains(item.id) ? _readItem(item) : item)
+            .toList(),
       );
-    }).toList();
-
-    rxNotifications.assignAll(updated);
-
-    if (Get.isRegistered<BottomNavBarController>()) {
-      Get.find<BottomNavBarController>().clearUnreadCount();
+      await fetchNotifications(isRefresh: true, silent: true);
+    } catch (e) {
+      debugPrint('Mark all read failed: $e');
+    } finally {
+      _reconcileCount();
     }
   }
 
   Future<bool> deleteNotification(String id) async {
-    final index = rxNotifications.indexWhere((item) => item.id == id);
-    NotificationItem? removedItem;
-    bool wasUnread = false;
-    if (index != -1) {
-      wasUnread = !rxNotifications[index].isRead;
-      removedItem = rxNotifications.removeAt(index);
-      if (wasUnread && Get.isRegistered<BottomNavBarController>()) {
-        Get.find<BottomNavBarController>().decrementUnreadCount();
-      }
-    }
-
+    if (_repo == null || _pendingIds.contains(id)) return false;
+    _pendingIds.add(id);
     try {
-      final repo = _repo;
-      if (repo != null) {
-        final response = await repo.deleteNotification(id);
-        if (response.statusCode == 200) {
-          return true;
-        }
-      }
+      if (!_success(await _repo!.deleteNotification(id))) return false;
+      ++_version;
+      rxNotifications.removeWhere((item) => item.id == id);
+      return true;
     } catch (e) {
-      debugPrint('Delete notification error: $e');
-      if (removedItem != null &&
-          index != -1 &&
-          index <= rxNotifications.length) {
-        rxNotifications.insert(index, removedItem);
-        if (wasUnread && Get.isRegistered<BottomNavBarController>()) {
-          Get.find<BottomNavBarController>().fetchUnreadCount();
-        }
-      }
+      debugPrint('Delete notification failed: $e');
       return false;
+    } finally {
+      _pendingIds.remove(id);
+      _reconcileCount();
     }
-    return true;
   }
 
   Future<void> deleteAllNotifications() async {
+    if (_repo == null) return;
+    final ids = rxNotifications.map((item) => item.id).toSet();
     try {
-      final repo = _repo;
-      if (repo != null) {
-        await repo.deleteAllNotifications();
-      }
-    } catch (_) {}
-    rxNotifications.clear();
-    if (Get.isRegistered<BottomNavBarController>()) {
-      Get.find<BottomNavBarController>().clearUnreadCount();
+      if (!_success(await _repo!.deleteAllNotifications())) return;
+      ++_version;
+      rxNotifications.removeWhere((item) => ids.contains(item.id));
+      await fetchNotifications(isRefresh: true, silent: true);
+    } catch (e) {
+      debugPrint('Delete all notifications failed: $e');
+    } finally {
+      _reconcileCount();
     }
   }
 

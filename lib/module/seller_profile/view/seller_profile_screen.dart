@@ -127,13 +127,9 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
                 // Translucent Stats Container (Label on TOP, Value on BOTTOM)
                 Obx(() {
                   final stats = controller.rxSellerStats.value;
-                  final listed = stats.totalProductsListed > 0
-                      ? stats.totalProductsListed
-                      : controller.itemsListedCount;
-                  final sold = stats.totalProductsPurchased > 0
-                      ? stats.totalProductsPurchased
-                      : controller.itemsSoldCount;
-                  final closetValueText = stats.formattedEarnings;
+                  final listed = stats.totalProductsListed;
+                  final sold = stats.totalProductsSold;
+                  final closetValueText = stats.formattedClosetValue;
 
                   return Container(
                     padding: EdgeInsets.symmetric(
@@ -161,6 +157,7 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
                           child: _buildStatItem(
                             "Closet Value",
                             closetValueText,
+                            isCurrency: true,
                           ),
                         ),
                       ],
@@ -175,7 +172,7 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
     );
   }
 
-  Widget _buildStatItem(String label, String value) {
+  Widget _buildStatItem(String label, String value, {bool isCurrency = false}) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -188,13 +185,15 @@ class SellerProfileScreen extends GetView<SellerProfileController> {
           ),
         ),
         SizedBox(height: 4.h),
-        Text(
-          value,
-          style: GoogleFonts.dmSans(
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-          ),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: isCurrency
+              ? DirhamPrice(price: value, style: GoogleFonts.dmSans(
+                  fontSize: 14.sp, fontWeight: FontWeight.w700, color: Colors.white,
+                ))
+              : Text(value, maxLines: 1, style: GoogleFonts.dmSans(
+                  fontSize: 14.sp, fontWeight: FontWeight.w700, color: Colors.white,
+                )),
         ),
       ],
     );
